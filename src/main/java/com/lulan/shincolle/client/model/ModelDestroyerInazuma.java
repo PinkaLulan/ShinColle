@@ -5,7 +5,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -19,8 +18,9 @@ import net.minecraft.util.math.MathHelper;
  * ModelDestroyerInazuma - PinkaLulan
  * Created using Tabula 4.1.1
  */
-public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
+public class ModelDestroyerInazuma extends ShipModelBaseAdv
 {
+	
     public ModelRenderer BodyMain;
     public ModelRenderer Butt;
     public ModelRenderer Head;
@@ -38,11 +38,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
     public ModelRenderer Skirt02;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face0;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
     public ModelRenderer Ahoke;
     public ModelRenderer HairU01;
     public ModelRenderer HairL01;
@@ -100,13 +95,12 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
         this.textureWidth = 128;
         this.textureHeight = 128;
         
+        this.setDefaultFaceModel();
+        
         this.EquipMain03 = new ModelRenderer(this, 59, 15);
         this.EquipMain03.setRotationPoint(0.0F, 9.5F, 9.0F);
         this.EquipMain03.addBox(-1.0F, 0.0F, -1.5F, 2, 6, 3, 0.0F);
         this.setRotateAngle(EquipMain03, 0.5009094953223726F, 0.0F, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipC02 = new ModelRenderer(this, 0, 0);
         this.EquipC02.setRotationPoint(-2.0F, 0.5F, 0.0F);
         this.EquipC02.addBox(-3.5F, -3.0F, -3.5F, 7, 3, 7, 0.0F);
@@ -177,9 +171,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
         this.LegLeft03 = new ModelRenderer(this, 30, 76);
         this.LegLeft03.setRotationPoint(3.0F, 8.0F, 2.9F);
         this.LegLeft03.addBox(-3.5F, 0.0F, -3.5F, 7, 5, 7, 0.0F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.HairL02 = new ModelRenderer(this, 88, 104);
         this.HairL02.setRotationPoint(-0.1F, 7.5F, 0.0F);
         this.HairL02.addBox(-0.5F, 0.0F, 0.0F, 1, 7, 3, 0.0F);
@@ -214,9 +205,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
         this.HairR01.setRotationPoint(-8.0F, 2.0F, -6.7F);
         this.HairR01.addBox(-0.5F, 0.0F, 0.0F, 1, 9, 3, 0.0F);
         this.setRotateAngle(HairR01, -0.05235987755982988F, 0.08726646259971647F, -0.13962634015954636F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.BodyMain = new ModelRenderer(this, 0, 105);
         this.BodyMain.setRotationPoint(0.0F, -9.0F, 0.0F);
         this.BodyMain.addBox(-6.5F, -11.0F, -4.0F, 13, 14, 7, 0.0F);
@@ -256,9 +244,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
         this.EquipC04a = new ModelRenderer(this, 0, 0);
         this.EquipC04a.setRotationPoint(-1.5F, -3.0F, 0.0F);
         this.EquipC04a.addBox(-1.0F, -1.0F, -6.0F, 2, 2, 6, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipHead04 = new ModelRenderer(this, 0, 0);
         this.EquipHead04.setRotationPoint(0.0F, -4.8F, 2.5F);
         this.EquipHead04.addBox(-1.0F, -1.0F, 0.0F, 2, 2, 6, 0.0F);
@@ -281,9 +266,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
         this.EquipHead02 = new ModelRenderer(this, 0, 0);
         this.EquipHead02.setRotationPoint(1.0F, 0.0F, -15.0F);
         this.EquipHead02.addBox(-1.5F, -7.0F, 0.0F, 3, 14, 3, 0.0F);
-        this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipTL02d = new ModelRenderer(this, 0, 0);
         this.EquipTL02d.setRotationPoint(1.3F, -2.3F, 3.0F);
         this.EquipTL02d.addBox(-1.0F, -1.0F, 0.0F, 2, 2, 2, 0.0F);
@@ -408,14 +390,11 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
-        
-    }
-
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
     }
     
     @Override
@@ -466,46 +445,37 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
     	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
-    
-	//model animation
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    {
-		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-		IShipEmotion ent = (IShipEmotion)entity;
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
+  		case ID.State.EQUIP00:
+  			this.EquipBase.isHidden = false;
+  		break;
+  		default:  //normal
+  			this.EquipBase.isHidden = true;
+  		break;
+  		}
+	}
 
-		showEquip(ent);
-		
-		EmotionHelper.rollEmotion(this, ent);
-		  
-		if (ent.getStateFlag(ID.F.NoFuel))
-		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
-		}
-		else
-		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
-		}
-		
-		setGlowRotation();
-    }
-    
-	//設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	GlStateManager.translate(0F, 0.51F + 0.24F * ent.getScaleLevel(), 0F);
-    	setFace(4);
+    	this.setFaceHungry(ent);
     	
 		//body
     	this.Head.rotateAngleX = 0F;
@@ -549,12 +519,11 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 		this.LegRight02.offsetX = 0F;
 		this.LegRight02.offsetY = 0F;
 		this.LegRight02.offsetZ = 0F;
-	  	
-    }
-    
-	//雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-  	{   
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
@@ -904,110 +873,6 @@ public class ModelDestroyerInazuma extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-  	}
-  	
-  	private void showEaaquip(IShipEmotion ent)
-  	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.State.EQUIP00:
-  			this.EquipBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  		break;
-  		}
-  	}
-  	
-    //設定顯示的臉型
-  	@Override
-  	public void setFace(int emo)
-  	{
-  		switch (emo)
-  		{
-  		case 0:
-  			this.Face0.isHidden = false;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 1:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = false;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 2:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 3:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 4:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  			break;
-  		default:
-  		break;
-  		}
-  	}
-  	
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void showEquip(IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void syncRotationGlowPart()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
 	}
   	
   	

@@ -10,7 +10,9 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -78,7 +80,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
-	
+
 	//check entity state every tick
   	@Override
   	public void onLivingUpdate()
@@ -279,18 +281,15 @@ public class EntityNorthernHime extends BasicEntityShipCV
     	if (!this.isEntityAlive()) return EnumActionResult.FAIL;
     		
 		//pick up northern for riding
-		if (!this.world.isRemote)
+		if (this.world.isRemote)
 		{
-			if (this.isSitting() && TeamHelper.checkSameOwner(this, player) &&
-				this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+			if (this.isSitting() && this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED &&
+				(stack == null || stack.getItem() != ModItems.PointerItem))
 			{
-				this.setEntitySit(false);
-				this.startRiding(player, true);
-				this.sendSyncPacketRiders();
-				this.getShipNavigate().clearPathEntity();
-				this.cancelGoRiding();
+				//send riding request packet
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_Riding, this.getEntityId(), this.world.provider.getDimension()));
 				
-				return EnumActionResult.SUCCESS;
+				return EnumActionResult.FAIL;	//no swing animation
 			}
 		}
 		

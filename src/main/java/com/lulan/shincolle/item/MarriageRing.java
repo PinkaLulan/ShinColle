@@ -3,9 +3,12 @@ package com.lulan.shincolle.item;
 import java.util.List;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
@@ -142,6 +145,41 @@ public class MarriageRing extends BasicItem implements IBauble
 					}
 				}
 			}//end extPros != null
+			
+			//server side
+			if (!world.isRemote)
+			{
+				if (inUse && (entity.ticksExisted & 63) == 0)
+				{
+					//apply shy emotion to nearby ship
+		  			List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, entity.getEntityBoundingBox().expand(6D, 5D, 6D));
+
+	              	for (BasicEntityShip s : slist)
+	              	{
+	              		if (s != null && s.isEntityAlive() && !s.getStateFlag(ID.F.NoFuel) &&
+	              			TeamHelper.checkSameOwner(entity, s))
+	              		{
+          					s.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
+              				
+              				if (s.getRand().nextInt(5) == 0)
+	              			{
+	              				switch (s.getRand().nextInt(3))
+	            				{
+	            				case 1:
+	            					s.applyParticleEmotion(1);		//love
+	            					break;
+	            				case 2:
+	            					s.applyParticleEmotion(31);		//shy
+	            					break;
+	            				default:
+	            					s.applyParticleEmotion(15);		//kiss
+	            					break;
+	            				}
+	              			}
+	              		}
+		  			}//end for ship
+				}//end inUse
+			}//end server side
 		}//end entity = player
 	}
 	

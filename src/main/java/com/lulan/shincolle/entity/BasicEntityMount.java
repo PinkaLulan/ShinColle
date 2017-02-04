@@ -221,10 +221,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		}
 		
 		//set hurt face
-    	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
-    	{
-    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-    	}
+    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	
     	//change sensitive body
   		if (this.rand.nextInt(10) == 0) this.host.randomSensitiveBody();

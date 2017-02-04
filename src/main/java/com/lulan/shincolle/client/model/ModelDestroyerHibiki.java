@@ -8,7 +8,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -21,8 +20,9 @@ import net.minecraft.util.math.MathHelper;
  * ModelDestroyerHibiki - PinkaLulan
  * Created using Tabula 4.1.1  2016/5/14
  */
-public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
+public class ModelDestroyerHibiki extends ShipModelBaseAdv
 {
+	
     public ModelRenderer BodyMain;
     public ModelRenderer Butt;
     public ModelRenderer Head;
@@ -40,10 +40,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
     public ModelRenderer Skirt02;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
     public ModelRenderer Ahoke;
     public ModelRenderer HairU01;
     public ModelRenderer HairL01;
@@ -173,9 +169,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.Hat03c.setRotationPoint(-0.5F, 2.0F, 0.0F);
         this.Hat03c.addBox(0.0F, -4.0F, 0.0F, 5, 3, 5, 0.0F);
         this.setRotateAngle(Hat03c, -0.03490658503988659F, 0.0F, 0.0F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.EquipHead04 = new ModelRenderer(this, 0, 0);
         this.EquipHead04.setRotationPoint(0.0F, -4.8F, 2.5F);
         this.EquipHead04.addBox(-1.0F, -1.0F, 0.0F, 2, 2, 6, 0.0F);
@@ -203,9 +196,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.Hair02a1.setRotationPoint(0.0F, 10.0F, -2.2F);
         this.Hair02a1.addBox(-2.0F, 0.0F, 0.0F, 4, 7, 0, 0.0F);
         this.setRotateAngle(Hair02a1, 0.2617993877991494F, 0.0F, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.EquipHead05 = new ModelRenderer(this, 0, 0);
         this.EquipHead05.setRotationPoint(0.0F, 0.0F, -2.0F);
         this.EquipHead05.addBox(-1.0F, -5.0F, 0.0F, 2, 10, 2, 0.0F);
@@ -238,9 +228,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.EquipC05a = new ModelRenderer(this, 0, 0);
         this.EquipC05a.setRotationPoint(1.5F, -3.0F, 0.0F);
         this.EquipC05a.addBox(-1.0F, -1.0F, -6.0F, 2, 2, 6, 0.0F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.EquipHead03 = new ModelRenderer(this, 0, 0);
         this.EquipHead03.setRotationPoint(0.0F, 4.8F, 2.5F);
         this.EquipHead03.addBox(-1.0F, -1.0F, 0.0F, 2, 2, 6, 0.0F);
@@ -396,9 +383,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.EquipBase = new ModelRenderer(this, 0, 0);
         this.EquipBase.setRotationPoint(0.0F, -1.0F, 0.0F);
         this.EquipBase.addBox(0.0F, 0.0F, 0.0F, 0, 0, 0, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.Hair02a2 = new ModelRenderer(this, 24, 32);
         this.Hair02a2.setRotationPoint(0.0F, 7.0F, 0.0F);
         this.Hair02a2.addBox(-2.0F, 0.0F, 0.0F, 4, 7, 0, 0.0F);
@@ -456,63 +440,63 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.HatBase2.setRotationPoint(0.0F, -8F, 0.0F);
         this.HatBase2.addBox(0.0F, 0.0F, 0.0F, 0, 0, 0, 0.0F);
         this.setRotateAngle(HatBase2, -0.2618F, 0.0F, 0.0F);
-        this.Hat201_01 = new ModelRenderer(this, 98, 58);
+        this.Hat201_01 = new ModelRenderer(this, 98, 46);
         this.Hat201_01.mirror = true;
         this.Hat201_01.setRotationPoint(0.0F, 0.0F, -9.0F);
         this.Hat201_01.addBox(0.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
-        this.Hat201_02 = new ModelRenderer(this, 98, 58);
+        this.Hat201_02 = new ModelRenderer(this, 98, 46);
         this.Hat201_02.setRotationPoint(0.0F, 0.0F, -9.0F);
         this.Hat201_02.addBox(-9.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
-        this.Hat201_03 = new ModelRenderer(this, 98, 58);
+        this.Hat201_03 = new ModelRenderer(this, 98, 46);
         this.Hat201_03.mirror = true;
         this.Hat201_03.setRotationPoint(0.0F, 0.0F, 8.0F);
         this.Hat201_03.addBox(0.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
-        this.Hat201_04 = new ModelRenderer(this, 98, 58);
+        this.Hat201_04 = new ModelRenderer(this, 98, 46);
         this.Hat201_04.setRotationPoint(0.0F, 0.0F, 8.0F);
         this.Hat201_04.addBox(-9.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
-        this.Hat201_05 = new ModelRenderer(this, 98, 58);
+        this.Hat201_05 = new ModelRenderer(this, 98, 46);
         this.Hat201_05.mirror = true;
         this.Hat201_05.setRotationPoint(8.0F, 0.0F, 0.0F);
         this.Hat201_05.addBox(0.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_05, 0.0F, 1.5707963267948966F, 0.0F);
-        this.Hat201_06 = new ModelRenderer(this, 98, 58);
+        this.Hat201_06 = new ModelRenderer(this, 98, 46);
         this.Hat201_06.setRotationPoint(8.0F, 0.0F, 9.0F);
         this.Hat201_06.addBox(0.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_06, 0.0F, 1.5707963267948966F, 0.0F);
-        this.Hat201_07 = new ModelRenderer(this, 98, 58);
+        this.Hat201_07 = new ModelRenderer(this, 98, 46);
         this.Hat201_07.mirror = true;
         this.Hat201_07.setRotationPoint(-9.0F, 0.0F, 0.0F);
         this.Hat201_07.addBox(0.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_07, 0.0F, 1.5707963267948966F, 0.0F);
-        this.Hat201_08 = new ModelRenderer(this, 98, 58);
+        this.Hat201_08 = new ModelRenderer(this, 98, 46);
         this.Hat201_08.setRotationPoint(-9.0F, 0.0F, 9.0F);
         this.Hat201_08.addBox(0.0F, -9.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_08, 0.0F, 1.5707963267948966F, 0.0F);
-        this.Hat201_09 = new ModelRenderer(this, 98, 58);
+        this.Hat201_09 = new ModelRenderer(this, 98, 46);
         this.Hat201_09.mirror = true;
         this.Hat201_09.setRotationPoint(0.0F, -9.0F, 0.0F);
         this.Hat201_09.addBox(0.0F, 0.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_09, -1.5707963267948966F, 0.0F, 0.0F);
-        this.Hat201_10 = new ModelRenderer(this, 98, 58);
+        this.Hat201_10 = new ModelRenderer(this, 98, 46);
         this.Hat201_10.setRotationPoint(-9.0F, -9.0F, 0.0F);
         this.Hat201_10.addBox(0.0F, 0.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_10, -1.5707963267948966F, 0.0F, 0.0F);
-        this.Hat201_11 = new ModelRenderer(this, 98, 58);
+        this.Hat201_11 = new ModelRenderer(this, 98, 46);
         this.Hat201_11.mirror = true;
         this.Hat201_11.setRotationPoint(0.0F, -9.0F, 9.0F);
         this.Hat201_11.addBox(0.0F, 0.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_11, -1.5707963267948966F, 0.0F, 0.0F);
-        this.Hat201_12 = new ModelRenderer(this, 98, 58);
+        this.Hat201_12 = new ModelRenderer(this, 98, 46);
         this.Hat201_12.setRotationPoint(-9.0F, -9.0F, 9.0F);
         this.Hat201_12.addBox(0.0F, 0.0F, 0.0F, 9, 9, 1, 0.0F);
         this.setRotateAngle(Hat201_12, -1.5707963267948966F, 0.0F, 0.0F);
-        this.Hat202a = new ModelRenderer(this, 98, 46);
-        this.Hat202a.setRotationPoint(9.0F, -2.5F, 0.0F);
-        this.Hat202a.addBox(0.0F, 0.0F, -3.0F, 1, 4, 6, 0.0F);
+        this.Hat202a = new ModelRenderer(this, 46, 8);
+        this.Hat202a.setRotationPoint(9.5F, -2.5F, 0.0F);
+        this.Hat202a.addBox(-3F, 0F, -0.5F, 6, 4, 1, 0.0F);
         this.setRotateAngle(Hat202a, 0.0F, 0.0F, -0.08726646259971647F);
-        this.Hat202b = new ModelRenderer(this, 98, 46);
-        this.Hat202b.setRotationPoint(-10.0F, -2.5F, 0.0F);
-        this.Hat202b.addBox(0.0F, 0.0F, -3.0F, 1, 4, 6, 0.0F);
+        this.Hat202b = new ModelRenderer(this, 46, 8);
+        this.Hat202b.setRotationPoint(-9.5F, -2.5F, 0.0F);
+        this.Hat202b.addBox(-3F, 0F, -0.5F, 6, 4, 1, 0.0F);
         this.setRotateAngle(Hat202b, 0.0F, 0.0F, 0.08726646259971647F);
         
         this.EquipTR02.addChild(this.EquipTR02f);
@@ -603,12 +587,49 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.GlowBodyMain.setRotationPoint(0.0F, -9.0F, 0.0F);
         this.GlowHead = new ModelRenderer(this, 0, 0);
         this.GlowHead.setRotationPoint(0.0F, -11.8F, -1.0F);
+		//change texture offset
+        this.Face0 = new ModelRenderer(this, 98, 63);
+        this.Face0.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face0.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face1 = new ModelRenderer(this, 98, 76);
+        this.Face1.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face1.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face2 = new ModelRenderer(this, 98, 89);
+        this.Face2.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face2.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face3 = new ModelRenderer(this, 98, 102);
+        this.Face3.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face3.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Face4 = new ModelRenderer(this, 98, 115);
+        this.Face4.setRotationPoint(0.0F, -12.2F, -6.1F);
+        this.Face4.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
+        this.Mouth0 = new ModelRenderer(this, 22, 52);
+        this.Mouth0.setRotationPoint(0.0F, -4.2F, -6.2F);
+        this.Mouth0.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
+        this.Mouth1 = new ModelRenderer(this, 100, 58);
+        this.Mouth1.setRotationPoint(0.0F, -4.2F, -6.2F);
+        this.Mouth1.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
+        this.Mouth2 = new ModelRenderer(this, 114, 56);
+        this.Mouth2.setRotationPoint(0.0F, -4.2F, -6.2F);
+        this.Mouth2.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
+        this.Flush0 = new ModelRenderer(this, 114, 61);
+        this.Flush0.setRotationPoint(-6F, -3.0F, -6.8F);
+        this.Flush0.addBox(-1.0F, 0.0F, -0.5F, 2, 1, 0, 0.0F);
+        this.Flush1 = new ModelRenderer(this, 114, 61);
+        this.Flush1.setRotationPoint(6F, -3.0F, -6.8F);
+        this.Flush1.addBox(-1.0F, 0.0F, -0.5F, 2, 1, 0, 0.0F);
         
         this.GlowBodyMain.addChild(this.GlowHead);
+        this.GlowHead.addChild(this.Face0);
         this.GlowHead.addChild(this.Face1);
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
         this.GlowHead.addChild(this.HatBase2);
         this.HatBase2.addChild(this.Hat201_01);
         this.HatBase2.addChild(this.Hat201_02);
@@ -624,13 +645,6 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
         this.HatBase2.addChild(this.Hat201_12);
         this.HatBase2.addChild(this.Hat202a);
         this.HatBase2.addChild(this.Hat202b);
-    }
-
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
     }
     
     @Override
@@ -681,46 +695,69 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
     	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
-    
-	//model animation
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    {
-		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-		IShipEmotion ent = (IShipEmotion)entity;
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
+  		case ID.State.EQUIP00:
+  			this.EquipBase.isHidden = false;
+  			this.EquipTL03.isHidden = false;
+  		break;
+  		default:  //normal
+  			this.EquipBase.isHidden = true;
+  			this.EquipTL03.isHidden = true;
+  		break;
+  		}
+  		
+  		switch (ent.getStateEmotion(ID.S.State2))
+  		{
+  		case ID.State.EQUIP00a:
+  			this.HatBase.isHidden = false;
+  			this.Hair02f1.isHidden = false;
+  			this.HatBase2.isHidden = true;
+  		break;
+  		case ID.State.EQUIP01a:
+  			this.HatBase.isHidden = true;
+  			this.Hair02f1.isHidden = true;
+  			this.HatBase2.isHidden = false;
+  			this.HatBase2.rotateAngleX = -0.2618F;
+  			this.HatBase2.offsetY = 0F;
+  			this.HatBase2.offsetZ = 0F;
+  		break;
+  		case ID.State.EQUIP02a:
+  			this.HatBase.isHidden = true;
+  			this.Hair02f1.isHidden = true;
+  			this.HatBase2.isHidden = false;
+  			this.HatBase2.rotateAngleX = -0.7F;
+  			this.HatBase2.offsetY = -0.06F;
+  			this.HatBase2.offsetZ = 0.06F;
+  		break;
+  		default:  //normal
+  			this.HatBase.isHidden = true;
+  			this.Hair02f1.isHidden = false;
+  			this.HatBase2.isHidden = true;
+  		break;
+  		}
+	}
 
-		showEquip(ent);
-		
-		EmotionHelper.rollEmotionAdv(this, ent);
-		  
-		if (ent.getStateFlag(ID.F.NoFuel))
-		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
-		}
-		else
-		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
-		}
-		
-		setGlowRotation();
-    }
-    
-	//設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	GlStateManager.translate(0F, 0.51F + 0.25F * ent.getScaleLevel(), 0F);
-    	setFace(4);
+    	this.setFaceHungry(ent);
     	
 		//body
     	this.Head.rotateAngleX = 0F;
@@ -766,11 +803,11 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 		this.LegRight02.offsetX = 0F;
 		this.LegRight02.offsetY = 0F;
 		this.LegRight02.offsetZ = 0F;
-    }
-    
-	//雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-  	{   
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
@@ -1153,314 +1190,302 @@ public class ModelDestroyerHibiki extends ModelBase implements IModelEmotionAdv
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-  	}
-  	
-  	private void showaaEquip(IShipEmotion ent)
-  	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.State.EQUIP00:
-  			this.EquipBase.isHidden = false;
-  			this.EquipTL03.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  			this.EquipTL03.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.State.EQUIP00a:
-  			this.HatBase.isHidden = false;
-  			this.Hair02f1.isHidden = false;
-  			this.HatBase2.isHidden = true;
-  		break;
-  		case ID.State.EQUIP01a:
-  			this.HatBase.isHidden = true;
-  			this.Hair02f1.isHidden = true;
-  			this.HatBase2.isHidden = false;
-  			this.HatBase2.rotateAngleX = -0.2618F;
-  			this.HatBase2.offsetY = 0F;
-  			this.HatBase2.offsetZ = 0F;
-  		break;
-  		case ID.State.EQUIP02a:
-  			this.HatBase.isHidden = true;
-  			this.Hair02f1.isHidden = true;
-  			this.HatBase2.isHidden = false;
-  			this.HatBase2.rotateAngleX = -0.7F;
-  			this.HatBase2.offsetY = -0.06F;
-  			this.HatBase2.offsetZ = 0.06F;
-  		break;
-  		default:  //normal
-  			this.HatBase.isHidden = true;
-  			this.Hair02f1.isHidden = false;
-  			this.HatBase2.isHidden = true;
-  		break;
-  		}
-  	}
-  	
-    //設定顯示的臉型
-  	@Override
-  	public void setFace(int emo)
-  	{
-  		switch (emo)
-  		{
-  		case 1:
-  			this.Face1.isHidden = false;
-  			this.Face1.rotateAngleY = 0F;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 2:
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face2.rotateAngleY = 0F;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 3:
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face3.rotateAngleY = 0F;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 4:
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  			this.Face4.rotateAngleY = 0F;
-  		break;
-  		case 0:
-  		case 5:
-  		case 6:
-  			this.Face1.isHidden = false;
-  			this.Face1.rotateAngleY = 3.14159F;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 7:
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face2.rotateAngleY = 3.14159F;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 8:
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face3.rotateAngleY = 3.14159F;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 9:
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  			this.Face4.rotateAngleY = 3.14159F;
-  		break;
-  		default:
-  		break;
-  		}
-  	}
-
+	}
+	
 	@Override
 	public void setFaceNormal(IShipEmotion ent)
 	{
-		if (ent.getTickExisted() % 2048 > 1024)
+		this.setFace(0);
+		
+		if (ent.getStateEmotion(ID.S.Emotion4) == ID.Emotion.BORED && (ent.getTickExisted() & 255) > 200)
 		{
-			setFace(6);
+			this.setMouth(0);
 		}
 		else
 		{
-			setFace(7);
+			this.setMouth(3);
 		}
 	}
 
 	@Override
 	public void setFaceBlink0(IShipEmotion ent)
 	{
-		setFace(2);
+		this.setFace(0);
 	}
 
 	@Override
 	public void setFaceBlink1(IShipEmotion ent)
 	{
-		setFace(1);
+		this.setFace(1);
 	}
 
 	@Override
 	public void setFaceCry(IShipEmotion ent)
 	{
-		if (ent.getTickExisted() % 256 > 128)
+		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 255;
+		
+		if (t < 128)
 		{
-			setFace(3);
+			this.setFace(6);
+			
+			if (t < 64)
+			{
+				this.setMouth(2);
+			}
+			else
+			{
+				this.setMouth(1);
+			}
 		}
 		else
 		{
-			setFace(9);
+			this.setFace(7);
+			this.setMouth(2);
 		}
 	}
 
 	@Override
 	public void setFaceAttack(IShipEmotion ent)
 	{
-		int t = ent.getTickExisted() % 128;
+		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 511;
 		
-		if (t < 45)
+		if (t < 160)
 		{
-			setFace(2);
+			this.setFace(0);
+			
+			if (t < 80)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(1);
+			}
 		}
-		else if (t < 90)
+		else if (t < 320)
 		{
-			setFace(3);
+			this.setFace(2);
+			
+			if (t < 220)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(1);
+			}
+		}
+		else if (t < 410)
+		{
+			this.setFace(3);
+			
+			if (t < 360)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(4);
+			}
 		}
 		else
 		{
-			setFace(8);
+			this.setFace(8);
+			
+			if (t < 470)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(1);
+			}
 		}
 	}
-
+	
 	@Override
 	public void setFaceDamaged(IShipEmotion ent)
 	{
-		int t = ent.getTickExisted() % 128;
+		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 511;
 		
-		if (t < 64)
+		if (t < 200)
 		{
-			setFace(8);
+			this.setFace(6);
+			
+			if (t < 60)
+			{
+				this.setMouth(2);
+			}
+			else
+			{
+				this.setMouth(1);
+			}
+		}
+		else if (t < 400)
+		{
+			this.setFace(3);
+			
+			if (t < 250)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(3);
+			}
 		}
 		else
 		{
-			setFace(3);
+			this.setFace(9);
+			
+			if (t < 450)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(1);
+			}
 		}
+	}
+	
+	@Override
+	public void setFaceScorn(IShipEmotion ent)
+	{
+		this.setFace(2);
+		this.setMouth(1);
 	}
 
 	@Override
 	public void setFaceHungry(IShipEmotion ent)
 	{
-		setFace(4);		
+		this.setFace(4);	
+		this.setMouth(2);
 	}
 
 	@Override
 	public void setFaceAngry(IShipEmotion ent)
 	{
-		if (ent.getTickExisted() % 64 > 32)
+		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 255;
+		
+		if (t < 128)
 		{
-			setFace(7);
+			this.setFace(1);
+			
+			if (t < 64)
+			{
+				this.setMouth(3);
+			}
+			else
+			{
+				this.setMouth(1);
+			}
 		}
 		else
 		{
-			setFace(8);
+			this.setFace(2);
+
+			if (t < 170)
+			{
+				this.setMouth(1);
+			}
+			else
+			{
+				this.setMouth(3);
+			}
 		}
 	}
 
 	@Override
-	public void setFaceScorn(IShipEmotion ent)
+	public void setFaceBored(IShipEmotion ent)
 	{
-		if (ent.getTickExisted() % 128 > 64)
+		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 511;
+		
+		if (t < 170)
 		{
-			setFace(7);
+			this.setFace(1);
+			
+			if (t < 80)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(3);
+			}
+		}
+		else if (t < 340)
+		{
+			this.setFace(8);
+
+			if (t < 250)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(3);
+			}
 		}
 		else
 		{
-			setFace(8);
+			this.setFace(0);
+
+			if (t < 420)
+			{
+				this.setMouth(0);
+			}
+			else
+			{
+				this.setMouth(3);
+			}
 		}
-	}
-	
-	@Override
-	public void setFaceBored(IShipEmotion ent)
-	{
-//		int t = ent.getTickExisted() % 1024;
-//		
-//		if (t < 330)
-//		{
-//			setFace(1);
-//		}
-//		else if (t < 660)
-//		{
-//			setFace(2);
-//		}
-//		else
-//		{
-//			setFace(7);
-//		}
 	}
 	
 	@Override
 	public void setFaceShy(IShipEmotion ent)
 	{
+		this.setFlush(true);
 		
+		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 255;
+		
+		this.setFace(0);
+		
+		if (t < 150)
+		{
+			this.setMouth(3);
+		}
+		else
+		{
+			this.setMouth(2);
+		}
 	}
 	
 	@Override
 	public void setFaceHappy(IShipEmotion ent)
 	{
+		this.setFlush(true);
 		
-	}
-	
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void showEquip(IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
+		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 255;
 		
-	}
-
-	@Override
-	public void syncRotationGlowPart()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setMouth(int par1)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setFlush(boolean par1)
-	{
-		// TODO Auto-generated method stub
-		
+		if (t < 140)
+		{
+			this.setFace(3);
+			
+			if (t < 80)
+			{
+				this.setMouth(3);
+			}
+			else
+			{
+				this.setMouth(4);
+			}
+		}
+		else
+		{
+			this.setFace(8);
+			this.setMouth(0);
+		}
 	}
 	
 	

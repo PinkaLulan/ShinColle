@@ -104,7 +104,7 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 			//server side
 			if (!world.isRemote)
 			{
-				if (inUse && player.ticksExisted % 16 == 0)
+				if (inUse && (player.ticksExisted & 15) == 0)
 				{
 					//get nearby ship
 		  			List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, player.getEntityBoundingBox().expand(8D, 6D, 8D));
@@ -116,6 +116,7 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 	              		{
               				if (player.getDistanceSqToEntity(s) > 4D)
 	              			{
+              					s.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
 	              				s.getShipNavigate().tryMoveToEntityLiving(player, 0.75D);
 	              				
 	              				if (player.getRNG().nextInt(5) == 0)

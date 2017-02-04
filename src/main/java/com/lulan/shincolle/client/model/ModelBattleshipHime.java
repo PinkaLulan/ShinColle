@@ -2,12 +2,10 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -20,8 +18,9 @@ import net.minecraft.util.math.MathHelper;
  * ModelBattleshipHime - PinkaLulan 2015/4/12
  * Created using Tabula 4.1.1
  */
-public class ModelBattleshipHime extends ModelBase implements IModelEmotion
+public class ModelBattleshipHime extends ShipModelBaseAdv
 {
+	
 	public ModelRenderer BodyMain;
     public ModelRenderer Neck;
     public ModelRenderer BoobR;
@@ -33,11 +32,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
     public ModelRenderer Head;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
-    public ModelRenderer Face0;
     public ModelRenderer HeadHL;
     public ModelRenderer HeadHR;
     public ModelRenderer Ahoke;
@@ -70,6 +64,8 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
         this.textureWidth = 128;
         this.textureHeight = 128;
         
+        this.setDefaultFaceModel();
+        
         this.HairL02 = new ModelRenderer(this, 88, 100);
         this.HairL02.setRotationPoint(0.0F, 10.0F, 0.0F);
         this.HairL02.addBox(-1.0F, 0.0F, 0.0F, 2, 12, 3, 0.0F);
@@ -86,9 +82,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
         this.ClothL02.setRotationPoint(0.0F, -1.0F, 0.0F);
         this.ClothL02.addBox(-4.4F, 0.0F, -3.7F, 8, 3, 9, 0.0F);
         this.setRotateAngle(ClothL02, 0.13962634015954636F, 0.0F, 0.0F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.LegLeft01 = new ModelRenderer(this, 0, 84);
         this.LegLeft01.mirror = true;
         this.LegLeft01.setRotationPoint(4.5F, 9.5F, -2.7F);
@@ -103,9 +96,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
         this.ArmLeft01.setRotationPoint(7.8F, -9.3F, -0.7F);
         this.ArmLeft01.addBox(-2.0F, -1.0F, -2.5F, 5, 12, 5, 0.0F);
         this.setRotateAngle(ArmLeft01, 0.0F, 0.0F, -0.20943951023931953F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.BoobL = new ModelRenderer(this, 33, 101);
         this.BoobL.mirror = true;
         this.BoobL.setRotationPoint(3.7F, -9.0F, -3.5F);
@@ -134,16 +124,10 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
         this.Head = new ModelRenderer(this, 44, 101);
         this.Head.setRotationPoint(0.0F, -1.5F, 0.0F);
         this.Head.addBox(-7.0F, -14.5F, -6.5F, 14, 14, 13, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.ClothL03 = new ModelRenderer(this, 8, 0);
         this.ClothL03.setRotationPoint(0.0F, 1.5F, 0.1F);
         this.ClothL03.addBox(-4.5F, 0.0F, -3.8F, 9, 5, 10, 0.0F);
         this.setRotateAngle(ClothL03, 0.08726646259971647F, 0.0F, 0.0F);
-        this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.Hair01 = new ModelRenderer(this, 50, 46);
         this.Hair01.setRotationPoint(0.0F, 9.0F, 1.0F);
         this.Hair01.addBox(-7.5F, 0.0F, 0.0F, 15, 17, 9, 0.0F);
@@ -193,9 +177,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
         this.Neck.setRotationPoint(0.0F, -10.0F, -0.5F);
         this.Neck.addBox(-4.5F, -2.0F, -4.0F, 9, 1, 8, 0.0F);
         this.setRotateAngle(Neck, 0.05235987755982988F, 0.0F, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.Ahoke = new ModelRenderer(this, 108, 41);
         this.Ahoke.setRotationPoint(0.0F, -5.3F, -7.2F);
         this.Ahoke.addBox(-2.0F, 0.0F, 0.0F, 10, 12, 0, 0.0F);
@@ -216,6 +197,7 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
         this.HairL01.setRotationPoint(6.5F, 0.0F, -5.0F);
         this.HairL01.addBox(-1.0F, 0.0F, 0.0F, 2, 11, 3, 0.0F);
         this.setRotateAngle(HairL01, -0.13962634015954636F, -0.17453292519943295F, -0.13962634015954636F);
+        
         this.HairL01.addChild(this.HairL02);
         this.HairR01.addChild(this.HairR02);
         this.LegRight01.addChild(this.ClothR02);
@@ -266,14 +248,11 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
-        
-    }
-    
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
     }
 
     @Override
@@ -291,7 +270,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
-    	GlStateManager.disableBlend();
     	
     	//light part
     	GlStateManager.disableLighting();
@@ -301,35 +279,13 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	
+    	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
-
-    //for idle/run animation
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    { 	
-    	super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-
-		IShipEmotion ent = (IShipEmotion)entity;
-		
-		EmotionHelper.rollEmotion(this, ent);
-		  
-		if(ent.getStateFlag(ID.F.NoFuel))
-		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
-		}
-		else
-		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
-		}
-		
-		setGlowRotation();
-    }
     
-    //設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
-    	//頭部
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -339,17 +295,23 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	float addk1 = 0F;
   		float addk2 = 0F;
   		float headX = 0F;
   		float headZ = 0F;
   		
   		GlStateManager.translate(0F, 1.05F, 0F);
-  		setFace(4);
+  		this.setFaceHungry(ent);
   		
   		//移動頭部使其看人
 	  	this.Head.rotateAngleX = 0F; 	//上下角度
@@ -425,10 +387,11 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-    }
-    
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-  	{   
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleX2 = MathHelper.cos(f2*0.08F + 0.6F + f * 0.5F);
@@ -806,97 +769,6 @@ public class ModelBattleshipHime extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-  	}
-  	
-    //設定顯示的臉型
-  	@Override
-  	public void setFace(int emo)
-  	{
-  		switch(emo)
-  		{
-  		case 0:
-  			this.Face0.isHidden = false;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 1:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = false;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 2:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 3:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 4:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  		break;
-  		default:
-  		break;
-  		}
-  	}
-  	
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void showEquip(IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void syncRotationGlowPart()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
 	}
 
     

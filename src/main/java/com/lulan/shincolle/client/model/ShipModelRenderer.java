@@ -1,9 +1,8 @@
 package com.lulan.shincolle.client.model;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -66,14 +65,14 @@ public class ShipModelRenderer extends ModelRenderer
 	{
 		if (tweakModel)
 		{
-			GL11.glPushMatrix();
-			GL11.glScalef(scale2x, scale2y, scale2z);
-			GL11.glRotatef(rotat2x, 1F, 0F, 0F);
-			GL11.glRotatef(rotat2y, 0F, 1F, 0F);
-			GL11.glRotatef(rotat2z, 0F, 0F, 1F);
-			GL11.glTranslatef(trans2x, trans2y, trans2z);
+			GlStateManager.pushMatrix();
+			GlStateManager.scale(scale2x, scale2y, scale2z);
+			GlStateManager.rotate(rotat2x, 1F, 0F, 0F);
+			GlStateManager.rotate(rotat2y, 0F, 1F, 0F);
+			GlStateManager.rotate(rotat2z, 0F, 0F, 1F);
+			GlStateManager.translate(trans2x, trans2y, trans2z);
 			super.render(scale);
-			GL11.glPopMatrix();
+			GlStateManager.popMatrix();
 		}
 		else
 		{

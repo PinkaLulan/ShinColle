@@ -468,10 +468,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		if (this.world.isRemote) return false;
 		
 		//set hurt face
-    	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
-    	{
-    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-    	}
+    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	
     	boolean checkDEF = true;
     	
@@ -870,7 +867,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			if (!this.initScale)
 			{
 				//send scale init packet request
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
 			}
 			
 			if (EntityHelper.checkEntityIsInLiquid(this))

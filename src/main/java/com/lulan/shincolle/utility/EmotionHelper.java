@@ -1,7 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import java.util.Random;
-
 import com.lulan.shincolle.client.model.IModelEmotion;
 import com.lulan.shincolle.client.model.IModelEmotionAdv;
 import com.lulan.shincolle.entity.IShipEmotion;
@@ -14,8 +12,6 @@ import net.minecraft.util.math.MathHelper;
  */
 public class EmotionHelper
 {
-	
-	private static Random rand = new Random();
 	
 	
 	public EmotionHelper() {}
@@ -59,7 +55,7 @@ public class EmotionHelper
     		//1 tick in entity = ~3 tick in model class (20 vs 60 fps)
     		if ((ent.getTickExisted() & 127) == 0)
     		{
-        		int emotionRand = rand.nextInt(10);
+        		int emotionRand = ent.getRand().nextInt(10);
         		
         		if (emotionRand > 7)
         		{
@@ -117,7 +113,7 @@ public class EmotionHelper
     		//1 tick in entity = ~3 tick in model class (20 vs 60 fps)
     		if ((ent.getTickExisted() & 127) == 0)
     		{
-        		int emotionRand = rand.nextInt(10);
+        		int emotionRand = ent.getRand().nextInt(10);
         		
         		if (emotionRand > 7)
         		{
@@ -136,14 +132,14 @@ public class EmotionHelper
     	float partTick = f2 - (int)f2 + cd;
     	
     	//check head tilt CD
-    	if (cd > 70 + rand.nextInt(5))
+    	if (cd > 70 + ent.getRand().nextInt(5))
     	{
     		//update head tilt time
     		ent.setHeadTiltTick(ent.getTickExisted());
     		partTick = f2 - (int)f2;
     		
     		//roll head tilt state
-			if (rand.nextInt(10) > 4)
+			if (ent.getRand().nextInt(10) > 4)
 			{
 				ent.setStateFlag(ID.F.HeadTilt, true);
 	    	}

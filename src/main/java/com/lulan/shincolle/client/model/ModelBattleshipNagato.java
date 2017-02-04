@@ -5,7 +5,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -18,8 +17,9 @@ import net.minecraft.util.math.MathHelper;
  * ModelBattleshipNagato - PinkaLulan 2015/4/2
  * Created using Tabula 4.1.1
  */
-public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
+public class ModelBattleshipNagato extends ShipModelBaseAdv
 {
+	
     public ModelRenderer BodyMain;
     public ModelRenderer Neck;
     public ModelRenderer BoobR;
@@ -31,11 +31,6 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     public ModelRenderer Head;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
-    public ModelRenderer Face0;
     public ModelRenderer HeadEquip;
     public ModelRenderer HeadEquip05;
     public ModelRenderer Ahoke;
@@ -104,6 +99,8 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
         this.textureWidth = 256;
         this.textureHeight = 128;
         
+        this.setDefaultFaceModel();
+        
         this.LegRight = new ModelRenderer(this, 0, 80);
         this.LegRight.setRotationPoint(-4.5F, 9.5F, -3.0F);
         this.LegRight.addBox(-3.0F, 0.0F, -3.0F, 6, 19, 6, 0.0F);
@@ -111,19 +108,10 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
         this.Cloth = new ModelRenderer(this, 96, 16);
         this.Cloth.setRotationPoint(0.0F, -11.5F, -5.0F);
         this.Cloth.addBox(-5.5F, 0.0F, 0.0F, 11, 2, 9, 0.0F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipL02 = new ModelRenderer(this, 128, 0);
         this.EquipL02.setRotationPoint(11.5F, 0.0F, 0.6F);
         this.EquipL02.addBox(0.0F, 0.0F, 0.0F, 10, 12, 5, 0.0F);
         this.setRotateAngle(EquipL02, 0.0F, 0.5235987755982988F, 0.0F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.Neck = new ModelRenderer(this, 46, 14);
         this.Neck.setRotationPoint(0.0F, -10.0F, 0.0F);
         this.Neck.addBox(-7.0F, -0.5F, -4.5F, 14, 12, 8, 0.0F);
@@ -201,9 +189,6 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
         this.ArmLeft01.setRotationPoint(8.5F, -10.0F, 0.0F);
         this.ArmLeft01.addBox(-2.5F, 0.0F, -2.5F, 5, 12, 5, 0.0F);
         this.setRotateAngle(ArmLeft01, 0F, 0.0F, -0.15707963267948966F);
-        this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.LegLeft = new ModelRenderer(this, 0, 80);
         this.LegLeft.mirror = true;
         this.LegLeft.setRotationPoint(4.5F, 9.5F, -3.0F);
@@ -308,9 +293,6 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
         this.EquipLCRadar = new ModelRenderer(this, 128, 0);
         this.EquipLCRadar.setRotationPoint(5.2F, 0.0F, 5.5F);
         this.EquipLCRadar.addBox(0.0F, -7.5F, 0.0F, 1, 15, 5, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipRC01 = new ModelRenderer(this, 128, 117);
         this.EquipRC01.setRotationPoint(-4.0F, -2.0F, -4.0F);
         this.EquipRC01.addBox(-1.5F, -1.5F, -5.0F, 3, 3, 5, 0.0F);
@@ -445,14 +427,12 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
     }  
-    
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
-    }
 
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
@@ -491,8 +471,6 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     	this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
-    	GlStateManager.disableBlend();
-    	
     	//light part
     	GlStateManager.disableLighting();
     	GlStateManager.enableCull();
@@ -501,37 +479,41 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	
+    	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
 
-    //for idle/run animation
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    {
-		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		
-		IShipEmotion ent = (IShipEmotion)entity;
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+		switch (ent.getStateEmotion(ID.S.State))
+		{
+  		case ID.State.EQUIP00:
+  			this.HeadEquip.isHidden = false;
+  			this.HeadEquip05.isHidden = false;
+  			this.EquipBase.isHidden = true;
+  		break;
+  		case ID.State.EQUIP01:
+  			this.HeadEquip.isHidden = true;
+  			this.HeadEquip05.isHidden = true;
+  			this.EquipBase.isHidden = false;
+  		break;
+  		case ID.State.EQUIP02:
+  			this.HeadEquip.isHidden = false;
+  			this.HeadEquip05.isHidden = false;
+  			this.EquipBase.isHidden = false;
+  		break;
+  		default:  //normal
+  			this.HeadEquip.isHidden = true;
+  			this.HeadEquip05.isHidden = true;
+  			this.EquipBase.isHidden = true;
+  		break;
+  		}
+	}
 
-		showEquip(ent);
-		
-		EmotionHelper.rollEmotion(this, ent);
-		
-		if (ent.getStateFlag(ID.F.NoFuel))
-		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
-		}
-		else
-		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
-		}
-		
-		setGlowRotation();
-    }
-    
-    //設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
-    	//頭部
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -541,12 +523,13 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
-    	setFace(4);
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	GlStateManager.translate(0F, 0.73F + 0.28F * ent.getScaleLevel(), 0F);
+    	this.setFaceHungry(ent);
     	
     	//移動頭部使其看人
 	  	this.Head.rotateAngleX = 0F;
@@ -579,12 +562,11 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 		this.LegRight.rotateAngleZ = 0.14F;
 		//equip
 		this.EquipBase.isHidden = true;
+	}
 
-    }
-    
-    //雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-  	{   
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1;
@@ -762,7 +744,7 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 	    	else if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
 	    		GlStateManager.translate(0F, 0.71F, 0F);
-	    		setFace(4);
+	    		this.setFaceHungry(ent);
 		    	//Body
 			  	this.BodyMain.rotateAngleX = 1.48F;
 			  	//hair
@@ -891,124 +873,6 @@ public class ModelBattleshipNagato extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft.rotateAngleX = addk1;
 	    this.LegRight.rotateAngleX = addk2;
-  	}
-  	
-  	private void aashowEquip(IShipEmotion ent)
-  	{
-		switch (ent.getStateEmotion(ID.S.State))
-		{
-  		case ID.State.EQUIP00:
-  			this.HeadEquip.isHidden = false;
-  			this.HeadEquip05.isHidden = false;
-  			this.EquipBase.isHidden = true;
-  		break;
-  		case ID.State.EQUIP01:
-  			this.HeadEquip.isHidden = true;
-  			this.HeadEquip05.isHidden = true;
-  			this.EquipBase.isHidden = false;
-  		break;
-  		case ID.State.EQUIP02:
-  			this.HeadEquip.isHidden = false;
-  			this.HeadEquip05.isHidden = false;
-  			this.EquipBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.HeadEquip.isHidden = true;
-  			this.HeadEquip05.isHidden = true;
-  			this.EquipBase.isHidden = true;
-  		break;
-  		}
-  	}
-  	
-    //設定顯示的臉型
-  	@Override
-  	public void setFace(int emo)
-  	{
-  		switch (emo)
-  		{
-  		case 0:
-  			this.Face0.isHidden = false;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 1:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = false;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 2:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 3:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 4:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  		break;
-  		default:
-  		break;
-  		}
-  	}
-  	
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void showEquip(IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void syncRotationGlowPart()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
 	}
     
     

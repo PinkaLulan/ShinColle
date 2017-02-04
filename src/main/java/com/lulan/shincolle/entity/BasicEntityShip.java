@@ -1762,7 +1762,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			switch (type)
 			{
 			case 0:		//model display
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
 			break;
 			}
 		}
@@ -1933,6 +1933,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 }
             }
 			
+			//set happy emotion
+			this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
+			
 			//play marriage sound
 			this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
 			
@@ -2039,17 +2042,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         
 		//play marriage sound
 		this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
+		
+		//add morale
+		this.StateMinor[ID.M.Morale] = 10000;
+		
+		//set shy emotion
+		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
         
         //add 3 random bonus point
         for (int i = 0; i < 3; ++i)
         {
-        	addRandomBonusPoint();
+        	this.addRandomBonusPoint();
         }
         
+        //update attrs
         this.calcEquipAndUpdateState();
         
+        //物品用完時要設定為null清空該slot
         if (stack.stackSize <= 0)
-        {  //物品用完時要設定為null清空該slot
+        {
         	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
         }
         
@@ -2189,6 +2200,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					
 					//send sync packet
 					this.sendSyncPacket(S2CEntitySync.PID.SyncShip_ID, true);
+					
+					//set cry emotion
+					this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
 				}//end target != null
 			}//end item has 2 signs
 		}//end item has nbt
@@ -2250,7 +2264,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			return false;
 		}
-
+		
 		if (i instanceof ItemFood)
 		{
 			type = 1;
@@ -2329,6 +2343,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//can feed
 		if (type > 0)
 		{
+			//set happy emotion
+			this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
+			
 			//play sound
 			if (this.StateTimer[ID.T.SoundTime] <= 0)
 	    	{
@@ -2476,7 +2493,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//request model display sync after construction
 			if (this.ticksExisted == 2)
 			{
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.RequestSync_Model, this.getEntityId(), this.world.provider.getDimension()));
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
 			}
 			
 			//faster body rotateYaw update (vanilla = 12~20 ticks?)
@@ -2583,6 +2600,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void onLivingUpdate()
 	{
+		if (this.ticksExisted == 8)
+		{
+			//reseed random
+			this.rand.setSeed((this.getShipUID() << 4) + System.currentTimeMillis());
+		}
+		
         //server side check
         if ((!world.isRemote))
         {
@@ -3053,10 +3076,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		boolean checkDEF = true;
 		
 		//set hurt face
-    	if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.O_O)
-    	{
-    		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-    	}
+    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
     	
     	//change sensitive body
   		if (this.rand.nextInt(10) == 0) randomSensitiveBody();
@@ -4595,7 +4615,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-  	/** normal emotes */
+  	/** normal emotes for head caress */
   	protected void reactionNormal()
   	{
   		Random ran = new Random();
@@ -4614,6 +4634,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//check sensitive body
 	  		if (body == getSensitiveBody())
 	  		{
+		  		//apply emotion
+		  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
+		  		
 	  			if (this.rand.nextInt(2) == 0)
 	  			{
 	  				applyParticleEmotion(31);  //shy
@@ -4631,6 +4654,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  		//other reaction
 	  		else
 	  		{
+		  		//apply emotion
+		  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
+	  			
 				switch (body)
 				{
 				case ID.Body.UBelly:
@@ -4660,6 +4686,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  		}
 			break;
 		case 1:   //happy
+	  		//apply emotion
+	  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
+	  		
 			//check sensitive body
 	  		if (body == getSensitiveBody())
 	  		{
@@ -4716,6 +4745,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//check sensitive body
 	  		if (body == getSensitiveBody())
 	  		{
+		  		//apply emotion
+		  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
+		  		
 	  			if (this.getStateFlag(ID.F.IsMarried))
 	  			{
 	  				applyParticleEmotion(19);  //lick
@@ -4786,7 +4818,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//check sensitive body
 	  		if  (body == getSensitiveBody())
 	  		{
-	  			setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+		  		//apply emotion
+		  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
+		  		
 	  			applyParticleEmotion(32);  //hmm
 	  			setStateMinor(ID.M.Morale, m + this.rand.nextInt(baseMorale + 1));
 	  			
@@ -4854,7 +4888,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//check sensitive body
 	  		if (body == getSensitiveBody())
 	  		{
-	  			setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+		  		//apply emotion
+		  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
+		  		
 	  			applyParticleEmotion(6);  //angry
 	  			setStateMinor(ID.M.Morale, m - baseMorale * 10 - this.rand.nextInt(baseMorale * 5 + 1));
 	  			
@@ -4955,6 +4991,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//check sensitive body
   		if (body == getSensitiveBody())
   		{
+	  		//apply emotion
+	  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.ANGRY, true);
+	  		
   			if (this.rand.nextInt(2) == 0)
   			{
 				applyParticleEmotion(6);  //angry
@@ -4989,14 +5028,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//other reaction
   		else
   		{
+	  		//apply emotion
+	  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+	  		
   			switch (body)
   			{
 			case ID.Body.UBelly:
 			case ID.Body.Butt:
 			case ID.Body.Chest:
 			case ID.Body.Face:
-				setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-				
 				if (this.rand.nextInt(2) == 0)
 				{
 					applyParticleEmotion(6);  //angry
@@ -5062,6 +5102,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		switch (getMoraleLevel())
 		{
 		case 0:   //excited
+	  		//apply emotion
+	  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
+	  		
 			switch (this.rand.nextInt(8))
 			{
 			case 1:
@@ -5422,28 +5465,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		
   		switch (type)
   		{
-  		case 1:  //caress head (no fuel / not owner)
+  		case 1:		//caress head (no fuel / not owner)
   			if (ran.nextInt(9) == 0 && this.getEmotesTick() <= 0)
   			{
 				this.setEmotesTick(60);
 				reactionStranger();
 			}
   			break;
-  		case 2:  //damaged
+  		case 2:		//damaged
   			if (this.getEmotesTick() <= 10)
   			{
 				this.setEmotesTick(40);
 				reactionDamaged();
 			}
   			break;
-  		case 3:  //attack
+  		case 3:		//attack
   			if (ran.nextInt(6) == 0 && this.getEmotesTick() <= 0)
   			{
 				this.setEmotesTick(60);
 				reactionAttack();
 			}
   			break;
-  		case 4:
+  		case 4:		//idle
   			if (ran.nextInt(3) == 0 && this.getEmotesTick() <= 0)
   			{
 				this.setEmotesTick(20);

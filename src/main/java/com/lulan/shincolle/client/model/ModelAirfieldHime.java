@@ -78,6 +78,8 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
         this.textureWidth = 128;
         this.textureHeight = 128;
         
+        this.setDefaultFaceModel();
+        
         this.HairR02 = new ModelRenderer(this, 25, 18);
         this.HairR02.mirror = true;
         this.HairR02.setRotationPoint(0.2F, 10.0F, 0.0F);
@@ -257,36 +259,6 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
         this.Hair = new ModelRenderer(this, 45, 77);
         this.Hair.setRotationPoint(0.0F, -7.5F, 0.0F);
         this.Hair.addBox(-8.0F, -8.0F, -7.2F, 16, 16, 8, 0.0F);
-        this.Face0 = new ModelRenderer(this, 98, 63);
-        this.Face0.setRotationPoint(0.0F, -12.2F, -6.1F);
-        this.Face0.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
-        this.Face1 = new ModelRenderer(this, 98, 76);
-        this.Face1.setRotationPoint(0.0F, -12.2F, -6.1F);
-        this.Face1.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
-        this.Face2 = new ModelRenderer(this, 98, 89);
-        this.Face2.setRotationPoint(0.0F, -12.2F, -6.1F);
-        this.Face2.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 102);
-        this.Face3.setRotationPoint(0.0F, -12.2F, -6.1F);
-        this.Face3.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 115);
-        this.Face4.setRotationPoint(0.0F, -12.2F, -6.1F);
-        this.Face4.addBox(-7.0F, 0.0F, -0.5F, 14, 12, 1, 0.0F);
-        this.Mouth0 = new ModelRenderer(this, 100, 53);
-        this.Mouth0.setRotationPoint(0.0F, -4.2F, -6.2F);
-        this.Mouth0.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
-        this.Mouth1 = new ModelRenderer(this, 100, 58);
-        this.Mouth1.setRotationPoint(0.0F, -4.2F, -6.2F);
-        this.Mouth1.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
-        this.Mouth2 = new ModelRenderer(this, 114, 53);
-        this.Mouth2.setRotationPoint(0.0F, -4.2F, -6.2F);
-        this.Mouth2.addBox(-3.0F, 0.0F, -0.5F, 6, 4, 1, 0.0F);
-        this.Flush0 = new ModelRenderer(this, 114, 58);
-        this.Flush0.setRotationPoint(-6F, -3.0F, -6.8F);
-        this.Flush0.addBox(-1.0F, 0.0F, -0.5F, 2, 1, 0, 0.0F);
-        this.Flush1 = new ModelRenderer(this, 114, 58);
-        this.Flush1.setRotationPoint(6F, -3.0F, -6.8F);
-        this.Flush1.addBox(-1.0F, 0.0F, -0.5F, 2, 1, 0, 0.0F);
         
         this.HairR01.addChild(this.HairR02);
         this.Hair01.addChild(this.Hair02);
@@ -378,7 +350,6 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
     	this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
-    	
     	//light part
     	GlStateManager.disableLighting();
     	GlStateManager.enableCull();
@@ -429,7 +400,7 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
   		float headZ = 0F;
   		
   		GlStateManager.translate(0F, 0.55F, 0F);
-  		setFace(4);
+  		this.setFaceHungry(ent);
   		
   		//移動頭部使其看人
   		this.Head.rotateAngleX = 0F;	//左右角度

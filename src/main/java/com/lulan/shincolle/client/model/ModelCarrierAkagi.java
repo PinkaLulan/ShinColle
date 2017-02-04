@@ -6,7 +6,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -19,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
  * ModelCarrierAkagi - PinkaLulan  2016/4/13
  * Created using Tabula 4.1.1 
  */
-public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
+public class ModelCarrierAkagi extends ShipModelBaseAdv
 {
 	
     public ModelRenderer BodyMain;
@@ -55,11 +54,6 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
     public ModelRenderer Tail03;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
-    public ModelRenderer Face0;
     public ModelRenderer Ear01;
     public ModelRenderer Ear02;
     public ModelRenderer Ahoke;
@@ -118,6 +112,8 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
     {
         this.textureWidth = 256;
         this.textureHeight = 128;
+        
+        this.setDefaultFaceModel();
         
         this.ClothHL01 = new ModelRenderer(this, 43, 1);
         this.ClothHL01.setRotationPoint(0.0F, -1.5F, 0.0F);
@@ -509,21 +505,6 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
         this.GlowHead = new ModelRenderer(this, 0, 0);
         this.GlowHead.setRotationPoint(0.0F, -11.8F, -1.0F);
         this.setRotateAngle(GlowHead, 0.10471975511965977F, 0.0F, 0.0F);
-        this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         
         //glow bone
         this.GlowBodyMain.addChild(this.GlowHead);
@@ -532,16 +513,14 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
         
     }
 
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
-    }
-    
     @Override
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
     {
@@ -579,8 +558,6 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
-    	GlStateManager.disableBlend();
-    	
     	//light part
     	GlStateManager.disableLighting();
     	GlStateManager.enableCull();
@@ -589,48 +566,132 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	
+    	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
-    
-	//model animation
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    {
-		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-		IShipEmotion ent = (IShipEmotion)entity;
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
+  		case ID.State.EQUIP00:
+  			this.EquipC01.isHidden = true;  //水袋
+  			this.EquipB01.isHidden = false;  //胸甲
+  			this.EquipS01.isHidden = false;  //裙甲
+  			this.Ear01.isHidden = true;
+  			this.Ear02.isHidden = true;
+  			this.Tail01.isHidden = true;
+  		break;
+  		case ID.State.EQUIP01:
+  			this.EquipC01.isHidden = false;  //水袋
+  			this.EquipB01.isHidden = true;  //胸甲
+  			this.EquipS01.isHidden = true;  //裙甲
+  			this.Ear01.isHidden = true;
+  			this.Ear02.isHidden = true;
+  			this.Tail01.isHidden = true;
+  		break;
+  		case ID.State.EQUIP02:
+  			this.EquipC01.isHidden = false;  //水袋
+  			this.EquipB01.isHidden = false;  //胸甲
+  			this.EquipS01.isHidden = false;  //裙甲
+  			this.Ear01.isHidden = true;
+  			this.Ear02.isHidden = true;
+  			this.Tail01.isHidden = true;
+  		break;
+  		case ID.State.EQUIP03:
+  			this.EquipC01.isHidden = true;  //水袋
+  			this.EquipB01.isHidden = true;  //胸甲
+  			this.EquipS01.isHidden = true;  //裙甲
+  			this.Ear01.isHidden = false;
+  			this.Ear02.isHidden = false;
+  			this.Tail01.isHidden = false;
+  		break;
+  		case ID.State.EQUIP04:
+  			this.EquipC01.isHidden = true;  //水袋
+  			this.EquipB01.isHidden = false;  //胸甲
+  			this.EquipS01.isHidden = false;  //裙甲
+  			this.Ear01.isHidden = false;
+  			this.Ear02.isHidden = false;
+  			this.Tail01.isHidden = false;
+  		break;
+  		case ID.State.EQUIP05:
+  			this.EquipC01.isHidden = false;  //水袋
+  			this.EquipB01.isHidden = true;  //胸甲
+  			this.EquipS01.isHidden = true;  //裙甲
+  			this.Ear01.isHidden = false;
+  			this.Ear02.isHidden = false;
+  			this.Tail01.isHidden = false;
+  		break;
+  		case ID.State.EQUIP06:
+  			this.EquipC01.isHidden = false;  //水袋
+  			this.EquipB01.isHidden = false;  //胸甲
+  			this.EquipS01.isHidden = false;  //裙甲
+  			this.Ear01.isHidden = false;
+  			this.Ear02.isHidden = false;
+  			this.Tail01.isHidden = false;
+  		break;
+  		default:  //normal
+  			this.EquipC01.isHidden = true;  //水袋
+  			this.EquipB01.isHidden = true;  //胸甲
+  			this.EquipS01.isHidden = true;  //裙甲
+  			this.Ear01.isHidden = true;
+  			this.Ear02.isHidden = true;
+  			this.Tail01.isHidden = true;
+  		break;
+  		}
+  		
+  		switch (ent.getStateEmotion(ID.S.State2))
+  		{
+  		case ID.State.EQUIP00a:
+  			this.EquipABase.isHidden = true;//箭袋
+  			this.EquipD01.isHidden = true;  //甲板
+  			this.EquipE01.isHidden = false;  //弓
+  			this.EquipGlove.isHidden = false;//手套
+  		break;
+  		case ID.State.EQUIP01a:
+  			this.EquipABase.isHidden = false;//箭袋
+  			this.EquipD01.isHidden = false;  //甲板
+  			this.EquipE01.isHidden = true;  //弓
+  			this.EquipGlove.isHidden = true;//手套
+  		break;
+  		case ID.State.EQUIP02a:
+  			this.EquipABase.isHidden = false;//箭袋
+  			this.EquipD01.isHidden = true;  //甲板
+  			this.EquipE01.isHidden = false;  //弓
+  			this.EquipGlove.isHidden = false;//手套
+  		break;
+  		case ID.State.EQUIP03a:
+  			this.EquipABase.isHidden = false;//箭袋
+  			this.EquipD01.isHidden = false;  //甲板
+  			this.EquipE01.isHidden = false;  //弓
+  			this.EquipGlove.isHidden = false;//手套
+  		break;
+  		default:  //normal
+  			this.EquipABase.isHidden = true;//箭袋
+  			this.EquipD01.isHidden = true;  //甲板
+  			this.EquipE01.isHidden = true;  //弓
+  			this.EquipGlove.isHidden = true;//手套
+  		break;
+  		}
+	}
 
-		showEquip(ent);
-		
-		EmotionHelper.rollEmotion(this, ent);
-		  
-		if (ent.getStateFlag(ID.F.NoFuel))
-		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
-		}
-		else
-		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
-		}
-		
-		setGlowRotation();
-    }
-    
-	//設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	GlStateManager.translate(0F, 0.53F + 0.25F * ent.getScaleLevel(), 0F);
-		setFace(4);
+		this.setFaceHungry(ent);
 	  	
 	  	if (((IShipFloating)ent).getShipDepth() > 0)
 	  	{
@@ -734,11 +795,11 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
 		this.LegRight02.rotateAngleX = 1.0472F;
 		this.LegRight02.rotateAngleZ = 0F;
 		this.LegRight02.offsetZ = 0F;
-    }
-    
-	//雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-  	{   
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
   		float angleX1 = MathHelper.cos(f2*0.1F + 0.3F + f * 0.5F);
   		float angleX2 = MathHelper.cos(f2*0.1F + 0.6F + f * 0.5F);
@@ -1102,202 +1163,6 @@ public class ModelCarrierAkagi extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-  	}
-  	
-  	private void showEaaquip(IShipEmotion ent)
-  	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.State.EQUIP00:
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		case ID.State.EQUIP01:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		case ID.State.EQUIP02:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		case ID.State.EQUIP03:
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		case ID.State.EQUIP04:
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		case ID.State.EQUIP05:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		case ID.State.EQUIP06:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.State.EQUIP00a:
-  			this.EquipABase.isHidden = true;//箭袋
-  			this.EquipD01.isHidden = true;  //甲板
-  			this.EquipE01.isHidden = false;  //弓
-  			this.EquipGlove.isHidden = false;//手套
-  		break;
-  		case ID.State.EQUIP01a:
-  			this.EquipABase.isHidden = false;//箭袋
-  			this.EquipD01.isHidden = false;  //甲板
-  			this.EquipE01.isHidden = true;  //弓
-  			this.EquipGlove.isHidden = true;//手套
-  		break;
-  		case ID.State.EQUIP02a:
-  			this.EquipABase.isHidden = false;//箭袋
-  			this.EquipD01.isHidden = true;  //甲板
-  			this.EquipE01.isHidden = false;  //弓
-  			this.EquipGlove.isHidden = false;//手套
-  		break;
-  		case ID.State.EQUIP03a:
-  			this.EquipABase.isHidden = false;//箭袋
-  			this.EquipD01.isHidden = false;  //甲板
-  			this.EquipE01.isHidden = false;  //弓
-  			this.EquipGlove.isHidden = false;//手套
-  		break;
-  		default:  //normal
-  			this.EquipABase.isHidden = true;//箭袋
-  			this.EquipD01.isHidden = true;  //甲板
-  			this.EquipE01.isHidden = true;  //弓
-  			this.EquipGlove.isHidden = true;//手套
-  		break;
-  		}
-  	}
-  	
-    //設定顯示的臉型
-  	@Override
-  	public void setFace(int emo)
-  	{
-  		switch (emo)
-  		{
-  		case 0:
-  			this.Face0.isHidden = false;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 1:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = false;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 2:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 3:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 4:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  		break;
-  		default:
-  		break;
-  		}
-  	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void showEquip(IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void syncRotationGlowPart()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
 	}
   	
   	

@@ -5,7 +5,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -18,8 +17,9 @@ import net.minecraft.util.math.MathHelper;
  * ModelDestroyerShimakaze - PinkaLulan 2015/3/27
  * Created using Tabula 4.1.1
  */
-public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
+public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 {
+	
     public ModelRenderer BodyMain;
     public ModelRenderer NeckCloth;
     public ModelRenderer ArmLeft;
@@ -30,11 +30,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     public ModelRenderer NeckTie;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
-    public ModelRenderer Face0;
     public ModelRenderer Ahoke;
     public ModelRenderer HairL01;
     public ModelRenderer HairR01;
@@ -73,6 +68,8 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        
+        this.setDefaultFaceModel();
         
         this.Head = new ModelRenderer(this, 24, 101);
         this.Head.setRotationPoint(0.0F, -1.5F, 0.0F);
@@ -148,18 +145,12 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
         this.HairL01.setRotationPoint(5.5F, 0.0F, -3.0F);
         this.HairL01.addBox(-1.0F, 0.0F, 0.0F, 2, 9, 4, 0.0F);
         this.setRotateAngle(HairL01, -0.2617993877991494F, -0.17453292519943295F, -0.2617993877991494F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.ShoesL = new ModelRenderer(this, 88, 15);
         this.ShoesL.setRotationPoint(0.0F, 19.0F, -0.2F);
         this.ShoesL.addBox(-3.5F, 0.0F, -3.5F, 7, 7, 7, 0.0F);
         this.EquipT04 = new ModelRenderer(this, 85, 65);
         this.EquipT04.setRotationPoint(-4.8F, -8.0F, 1.0F);
         this.EquipT04.addBox(0.0F, 0.0F, 0.0F, 3, 31, 3, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.Butt = new ModelRenderer(this, 0, 22);
         this.Butt.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.Butt.addBox(-8.0F, 4.0F, -5.4F, 16, 8, 7, 0.0F);
@@ -171,9 +162,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
         this.EquipBase.setRotationPoint(2.0F, -5.0F, 7.0F);
         this.EquipBase.addBox(-7.0F, 0.0F, -3.7F, 14, 8, 12, 0.0F);
         this.setRotateAngle(EquipBase, 0.13962634015954636F, 0.0F, 0.5235987755982988F);
-        this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face0.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.EquipHead = new ModelRenderer(this, 77, 29);
         this.EquipHead.setRotationPoint(0.0F, -3.0F, -0.3F);
         this.EquipHead.addBox(-9.0F, 0.0F, 0.0F, 18, 17, 7, 0.0F);
@@ -200,9 +188,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
         this.NeckTie.setRotationPoint(0.0F, 2.5F, -4.7F);
         this.NeckTie.addBox(-3.5F, 0.0F, 0.0F, 7, 7, 0, 0.0F);
         this.setRotateAngle(NeckTie, -0.13962634015954636F, 0.0F, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.ArmRight = new ModelRenderer(this, 0, 61);
         this.ArmRight.setRotationPoint(-7.0F, -10.5F, 0.0F);
         this.ArmRight.addBox(-2.5F, 0.0F, -2.5F, 5, 22, 5, 0.0F);
@@ -216,9 +201,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
         this.HairR02.setRotationPoint(0.2F, 8.5F, 0.5F);
         this.HairR02.addBox(-1.0F, 0.0F, 0.0F, 2, 9, 3, 0.0F);
         this.setRotateAngle(HairR02, 0.17453292519943295F, 0.0F, -0.17453292519943295F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -0.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -6.5F, 14, 14, 1, 0.0F);
         this.HairMain.addChild(this.HairMidR01);
         this.HairMain.addChild(this.HairMidL01);
         this.EarL01.addChild(this.EarL02);
@@ -270,13 +252,11 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
-    }
-    
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
     }
 
     @Override
@@ -316,8 +296,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
-    	GlStateManager.disableBlend();
-    	
     	//light part
     	GlStateManager.disableLighting();
     	GlStateManager.enableCull();
@@ -326,37 +304,28 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	
+    	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
-    
-    //for idle/run animation
-    @Override
-	public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    {
-		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-		  
-		IShipEmotion ent = (IShipEmotion)entity;
-		  
-		showEquip(ent);
-		
-		EmotionHelper.rollEmotion(this, ent);
-		
-		if (ent.getStateFlag(ID.F.NoFuel))
+
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
 		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
+			this.EquipBase.isHidden = false;
+			this.HairAnchor.isHidden = false;
 		}
 		else
 		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
+			this.EquipBase.isHidden = true;
+			this.HairAnchor.isHidden = true;
 		}
-		
-		setGlowRotation();
-    }
-    
-    //設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
-    	//頭部
+	}
+
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -366,12 +335,13 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 		this.GlowHead.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	GlStateManager.translate(0F, 0.55F + 0.26F * ent.getScaleLevel(), 0F);
-    	setFace(4);
+    	this.setFaceHungry(ent);
     	
   	    //ear
   	    this.EarL01.rotateAngleX = 1F;
@@ -409,11 +379,11 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 		this.LegRight.rotateAngleY = 0F;
     	this.LegLeft.rotateAngleZ = 0.03F;
     	this.LegRight.rotateAngleZ = -0.03F;
-    }
-    
-    //雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-  	{   
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F);
   		float angleX1 = MathHelper.cos(f2*0.08F + 0.3F + f * 0.5F);
   		float angleRun = MathHelper.cos(f * 1.5F) * f1;
@@ -657,111 +627,6 @@ public class ModelDestroyerShimakaze extends ModelBase implements IModelEmotion
 	    //leg motion
 	    this.LegLeft.rotateAngleX = addk1;
 	    this.LegRight.rotateAngleX = addk2;
-  	}
-  	
-  	private void shoaawEquip(IShipEmotion ent)
-  	{
-		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
-		{
-			this.EquipBase.isHidden = false;
-			this.HairAnchor.isHidden = false;
-		}
-		else
-		{
-			this.EquipBase.isHidden = true;
-			this.HairAnchor.isHidden = true;
-		}
-  	}
-
-    //設定顯示的臉型
-  	@Override
-  	public void setFace(int emo)
-  	{
-  		switch (emo)
-  		{
-  		case 0:
-  			this.Face0.isHidden = false;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 1:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = false;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 2:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = false;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 3:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = false;
-  			this.Face4.isHidden = true;
-  		break;
-  		case 4:
-  			this.Face0.isHidden = true;
-  			this.Face1.isHidden = true;
-  			this.Face2.isHidden = true;
-  			this.Face3.isHidden = true;
-  			this.Face4.isHidden = false;
-  			break;
-  		default:
-  		break;
-  		}
-  	}
-  	
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void showEquip(IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void syncRotationGlowPart()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
 	}
 
     

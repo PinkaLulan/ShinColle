@@ -49,8 +49,9 @@ public class C2SInputPackets implements IMessage
 		public static final byte SyncHandheld = 2;
 		public static final byte CmdChOwner = 3;
 		public static final byte CmdShipAttr = 4;
-		public static final byte RequestSync_Model = 5;
+		public static final byte Request_SyncModel = 5;
 		public static final byte Waypoint_Set = 6;
+		public static final byte Request_Riding = 7;
 	}
 	
 	
@@ -61,7 +62,9 @@ public class C2SInputPackets implements IMessage
 	 * type 2:(1 parms) sync current item: 0:item slot
 	 * type 3:(2 parms) command: change owner: 0:owner eid, 1:ship eid
 	 * type 4:(9 parms) command: set ship attrs: 0:ship id, 1:world id, 2:ship level, 3~8:bonus value
-	 * 
+	 * type 5:(2 parms) request server to sync model parms: 0:world id, 1:entity id
+	 * type 6:(9 parms) setting waypoint 
+	 * type 7:(2 parms) request server to sync riding: 0:world id, 1:ship eid
 	 */
 	public C2SInputPackets(byte id, int...parms)
 	{
@@ -84,7 +87,8 @@ public class C2SInputPackets implements IMessage
 		case PID.SyncHandheld:		//sync current item
 		case PID.CmdChOwner:    	//command: change owner
 		case PID.CmdShipAttr:   	//command: set ship attrs
-		case PID.RequestSync_Model:	//request model display sync
+		case PID.Request_SyncModel:	//request model display sync
+		case PID.Request_Riding:	//request riding
 		case PID.Waypoint_Set:		//waypoint pairing packet
 			try
 			{
@@ -119,7 +123,8 @@ public class C2SInputPackets implements IMessage
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
-		case PID.RequestSync_Model:  //request model display sync
+		case PID.Request_SyncModel:	//request model display sync
+		case PID.Request_Riding:	//request riding
 		case PID.Waypoint_Set:		//waypoint pairing packet
 			//send int array
 			if (this.value3 != null)
@@ -239,7 +244,7 @@ public class C2SInputPackets implements IMessage
 					}
 				}
 			break;
-			case PID.RequestSync_Model:  //request model display sync
+			case PID.Request_SyncModel:  //request model display sync
 				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
 				
 				if (entity instanceof BasicEntityShip)
@@ -254,6 +259,24 @@ public class C2SInputPackets implements IMessage
 				{
 					((BasicEntitySummon) entity).sendSyncPacket(0);
 				}
+			break;
+			case PID.Request_Riding:
+			{
+				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
+				
+				if (entity instanceof BasicEntityShip)
+				{
+					BasicEntityShip ship = (BasicEntityShip) entity;
+					
+					if (TeamHelper.checkSameOwner(player, ship))
+					{
+						ship.setEntitySit(false);
+						ship.startRiding(player, true);
+						ship.getShipNavigate().clearPathEntity();
+						ship.sendSyncPacketRiders();
+					}
+				}
+			}
 			break;
 			case PID.Waypoint_Set:		//waypoint pairing packet
 			{

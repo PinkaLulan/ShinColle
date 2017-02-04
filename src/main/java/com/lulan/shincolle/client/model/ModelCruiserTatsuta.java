@@ -5,7 +5,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -18,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
  * ModelCruiserTatsuta - PinkaLulan 2017/1/14
  * Created using Tabula 5.1.0
  */
-public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
+public class ModelCruiserTatsuta extends ShipModelBaseAdv
 {
 	
     public ModelRenderer BodyMain;
@@ -33,11 +32,6 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
     public ModelRenderer Head;
     public ModelRenderer Hair;
     public ModelRenderer HairMain;
-    public ModelRenderer Face0;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
     public ModelRenderer CirBase;
     public ModelRenderer HairU01;
     public ModelRenderer Ahoke;
@@ -102,6 +96,8 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
         this.textureWidth = 128;
         this.textureHeight = 128;
         
+        this.setDefaultFaceModel();
+        
         this.EquipCL03b = new ModelRenderer(this, 0, 27);
         this.EquipCL03b.setRotationPoint(1.9F, -0.5F, 0.5F);
         this.EquipCL03b.addBox(-1.0F, -7.0F, -1.0F, 2, 14, 2, 0.0F);
@@ -151,9 +147,6 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
         this.ArmRight02.mirror = true;
         this.ArmRight02.setRotationPoint(-3.0F, 11.0F, 2.5F);
         this.ArmRight02.addBox(0.0F, 0.0F, -5.0F, 5, 12, 5, 0.0F);
-        this.Face2 = new ModelRenderer(this, 98, 83);
-        this.Face2.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face2.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.EquipCR03c = new ModelRenderer(this, 0, 27);
         this.EquipCR03c.setRotationPoint(-1.9F, -0.5F, 2.7F);
         this.EquipCR03c.addBox(-1.0F, -7.0F, -1.0F, 2, 14, 2, 0.0F);
@@ -172,9 +165,6 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
         this.EquipCR01.mirror = true;
         this.EquipCR01.setRotationPoint(-3.5F, 3.5F, 2.0F);
         this.EquipCR01.addBox(-2.0F, -1.0F, -1.0F, 2, 2, 2, 0.0F);
-        this.Face3 = new ModelRenderer(this, 98, 98);
-        this.Face3.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face3.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.Cir01 = new ModelRenderer(this, 20, 12);
         this.Cir01.setRotationPoint(0.0F, 0.0F, -5.5F);
         this.Cir01.addBox(-6.0F, 0.0F, -0.5F, 12, 3, 1, 0.0F);
@@ -284,18 +274,12 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
         this.EquipSL03c.setRotationPoint(-0.1F, 13.9F, 3.1F);
         this.EquipSL03c.addBox(-0.5F, -7.0F, -2.0F, 1, 8, 2, 0.0F);
         this.setRotateAngle(EquipSL03c, -0.03490658503988659F, 0.0F, 0.0F);
-        this.Face4 = new ModelRenderer(this, 98, 113);
-        this.Face4.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face4.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.EquipSL03a = new ModelRenderer(this, 120, 0);
         this.EquipSL03a.setRotationPoint(0.0F, 11.9F, -0.4F);
         this.EquipSL03a.addBox(-0.5F, 0.0F, -0.5F, 1, 14, 3, 0.0F);
         this.Equip01c = new ModelRenderer(this, 26, 0);
         this.Equip01c.setRotationPoint(0.0F, 0.0F, 5.0F);
         this.Equip01c.addBox(-3.5F, 0.0F, 0.0F, 7, 7, 5, 0.0F);
-        this.Face0 = new ModelRenderer(this, 98, 53);
-        this.Face0.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face0.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.EquipSL01 = new ModelRenderer(this, 106, 0);
         this.EquipSL01.setRotationPoint(0.0F, 5.9F, 0.0F);
         this.EquipSL01.addBox(-0.5F, 0.0F, -0.5F, 1, 12, 1, 0.0F);
@@ -303,9 +287,6 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
         this.Cir03.setRotationPoint(5.5F, 0.0F, 0.0F);
         this.Cir03.addBox(-6.0F, 0.0F, -0.5F, 12, 3, 1, 0.0F);
         this.setRotateAngle(Cir03, 0.0F, 1.5707963267948966F, 0.0F);
-        this.Face1 = new ModelRenderer(this, 98, 68);
-        this.Face1.setRotationPoint(0.0F, 0.0F, -6.1F);
-        this.Face1.addBox(-7.0F, -14.2F, -0.5F, 14, 14, 1, 0.0F);
         this.HairMain = new ModelRenderer(this, 46, 104);
         this.HairMain.setRotationPoint(0.0F, -14.8F, -3.0F);
         this.HairMain.addBox(-7.5F, 0.0F, 0.0F, 15, 11, 10, 0.0F);
@@ -407,6 +388,11 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
         this.GlowHead.addChild(this.Face2);
         this.GlowHead.addChild(this.Face3);
         this.GlowHead.addChild(this.Face4);
+        this.GlowHead.addChild(this.Mouth0);
+        this.GlowHead.addChild(this.Mouth1);
+        this.GlowHead.addChild(this.Mouth2);
+        this.GlowHead.addChild(this.Flush0);
+        this.GlowHead.addChild(this.Flush1);
         this.GlowBodyMain2.addChild(this.GlowNeck2);
         this.GlowNeck2.addChild(this.GlowHead2);
         this.GlowHead2.addChild(this.CirBase);
@@ -422,13 +408,6 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
         this.GlowEquip02a.addChild(this.Equip02b);
         this.Equip02b.addChild(this.Equip02c);
         this.Equip02c.addChild(this.Equip02d);
-    }
-    
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
-    {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
     }
 
     @Override
@@ -468,8 +447,6 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);
     	this.BodyMain.render(f5);
     	
-    	GlStateManager.disableBlend();
-    	
     	//light part
     	GlStateManager.disableLighting();
     	GlStateManager.enableCull();
@@ -482,35 +459,51 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	
+    	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
-    
-    @Override
-    public void setRotationAngles(float f, float f1, float f2, float f3, float f4, float f5, Entity entity)
-    {
-		super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
 
-		IShipEmotion ent = (IShipEmotion)entity;
+	@Override
+	public void showEquip(IShipEmotion ent)
+	{
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
+  		case ID.State.EQUIP00:
+  			this.Equip00.isHidden = true;
+  			this.GlowEquip00.isHidden = true;
+  			this.CirBase.isHidden = false;
+  		break;
+  		case ID.State.EQUIP01:
+  			this.Equip00.isHidden = false;
+  			this.GlowEquip00.isHidden = false;
+  			this.CirBase.isHidden = true;
+  		break;
+  		case ID.State.EQUIP02:
+  			this.Equip00.isHidden = false;
+  			this.GlowEquip00.isHidden = false;
+  			this.CirBase.isHidden = false;
+  		break;
+  		default:  //normal
+  			this.Equip00.isHidden = true;
+  			this.GlowEquip00.isHidden = true;
+  			this.CirBase.isHidden = true;
+  		break;
+  		}
+  		
+  		switch (ent.getStateEmotion(ID.S.State2))
+  		{
+  		case ID.State.EQUIP00a:
+  			this.EquipSL00.isHidden = false;
+  		break;
+  		default:  //normal
+  			this.EquipSL00.isHidden = true;
+  		break;
+  		}
+	}
 
-		showEquip(ent);
-		
-		EmotionHelper.rollEmotionAdv(this, ent);
-		  
-		if (ent.getStateFlag(ID.F.NoFuel))
-		{
-			motionStopPos(f, f1, f2, f3, f4, ent);
-		}
-		else
-		{
-			motionHumanPos(f, f1, f2, f3, f4, ent);
-		}
-		
-		setGlowRotation();
-    }
-    
-	//設定模型發光部份的rotation
-    private void setGlowRotation()
-    {
+	@Override
+	public void syncRotationGlowPart()
+	{
 		this.GlowBodyMain.rotateAngleX = this.BodyMain.rotateAngleX;
 		this.GlowBodyMain.rotateAngleY = this.BodyMain.rotateAngleY;
 		this.GlowBodyMain.rotateAngleZ = this.BodyMain.rotateAngleZ;
@@ -523,12 +516,13 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
 		this.GlowHead2.rotateAngleX = this.Head.rotateAngleX;
 		this.GlowHead2.rotateAngleY = this.Head.rotateAngleY;
 		this.GlowHead2.rotateAngleZ = this.Head.rotateAngleZ;
-    }
-    
-    private void motionStopPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-    {
+	}
+
+	@Override
+	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
     	GlStateManager.translate(0F, 0.51F + 0.26F * ent.getScaleLevel(), 0F);
-		setFace(4);
+		this.setFaceHungry(ent);
 
 		//body
 		this.Head.rotateAngleX = 0.9599310885968813F;
@@ -588,11 +582,11 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
 		this.LegRight02.offsetX = 0F;
 		this.LegRight02.offsetY = 0F;
 		this.LegRight02.offsetZ = 0F;
-    }
-    
-	//雙腳移動計算
-  	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-  	{   
+	}
+
+	@Override
+	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
+	{
   		float angleX = MathHelper.cos(f2*0.08F + f * 0.25F);
   		float angleX1 = MathHelper.cos(f2*0.1F + 0.3F + f * 0.5F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1;
@@ -1106,315 +1100,7 @@ public class ModelCruiserTatsuta extends ModelBase implements IModelEmotionAdv
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
-  	}
-  	
-  	private void showEqaaauip(IShipEmotion ent)
-  	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.State.EQUIP00:
-  			this.Equip00.isHidden = true;
-  			this.GlowEquip00.isHidden = true;
-  			this.CirBase.isHidden = false;
-  		break;
-  		case ID.State.EQUIP01:
-  			this.Equip00.isHidden = false;
-  			this.GlowEquip00.isHidden = false;
-  			this.CirBase.isHidden = true;
-  		break;
-  		case ID.State.EQUIP02:
-  			this.Equip00.isHidden = false;
-  			this.GlowEquip00.isHidden = false;
-  			this.CirBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.Equip00.isHidden = true;
-  			this.GlowEquip00.isHidden = true;
-  			this.CirBase.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.State.EQUIP00a:
-  			this.EquipSL00.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipSL00.isHidden = true;
-  		break;
-  		}
-  	}
-  	
-    //設定顯示的臉型
-   	@Override
-   	public void setFace(int emo)
-   	{
-   		switch (emo)
-   		{
-   		case 0:
-   			this.Face0.isHidden = false;
-   			this.Face0.rotateAngleY = 0F;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 1:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = false;
-   			this.Face1.rotateAngleY = 0F;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 2:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = false;
-   			this.Face2.rotateAngleY = 0F;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 3:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = false;
-   			this.Face3.rotateAngleY = 0F;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 4:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = false;
-   			this.Face4.rotateAngleY = 0F;
-   		break;
-   		case 5:
-   			this.Face0.isHidden = false;
-   			this.Face0.rotateAngleY = 3.14159F;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 6:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = false;
-   			this.Face1.rotateAngleY = 3.14159F;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 7:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = false;
-   			this.Face2.rotateAngleY = 3.14159F;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 8:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = false;
-   			this.Face3.rotateAngleY = 3.14159F;
-   			this.Face4.isHidden = true;
-   		break;
-   		case 9:
-   			this.Face0.isHidden = true;
-   			this.Face1.isHidden = true;
-   			this.Face2.isHidden = true;
-   			this.Face3.isHidden = true;
-   			this.Face4.isHidden = false;
-   			this.Face4.rotateAngleY = 3.14159F;
-   		break;
-   		default:
-   		break;
-   		}
-   	}
-
-	@Override
-	public void setFaceNormal(IShipEmotion ent)
-	{
-		setFace(0);
-	}
-
-	@Override
-	public void setFaceBlink0(IShipEmotion ent)
-	{
-		setFace(0);		
-	}
-
-	@Override
-	public void setFaceBlink1(IShipEmotion ent)
-	{
-		setFace(1);
-	}
-
-	@Override
-	public void setFaceCry(IShipEmotion ent)
-	{
-		if ((ent.getTickExisted() & 255) < 128)
-		{
-			setFace(6);
-		}
-		else
-		{
-			setFace(7);
-		}
-	}
-
-	@Override
-	public void setFaceAttack(IShipEmotion ent)
-	{
-		int t = ent.getTickExisted() & 511;
-		
-		if (t < 128)
-		{
-			setFace(1);
-		}
-		else if (t < 256)
-		{
-			setFace(2);
-		}
-		else if (t < 384)
-		{
-			setFace(3);
-		}
-		else
-		{
-			setFace(8);
-		}
-	}
-
-	@Override
-	public void setFaceDamaged(IShipEmotion ent)
-	{
-		int t = ent.getTickExisted() % 128;
-		
-		if (t < 64)
-		{
-			setFace(6);
-		}
-		else
-		{
-			setFace(3);
-		}
-	}
-
-	@Override
-	public void setFaceHungry(IShipEmotion ent)
-	{
-		setFace(4);		
-	}
-
-	@Override
-	public void setFaceAngry(IShipEmotion ent)
-	{
-		if (ent.getTickExisted() % 64 > 32)
-		{
-			setFace(1);
-		}
-		else
-		{
-			setFace(2);
-		}
-	}
-
-	@Override
-	public void setFaceScorn(IShipEmotion ent)
-	{
-		setFace(2);		
 	}
 	
-	@Override
-	public void setFaceBored(IShipEmotion ent)
-	{
-		int t = ent.getTickExisted() % 512;
-		
-		if (t < 256)
-		{
-			setFace(8);
-		}
-		else
-		{
-			setFace(9);
-		}
-	}
 	
-	@Override
-	public void setFaceShy(IShipEmotion ent)
-	{
-		setFace(8);
-	}
-	
-	@Override
-	public void setFaceHappy(IShipEmotion ent)
-	{
-		setFace(8);
-	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, float value)
-	{
-	}
-
-	@Override
-	public float getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void showEquip(IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void syncRotationGlowPart()
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void applyNormalPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setMouth(int par1)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setFlush(boolean par1)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-    
-    
 }

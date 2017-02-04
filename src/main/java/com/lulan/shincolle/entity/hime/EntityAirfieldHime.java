@@ -117,7 +117,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV
 				}//end heal ability
         	}
   		}//end server side
-  			
+  		
   		super.onLivingUpdate();
   	}
   	

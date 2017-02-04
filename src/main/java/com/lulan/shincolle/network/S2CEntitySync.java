@@ -738,12 +738,12 @@ public class S2CEntitySync implements IMessage
 				ship.setStateEmotion(ID.S.Emotion, msg.valueByte1[2], false);
 				ship.setStateEmotion(ID.S.Phase, msg.valueByte1[3], false);
 				ship.setStateEmotion(ID.S.Emotion3, msg.valueByte1[4], false);
-				ship.setBonusPoint(ID.HP, msg.valueByte1[7]);
-				ship.setBonusPoint(ID.ATK, msg.valueByte1[8]);
-				ship.setBonusPoint(ID.DEF, msg.valueByte1[9]);
-				ship.setBonusPoint(ID.SPD, msg.valueByte1[10]);
-				ship.setBonusPoint(ID.MOV, msg.valueByte1[11]);
-				ship.setBonusPoint(ID.HIT, msg.valueByte1[12]);
+				ship.setBonusPoint(ID.HP, msg.valueByte1[5]);
+				ship.setBonusPoint(ID.ATK, msg.valueByte1[6]);
+				ship.setBonusPoint(ID.DEF, msg.valueByte1[7]);
+				ship.setBonusPoint(ID.SPD, msg.valueByte1[8]);
+				ship.setBonusPoint(ID.MOV, msg.valueByte1[9]);
+				ship.setBonusPoint(ID.HIT, msg.valueByte1[10]);
 
 				ship.setStateFlag(ID.F.CanFloatUp, msg.valueBoolean1[0]);
 				ship.setStateFlag(ID.F.IsMarried, msg.valueBoolean1[1]);
