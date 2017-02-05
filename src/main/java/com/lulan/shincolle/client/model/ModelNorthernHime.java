@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -122,11 +123,19 @@ public class ModelNorthernHime extends ShipModelBaseAdv
     public ModelRenderer GlowEquipLT05;
     public ModelRenderer GlowEquipLT06;
     
+    protected float[] offsetItem2 = new float[] {0.05F, 1F, -0.14F};
+    protected float[] offsetBlock2 = new float[] {0.1F, 1.13F, 0.1F};
+    protected float[] rotateItem2 = new float[] {-30F, 30F, -60F};
+    
 
     public ModelNorthernHime()
     {
         this.textureWidth = 256;
         this.textureHeight = 128;
+        this.scale = 0.34F;
+        this.offsetY = 3.08F;
+        this.offsetItem = new float[] {0.07F, 1.02F, -0.05F};
+        this.offsetBlock = new float[] {0.1F, 1.03F, 0F};
         
         this.setDefaultFaceModel();
         
@@ -614,6 +623,10 @@ public class ModelNorthernHime extends ShipModelBaseAdv
         this.GlowEquipLT04.addChild(this.GlowEquipLT05);
         this.GlowEquipLT05.addChild(this.GlowEquipLT06);
         this.GlowEquipLT06.addChild(this.EquipLHead);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02, this.ArmRight03, this.ArmRight04, this.ArmRight05};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02, this.ArmLeft03, this.ArmLeft04, this.ArmLeft05};
     }
 
     @Override
@@ -622,7 +635,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
     	//FIX: head rotation bug while riding
     	if (f3 <= -180F) { f3 += 360F; }
     	else if (f3 >= 180F) { f3 -= 360F; }
-    	
+    
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -800,8 +813,10 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 	  	this.ArmLeft02.offsetZ = 0F;
 	  	this.ArmLeft04.rotateAngleY = 0F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 + 0.2618F;
+	    this.ArmRight01.rotateAngleY = 0F;
 	    this.ArmRight01.rotateAngleZ = angleX * 0.1F + 0.5235F;
 	    this.ArmRight02.rotateAngleX = 0F;
+	    this.ArmRight04.rotateAngleY = 0F;
 		//leg
 		this.LegLeft01.rotateAngleY = 0F;
 		this.LegLeft01.rotateAngleZ = -0.05F;
@@ -838,7 +853,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 	    	setFace(3);
 	    	//arm
 	    	this.ArmLeft01.rotateAngleZ = -1F;
-	    	this.ArmRight01.rotateAngleX = -2.53F;
+	    	this.ArmRight01.rotateAngleX = -2.9F;
 	    	this.ArmRight01.rotateAngleZ = -0.7F;
 	    	
 	    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01a)
@@ -894,7 +909,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		    	this.ArmLeft01.rotateAngleX = -2F;
 		    	this.ArmLeft01.rotateAngleY = -0.35F;
 		    	this.ArmLeft01.rotateAngleZ = 0.35F;
-		    	this.ArmRight01.rotateAngleX = -2F;
+		    	this.ArmRight01.rotateAngleX = -2.9F;
 		    	this.ArmRight01.rotateAngleY = 0.35F;
 		    	this.ArmRight01.rotateAngleZ = -0.35F;
 		    	//leg
@@ -1041,13 +1056,13 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			}
 			else
 			{
-				this.setMouth(1);
+				this.setMouth(5);
 			}
 		}
 		else
 		{
 			this.setFace(7);
-			this.setMouth(2);
+			this.setMouth(5);
 		}
 	}
 
@@ -1062,11 +1077,11 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			
 			if (t < 80)
 			{
-				this.setMouth(0);
+				this.setMouth(4);
 			}
 			else
 			{
-				this.setMouth(1);
+				this.setMouth(3);
 			}
 		}
 		else if (t < 320)
@@ -1079,7 +1094,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			}
 			else
 			{
-				this.setMouth(1);
+				this.setMouth(3);
 			}
 		}
 		else if (t < 410)
@@ -1088,7 +1103,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			
 			if (t < 360)
 			{
-				this.setMouth(0);
+				this.setMouth(5);
 			}
 			else
 			{
@@ -1097,15 +1112,15 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		}
 		else
 		{
-			this.setFace(8);
+			this.setFace(5);
 			
 			if (t < 470)
 			{
-				this.setMouth(0);
+				this.setMouth(3);
 			}
 			else
 			{
-				this.setMouth(1);
+				this.setMouth(4);
 			}
 		}
 	}
@@ -1121,11 +1136,11 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			
 			if (t < 60)
 			{
-				this.setMouth(2);
+				this.setMouth(4);
 			}
 			else
 			{
-				this.setMouth(1);
+				this.setMouth(5);
 			}
 		}
 		else if (t < 400)
@@ -1134,11 +1149,11 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			
 			if (t < 250)
 			{
-				this.setMouth(0);
+				this.setMouth(3);
 			}
 			else
 			{
-				this.setMouth(3);
+				this.setMouth(5);
 			}
 		}
 		else
@@ -1147,11 +1162,11 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			
 			if (t < 450)
 			{
-				this.setMouth(0);
+				this.setMouth(2);
 			}
 			else
 			{
-				this.setMouth(1);
+				this.setMouth(3);
 			}
 		}
 	}
@@ -1160,14 +1175,14 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 	public void setFaceScorn(IShipEmotion ent)
 	{
 		this.setFace(2);
-		this.setMouth(1);
+		this.setMouth(3);
 	}
 
 	@Override
 	public void setFaceHungry(IShipEmotion ent)
 	{
-		this.setFace(4);	
-		this.setMouth(2);
+		this.setFace(4);
+		this.setMouth(3);
 	}
 
 	@Override
@@ -1194,7 +1209,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 
 			if (t < 170)
 			{
-				this.setMouth(1);
+				this.setMouth(0);
 			}
 			else
 			{
@@ -1223,11 +1238,11 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		}
 		else if (t < 340)
 		{
-			this.setFace(8);
+			this.setFace(5);
 
 			if (t < 250)
 			{
-				this.setMouth(0);
+				this.setMouth(4);
 			}
 			else
 			{
@@ -1240,7 +1255,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 
 			if (t < 420)
 			{
-				this.setMouth(0);
+				this.setMouth(4);
 			}
 			else
 			{
@@ -1281,19 +1296,52 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 			
 			if (t < 80)
 			{
-				this.setMouth(3);
+				this.setMouth(4);
 			}
 			else
 			{
-				this.setMouth(4);
+				this.setMouth(3);
 			}
 		}
 		else
 		{
 			this.setFace(8);
-			this.setMouth(0);
+			this.setMouth(3);
 		}
 	}
+	
+	@Override
+    public float[] getHeldItemOffset(IShipEmotion ent, EnumHandSide side, int type)
+    {
+		if (side == EnumHandSide.RIGHT && (ent.getIsSprinting() || ent.getIsRiding()))
+		{
+			if (ent.getIsSprinting())
+			{
+				this.offsetItem2[1] = 1.05F;
+				this.offsetItem2[2] = -0.14F;
+			}
+			else if (ent.getIsRiding())
+			{
+				this.offsetItem2[1] = 1.14F;
+				this.offsetItem2[2] = 0F;
+			}
+			
+			return type == 0 ? this.offsetItem2 : this.offsetBlock2;
+		}
+		
+    	return type == 0 ? this.offsetItem : this.offsetBlock;
+    }
+    
+	@Override
+    public float[] getHeldItemRotate(IShipEmotion ent, EnumHandSide side, int type)
+    {
+		if (side == EnumHandSide.RIGHT && (ent.getIsSprinting() || ent.getIsRiding()))
+		{
+			return type == 0 ? this.rotateItem2 : this.rotateBlock;
+		}
+		
+    	return type == 0 ? this.rotateItem : this.rotateBlock;
+    }
 
     
 }

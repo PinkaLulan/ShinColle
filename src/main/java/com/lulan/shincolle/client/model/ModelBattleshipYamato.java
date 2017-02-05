@@ -194,9 +194,6 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
 
-    private float scale;
-    private float offsetY;
-    
     
     public ModelBattleshipYamato()
     {
@@ -1020,6 +1017,10 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
         this.GlowHead.addChild(this.Mouth2);
         this.GlowHead.addChild(this.Flush0);
         this.GlowHead.addChild(this.Flush1);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
 
     @Override
@@ -1586,6 +1587,6 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
 	}
-   
+
     
 }

@@ -124,9 +124,6 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowHead;
 
-    private float scale;
-    private float offsetY;
-    
     
     public ModelDestroyerHibiki()
     {
@@ -645,6 +642,10 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
         this.HatBase2.addChild(this.Hat201_12);
         this.HatBase2.addChild(this.Hat202a);
         this.HatBase2.addChild(this.Hat202b);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
     
     @Override

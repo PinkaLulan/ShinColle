@@ -104,9 +104,6 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowHead;
     
-    private float scale;
-    private float offsetY;
-    
 
     public ModelCarrierAkagi()
     {
@@ -519,6 +516,9 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
         this.GlowHead.addChild(this.Flush0);
         this.GlowHead.addChild(this.Flush1);
         
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
 
     @Override

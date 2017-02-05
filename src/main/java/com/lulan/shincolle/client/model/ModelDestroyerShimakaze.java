@@ -60,9 +60,6 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
     public ModelRenderer GlowNeckCloth;
     public ModelRenderer GlowHead;
     
-    private float scale;
-    private float offsetY;
-
     
     public ModelDestroyerShimakaze()
     {
@@ -257,6 +254,10 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
         this.GlowHead.addChild(this.Mouth2);
         this.GlowHead.addChild(this.Flush0);
         this.GlowHead.addChild(this.Flush1);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft};
     }
 
     @Override

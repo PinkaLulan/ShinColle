@@ -87,9 +87,6 @@ public class ModelCruiserTatsuta extends ShipModelBaseAdv
     public ModelRenderer GlowEquip01a;
     public ModelRenderer GlowEquip02a;
 
-    private float scale;
-    private float offsetY;
-    
     
     public ModelCruiserTatsuta()
     {
@@ -408,6 +405,10 @@ public class ModelCruiserTatsuta extends ShipModelBaseAdv
         this.GlowEquip02a.addChild(this.Equip02b);
         this.Equip02b.addChild(this.Equip02c);
         this.Equip02c.addChild(this.Equip02d);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
 
     @Override
@@ -450,16 +451,18 @@ public class ModelCruiserTatsuta extends ShipModelBaseAdv
     	//light part
     	GlStateManager.disableLighting();
     	GlStateManager.enableCull();
+    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+    	this.GlowBodyMain.render(f5);
+    	GlStateManager.disableBlend();
+    	
     	float light = 80F + MathHelper.cos(f2 * 0.125F) * 120F;
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
     	this.GlowBodyMain2.render(f5);
     	
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
-    	this.GlowBodyMain.render(f5);
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	
-    	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }
 

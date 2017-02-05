@@ -123,6 +123,8 @@ public class ModelSubmYo extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.scale = 0.47F;
+        this.offsetY = 1.78F;
         
         this.setDefaultFaceModel();
         
@@ -611,6 +613,10 @@ public class ModelSubmYo extends ShipModelBaseAdv
         this.GlowEquipBody01.addChild(this.EquipS01b);
         this.GlowEquipBody01.addChild(this.EquipS01c);
         this.GlowEquipBody01.addChild(this.EquipS01d);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
 
     @Override
@@ -623,8 +629,8 @@ public class ModelSubmYo extends ShipModelBaseAdv
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.scale(0.47F, 0.47F, 0.47F);
-    	GlStateManager.translate(0F, 1.78F, 0F);
+    	GlStateManager.scale(this.scale, this.scale, this.scale);
+    	GlStateManager.translate(0F, this.offsetY, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);

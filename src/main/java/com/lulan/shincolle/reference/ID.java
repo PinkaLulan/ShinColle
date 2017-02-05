@@ -362,8 +362,9 @@ public class ID
 		public static final byte AntiSS = 20;
 		public static final byte PassiveAI = 21;
 		public static final byte TimeKeeper = 22;
-		public static final byte PickItem = 23;
-		public static final byte CanPickItem = 24;
+		public static final byte PickItem = 23;			//active picking item
+		public static final byte CanPickItem = 24;		//can pick item
+		public static final byte ShowHeldItem = 25;
 	}
 	
 	/** Update Flag */

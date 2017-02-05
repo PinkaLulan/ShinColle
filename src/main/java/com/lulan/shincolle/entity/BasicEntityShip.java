@@ -155,7 +155,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 23:PickItem 
+	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 23:PickItem
+	 *  24:canPickItem 25:ShowHeldItem  
 	 */
 	protected boolean[] StateFlag;
 	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
@@ -220,7 +221,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
 								        true, true, false, true, false,
-								        false, false, true, true, false
+								        false, false, true, true, false,
+								        true
 								       };
 		this.UpdateFlag = new boolean[] {false};
 		this.BonusPoint = new byte[6];
@@ -823,7 +825,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean getIsSprinting()
 	{
-		return this.isSprinting();
+		//TODO debug
+		return this.isSprinting() || this.limbSwingAmount > 0.2F;
 	}
 
 	@Override
@@ -6257,6 +6260,22 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		this.deathTime = par1;
 	}
+	
+	@Override
+    @Nullable
+    public ItemStack getHeldItemMainhand()
+    {
+		if (this.itemHandler != null) return this.itemHandler.getStackInSlot(22);
+		return null;
+    }
+
+	@Override
+    @Nullable
+    public ItemStack getHeldItemOffhand()
+    {
+		if (this.itemHandler != null) return this.itemHandler.getStackInSlot(23);
+		return null;
+    }
 	
 	
 }

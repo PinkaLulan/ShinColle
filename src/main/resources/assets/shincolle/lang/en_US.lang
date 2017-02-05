@@ -642,6 +642,7 @@ gui.shincolle:ai.timekeeper=TimeKeeper
 gui.shincolle:ai.pickitem=Pick Item
 gui.shincolle:ai.wpstay=WP Stay Time
 gui.shincolle:modernlevel=Modernization Level
+gui.shincolle:showhelditem=Show Held Item
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

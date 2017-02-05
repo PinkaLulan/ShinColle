@@ -101,9 +101,6 @@ public class ModelCarrierKaga extends ShipModelBaseAdv
     public ModelRenderer Tail02;
     public ModelRenderer Tail03;
 
-    private float scale;
-    private float offsetY;
-    
     
     public ModelCarrierKaga()
     {
@@ -497,6 +494,10 @@ public class ModelCarrierKaga extends ShipModelBaseAdv
         this.GlowHead.addChild(this.Mouth2);
         this.GlowHead.addChild(this.Flush0);
         this.GlowHead.addChild(this.Flush1);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
 
     @Override

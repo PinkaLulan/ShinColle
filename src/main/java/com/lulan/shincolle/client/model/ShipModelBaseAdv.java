@@ -7,6 +7,7 @@ import com.lulan.shincolle.utility.EmotionHelper;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumHandSide;
 
 /**
  * model base for advance emotion
@@ -14,6 +15,10 @@ import net.minecraft.entity.Entity;
 abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotionAdv
 {
 
+	/** basic parms */
+	protected float scale = 1F;
+	protected float offsetY = 0F;
+    
 	/** basic model */
 	public ModelRenderer Face0;
     public ModelRenderer Face1;
@@ -25,6 +30,14 @@ abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotio
     public ModelRenderer Mouth2;
     public ModelRenderer Flush0;
     public ModelRenderer Flush1;
+    
+    /** held item rendering */
+    protected float[] offsetItem = new float[] {0F, 0F, 0F};
+    protected float[] rotateItem = new float[] {0F, 0F, 0F};
+    protected float[] offsetBlock = new float[] {0F, 0F, 0F};
+    protected float[] rotateBlock = new float[] {0F, 0F, 0F};
+    protected ModelRenderer[] armMain;
+    protected ModelRenderer[] armOff;
     
 	
 	public ShipModelBaseAdv()
@@ -65,6 +78,32 @@ abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotio
         this.Flush1.setRotationPoint(6F, -3.0F, -6.9F);
         this.Flush1.addBox(-1.0F, 0.0F, -0.5F, 2, 1, 0, 0.0F);
 	}
+	
+    /** get hand model for held item rendering */
+    public ModelRenderer[] getArmForSide(EnumHandSide side)
+    {
+    	return side == EnumHandSide.RIGHT ? this.armMain : this.armOff;
+    }
+    
+    public float[] getHeldItemOffset(IShipEmotion ent, EnumHandSide side, int type)
+    {
+    	return type == 0 ? this.offsetItem : this.offsetBlock; 
+    }
+    
+    public float[] getHeldItemRotate(IShipEmotion ent, EnumHandSide side, int type)
+    {
+    	return type == 0 ? this.rotateItem : this.rotateBlock; 
+    }
+    
+    public float getOffsetY()
+    {
+    	return this.offsetY;
+    }
+    
+    public float getScale()
+    {
+    	return this.scale;
+    }
 	
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
     {

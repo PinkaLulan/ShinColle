@@ -61,9 +61,6 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
     
-    private float scale;
-    private float offsetY;
-    
 
     public ModelSubmRo500()
     {
@@ -267,6 +264,10 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
         this.FlowerBase.addChild(this.Flower2);
         this.FlowerBase.addChild(this.Flower3);
         this.FlowerBase.addChild(this.Flower4);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
 
     @Override

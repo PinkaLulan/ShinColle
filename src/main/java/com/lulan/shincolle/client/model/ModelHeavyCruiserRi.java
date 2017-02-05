@@ -72,6 +72,8 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.scale = 0.41F;
+        this.offsetY = 2.15F;
         
         this.setDefaultFaceModel();
         
@@ -302,6 +304,10 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.GlowEquipRightBase.addChild(this.GlowEquipRightBase3);
         this.GlowEquipRightBase2.addChild(this.EquipRightTooth1);
         this.GlowEquipRightBase3.addChild(this.EquipRightTooth2);
+        
+     	//for held item rendering
+        this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight};
+        this.armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft};
     }
 
     @Override
@@ -314,8 +320,8 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.scale(0.41F, 0.41F, 0.41F);
-    	GlStateManager.translate(0F, 2.15F, 0F);
+    	GlStateManager.scale(this.scale, this.scale, this.scale);
+    	GlStateManager.translate(0F, this.offsetY, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);

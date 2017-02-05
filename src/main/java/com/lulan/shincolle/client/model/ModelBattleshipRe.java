@@ -101,6 +101,8 @@ public class ModelBattleshipRe extends ShipModelBaseAdv
     {
         this.textureWidth = 256;
         this.textureHeight = 128;
+        this.scale = 0.4F;
+        this.offsetY = 0F;
         
         this.setDefaultFaceModel();
         
@@ -469,6 +471,10 @@ public class ModelBattleshipRe extends ShipModelBaseAdv
         this.GlowTailHead1.addChild(this.TailHeadT01);
         this.GlowTailHeadBase.addChild(this.GlowTailJaw1);
         this.GlowTailJaw1.addChild(this.TailJawT01);
+        
+     	//for held item rendering
+        armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
+        armOff = new ModelRenderer[] {this.BodyMain, this.ArmLeft01, this.ArmLeft02};
     }
 
 
@@ -482,7 +488,8 @@ public class ModelBattleshipRe extends ShipModelBaseAdv
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-    	GlStateManager.scale(0.4F, 0.4F, 0.4F);
+    	GlStateManager.scale(this.scale, this.scale, this.scale);
+    	GlStateManager.translate(0F, this.offsetY, 0F);
     	
     	//main body
     	setRotationAngles(f, f1, f2, f3, f4, f5, entity);

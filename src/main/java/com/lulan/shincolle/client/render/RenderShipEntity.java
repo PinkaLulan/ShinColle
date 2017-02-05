@@ -145,6 +145,7 @@ public class RenderShipEntity extends RenderBasic
     public RenderShipEntity(RenderManager rm)
     {
         super(rm);
+        this.addLayer(new LayerShipHeldItem(this));
     }
 
     @Override
