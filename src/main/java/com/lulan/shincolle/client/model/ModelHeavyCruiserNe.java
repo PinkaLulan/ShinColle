@@ -72,6 +72,8 @@ public class ModelHeavyCruiserNe extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.4F;
         this.offsetY = 2.63F;
+        this.offsetItem = new float[] {0.07F, 0.99F, -0.09F};
+        this.offsetBlock = new float[] {0.07F, 0.99F, -0.09F};
         
         this.TailRC02 = new ModelRenderer(this, 0, 0);
         this.TailRC02.setRotationPoint(-3.0F, 2.0F, 13.5F);

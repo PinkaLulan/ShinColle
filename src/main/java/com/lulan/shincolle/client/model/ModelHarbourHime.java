@@ -72,6 +72,8 @@ public class ModelHarbourHime extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.53F;
         this.offsetY = 1.35F;
+        this.offsetItem = new float[] {0F, 0.74F, -0.07F};
+        this.offsetBlock = new float[] {0F, 0.74F, -0.07F};
         
         this.setDefaultFaceModel();
         

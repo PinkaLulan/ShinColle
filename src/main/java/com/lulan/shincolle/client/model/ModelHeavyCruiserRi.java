@@ -74,6 +74,8 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.41F;
         this.offsetY = 2.15F;
+        this.offsetItem = new float[] {-0.14F, 1.29F, 0F};
+        this.offsetBlock = new float[] {-0.14F, 1.29F, 0F};
         
         this.setDefaultFaceModel();
         
@@ -149,7 +151,7 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.setRotateAngle(ArmLeft, 0.0F, 0.0F, -0.2617993877991494F);
         this.Neck = new ModelRenderer(this, 76, 3);
         this.Neck.setRotationPoint(0F, -13F, 1F);
-        this.Neck.addBox(-7F, 0F, -6.6F, 14, 3, 12, 0.0F);
+        this.Neck.addBox(-6.5F, 0F, -6F, 13, 3, 12, 0.0F);
         this.setRotateAngle(Neck, 0.1F, 0F, 0F);
         this.ShoesRight = new ModelRenderer(this, 52, 52);
         this.ShoesRight.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -452,11 +454,11 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
   	    //body
   	    this.BodyMain.rotateAngleX = -0.15F;
   	    //arm
-	  	this.ArmLeft.rotateAngleZ = angleZ * -0.15F - 0.3F;
+	  	this.ArmLeft.rotateAngleZ = angleZ * -0.06F - 0.25F;
 	    this.ArmLeft.rotateAngleX = 0.2F;
 		this.ArmRight.rotateAngleX = 0.2F;
 		this.ArmRight.rotateAngleY = 0F;
-		this.ArmRight.rotateAngleZ = angleZ * 0.15F + 0.3F;
+		this.ArmRight.rotateAngleZ = angleZ * 0.06F + 0.25F;
 		//leg
 		this.LegLeft.rotateAngleZ = 0.087F;
 		this.LegRight.rotateAngleZ = -0.087F;

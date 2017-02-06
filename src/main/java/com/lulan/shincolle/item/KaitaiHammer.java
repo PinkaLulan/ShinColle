@@ -25,6 +25,7 @@ public class KaitaiHammer extends BasicItem
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(20);
+		this.setFull3D();
         
         GameRegistry.register(this);
 	}

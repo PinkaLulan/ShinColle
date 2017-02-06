@@ -234,19 +234,19 @@ public class PacketHelper
 			{
 			case ID.B.ShipInv_Melee:
 				entity.setStateFlagI(ID.F.UseMelee, value);
-				break;
+			break;
 			case ID.B.ShipInv_AmmoLight:
 				entity.setStateFlagI(ID.F.UseAmmoLight, value);
-				break;
+			break;
 			case ID.B.ShipInv_AmmoHeavy:
 				entity.setStateFlagI(ID.F.UseAmmoHeavy, value);
-				break;
+			break;
 			case ID.B.ShipInv_AirLight:
 				entity.setStateFlagI(ID.F.UseAirLight, value);
-				break;
+			break;
 			case ID.B.ShipInv_AirHeavy:
 				entity.setStateFlagI(ID.F.UseAirHeavy, value);
-				break;
+			break;
 			case ID.B.ShipInv_FollowMin:
 				entity.setStateMinor(ID.M.FollowMin, value);
 				
@@ -255,7 +255,7 @@ public class PacketHelper
 				{
 					entity.setStateMinor(ID.M.FollowMax, value + 1);
 				}
-				break;
+			break;
 			case ID.B.ShipInv_FollowMax:
 				entity.setStateMinor(ID.M.FollowMax, value);
 				
@@ -264,40 +264,43 @@ public class PacketHelper
 				{
 					entity.setStateMinor(ID.M.FollowMin, value - 1);
 				}
-				break;
+			break;
 			case ID.B.ShipInv_FleeHP:
 				entity.setStateMinor(ID.M.FleeHP, value);
-				break;
+			break;
 			case ID.B.ShipInv_TarAI:
 				entity.setStateFlagI(ID.F.PassiveAI, value);
-				break;
+			break;
 			case ID.B.ShipInv_AuraEffect:
 				entity.setStateFlagI(ID.F.UseRingEffect, value);
-				break;
+			break;
 			case ID.B.ShipInv_OnSightAI:
 				entity.setStateFlagI(ID.F.OnSightChase, value);
-				break;
+			break;
 			case ID.B.ShipInv_PVPAI:
 				entity.setStateFlagI(ID.F.PVPFirst, value);
-				break;
+			break;
 			case ID.B.ShipInv_AAAI:
 				entity.setStateFlagI(ID.F.AntiAir, value);
-				break;
+			break;
 			case ID.B.ShipInv_ASMAI:
 				entity.setStateFlagI(ID.F.AntiSS, value);
-				break;
+			break;
 			case ID.B.ShipInv_TIMEKEEPAI:
 				entity.setStateFlagI(ID.F.TimeKeeper, value);
-				break;
+			break;
 			case ID.B.ShipInv_InvPage:
 				entity.getCapaShipInventory().setInventoryPage(value);
-				break;
+			break;
 			case ID.B.ShipInv_PickitemAI:
 				entity.setStateFlagI(ID.F.PickItem, value);
-				break;
+			break;
 			case ID.B.ShipInv_WpStay:
 				entity.setStateMinor(ID.M.WpStay, value);
-				break;
+			break;
+			case ID.B.ShipInv_ShowHeld:
+				entity.setStateFlagI(ID.F.ShowHeldItem, value);
+			break;
 			}
 		}
 		else

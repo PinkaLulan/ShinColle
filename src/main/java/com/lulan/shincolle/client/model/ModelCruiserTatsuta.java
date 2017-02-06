@@ -92,6 +92,8 @@ public class ModelCruiserTatsuta extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {0.06F, 1.07F, -0.06F};
+        this.offsetBlock = new float[] {0.06F, 1.07F, -0.06F};
         
         this.setDefaultFaceModel();
         

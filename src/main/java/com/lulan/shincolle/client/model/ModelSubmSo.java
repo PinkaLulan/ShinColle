@@ -72,6 +72,8 @@ public class ModelSubmSo extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.47F;
         this.offsetY = 1.78F;
+        this.offsetItem = new float[] {0.08F, 0.96F, -0.08F};
+        this.offsetBlock = new float[] {0.08F, 0.96F, -0.08F};
         
         this.setDefaultFaceModel();
         

@@ -93,6 +93,8 @@ public class ModelCarrierWo extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.44F;
         this.offsetY = 1.9F;
+        this.offsetItem = new float[] {0.11F, 0.92F, -0.09F};
+        this.offsetBlock = new float[] {0.11F, 0.92F, -0.09F};
         
         this.Head = new ModelRenderer(this, 43, 101);
         this.Head.setRotationPoint(0.0F, -13.5F, -0.5F);

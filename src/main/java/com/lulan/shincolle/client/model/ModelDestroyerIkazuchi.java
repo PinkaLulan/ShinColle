@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -86,11 +87,16 @@ public class ModelDestroyerIkazuchi extends ShipModelBaseAdv
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowHead;
     
+    //additional offset
+    protected float[] offsetItem2 = new float[] {0.06F, 0.81F, -0.1F};
+    
 
     public ModelDestroyerIkazuchi()
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {0.06F, 1.04F, -0.08F};
+        this.offsetBlock = new float[] {0.06F, 1.04F, -0.08F};
         
         this.setDefaultFaceModel();
         
@@ -1203,6 +1209,17 @@ public class ModelDestroyerIkazuchi extends ShipModelBaseAdv
 			this.setMouth(4);
 		}
 	}
+	
+	@Override
+    public float[] getHeldItemOffset(IShipEmotion ent, EnumHandSide side, int type)
+    {
+		if (ent.getIsRiding())
+		{
+			return this.offsetItem2;
+		}
+		
+    	return this.offsetItem;
+    }
   	
   	
 }

@@ -129,6 +129,8 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {0.06F, 1.04F, -0.08F};
+        this.offsetBlock = new float[] {0.06F, 1.04F, -0.08F};
         
         this.EquipTR02f = new ModelRenderer(this, 0, 0);
         this.EquipTR02f.setRotationPoint(-1.3F, 2.3F, 2.5F);

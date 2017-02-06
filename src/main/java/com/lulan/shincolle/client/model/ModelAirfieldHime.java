@@ -79,6 +79,8 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.47F;
         this.offsetY = 1.75F;
+        this.offsetItem = new float[] {0.08F, 1.02F, -0.07F};
+        this.offsetBlock = new float[] {0.08F, 1.02F, -0.07F};
         
         this.setDefaultFaceModel();
         

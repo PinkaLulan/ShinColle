@@ -199,6 +199,8 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
     {
         this.textureWidth = 256;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {0.07F, 1.04F, -0.03F};
+        this.offsetBlock = new float[] {0.07F, 1.04F, -0.03F};
         
         this.setDefaultFaceModel();
         

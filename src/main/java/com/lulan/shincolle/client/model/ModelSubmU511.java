@@ -62,6 +62,8 @@ public class ModelSubmU511 extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {0F, 1.1F, -0.05F};
+        this.offsetBlock = new float[] {0F, 1.1F, -0.05F};
         
         this.setDefaultFaceModel();
         

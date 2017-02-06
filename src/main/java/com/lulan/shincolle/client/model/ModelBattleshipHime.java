@@ -65,6 +65,8 @@ public class ModelBattleshipHime extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.5F;
         this.offsetY = 0F;
+        this.offsetItem = new float[] {0.08F, 0.43F, -0.08F};
+        this.offsetBlock = new float[] {0.08F, 0.43F, -0.08F};
         
         this.setDefaultFaceModel();
         

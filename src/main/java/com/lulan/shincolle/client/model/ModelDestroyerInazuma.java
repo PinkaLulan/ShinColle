@@ -91,6 +91,8 @@ public class ModelDestroyerInazuma extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {0.06F, 1.04F, -0.08F};
+        this.offsetBlock = new float[] {0.06F, 1.04F, -0.08F};
         
         this.setDefaultFaceModel();
         

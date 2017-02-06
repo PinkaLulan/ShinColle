@@ -65,6 +65,8 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {-0.16F, 1.24F, -0.03F};
+        this.offsetBlock = new float[] {-0.16F, 1.24F, -0.03F};
         
         this.setDefaultFaceModel();
         

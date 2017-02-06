@@ -123,6 +123,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
     public ModelRenderer GlowEquipLT05;
     public ModelRenderer GlowEquipLT06;
     
+    //additional offset
     protected float[] offsetItem2 = new float[] {0.05F, 1F, -0.14F};
     protected float[] offsetBlock2 = new float[] {0.1F, 1.13F, 0.1F};
     protected float[] rotateItem2 = new float[] {-30F, 30F, -60F};

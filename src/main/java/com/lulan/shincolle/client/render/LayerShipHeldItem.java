@@ -3,7 +3,7 @@ package com.lulan.shincolle.client.render;
 import com.lulan.shincolle.client.model.ShipModelBaseAdv;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.handler.ConfigHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
@@ -12,8 +12,6 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
@@ -40,7 +38,7 @@ public class LayerShipHeldItem implements LayerRenderer<EntityLivingBase>
     	//check AI option
     	if (entity instanceof BasicEntityShip)
     	{
-    		if (!((BasicEntityShip) entity).getStateFlag(ID.F.ShowHeldItem)) return;
+    		if (!((BasicEntityShip) entity).canShowHeldItem()) return;
     	}
     	
         ItemStack stackMain = entity.getHeldItemMainhand();
@@ -49,8 +47,8 @@ public class LayerShipHeldItem implements LayerRenderer<EntityLivingBase>
         //TODO debug
 //        stackMain = new ItemStack(Items.DIAMOND_SWORD);
 //        stackOff = new ItemStack(Items.DIAMOND_SWORD);
-        stackMain = new ItemStack(Item.getItemFromBlock(Blocks.GRASS));
-        stackOff = new ItemStack(Item.getItemFromBlock(Blocks.GRASS));
+//        stackMain = new ItemStack(Item.getItemFromBlock(Blocks.GRASS));
+//        stackOff = new ItemStack(Item.getItemFromBlock(Blocks.GRASS));
         
         if (stackMain != null)
         {
@@ -86,8 +84,14 @@ public class LayerShipHeldItem implements LayerRenderer<EntityLivingBase>
     		{
         		boolean flag = handSide == EnumHandSide.LEFT;
         		
-            	GlStateManager.translate(this.itemOffset[0]*(flag?-1F:1F), this.itemOffset[1], this.itemOffset[2]);
+            	GlStateManager.translate((this.itemOffset[0]+ConfigHandler.scaleHeldItem[1])*(flag?-1F:1F),
+				            			 this.itemOffset[1]+ConfigHandler.scaleHeldItem[2],
+				            			 this.itemOffset[2]+ConfigHandler.scaleHeldItem[3]);
+            	//TODO debug
 //        		GlStateManager.translate(EventHandler.field1*(flag?-1F:1F), EventHandler.field2, EventHandler.field3);
+//        		this.itemRotate[0] = 0F;
+//        		this.itemRotate[1] = 0F;
+//        		this.itemRotate[2] = 0F;
         		
         		//從bodyMain到手部所有連接的模型都post render一次以便套用位移跟旋轉
         		for (int i = 0; i < hand.length; i++)
@@ -100,6 +104,23 @@ public class LayerShipHeldItem implements LayerRenderer<EntityLivingBase>
         		GlStateManager.rotate(180F+this.itemRotate[1], 0F, 1F, 0F);
         		GlStateManager.rotate(this.itemRotate[2], 0F, 0F, 1F);
             	GlStateManager.translate((float)(flag ? -1 : 1) / 16F, 0.125F, -0.625F);
+            	
+            	//is weapon
+            	if (stack.getItem().isFull3D())
+            	{
+            		GlStateManager.scale(ConfigHandler.scaleHeldItem[0]*0.5D, ConfigHandler.scaleHeldItem[0], ConfigHandler.scaleHeldItem[0]);
+            	}
+            	//is block
+            	else if (isBlock)
+            	{
+            		GlStateManager.scale(ConfigHandler.scaleHeldItem[0]*0.75D, ConfigHandler.scaleHeldItem[0]*0.75D, ConfigHandler.scaleHeldItem[0]*0.75D);
+            	}
+            	//other item
+            	else
+            	{
+            		GlStateManager.scale(ConfigHandler.scaleHeldItem[0], ConfigHandler.scaleHeldItem[0], ConfigHandler.scaleHeldItem[0]);
+            	}
+            	
                 Minecraft.getMinecraft().getItemRenderer().renderItemSide(entity, stack, type, flag);
     		}
         }

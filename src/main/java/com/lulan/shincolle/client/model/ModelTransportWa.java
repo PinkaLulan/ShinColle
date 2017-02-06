@@ -110,6 +110,8 @@ public class ModelTransportWa extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.4F;
         this.offsetY = 2.35F;
+        this.offsetItem = new float[] {0.06F, 1.05F, -0.06F};
+        this.offsetBlock = new float[] {0.06F, 1.05F, -0.06F};
         
         this.setDefaultFaceModel();
         

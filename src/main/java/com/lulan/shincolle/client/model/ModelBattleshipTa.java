@@ -62,6 +62,9 @@ public class ModelBattleshipTa extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.46F;
         this.offsetY = 1.78F;
+        this.offsetItem = new float[] {-0.04F, 0.98F, 0.07F};
+        this.offsetBlock = new float[] {-0.04F, 0.98F, 0.07F};
+        this.rotateItem = new float[] {0F, 0F, -180F};
         
         this.setDefaultFaceModel();
         

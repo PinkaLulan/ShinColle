@@ -5959,7 +5959,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 */
 	public int getFieldCount()
 	{
-		return 28;
+		return 29;
 	}
 	
 	public int getField(int id)
@@ -6022,6 +6022,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.StateMinor[ID.M.NumGrudge];
 		case 27:
 			return this.itemHandler.getInventoryPage();
+		case 28:
+			return this.getStateFlagI(ID.F.ShowHeldItem);
 		}
 		
 		return 0;
@@ -6114,6 +6116,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			break;
 		case 27:
 			this.itemHandler.setInventoryPage(value);
+			break;
+		case 28:
+			this.setStateFlagI(ID.F.ShowHeldItem, value);
 			break;
 		}
 		
@@ -6276,6 +6281,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (this.itemHandler != null) return this.itemHandler.getStackInSlot(23);
 		return null;
     }
+	
+	//check held item can be rendered
+	public boolean canShowHeldItem()
+	{
+		if (!this.getStateFlag(ID.F.ShowHeldItem) || this.getAttackTick() > 0 ||
+			this.getAttackTick2() > 0)
+		{
+			return false;
+		}
+		
+		return true;
+	}
 	
 	
 }

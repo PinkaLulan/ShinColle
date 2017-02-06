@@ -26,6 +26,7 @@ public class ID
 		public static final byte ShipInv_InvPage = 15;
 		public static final byte ShipInv_PickitemAI = 16;
 		public static final byte ShipInv_WpStay = 17;
+		public static final byte ShipInv_ShowHeld = 18;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;

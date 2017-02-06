@@ -61,7 +61,7 @@ public class ConfigHandler
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
 						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
-						   propPolyGravel;
+						   propPolyGravel, propHeldItem;
 	
 	//SHIP SETTING
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
@@ -75,6 +75,8 @@ public class ConfigHandler
 	//	  												HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] scaleMobSmall = new double[] {250D, 25D, 15D, 0.7D, 0.45D, 12D};
 	public static double[] scaleMobLarge = new double[] {500D, 50D, 30D, 0.9D, 0.4D, 15D};
+	//item scaling                                       scale, offX, offY, offZ
+	public static double[] scaleHeldItem = new double[] {2.5D,    0D,   0D,   0D};
 	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
 	public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
 	//grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
@@ -210,6 +212,7 @@ public class ConfigHandler
 		propAtkDly = config.get(CATE_SHIP, "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get(CATE_SHIP, "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
 		propMobSpawn = config.get(CATE_SHIP, "Limit_MobSpawnNumber", mobSpawn, "Mob ship spawn MAX number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
+		propHeldItem = config.get(CATE_SHIP, "Held_Item", scaleHeldItem, "Ship held item scaling: scale, offset X, offset Y, offset Z");
 		
 		propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
 		propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
@@ -245,6 +248,7 @@ public class ConfigHandler
 		shipyardLarge = getDoubleArrayFromConfig(shipyardLarge, propShipyardLarge);
 		volCore = getDoubleArrayFromConfig(volCore, propVolCore);
 		ringAbility = getIntArrayFromConfig(ringAbility, propRingAbility);
+		scaleHeldItem = getDoubleArrayFromConfig(scaleHeldItem, propHeldItem);
 		
 		checkChange(config);
 	}

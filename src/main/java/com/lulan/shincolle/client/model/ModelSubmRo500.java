@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -61,11 +62,15 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
     
+    protected float[] offsetItem2 = new float[] {-0.03F, 0.93F, 0.1F};
+    
 
     public ModelSubmRo500()
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {-0.01F, 1.1F, -0.05F};
+        this.offsetBlock = new float[] {-0.01F, 1.1F, -0.05F};
         
         this.setDefaultFaceModel();
         
@@ -596,6 +601,17 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
 	    this.LegLeft01.rotateAngleX = addk1;
 	    this.LegRight01.rotateAngleX = addk2;
 	}
+	
+	@Override
+    public float[] getHeldItemOffset(IShipEmotion ent, EnumHandSide side, int type)
+    {
+		if (ent.getIsSprinting())
+		{
+			return this.offsetItem2;
+		}
+		
+    	return this.offsetItem;
+    }
 
     
 }

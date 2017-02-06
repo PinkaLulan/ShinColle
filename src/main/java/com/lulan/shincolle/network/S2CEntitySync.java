@@ -133,14 +133,14 @@ public class S2CEntitySync implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 1+28);
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+11+14);
 			this.valueByte1 = PacketHelper.readByteArray(buf, 5+6);
-			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 17);
+			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 18);
 		break;
 		case PID.SyncShip_Emo: //entity emotion only
 			this.valueByte1 = PacketHelper.readByteArray(buf, 5);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 1);
 		break;
 		case PID.SyncShip_Flag: //entity flag only
-			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 17);
+			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 18);
 		break;
 		case PID.SyncShip_Formation: //ship formation data only
 			this.valueInt1 = PacketHelper.readIntArray(buf, 7);
@@ -317,6 +317,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeBoolean(entity.getStateFlag(ID.F.TimeKeeper));
 			buf.writeBoolean(entity.getStateFlag(ID.F.PickItem));
 			buf.writeBoolean(entity.getStateFlag(ID.F.CanPickItem));
+			buf.writeBoolean(entity.getStateFlag(ID.F.ShowHeldItem));
 		}
 		break;
 		case PID.SyncShip_Emo:	//entity state only
@@ -353,6 +354,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeBoolean(entity.getStateFlag(ID.F.TimeKeeper));
 			buf.writeBoolean(entity.getStateFlag(ID.F.PickItem));
 			buf.writeBoolean(entity.getStateFlag(ID.F.CanPickItem));
+			buf.writeBoolean(entity.getStateFlag(ID.F.ShowHeldItem));
 		}
 		break;
 		case PID.SyncShip_Minor:	//sync minor only
@@ -762,6 +764,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateFlag(ID.F.TimeKeeper, msg.valueBoolean1[14]);
 				ship.setStateFlag(ID.F.PickItem, msg.valueBoolean1[15]);
 				ship.setStateFlag(ID.F.CanPickItem, msg.valueBoolean1[16]);
+				ship.setStateFlag(ID.F.ShowHeldItem, msg.valueBoolean1[17]);
 			}
 			break;
 			case PID.SyncShip_Emo: //entity emotion only
@@ -798,6 +801,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateFlag(ID.F.TimeKeeper, msg.valueBoolean1[14]);
 				ship.setStateFlag(ID.F.PickItem, msg.valueBoolean1[15]);
 				ship.setStateFlag(ID.F.CanPickItem, msg.valueBoolean1[16]);
+				ship.setStateFlag(ID.F.ShowHeldItem, msg.valueBoolean1[17]);
 			}
 			break;
 			case PID.SyncShip_Formation: //ship formation data only

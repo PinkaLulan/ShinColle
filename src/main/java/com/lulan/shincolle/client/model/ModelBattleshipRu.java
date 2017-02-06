@@ -120,6 +120,8 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
         this.textureHeight = 128;
         this.scale = 0.44F;
         this.offsetY = 1.9F;
+        this.offsetItem = new float[] {0.07F, 1F, -0.07F};
+        this.offsetBlock = new float[] {0.07F, 1F, -0.07F};
         
         this.setDefaultFaceModel();
         

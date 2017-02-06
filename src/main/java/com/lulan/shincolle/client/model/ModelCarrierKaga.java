@@ -106,6 +106,8 @@ public class ModelCarrierKaga extends ShipModelBaseAdv
     {
         this.textureWidth = 256;
         this.textureHeight = 128;
+        this.offsetItem = new float[] {0.06F, 1F, -0.06F};
+        this.offsetBlock = new float[] {0.06F, 1F, -0.06F};
         
         this.setDefaultFaceModel();
         
