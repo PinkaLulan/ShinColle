@@ -301,6 +301,9 @@ public class PacketHelper
 			case ID.B.ShipInv_ShowHeld:
 				entity.setStateFlagI(ID.F.ShowHeldItem, value);
 			break;
+			case ID.B.ShipInv_AutoCR:
+				entity.setStateMinor(ID.M.UseCombatRation, value);
+			break;
 			}
 		}
 		else

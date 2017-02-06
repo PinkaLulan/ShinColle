@@ -130,7 +130,7 @@ public class S2CEntitySync implements IMessage
 		switch (this.packetType)
 		{
 		case PID.SyncShip_All:	//sync all attr
-			this.valueInt1 = PacketHelper.readIntArray(buf, 1+28);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 1+29);
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+11+14);
 			this.valueByte1 = PacketHelper.readByteArray(buf, 5+6);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 18);
@@ -147,7 +147,7 @@ public class S2CEntitySync implements IMessage
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 1);
 		break;
 		case PID.SyncShip_Minor: //entity minor only
-			this.valueInt1 = PacketHelper.readIntArray(buf, 28);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 29);
 		break;
 		case PID.SyncShip_Guard:  //sync guard for particle display
 			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
@@ -251,6 +251,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.LevelFlare));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelSearchlight));
 			buf.writeInt(entity.getStateMinor(ID.M.WpStay));
+			buf.writeInt(entity.getStateMinor(ID.M.UseCombatRation));
 			buf.writeInt(entity.getStateTimer(ID.T.CraneTime));
 			
 			buf.writeFloat(entity.getStateFinal(ID.HP));
@@ -389,6 +390,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.LevelFlare));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelSearchlight));
 			buf.writeInt(entity.getStateMinor(ID.M.WpStay));
+			buf.writeInt(entity.getStateMinor(ID.M.UseCombatRation));
 		}
 		break;
 		case PID.SyncShip_Guard:	//sync guard for particle display
@@ -698,7 +700,8 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.LevelFlare, msg.valueInt1[25]);
 				ship.setStateMinor(ID.M.LevelSearchlight, msg.valueInt1[26]);
 				ship.setStateMinor(ID.M.WpStay, msg.valueInt1[27]);
-				ship.setStateTimer(ID.T.CraneTime, msg.valueInt1[28]);
+				ship.setStateMinor(ID.M.UseCombatRation, msg.valueInt1[28]);
+				ship.setStateTimer(ID.T.CraneTime, msg.valueInt1[29]);
 				
 				ship.setStateFinal(ID.HP, msg.valueFloat1[0]);
 				ship.setStateFinal(ID.ATK, msg.valueFloat1[1]);
@@ -850,6 +853,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.LevelFlare, msg.valueInt1[25]);
 				ship.setStateMinor(ID.M.LevelSearchlight, msg.valueInt1[26]);
 				ship.setStateMinor(ID.M.WpStay, msg.valueInt1[27]);
+				ship.setStateMinor(ID.M.UseCombatRation, msg.valueInt1[28]);
 			}
 			break;
 			case PID.SyncShip_Guard:  //sync guard for particle display

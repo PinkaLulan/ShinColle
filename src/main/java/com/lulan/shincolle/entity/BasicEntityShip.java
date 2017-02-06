@@ -125,13 +125,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** final states before buffs: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
 	protected float[] StateFinalBU;
 	/** minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
-	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:
+	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:UseCombatRation
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
 	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
 	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
 	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize
 	 *  37:ChunkLoaderLV 38:FlareLV 39:SearchlightLV 40:LastX 41:LastY 42:LastZ 43:CraneState
-	 *  44:WpStayTime 45:SkillState
+	 *  44:WpStayTime 45:UseCombatRation
 	 */
 	protected int[] StateMinor;
 	/** timer array: 0:RevengeTime 1:CraneTime 2:ImmuneTime 3:CraneDelay 4:WpStayTime 5:Emotion3Time
@@ -202,7 +202,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateFinal = new float[9];
 		this.StateFinalBU = this.StateFinal.clone();
 		this.StateMinor = new int[] {1,  0,  0,  40, 0,
-				                     0,  0,  0,  0,  0,
+				                     0,  0,  0,  0,  3,
 				                     3,  12, 35, 1,  -1,
 				                     -1, -1, 0,  -1, 0,
 				                     0,  -1, -1, -1, 0,
@@ -825,8 +825,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public boolean getIsSprinting()
 	{
-		//TODO debug
-		return this.isSprinting() || this.limbSwingAmount > 0.2F;
+		return this.isSprinting() || this.limbSwingAmount > 0.9F;
 	}
 
 	@Override
@@ -2333,10 +2332,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//add morale to happy (3900 ~ 5100)
 				mfood = ((IShipCombatRation) i).getMoraleValue(meta);
 				
-				if (mvalue + mfood > 5000)
+				if (mvalue + mfood > 6000)
 				{
 					mfood = 0;
-					mvalue = 5000;
+					mvalue = 6000;
 				}
 				
 				break;
@@ -2727,7 +2726,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		}
                         		
                         		//use combat ration automatically
-                        		if (getStateMinor(ID.M.Morale) < 2100 && getFoodSaturation() < getFoodSaturationMax())
+                        		if (getMoraleLevel() >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
                         		{
                         			useCombatRation();
                         		}
@@ -5959,7 +5958,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 */
 	public int getFieldCount()
 	{
-		return 29;
+		return 30;
 	}
 	
 	public int getField(int id)
@@ -6024,6 +6023,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.itemHandler.getInventoryPage();
 		case 28:
 			return this.getStateFlagI(ID.F.ShowHeldItem);
+		case 29:
+			return this.StateMinor[ID.M.UseCombatRation];
 		}
 		
 		return 0;
@@ -6119,6 +6120,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			break;
 		case 28:
 			this.setStateFlagI(ID.F.ShowHeldItem, value);
+			break;
+		case 29:
+			this.StateMinor[ID.M.UseCombatRation] = value;
 			break;
 		}
 		

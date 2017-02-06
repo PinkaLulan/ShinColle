@@ -4,6 +4,7 @@ import com.lulan.shincolle.client.model.ShipModelBaseAdv;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;

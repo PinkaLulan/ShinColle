@@ -1,9 +1,13 @@
 package com.lulan.shincolle.entity.battleship;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
+import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.hime.EntityNorthernHime;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -16,6 +20,7 @@ import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -102,7 +107,70 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   	  				}
   	  			}//end 8 ticks
   			}//end 4 ticks
-  		}//end client side  
+  		}//end client side
+  		//server side
+  		else
+  		{
+  			if (this.ticksExisted % 128 == 0)
+  			{
+  				//add morale if DD or Hoppo nearby
+  				addMoraleSpecialEvent(this);
+  			}
+  		}//end server
+  	}
+  	
+	//add morale if DD or Hoppo nearby, add 150 per ship found
+  	protected static void addMoraleSpecialEvent(BasicEntityShip host)
+  	{
+		//get nearby ship
+		List<EntityLivingBase> slist = host.world.getEntitiesWithinAABB(EntityLivingBase.class, host.getEntityBoundingBox().expand(16D, 12D, 16D));
+		List<EntityLivingBase> target = new ArrayList<EntityLivingBase>();
+		
+		if (slist != null && !slist.isEmpty())
+		{
+			//check riders
+        	for (EntityLivingBase ent : slist)
+        	{
+        		if (ent instanceof EntityNorthernHime || (ent instanceof IShipEmotion &&
+        			((IShipEmotion)ent).getStateMinor(ID.M.ShipType) == ID.ShipType.DESTROYER))
+        		{
+        			target.add(ent);
+        		}
+        	}
+        	
+        	if (target.size() > 0)
+        	{
+        		//add morale = ship * 150
+        		int m = host.getStateMinor(ID.M.Morale);
+        		if (m < 7000) host.setStateMinor(ID.M.Morale, m + 150 * target.size());
+        		
+        		//try move to target
+        		if (!host.isSitting() && !host.isRiding() && !host.getStateFlag(ID.F.NoFuel))
+        		{
+        			host.getShipNavigate().tryMoveToEntityLiving(target.get(host.getRand().nextInt(target.size())), 1F);
+        		
+        			//show emote
+        			switch (host.getRand().nextInt(5))
+        			{
+        			case 1:
+        				host.applyParticleEmotion(31);  //shy
+    				break;
+        			case 2:
+        				host.applyParticleEmotion(1);  //heart
+    				break;
+        			case 3:
+        				host.applyParticleEmotion(7);  //note
+    				break;
+        			case 4:
+        				host.applyParticleEmotion(16);  //haha
+    				break;
+        			default:
+        				host.applyParticleEmotion(29);  //blink
+    				break;
+        			}
+        		}
+        	}
+		}
   	}
   	
   	/**Type 91 Armor-Piercing Fist

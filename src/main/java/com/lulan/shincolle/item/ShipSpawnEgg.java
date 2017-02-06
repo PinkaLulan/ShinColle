@@ -259,20 +259,53 @@ public class ShipSpawnEgg extends BasicItem
 				
 				//load ship attributes
 				int[] attrs = nbt.getIntArray("Attrs");
+				int[] attrs2 = nbt.getIntArray("Attrs2");
+				byte[] flags = nbt.getByteArray("Flags");
 				
 				try
 				{
-					//load bonus point
-					entity.setBonusPoint(ID.HP, (byte) attrs[1]);
-					entity.setBonusPoint(ID.ATK, (byte) attrs[2]);
-					entity.setBonusPoint(ID.DEF, (byte) attrs[3]);
-					entity.setBonusPoint(ID.SPD, (byte) attrs[4]);
-					entity.setBonusPoint(ID.MOV, (byte) attrs[5]);
-					entity.setBonusPoint(ID.HIT, (byte) attrs[6]);
-					entity.setStateFlagI(ID.F.IsMarried, attrs[7]);
-
-					//load ship level
-					entity.setShipLevel(attrs[0], true);
+					if (flags.length >= 15)
+					{
+						entity.setStateFlag(ID.F.IsMarried, flags[0] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.UseMelee, flags[1] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.UseAmmoLight, flags[2] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.UseAmmoHeavy, flags[3] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.UseAirLight, flags[4] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.UseAirHeavy, flags[5] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.UseRingEffect, flags[6] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.OnSightChase, flags[7] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.PVPFirst, flags[8] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.AntiAir, flags[9] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.AntiSS, flags[10] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.PassiveAI, flags[11] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.TimeKeeper, flags[12] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.PickItem, flags[13] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.ShowHeldItem, flags[14] > 0 ? true : false);
+					}
+					
+					if (attrs2.length >= 7)
+					{
+						entity.setStateEmotion(ID.S.State, attrs2[0], false);
+						entity.setStateEmotion(ID.S.State2, attrs2[1], false);
+				    	entity.setStateMinor(ID.M.FollowMin, attrs2[2]);
+				    	entity.setStateMinor(ID.M.FollowMax, attrs2[3]);
+				    	entity.setStateMinor(ID.M.FleeHP, attrs2[4]);
+				    	entity.setStateMinor(ID.M.WpStay, attrs2[5]);
+				    	entity.setStateMinor(ID.M.UseCombatRation, attrs2[6]);
+					}
+					
+					if (attrs.length >= 7)
+					{
+						entity.setBonusPoint(ID.HP, (byte) attrs[1]);
+						entity.setBonusPoint(ID.ATK, (byte) attrs[2]);
+						entity.setBonusPoint(ID.DEF, (byte) attrs[3]);
+						entity.setBonusPoint(ID.SPD, (byte) attrs[4]);
+						entity.setBonusPoint(ID.MOV, (byte) attrs[5]);
+						entity.setBonusPoint(ID.HIT, (byte) attrs[6]);
+				    	
+				    	//最後一行為設定等級, 並重新計算所有屬性數值
+				    	entity.setShipLevel(attrs[0], true);
+					}
 				}
 				catch (Exception e)
 				{

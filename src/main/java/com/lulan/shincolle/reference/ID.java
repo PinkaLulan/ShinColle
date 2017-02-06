@@ -27,6 +27,7 @@ public class ID
 		public static final byte ShipInv_PickitemAI = 16;
 		public static final byte ShipInv_WpStay = 17;
 		public static final byte ShipInv_ShowHeld = 18;
+		public static final byte ShipInv_AutoCR = 19;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -505,7 +506,7 @@ public class ID
 		public static final byte NumGrudge = 6;
 		public static final byte NumAirLight = 7;
 		public static final byte NumAirHeavy = 8;
-		public static final byte NO_USE0 = 9;		//TODO
+		public static final byte UseCombatRation = 9;	//morale level of auto using combat ration
 		public static final byte FollowMin = 10;	//follow range min/max
 		public static final byte FollowMax = 11;	
 		public static final byte FleeHP = 12;		//flee hp%
@@ -715,7 +716,7 @@ public class ID
 	/** ship type for GUI display */
 	public static final class ShipType
 	{				//for GUI display
-		public static final byte DESTROYER = 0;			//DD
+		public static final byte DESTROYER = -1;		//DD
 		public static final byte LIGHT_CRUISER = 1;		//CL
 		public static final byte HEAVY_CRUISER = 2;		//CA CAV
 		public static final byte TORPEDO_CRUISER = 3;	//CLT

@@ -1318,13 +1318,13 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		{
 			if (ent.getIsSprinting())
 			{
-				this.offsetItem2[1] = 1.05F;
-				this.offsetItem2[2] = -0.14F;
+				this.offsetItem2[1] = 0.9F;
+				this.offsetItem2[2] = -0.3F;
 			}
 			else if (ent.getIsRiding())
 			{
-				this.offsetItem2[1] = 1.14F;
-				this.offsetItem2[2] = 0F;
+				this.offsetItem2[1] = 1.1F;
+				this.offsetItem2[2] = -0.2F;
 			}
 			
 			return type == 0 ? this.offsetItem2 : this.offsetBlock2;

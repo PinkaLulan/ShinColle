@@ -169,8 +169,8 @@ public class EventHandler
 		    	String ownerUUID = EntityHelper.getPetPlayerUUID(entity);
 		    	String name = EntityHelper.getOwnerName(entity);
 		    	
-				//get ship bonus point
-		    	int[] attrs = new int[8];
+				//get ship misc data
+		    	int[] attrs = new int[7];
 		    	
 		    	if (entity.getLevel() > 1) attrs[0] = entity.getLevel() - 1;	//decrease level 1
 		    	else attrs[0] = 1;
@@ -181,14 +181,45 @@ public class EventHandler
 		    	attrs[4] = entity.getBonusPoint(ID.SPD);
 		    	attrs[5] = entity.getBonusPoint(ID.MOV);
 		    	attrs[6] = entity.getBonusPoint(ID.HIT);
-		    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
+		    	
+		    	//get ship misc data 2
+		    	int[] attrs2 = new int[7];
+		    	
+		    	attrs2[0] = entity.getStateEmotion(ID.S.State);
+		    	attrs2[1] = entity.getStateEmotion(ID.S.State2);
+		    	attrs2[2] = entity.getStateMinor(ID.M.FollowMin);
+		    	attrs2[3] = entity.getStateMinor(ID.M.FollowMax);
+		    	attrs2[4] = entity.getStateMinor(ID.M.FleeHP);
+		    	attrs2[5] = entity.getStateMinor(ID.M.WpStay);
+		    	attrs2[6] = entity.getStateMinor(ID.M.UseCombatRation);
+		    	
+		    	//get ship flag data
+		    	byte[] flags = new byte[15];
+		    	
+		    	flags[0] = entity.getStateFlag(ID.F.IsMarried) ? (byte)1 : (byte)0;
+		    	flags[1] = entity.getStateFlag(ID.F.UseMelee) ? (byte)1 : (byte)0;
+		    	flags[2] = entity.getStateFlag(ID.F.UseAmmoLight) ? (byte)1 : (byte)0;
+		    	flags[3] = entity.getStateFlag(ID.F.UseAmmoHeavy) ? (byte)1 : (byte)0;
+		    	flags[4] = entity.getStateFlag(ID.F.UseAirLight) ? (byte)1 : (byte)0;
+		    	flags[5] = entity.getStateFlag(ID.F.UseAirHeavy) ? (byte)1 : (byte)0;
+		    	flags[6] = entity.getStateFlag(ID.F.UseRingEffect) ? (byte)1 : (byte)0;
+		    	flags[7] = entity.getStateFlag(ID.F.OnSightChase) ? (byte)1 : (byte)0;
+		    	flags[8] = entity.getStateFlag(ID.F.PVPFirst) ? (byte)1 : (byte)0;
+		    	flags[9] = entity.getStateFlag(ID.F.AntiAir) ? (byte)1 : (byte)0;
+		    	flags[10] = entity.getStateFlag(ID.F.AntiSS) ? (byte)1 : (byte)0;
+		    	flags[11] = entity.getStateFlag(ID.F.PassiveAI) ? (byte)1 : (byte)0;
+		    	flags[12] = entity.getStateFlag(ID.F.TimeKeeper) ? (byte)1 : (byte)0;
+		    	flags[13] = entity.getStateFlag(ID.F.PickItem) ? (byte)1 : (byte)0;
+		    	flags[14] = entity.getStateFlag(ID.F.ShowHeldItem) ? (byte)1 : (byte)0;
 		    	
 		    	//save ship attributes
 		    	nbt.setString("owner", ownerUUID);									//owner UUID
 		    	nbt.setString("ownername", name);									//owner name
 		    	nbt.setInteger("PlayerID", entity.getStateMinor(ID.M.PlayerUID));	//owner UID
 		    	nbt.setTag(CapaInventory.InvName, shipInv.serializeNBT());			//inventory data
-		    	nbt.setIntArray("Attrs", attrs);									//bonus point
+		    	nbt.setIntArray("Attrs", attrs);									//misc data
+		    	nbt.setIntArray("Attrs2", attrs2);									//misc data2
+		    	nbt.setByteArray("Flags", flags);									//flag data
 		    	nbt.setInteger("ShipID", entity.getStateMinor(ID.M.ShipUID));		//ship UID
 		    	nbt.setString("customname", entity.getCustomNameTag());				//custom name
 		    	

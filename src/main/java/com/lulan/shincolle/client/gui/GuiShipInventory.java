@@ -52,7 +52,7 @@ public class GuiShipInventory extends GuiContainer
 	  strMiAmmoH, strMiGrudge, canMelee, canLATK, canHATK, canALATK, canAHATK, auraEffect,
 	  followMin, followMax, fleeHP, tarAI, strOnSight, strPVP, strAA, strASM, strTimeKeep,
 	  strPick, strWpStay, strAttrModern, strAttrXP, strAttrGrudge, strAttrAmmo, strAttrHPRES,
-	  strShowHeld;
+	  strShowHeld, strAutoCR;
 	private static String[] strMorale;
 	private static int widthHoveringText1, widthHoveringText2, widthHoveringText3;
 	
@@ -63,7 +63,7 @@ public class GuiShipInventory extends GuiContainer
 	               followMinValue, followMaxValue, fleeHPValue, barPosValue, Formation, strWpStayValue;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass, showPageInv,
-				wpStayPos, xClick, yClick;
+				wpStayPos, autoCRPos, xClick, yClick;
 	private float xMouse, yMouse;
 	private boolean mousePress, switchPick;
 	private boolean[] switchPage1a, switchPage1b, switchPage3, switchPage6;
@@ -198,6 +198,7 @@ public class GuiShipInventory extends GuiContainer
 		strPick = I18n.format("gui.shincolle:ai.pickitem");
 		strWpStay = I18n.format("gui.shincolle:ai.wpstay");
 		strShowHeld = I18n.format("gui.shincolle:showhelditem");
+		strAutoCR = I18n.format("gui.shincolle:autocombatration");
 		
 		//get max string width for hovering text drawing
 		int temp = this.fontRendererObj.getStringWidth(strAttrAtk1);
@@ -473,9 +474,13 @@ public class GuiShipInventory extends GuiContainer
         	
         	//get button value
         	wpStayPos = (int)(entity.getStateMinor(ID.M.WpStay) * 0.0625F * 42F);
+        	autoCRPos = (int)((entity.getStateMinor(ID.M.UseCombatRation) - 1) * 14F);
+//        	fleeHPPos = (int)(aaa * 42F);
         	
         	//draw range bar
         	drawTexturedModalRect(guiLeft+191, guiTop+148, 31, 214, 43, 3);
+        	drawTexturedModalRect(guiLeft+191, guiTop+172, 31, 214, 43, 3);
+//        	drawTexturedModalRect(guiLeft+191, guiTop+196, 31, 214, 43, 3);
         	
         	//draw range indicator by mouse focus target
         	switch (this.mousePressBar)
@@ -483,11 +488,19 @@ public class GuiShipInventory extends GuiContainer
         	case 3:
         		drawTexturedModalRect(guiLeft+187+barPos, guiTop+145, 22, 214, 9, 9);
         		break;
+        	case 4:
+        		drawTexturedModalRect(guiLeft+187+barPos, guiTop+169, 22, 214, 9, 9);
+        		break;
+//        	case 5:
+//        		drawTexturedModalRect(guiLeft+187+barPos, guiTop+193, 22, 214, 9, 9);
+//        		break;
         	default:
         		drawTexturedModalRect(guiLeft+187+wpStayPos, guiTop+145, 22, 214, 9, 9);
+        		drawTexturedModalRect(guiLeft+187+autoCRPos, guiTop+169, 22, 214, 9, 9);
+//        		drawTexturedModalRect(guiLeft+187+, guiTop+193, 22, 214, 9, 9);
         		break;
         	}
-        	
+
         	break;
         }
         case 6:
@@ -1164,9 +1177,12 @@ public class GuiShipInventory extends GuiContainer
 		{
 			//draw string
 			this.fontRendererObj.drawString(strWpStay, 174, 134, 0);
+			this.fontRendererObj.drawString(strAutoCR, 174, 158, 0);
+//			this.fontRendererObj.drawString(, 174, 182, 0);
 			
 			//draw value
 			strWpStayValue = CalcHelper.tick2SecOrMin(entity.wpStayTime2Ticks(entity.getStateMinor(ID.M.WpStay)));
+			int temp = entity.getStateMinor(ID.M.UseCombatRation);
 			
 			if (this.mousePressBar == 3)
 			{
@@ -1176,6 +1192,24 @@ public class GuiShipInventory extends GuiContainer
 			else
 			{
 				this.fontRendererObj.drawStringWithShadow(strWpStayValue, 174, 145, Enums.EnumColors.YELLOW.getValue());
+			}
+			
+			if (this.mousePressBar == 4)
+			{
+				int temp2 = (int)(barPos / (43F * 0.25F));
+				
+				if (temp2 >= 0 && temp2 <= 3)
+				{
+					barPosValue = this.strMorale[temp2+1];
+					this.fontRendererObj.drawStringWithShadow(barPosValue, 174, 169, Enums.EnumColors.RED_LIGHT.getValue());		
+				}
+			}
+			else
+			{
+				if (temp >= 0 && temp <= 4)
+				{
+					this.fontRendererObj.drawStringWithShadow(this.strMorale[temp], 174, 169, Enums.EnumColors.YELLOW.getValue());
+				}
 			}
 			
 			break;
@@ -1242,6 +1276,10 @@ public class GuiShipInventory extends GuiContainer
     		barvalue = (int)(barPos / (42F * 0.0625F));
     		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_WpStay, barvalue));
     		break;
+    	case 4:	//bar4: auto use combat ration
+    		barvalue = (int)(barPos / (43F * 0.25F)) + 1;
+    		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AutoCR, barvalue));
+    		break;
     	}
     	
     	//reset flag
@@ -1285,6 +1323,9 @@ public class GuiShipInventory extends GuiContainer
         	{
         	case 0:
         		mousePressBar = 3;
+        		break;
+        	case 1:
+        		mousePressBar = 4;
         		break;
     		default:
     			mousePressBar = -1;

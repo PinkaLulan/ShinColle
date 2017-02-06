@@ -643,6 +643,7 @@ gui.shincolle:ai.pickitem=Pick Item
 gui.shincolle:ai.wpstay=WP Stay Time
 gui.shincolle:modernlevel=Modernization Level
 gui.shincolle:showhelditem=Show Held Item
+gui.shincolle:autocombatration=Autouse CombatRation
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

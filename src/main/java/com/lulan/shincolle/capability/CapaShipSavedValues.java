@@ -59,6 +59,7 @@ public class CapaShipSavedValues
 		nbtExt_add0.setInteger("Food", ship.getStateMinor(ID.M.Food));
 		nbtExt_add0.setInteger("Crane", ship.getStateMinor(ID.M.CraneState));
 		nbtExt_add0.setInteger("WpStay", ship.getStateMinor(ID.M.WpStay));
+		nbtExt_add0.setInteger("AutoCR", ship.getStateMinor(ID.M.UseCombatRation));
 		nbtExt_add0.setString("tagName", ship.getCustomNameTag());
 		
 		//save EntityState
@@ -149,6 +150,7 @@ public class CapaShipSavedValues
 		ship.setStateMinor(ID.M.Food, nbt_load.getInteger("Food"));
 		ship.setStateMinor(ID.M.CraneState, nbt_load.getInteger("Crane"));
 		ship.setStateMinor(ID.M.WpStay, nbt_load.getInteger("WpStay"));
+		ship.setStateMinor(ID.M.UseCombatRation, nbt_load.getInteger("AutoCR"));
 		ship.setNameTag(nbt_load.getString("tagName"));
 		
 		//load emotion state
