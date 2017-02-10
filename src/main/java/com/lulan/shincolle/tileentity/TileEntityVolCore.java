@@ -61,9 +61,9 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 		this.btnActive = false;
 		this.syncTime = 0;
 
-		POWERMAX = (int) ConfigHandler.volCore[0];
-		CONSUMEDSPEED = (int) ConfigHandler.volCore[1];
-		FUELMAGN = (int) ConfigHandler.volCore[2];
+		POWERMAX = (int) ConfigHandler.tileVolCore[0];
+		CONSUMEDSPEED = (int) ConfigHandler.tileVolCore[1];
+		FUELMAGN = (int) ConfigHandler.tileVolCore[2];
 	}
 	
 	@Override

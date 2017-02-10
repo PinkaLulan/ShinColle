@@ -110,39 +110,14 @@ public class ShinColle
         ConfigHandler.checkChange(ConfigHandler.config);
 		
 		//add forestry bees
-//		if (Loader.isModLoaded(Reference.MOD_ID_Forestry) && ConfigHandler.enableForestry)
-//		{
-//			LogHelper.info("INFO : Enable Forestry mod support.");
-//			ShinBees.init();
-//			
-//			AlleleManager.alleleRegistry.getRegisteredAlleles().forEach((k, v) ->
-//			{
-//				LogHelper.info("AAAAAAAA "+k);
-//			});
-//			Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
-//			Iterator iter = AlleleManager.alleleRegistry.getSpeciesRoot("rootBees").getGenomeTemplates().entrySet().iterator();
-//			while (iter.hasNext())
-//			{
-//				Map.Entry entry = (Map.Entry)iter.next();
-//			    Object key = entry.getKey();
-//			    Object val = entry.getValue();
-//			    LogHelper.info("AAAAAA:  "+key+" , "+val);
-//			    
-//			    IAllele[] data = (IAllele[]) val;
-//			    
-//			    for (IAllele d : data)
-//			    {
-//			    	LogHelper.info("            BBBB:  "+d);
-//			    }
-//			}
-//		}
+        CommonProxy.checkModLoaded();
 		
-		//DEBUG
-//      Map<String, ModContainer> modlist = Loader.instance().getIndexedModList();
-//      modlist.forEach((name, v) ->
-//      {
-//      	LogHelper.info("AAAAAAAA "+name);
-//      });
+//		//DEBUG
+//        Map<String, ModContainer> modlist = Loader.instance().getIndexedModList();
+//        modlist.forEach((name, v) ->
+//        {
+//        	LogHelper.info("AAAAAAAA "+name);
+//        });
 //		LogHelper.info("DEBUG : biome spawn: "+this.worldObj.getBiomeGenForCoords((int)this.posX, (int)this.posZ).getSpawnableList(EnumCreatureType.waterCreature).get(1));
 //		for (String oreName : OreDictionary.getOreNames())
 //		{	//list all oreDictionary  (DEBUG)

@@ -25,6 +25,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,6 +35,8 @@ public class BlockHelper
 {
 	
 	private static Random rand = new Random();
+	public static final FluidStack SampleFluidLava = new FluidStack(FluidRegistry.LAVA, 1000);
+	public static final FluidStack SampleFluidWater = new FluidStack(FluidRegistry.WATER, 1000);
 
 	
 	public BlockHelper() {}

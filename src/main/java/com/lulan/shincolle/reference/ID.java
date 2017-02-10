@@ -44,6 +44,8 @@ public class ID
 		public static final byte Crane_Unload = 5;
 		public static final byte Crane_Nbt = 6;
 		public static final byte Crane_Red = 7;
+		public static final byte Crane_Liquid = 8;
+		public static final byte Crane_Energy = 9;
 		
 		public static final byte VolCore_Power = 0;
 	}
@@ -329,7 +331,9 @@ public class ID
 		public static final byte CATAPULT_C = 2;
 		public static final byte CATAPULT_E = 3;
 		//drum
-		public static final byte DRUM_N = 0;
+		public static final byte DRUM = 0;		//item drum
+		public static final byte DRUM_F = 1;	//fluid drum
+		public static final byte DRUM_E = 2;	//EU drum
 		//compass
 		public static final byte COMPASS = 0;
 		//flare
@@ -533,7 +537,7 @@ public class ID
 		public static final byte HitHeight = 33;	//hit height by pointer item, NO SYNC
 		public static final byte HitAngle = 34;		//hit angle by pointer item, NO SYNC
 		public static final byte SensBody = 35;		//sensitive body part id
-		public static final byte InvSize = 36;		//inventory page size
+		public static final byte DrumState = 36;	//drum state, ref: EquipDrum.class
 		public static final byte LevelChunkLoader = 37;	//level of chunk loader
 		public static final byte LevelFlare = 38;		//level of flare
 		public static final byte LevelSearchlight = 39;	//level of searchlight

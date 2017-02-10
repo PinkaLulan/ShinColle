@@ -10,7 +10,6 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,7 +19,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidContainerItem;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
  *  Total Build Time = FuelCost / buildSpeed
@@ -39,10 +45,6 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public class TileEntitySmallShipyard extends BasicTileInventory implements ITileLiquidFurnace, ITickable
 {
-//	//fluid tank  (TODO IFluidHandler capability)
-//	private static final int TANKCAPA = FluidContainerRegistry.BUCKET_VOLUME;
-//	private static final Fluid F_LAVA = FluidRegistry.LAVA;
-//	private FluidTank tank = new FluidTank(new FluidStack(F_LAVA, 0), TANKCAPA);
 	
 	//furnace
 	private int powerConsumed = 0;	//已花費的能量
@@ -56,6 +58,9 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 	public static int POWERMAX; 	//max power storage
 	public static float FUELMAGN; 	//fuel magnification
 	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
+	
+	//fluid tank
+	protected FluidTank tank;
 
 	
 	/** 注意constructor只會在server端呼叫, client端需要另外init以免噴出NPE */
@@ -68,9 +73,14 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 		this.isActive = false;
 		this.syncTime = 0;
 		
-		POWERMAX = (int) ConfigHandler.shipyardSmall[0];
-		BUILDSPEED = (int) ConfigHandler.shipyardSmall[1];
-		FUELMAGN = (float) ConfigHandler.shipyardSmall[2];
+		//tank
+		this.tank = new FluidTank(FluidRegistry.LAVA, 0, 2000);
+		this.tank.setCanDrain(false);
+		this.tank.setTileEntity(this);
+		
+		POWERMAX = (int) ConfigHandler.tileShipyardSmall[0];
+		BUILDSPEED = (int) ConfigHandler.tileShipyardSmall[1];
+		FUELMAGN = (float) ConfigHandler.tileShipyardSmall[2];
 		POWERINST = BUILDSPEED * 2400;
 	}
 	
@@ -108,51 +118,110 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 	
 	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
 	@Override
-	public boolean canExtractItem(int slot, ItemStack item, EnumFacing face)
+	public boolean canExtractItem(int slot, ItemStack stack, EnumFacing face)
 	{
-		//只有output slot跟fuel slot的空bucket可以輸出, face ignore
-		return (slot == 5) || (slot == 4 && item != null && item.getItem() == Items.BUCKET);
+		//is output slot
+		if (slot == 5) return true;
+		//is fuel slot
+		else if (slot == 4 && stack != null)
+		{
+			//is bucket
+			if (stack.getItem() == Items.BUCKET) return true;
+			//is fluid container (1.10.2 capability)
+			else if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
+			{
+				IFluidHandler fluid = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+				FluidStack fstack = fluid.drain(BlockHelper.SampleFluidLava, false);
+				if (fstack == null) return true;
+			}
+			//is IFluidContainerItem (1.7.10 old container)
+			else if (stack.getItem() instanceof IFluidContainerItem)
+			{
+				IFluidContainerItem container = (IFluidContainerItem) stack.getItem();
+				FluidStack fluid = container.getFluid(stack);
+				
+				if (fluid == null || fluid.amount < 1000) return true;
+			}
+			else
+			{
+				//check is solid fuel
+				if (TileEntityHelper.getItemFuelValue(stack) > 0 || stack.getItem() == ModItems.InstantConMat) return false;
+				
+				//check 1.7.10 FluidContainerRegistry
+				FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
+				
+				//fluid empty
+				if (fluid == null) return true;
+				//fluid remaining
+				else if (fluid.amount < 1000)
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	//load data
 	@Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(NBTTagCompound nbt)
 	{
-        super.readFromNBT(compound);	//從nbt讀取方塊的xyz座標
+        super.readFromNBT(nbt);	//從nbt讀取方塊的xyz座標
+        
+        //load tank
+        this.tank.readFromNBT(nbt);
         
         //load vars
-        powerConsumed = compound.getInteger("consumedPower");
-        powerRemained = compound.getInteger("remainedPower");
-        powerGoal = compound.getInteger("goalPower");
-        buildType = compound.getInteger("buildType");
-        setBuildRecord(compound.getIntArray("buildRecord"));
+        powerConsumed = nbt.getInteger("consumedPower");
+        powerRemained = nbt.getInteger("remainedPower");
+        powerGoal = nbt.getInteger("goalPower");
+        buildType = nbt.getInteger("buildType");
+        setBuildRecord(nbt.getIntArray("buildRecord"));
     }
 	
 	//save data
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound)
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
 	{
-		super.writeToNBT(compound);
+		super.writeToNBT(nbt);
+		
+		//save tank
+		this.tank.writeToNBT(nbt);
 
 		//save vars
-		compound.setInteger("consumedPower", powerConsumed);
-		compound.setInteger("remainedPower", powerRemained);
-		compound.setInteger("goalPower", powerGoal);
-		compound.setInteger("buildType", buildType);
-		compound.setIntArray("buildRecord", getBuildRecord());
+		nbt.setInteger("consumedPower", powerConsumed);
+		nbt.setInteger("remainedPower", powerRemained);
+		nbt.setInteger("goalPower", powerGoal);
+		nbt.setInteger("buildType", buildType);
+		nbt.setIntArray("buildRecord", getBuildRecord());
 		
-		return compound;
+		return nbt;
 	}
+	
+    @Override
+    public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+    {
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+    {
+        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) return (T) tank;
+        return super.getCapability(capability, facing);
+    }
 	
 	//判定物品是否能放入該格子, 用於canExtractItem等方法
 	//格子用途:0:grudge 1:abyss 2:ammo 3:poly 4:fuel 5:output
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack itemstack)
+	public boolean isItemValidForSlot(int slot, ItemStack stack)
 	{
-		if (itemstack != null)
+		if (stack != null)
 		{
-			Item item = itemstack.getItem();
-			int meta = itemstack.getItemDamage();
+			Item item = stack.getItem();
+			int meta = stack.getItemDamage();
 		
 			switch(slot)
 			{
@@ -165,15 +234,19 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 			case 3:		//polymetal slot
 				return item == ModItems.AbyssMetal && meta == 1;
 			case 4:		//fuel slot
-				return TileEntityHelper.getItemFuelValue(itemstack) > 0 || item == ModItems.InstantConMat;
-			default:
-				return false;
+				//slot must be empty
+				if (this.itemHandler.getStackInSlot(slot) == null)
+				{
+					return TileEntityHelper.getItemFuelValue(stack) > 0 || item == ModItems.InstantConMat ||
+						   item instanceof IFluidContainerItem ||
+						   FluidContainerRegistry.getFluidForFilledItem(stack) != null ||
+						   stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+				}
+			break;
 			}
 		}
-		else
-		{
-			return false;
-		}
+		
+		return false;
 	}
 	
 	@Override
@@ -356,7 +429,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 			}
 			
 			//add liquid fuel
-//			TileEntityHelper.decrLiquidFuel(this); //TODO update liquid handler
+			TileEntityHelper.decrLiquidFuel(this);
 			
 			//判定是否建造中, 每tick進行進度值更新, 若非建造中則重置進度值
 			if (this.isBuilding())
@@ -545,58 +618,32 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 
 	@Override
 	public void setPowerMax(int par1) {}
-
-//	@Override TODO update fluid handler
-//	public int fill(ForgeDirection from, FluidStack fluid, boolean doFill)
-//	{
-//		if(TileEntityHelper.checkLiquidIsLava(fluid)) {
-//			return tank.fill(fluid, doFill);
-//		}
-//		
-//		return 0;
-//	}
-//
-//	@Override
-//	public FluidStack drain(ForgeDirection from, FluidStack fluid, boolean doDrain) {
-//		return null;
-//	}
-//
-//	@Override
-//	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-//		return null;
-//	}
-//
-//	@Override
-//	public boolean canFill(ForgeDirection from, Fluid fluid) {
-//		if(TileEntityHelper.checkLiquidIsLava(fluid)) {
-//			return true;
-//		}
-//		
-//		return false;
-//	}
-//
-//	@Override
-//	public boolean canDrain(ForgeDirection from, Fluid fluid) {
-//		return false;
-//	}
-//
-//	@Override
-//	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-//		return new FluidTankInfo[] { tank.getInfo() };
-//	}
-
+	
+	//getter for fuel handler
 	@Override
 	public int getFluidFuelAmount()
 	{
-//		return this.tank.getFluidAmount(); TODO
+		return this.tank.getFluidAmount();
+	}
+
+	//getter for fuel handler
+	@Override
+	public int consumeFluidFuel(int amount)
+	{
+		if (this.tank != null)
+		{
+			FluidStack fluid = this.tank.drainInternal(amount, true);
+			
+			if (fluid != null) return fluid.amount;
+		}
+		
 		return 0;
 	}
 
 	@Override
-	public FluidStack drainFluidFuel(int amount)
+	public float getFuelMagni()
 	{
-//		return this.tank.drain(amount, true); TODO
-		return null;
+		return FUELMAGN;
 	}
 
 	

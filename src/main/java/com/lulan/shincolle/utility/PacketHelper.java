@@ -397,6 +397,14 @@ public class PacketHelper
 				if (value > 2) value = 0;
 				tile2.setField(10, value);
 			break;
+			case ID.B.Crane_Liquid:
+				if (value > 2) value = 0;
+				tile2.setField(12, value);
+			break;
+			case ID.B.Crane_Energy:
+				if (value > 2) value = 0;
+				tile2.setField(13, value);
+			break;
 			}//end switch
 		}
 		else if (tile instanceof TileEntityVolCore)

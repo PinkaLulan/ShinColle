@@ -1,19 +1,19 @@
 package com.lulan.shincolle.tileentity;
 
-import net.minecraftforge.fluids.FluidStack;
-
-/** Liquid Fuel Methods for tile entity INTERNAL operation
- * 
- *  for EXTERNAL liquid method, use IFluidHandler
+/**
+ * Fluid Fuel Methods for tile entity
  */
 public interface ITileLiquidFurnace extends ITileFurnace
 {
 
-	/** get liquid amount */
+	/** get fuel amount */
 	public int getFluidFuelAmount();
 	
-	/** drain liquid */
-	public FluidStack drainFluidFuel(int amount);
+	/** consume fuel, return consume amount */
+	public int consumeFluidFuel(int amount);
+	
+	/** fuel mod by condig */
+	public float getFuelMagni();
 	
 	
 }

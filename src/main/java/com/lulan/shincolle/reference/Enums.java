@@ -4,7 +4,8 @@ public class Enums
 {
 	
 	
-	/** color enum for gui
+	/**
+	 * color enum for gui
 	 */
 	public static enum EnumColors
 	{
@@ -42,6 +43,9 @@ public class Enums
 		
 	}//end Colors
 	
+	/**
+	 * path type for path finding
+	 */
 	public static enum EnumPathType
 	{
 	    BLOCKED,
@@ -51,6 +55,20 @@ public class Enums
 	    FENCE
 	    
 	}//end path type
+	
+	/**
+	 * equip special effect for BasicEquip.getSpecialEffect
+	 */
+	public static enum EnumEquipEffectSP
+	{
+		NONE,
+		DRUM,
+		DRUM_LIQUID,
+		DRUM_EU,
+		COMPASS,
+		FLARE,
+		SEARCHLIGHT
+	}//end sp effect
 	
     
 }

@@ -102,7 +102,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 	{
 		if (hostObj != null)
 		{
-			return ContainerShipInventory.SLOTS_PLAYERINV + hostObj.getStateMinor(ID.M.InvSize) * 18;
+			return ContainerShipInventory.SLOTS_PLAYERINV + hostObj.getStateMinor(ID.M.DrumState) * 18;
 		}
 		
 		return ContainerShipInventory.SLOTS_PLAYERINV;
@@ -136,7 +136,8 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 	
 	public ItemStack getStackInSlotWithoutPaging(int i)
 	{
-		validateSlotIndex(i);
+		if (i < 0 || i >= this.getSizeInventoryPaged() || i >= stacks.length)
+            throw new RuntimeException("Slot " + i + " not in valid range - [0," + stacks.length + ")");
 		return stacks[i];
 	}
 

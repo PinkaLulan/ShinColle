@@ -52,16 +52,18 @@ public class ConfigHandler
 	
 	//INTER-MOD
 	public static boolean enableForestry = true;
+	public static boolean enableIC2 = true;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
 	
 	//array data
-	public static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
+	private static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
 						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
-						   propPolyGravel, propHeldItem;
+						   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
+						   propInfLiquid;
 	
 	//SHIP SETTING
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
@@ -92,6 +94,12 @@ public class ConfigHandler
 	public static int[] mobSpawn = new int[] {50,  10,   1,        1,     1};
 	//marriage ring ability                      breath, fly, dig, fog, immune fire
 	public static int[] ringAbility = new int[] {0,      6,   30,  20,  12};
+	//liquid drum setting                       base, enchant
+	public static int[] drumLiquid = new int[] {40,   5};
+	//EU drum setting                       base, enchant
+	public static int[] drumEU = new int[] {400, 100};
+	//can ship pump infinite liquid            min water depth, min lava depth
+	public static int[] infLiquid = new int[] {25,              8};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
@@ -105,10 +113,12 @@ public class ConfigHandler
 	public static float volumeShip = 1.0F;
 	public static float volumeFire = 0.7F;
 	
-	//shipyard setting                                   max storage, build speed, fuel magn
-	public static double[] shipyardSmall = new double[] {460800D,     48D,         1D};
-	public static double[] shipyardLarge = new double[] {1382400D,    48D,         1D};
-	public static double[] volCore = new double[] {      9600D,       16D,         240D};
+	//tile entity setting                                max storage, build speed, fuel magn
+	public static double[] tileShipyardSmall = new double[] {460800D,     48D,         1D};
+	public static double[] tileShipyardLarge = new double[] {1382400D,    48D,         1D};
+	public static double[] tileVolCore = new double[] {      9600D,       16D,         240D};
+	//crane setting                            liquid tank capa, EU capa
+	public static int[] tileCrane = new int[] {128000,           4000000};
 
 	//WORLD GEN
 	public static int polyOreBaseRate = 7;
@@ -184,8 +194,10 @@ public class ConfigHandler
 		spawnMobNum = config.getInt("Spawn_Mob_Number", CATE_GENERAL, 4, 1, 10, "small hostile ship number per spawn");
 		
 		//是否開啟林業支援
-		enableForestry = config.getBoolean("Mod_Forestry", CATE_INTERMOD, true, "Enable Forestry module if Forestry exists: add bees and comb.");
-				
+		enableForestry = config.getBoolean("Mod_Forestry", CATE_INTERMOD, true, "Enable Forestry module if mod existed: add bees and comb.");
+		enableIC2 = config.getBoolean("Mod_IC2", CATE_INTERMOD, true, "Enable IC2 module if mod existed: add EU related function.");
+		propDrumEU = config.get(CATE_INTERMOD, "Drum_EU", drumEU, "EU transport rate: base transfer rate (EU/t), additional rate per enchantment (EU/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate + EnchantRate * #TotalEnchant)");
+		
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", CATE_SHIP, true, "Can ship spawn Flare lighting effect, CLIENT SIDE only");
 		canSearchlight = config.getBoolean("Can_Searchlight", CATE_SHIP, true, "Can ship spawn Searchlight lighting effect, CLIENT SIDE only");
@@ -213,11 +225,14 @@ public class ConfigHandler
 		propExp = config.get(CATE_SHIP, "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
 		propMobSpawn = config.get(CATE_SHIP, "Limit_MobSpawnNumber", mobSpawn, "Mob ship spawn MAX number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
 		propHeldItem = config.get(CATE_SHIP, "Held_Item", scaleHeldItem, "Ship held item scaling: scale, offset X, offset Y, offset Z");
+		propDrumLiquid = config.get(CATE_SHIP, "Drum_Liquid", drumLiquid, "liquid transport rate: base transfer rate (mB/t), additional rate per enchantment (mB/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate + EnchantRate * #TotalEnchant)");
 		
-		propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", shipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
-		propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", shipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
-		propVolCore = config.get(CATE_GENERAL, "Tile_VolCore", volCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
+		propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", tileShipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
+		propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", tileShipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
+		propVolCore = config.get(CATE_GENERAL, "Tile_VolCore", tileVolCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
+		propCrane = config.get(CATE_GENERAL, "Tile_Crane", tileCrane, "Crane: internal fluid tank capacity (mB), internal energy capacity (EU)");
 		propRingAbility = config.get(CATE_GENERAL, "Ring_Ability", ringAbility, "Ring ability related married number, -1 = disable, 0~N = active or max limit number: water breath (active number), fly in water (active number), dig speed boost (max limit number), fog in liquid (max limit number), immune to fire (active number)");
+		propInfLiquid = config.get(CATE_GENERAL, "Infinite_Pump", infLiquid, "Can ship pump liquid without destroying block: ");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("DmgTaken_SvS", CATE_SHIP, 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -244,11 +259,14 @@ public class ConfigHandler
 		fixedAttackDelay = getIntArrayFromConfig(fixedAttackDelay, propAtkDly);
 		expGain = getIntArrayFromConfig(expGain, propExp);
 		mobSpawn = getIntArrayFromConfig(mobSpawn, propMobSpawn);
-		shipyardSmall = getDoubleArrayFromConfig(shipyardSmall, propShipyardSmall);
-		shipyardLarge = getDoubleArrayFromConfig(shipyardLarge, propShipyardLarge);
-		volCore = getDoubleArrayFromConfig(volCore, propVolCore);
+		tileShipyardSmall = getDoubleArrayFromConfig(tileShipyardSmall, propShipyardSmall);
+		tileShipyardLarge = getDoubleArrayFromConfig(tileShipyardLarge, propShipyardLarge);
+		tileVolCore = getDoubleArrayFromConfig(tileVolCore, propVolCore);
+		tileCrane = getIntArrayFromConfig(tileCrane, propCrane);
 		ringAbility = getIntArrayFromConfig(ringAbility, propRingAbility);
 		scaleHeldItem = getDoubleArrayFromConfig(scaleHeldItem, propHeldItem);
+		drumLiquid = getIntArrayFromConfig(drumLiquid, propDrumLiquid);
+		drumEU = getIntArrayFromConfig(drumEU, propDrumEU);
 		
 		checkChange(config);
 	}

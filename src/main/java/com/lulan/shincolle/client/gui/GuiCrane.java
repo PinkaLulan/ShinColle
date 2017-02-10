@@ -13,6 +13,7 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.GuiHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -27,11 +28,12 @@ public class GuiCrane extends GuiContainer
 	private static final ResourceLocation guiTexture = new ResourceLocation(Reference.TEXTURES_GUI+"GuiCrane.png");
 	private TileEntityCrane tile;
 	private int xClick, yClick, xMouse, yMouse;
-	private int btnMode, btnRedMode;
+	private int btnMode, btnRedMode, btnLiquidMode, btnEnergyMode;
 	private boolean btnPower, btnMeta, btnDict, btnNbt, btnLoad, btnUnload, slotMode;
 	private float tickGUI;
 	private static String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strWaitfev, strNowait1,
-						strWaitfev1, strWaitfev2, strRed0, strRed1, strRed2;
+						strWaitfev1, strWaitfev2, strRed0, strRed1, strRed2, strLiq0, strLiq1, strLiq2,
+						strEne0, strEne1, strEne2;
 	
 	
 	public GuiCrane(InventoryPlayer par1, TileEntityCrane par2)
@@ -40,7 +42,7 @@ public class GuiCrane extends GuiContainer
 		
 		tile = par2;
 		xSize = 176;
-		ySize = 193;
+		ySize = 201;
 	}
 	
 	@Override
@@ -62,6 +64,12 @@ public class GuiCrane extends GuiContainer
 		strRed0 = I18n.format("gui.shincolle:crane.red0");
 		strRed1 = I18n.format("gui.shincolle:crane.red1");
 		strRed2 = I18n.format("gui.shincolle:crane.red2");
+		strLiq0 = I18n.format("gui.shincolle:crane.liquid0");
+		strLiq1 = I18n.format("gui.shincolle:crane.liquid1");
+		strLiq2 = I18n.format("gui.shincolle:crane.liquid2");
+		strEne0 = I18n.format("gui.shincolle:crane.energy0");
+		strEne1 = I18n.format("gui.shincolle:crane.energy1");
+		strEne2 = I18n.format("gui.shincolle:crane.energy2");
 		
 		//init value
 		updateButton();
@@ -118,8 +126,44 @@ public class GuiCrane extends GuiContainer
 			
 			this.drawHoveringText(list, mx, my+10, this.fontRendererObj);
 		}
+		else if (my > 35 && my < 50)
+		{
+			if (mx > 22 && mx < 37)
+			{
+				switch (this.btnLiquidMode)
+				{
+				case 1:
+					list.add(this.strLiq1);
+					break;
+				case 2:
+					list.add(this.strLiq2);
+					break;
+				default:
+					list.add(this.strLiq0);
+					break;
+				}
+			}
+			else if (mx > 38 && mx < 53)
+			{
+				switch (this.btnEnergyMode)
+				{
+				case 1:
+					list.add(this.strEne1);
+					break;
+				case 2:
+					list.add(this.strEne2);
+					break;
+				default:
+					list.add(this.strEne0);
+					break;
+				}
+			}
+			
+			this.drawHoveringText(list, mx, my+10, this.fontRendererObj);
+		}
+		
 		//draw wait mode
-		else if (mx > 22 && mx < 91 && my > 5 && my < 20)
+		if (mx > 22 && mx < 91 && my > 5 && my < 20)
 		{
 			list.clear();
 			
@@ -165,8 +209,8 @@ public class GuiCrane extends GuiContainer
 		fontRendererObj.drawStringWithShadow(str, 57 - len, 9, Enums.EnumColors.YELLOW.getValue());
 		
 		//draw slot string
-		fontRendererObj.drawString(strLoad, 21, 46, Enums.EnumColors.RED_LIGHT.getValue());
-		fontRendererObj.drawString(strUnload, 21, 77, Enums.EnumColors.BLACK.getValue());
+		fontRendererObj.drawString(strLoad, 21, 54, Enums.EnumColors.RED_LIGHT.getValue());
+		fontRendererObj.drawString(strUnload, 21, 85, Enums.EnumColors.BLACK.getValue());
 		
 		//draw ship info
 		if (tile.getShip() != null)
@@ -228,14 +272,14 @@ public class GuiCrane extends GuiContainer
         
         if (!this.btnLoad)
         {
-        	drawTexturedModalRect(guiLeft+7, guiTop+44, 176, 35, 11, 11);
-        	drawTexturedModalRect(guiLeft+8, guiTop+57, 0, 193, 160, 16);
+        	drawTexturedModalRect(guiLeft+7, guiTop+52, 176, 35, 11, 11);
+        	drawTexturedModalRect(guiLeft+8, guiTop+65, 0, 201, 160, 16);
         }
         
         if (!this.btnUnload)
         {
-        	drawTexturedModalRect(guiLeft+7, guiTop+75, 176, 35, 11, 11);
-        	drawTexturedModalRect(guiLeft+8, guiTop+88, 0, 193, 160, 16);
+        	drawTexturedModalRect(guiLeft+7, guiTop+83, 176, 35, 11, 11);
+        	drawTexturedModalRect(guiLeft+8, guiTop+96, 0, 201, 160, 16);
         }
         
         switch (this.btnRedMode)
@@ -248,6 +292,32 @@ public class GuiCrane extends GuiContainer
         	break;
         }
         
+        switch (this.btnLiquidMode)
+        {
+        case 0:
+        	drawTexturedModalRect(guiLeft+23, guiTop+36, 202, 101, 13, 13);
+        break;
+        case 1:
+        	drawTexturedModalRect(guiLeft+23, guiTop+36, 176, 101, 13, 13);
+        break;
+        case 2:
+        	drawTexturedModalRect(guiLeft+23, guiTop+36, 189, 101, 13, 13);
+        break;
+        }
+        
+        switch (this.btnEnergyMode)
+        {
+        case 0:
+        	drawTexturedModalRect(guiLeft+39, guiTop+36, 202, 114, 13, 13);
+        break;
+        case 1:
+        	drawTexturedModalRect(guiLeft+39, guiTop+36, 176, 114, 13, 13);
+        break;
+        case 2:
+        	drawTexturedModalRect(guiLeft+39, guiTop+36, 189, 114, 13, 13);
+        break;
+        }
+        
         //check loading slot mode
         for (int i = 0; i < 18; i++)
         {
@@ -257,11 +327,11 @@ public class GuiCrane extends GuiContainer
         	{
         		if (i >= 9)
         		{
-        			drawTexturedModalRect(guiLeft+7+(i-9)*18, guiTop+87, 0, 209, 18, 18);
+        			drawTexturedModalRect(guiLeft+7+(i-9)*18, guiTop+95, 0, 217, 18, 18);
         		}
         		else
         		{
-        			drawTexturedModalRect(guiLeft+7+i*18, guiTop+56, 0, 209, 18, 18);
+        			drawTexturedModalRect(guiLeft+7+i*18, guiTop+64, 0, 217, 18, 18);
         		}
         	}
         }
@@ -285,7 +355,7 @@ public class GuiCrane extends GuiContainer
         {
         case 0:  //power
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Power, btnPower ? 0 : 1, 0));
-        	break;
+        break;
         case 1:  //mode
         	if (key == 0)
         	{
@@ -314,25 +384,31 @@ public class GuiCrane extends GuiContainer
         		if (btnMode < 0) btnMode = 0;
         	}
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Mode, btnMode, 0));
-        	break;
+        break;
         case 2:  //meta
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Meta, btnMeta ? 0 : 1, 0));
-        	break;
+        break;
         case 3:  //dict
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Dict, btnDict ? 0 : 1, 0));
-        	break;
+        break;
         case 4:  //loading
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Load, btnLoad ? 0 : 1, 0));
-        	break;
+        break;
         case 5:  //unloading
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Unload, btnUnload ? 0 : 1, 0));
-        	break;
+        break;
         case 6:  //unloading
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Nbt, btnNbt ? 0 : 1, 0));
-        	break;
+        break;
         case 7:  //redstone signal mode
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Red, btnRedMode + 1, 0));
-        	break;
+        break;
+        case 8:  //liquid mode
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Liquid, btnLiquidMode + 1, 0));
+        break;
+        case 9:  //energy mode
+        	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Energy, btnEnergyMode + 1, 0));
+        break;
         }
 	}
 	
@@ -346,6 +422,8 @@ public class GuiCrane extends GuiContainer
 		btnUnload = tile.getField(7) > 0 ? true : false;
 		btnNbt = tile.getField(8) > 0 ? true : false;
 		btnRedMode = tile.getField(10);
+		btnLiquidMode = tile.getField(12);
+		btnEnergyMode = tile.getField(13);
 	}
 
 	

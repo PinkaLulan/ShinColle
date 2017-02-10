@@ -7,11 +7,15 @@ import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class TileEntityHelper
 {
@@ -25,7 +29,6 @@ public class TileEntityHelper
 		ITileFurnace tile2 = (ITileFurnace) tile;
 		ItemStack stack = null;
 		boolean sendUpdate = false;
-		int fuelx = 0;
 		
 		//check power storage first
 		if (tile2.getPowerRemained() >= tile2.getPowerMax()) return false;
@@ -38,54 +41,53 @@ public class TileEntityHelper
 			if (stack != null)
 			{
 				//get normal fuel value
-				fuelx = TileEntityFurnace.getItemBurnTime(stack);
+				int fuelx = TileEntityFurnace.getItemBurnTime(stack);
 				
-				//若一般的getFuelValue無效, 則改查詢liquid fuel
-				if (fuelx <= 0)
-				{
-					FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
-
-					//只接受岩漿為液體燃料 : fluid.tile.lava
-					if (checkLiquidIsLava1000(fluid))
-					{
-						//not support for large container
-						if (fluid.amount > 1000)
-						{
-							fuelx = 0;
-						}
-						else
-						{
-							fuelx = 20000;
-						}
-					}
-				}
-				
-				//calc fuel magnification
-				if (tile instanceof TileEntitySmallShipyard)
-				{
-					fuelx *= ((TileEntitySmallShipyard) tile).FUELMAGN;
-				}
-				else if (tile instanceof TileMultiGrudgeHeavy)
-				{
-					fuelx *= ((TileMultiGrudgeHeavy) tile).FUELMAGN;
-				}
+//				//check FluidContainerRegistry (1.7.10 old) TODO deprecated
+//				if (fuelx <= 0)
+//				{
+//					FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
+//					
+//					//只接受岩漿為液體燃料 : fluid.tile.lava
+//					if (fluid != null && checkLiquidIsLava1000(fluid))
+//					{
+//						//not support for large container
+//						if (fluid.amount > 1000)
+//						{
+//							fuelx = 0;
+//						}
+//						else
+//						{
+//							//calc fuel magnification
+//							fuelx = applyFuelMagniByTile(tile, 20000);
+//						}
+//					}
+//				}
 				
 				//check power storage and add disposable fuel (ex: coal, lava bucket, lava cell)
 				if (fuelx > 0 && fuelx + tile2.getPowerRemained() < tile2.getPowerMax())
 				{
+					ItemStack container = stack.getItem().getContainerItem(stack);
+					
+					//if item has container, ignore item with stackSize > 1
+					if (container != null && stack.stackSize > 1)
+					{
+						continue;
+					}
+					
 					stack.stackSize--;	//fuel size -1
 					tile2.setPowerRemained(tile2.getPowerRemained() + fuelx);	//fuel++
 					
 					//若該物品用完, 用getContainerItem處理是否要清空還是留下桶子 ex: lava bucket -> empty bucket
 					if (stack.stackSize <= 0)
 					{
-						stack = stack.getItem().getContainerItem(stack);
+						stack = container;
 					}
 					
 					//update slot
 					tile.setInventorySlotContents(i, stack);
 					sendUpdate = true;
-					break;	//only consume 1 fuel every tick
+					break;	//only consume 1 fuel per tick
 				}//end disposable fuel
 				
 				//add disposable fuel FAILED, try fluid container (ex: drum, universal cell)
@@ -105,16 +107,10 @@ public class TileEntityHelper
 						fuelx = 20000;
 						
 						//check fuel magnification
-						if (tile instanceof TileEntitySmallShipyard)
-						{
-							fuelx *= ((TileEntitySmallShipyard) tile).FUELMAGN;
-						}
-						else if (tile instanceof TileMultiGrudgeHeavy)
-						{
-							fuelx *= ((TileMultiGrudgeHeavy) tile).FUELMAGN;
-						}
+						fuelx = applyFuelMagniByTile(tile, fuelx);
 						
-						if(fuelx > 0 && fuelx + tile2.getPowerRemained() < tile2.getPowerMax()) {
+						if (fuelx > 0 && fuelx + tile2.getPowerRemained() < tile2.getPowerMax())
+						{
 							//drain lava, capacity is checked in checkLiquidIsLava(), no check again
 							container.drain(stack, 1000, true);
 							//fuel++
@@ -122,25 +118,68 @@ public class TileEntityHelper
 							//update slot
 							tile.setInventorySlotContents(i, stack);
 							sendUpdate = true;
-							break;	//only consume 1 fuel every tick
+							break;	//only consume 1 fuel per tick
 						}
 					}//has enough lava
 				}//end fluid container fuel
+				
+				//check capability (1.10.2 new)
+				if (fuelx <= 0)
+				{
+					if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
+					{
+						//check fluid type
+						IFluidHandler fluid = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+						FluidStack fstack = fluid.drain(BlockHelper.SampleFluidLava, false);
+						fuelx = applyFuelMagniByTile(tile, 20000);
+						
+						//is lava and > 1000 mb
+						if (fstack != null && fstack.containsFluid(BlockHelper.SampleFluidLava) &&
+							fuelx + tile2.getPowerRemained() < tile2.getPowerMax())
+						{
+							//drain fluid
+							fluid.drain(BlockHelper.SampleFluidLava, true);
+							//fuel++
+							tile2.setPowerRemained(tile2.getPowerRemained() + fuelx);
+							sendUpdate = true;
+							break;	//only consume 1 fuel per tick
+						}
+					}//end has capability
+				}//end check capability
 			}//end stack != null
-		}//end all slots for loop
+		}//end for all slot
 		
 		return sendUpdate;
 	}
 	
+	/** apply fuel magnification by tile type, return new amount */
+	public static int applyFuelMagniByTile(TileEntity tile, int amount)
+	{
+		if (tile instanceof TileEntitySmallShipyard)
+		{
+			amount *= ((TileEntitySmallShipyard) tile).FUELMAGN;
+		}
+		else if (tile instanceof TileMultiGrudgeHeavy)
+		{
+			amount *= ((TileMultiGrudgeHeavy) tile).FUELMAGN;
+		}
+		
+		return amount;
+	}
+	
 	/** consume fuel liquid for ITileFurnace, return true = add fuel success */
-	public static boolean decrLiquidFuel(ITileLiquidFurnace tile) {
+	public static boolean decrLiquidFuel(ITileLiquidFurnace tile)
+	{
 		//lava to fuel: 1k lava = 20k fuel value
-		if(tile.getPowerMax() - tile.getPowerRemained() >= 800) {
-			if(tile.getFluidFuelAmount() >= 40) {
+		if (tile.getPowerMax() - tile.getPowerRemained() >= 800)
+		{
+			if (tile.getFluidFuelAmount() >= 40)
+			{
 				//drain liquid
-				FluidStack getf = tile.drainFluidFuel(40);
-				//add liquid to fuel value
-				tile.setPowerRemained(tile.getPowerRemained() + getf.amount * 20);
+				int amount = tile.consumeFluidFuel(40) * 20;
+				amount = (int) ((float)amount * tile.getFuelMagni());
+				
+				tile.setPowerRemained(tile.getPowerRemained() + amount);
 				
 				return true;
 			}
@@ -199,22 +238,22 @@ public class TileEntityHelper
 		return fuelx;
 	}
 	
-	/** check liquid is a bucket of lava */
+	/** check liquid is a bucket of lava for 1.7.10 */
 	public static boolean checkLiquidIsLava1000(FluidStack fluid)
 	{
 		return checkLiquidIsLavaWithAmount(fluid, 1000);
 	}
 	
-	/** check liquid is lava */
+	/** check liquid is lava for 1.7.10 */
 	public static boolean checkLiquidIsLava(FluidStack fluid)
 	{
 		return checkLiquidIsLavaWithAmount(fluid, 0);
 	}
 	
-	/** check liquid is lava and enough amount */
+	/** check liquid is lava and enough amount for 1.7.10 */
 	public static boolean checkLiquidIsLavaWithAmount(FluidStack fluid, int amount)
 	{
-		if(fluid != null && checkLiquidIsLava(fluid.getFluid()) && fluid.amount >= amount)
+		if (fluid != null && checkLiquidIsLava(fluid.getFluid()) && fluid.amount == amount)
 		{
 			return true;
 		}
@@ -222,7 +261,7 @@ public class TileEntityHelper
 		return false;
 	}
 	
-	/** check liquid is lava */
+	/** check liquid is lava for 1.7.10 */
 	public static boolean checkLiquidIsLava(Fluid fluid)
 	{
 		if(fluid != null && fluid.getUnlocalizedName().equals("fluid.tile.lava"))

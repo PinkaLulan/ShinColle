@@ -246,7 +246,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.FormatType));
 			buf.writeInt(entity.getStateMinor(ID.M.FormatPos));
 			buf.writeInt(entity.getStateMinor(ID.M.Morale));
-			buf.writeInt(entity.getStateMinor(ID.M.InvSize));
+			buf.writeInt(entity.getStateMinor(ID.M.DrumState));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelChunkLoader));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelFlare));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelSearchlight));
@@ -385,7 +385,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.FormatType));
 			buf.writeInt(entity.getStateMinor(ID.M.FormatPos));
 			buf.writeInt(entity.getStateMinor(ID.M.Morale));
-			buf.writeInt(entity.getStateMinor(ID.M.InvSize));
+			buf.writeInt(entity.getStateMinor(ID.M.DrumState));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelChunkLoader));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelFlare));
 			buf.writeInt(entity.getStateMinor(ID.M.LevelSearchlight));
@@ -695,7 +695,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.FormatType, msg.valueInt1[20]);
 				ship.setStateMinor(ID.M.FormatPos, msg.valueInt1[21]);
 				ship.setStateMinor(ID.M.Morale, msg.valueInt1[22]);
-				ship.setStateMinor(ID.M.InvSize, msg.valueInt1[23]);
+				ship.setStateMinor(ID.M.DrumState, msg.valueInt1[23]);
 				ship.setStateMinor(ID.M.LevelChunkLoader, msg.valueInt1[24]);
 				ship.setStateMinor(ID.M.LevelFlare, msg.valueInt1[25]);
 				ship.setStateMinor(ID.M.LevelSearchlight, msg.valueInt1[26]);
@@ -848,7 +848,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.FormatType, msg.valueInt1[20]);
 				ship.setStateMinor(ID.M.FormatPos, msg.valueInt1[21]);
 				ship.setStateMinor(ID.M.Morale, msg.valueInt1[22]);
-				ship.setStateMinor(ID.M.InvSize, msg.valueInt1[23]);
+				ship.setStateMinor(ID.M.DrumState, msg.valueInt1[23]);
 				ship.setStateMinor(ID.M.LevelChunkLoader, msg.valueInt1[24]);
 				ship.setStateMinor(ID.M.LevelFlare, msg.valueInt1[25]);
 				ship.setStateMinor(ID.M.LevelSearchlight, msg.valueInt1[26]);

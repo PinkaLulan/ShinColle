@@ -22,6 +22,7 @@ public class Reference
 	//inter mod
 	public static final String MOD_ID_Baubles = "Baubles";
 	public static final String MOD_ID_Forestry = "forestry";
+	public static final String MOD_ID_IC2 = "IC2";
 	
 	
 }

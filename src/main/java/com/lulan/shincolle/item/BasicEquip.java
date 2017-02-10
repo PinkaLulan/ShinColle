@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EnchantHelper;
@@ -58,9 +59,9 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
 	 *  
 	 *  ex: drum, searchlight, compass ...etc
 	 */
-	public int getSpecialEffect(ItemStack stack)
+	public EnumEquipEffectSP getSpecialEffect(ItemStack stack)
 	{
-		return -1;
+		return EnumEquipEffectSP.NONE;
 	}
 	
 	@Override

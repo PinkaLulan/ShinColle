@@ -2,13 +2,14 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
+import com.lulan.shincolle.reference.ID;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import com.lulan.shincolle.reference.ID;
 
 /**meta:
  *    0: normal drum
@@ -28,9 +29,10 @@ public class EquipFlare extends BasicEquip
         GameRegistry.register(this);
 	}
 	
-	public int getSpecialEffect(ItemStack stack)
+	@Override
+	public EnumEquipEffectSP getSpecialEffect(ItemStack stack)
 	{
-		return 2;
+		return EnumEquipEffectSP.FLARE;
 	}
 	
 	@Override

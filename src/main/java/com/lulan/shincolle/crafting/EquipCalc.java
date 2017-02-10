@@ -10,6 +10,8 @@ import java.util.Random;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEquip;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -106,29 +108,36 @@ public class EquipCalc
 	 * 
 	 * return 0:inv page, 1:chunk loader, 2:flare, 3:searchlight
 	 */
-	public static float[] getEquipStatMisc(BasicEntityShip entity, ItemStack item)
+	public static float[] getEquipStatMisc(BasicEntityShip entity, ItemStack stack)
 	{
-		if (entity != null && item != null && item.getItem() instanceof BasicEquip)
+		if (entity != null && stack != null && stack.getItem() instanceof BasicEquip)
 		{
 			float[] itemStat = new float[] {0, 0, 0, 0};
-			int effect = ((BasicEquip) item.getItem()).getSpecialEffect(item);
+			EnumEquipEffectSP effect = ((BasicEquip) stack.getItem()).getSpecialEffect(stack);
 			
 			switch (effect)
 			{
-			case 0:  //drum
+			case DRUM:			//drum inventory page
 				itemStat[0] = 1;
-				break;
-			case 1:  //compass
+			break;
+			case DRUM_LIQUID:	//drum liquid tank
+				//NO EFFECT
+			break;
+			case DRUM_EU:		//drum EU storage
+				//if no IC2, it become normal drum
+				if (!CommonProxy.activeIC2) itemStat[0] = 1;
+			break;
+			case COMPASS:		//compass
 				itemStat[1] = 1;
-				break;
-			case 2:  //flare
+			break;
+			case FLARE:			//flare
 				itemStat[2] = 1;
-				break;
-			case 3:  //searchlight
+			break;
+			case SEARCHLIGHT:	//searchlight
 				itemStat[3] = 1;
-				break;
-			default:	//no effect
-				break;
+			break;
+			default:			//no effect
+			break;
 			}
 			
 			return itemStat;

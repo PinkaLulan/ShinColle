@@ -38,12 +38,12 @@ public class ContainerCrane extends Container
 		//tile inventory
 		for (i = 0; i < 9; i++)
 		{
-			this.addSlotToContainer(new SlotCrane(tile, i, 8+i*18, 57));
+			this.addSlotToContainer(new SlotCrane(tile, i, 8+i*18, 65));
 		}
 		
 		for (i = 0; i < 9; i++)
 		{
-			this.addSlotToContainer(new SlotCrane(tile, i+9, 8+i*18, 88));
+			this.addSlotToContainer(new SlotCrane(tile, i+9, 8+i*18, 96));
 		}
 		
 		//player inventory
@@ -51,14 +51,14 @@ public class ContainerCrane extends Container
 		{
 			for (j = 0; j < 9; j++)
 			{
-				this.addSlotToContainer(new Slot(invPlayer, j+i*9+9, 8+j*18, 111+i*18));
+				this.addSlotToContainer(new Slot(invPlayer, j+i*9+9, 8+j*18, 119+i*18));
 			}
 		}
 		
 		//player hot bar
 		for (i = 0; i < 9; i++)
 		{
-			this.addSlotToContainer(new Slot(invPlayer, i, 8+i*18, 169));
+			this.addSlotToContainer(new Slot(invPlayer, i, 8+i*18, 177));
 		}
 	}
 

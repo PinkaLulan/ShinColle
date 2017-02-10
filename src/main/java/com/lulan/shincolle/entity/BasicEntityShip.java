@@ -1118,7 +1118,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		EffectEquip[ID.EquipEffect.AMMO] = 1F;
 		EffectEquip[ID.EquipEffect.HPRES] = 1F;
 		
-		StateMinor[ID.M.InvSize] = 0;
+		StateMinor[ID.M.DrumState] = 0;
 		StateMinor[ID.M.LevelChunkLoader] = 0;
 		StateMinor[ID.M.LevelFlare] = 0;
 		StateMinor[ID.M.LevelSearchlight] = 0;
@@ -1159,7 +1159,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			if (equipStat != null)
 			{
-				StateMinor[ID.M.InvSize] += equipStat[0];
+				StateMinor[ID.M.DrumState] += equipStat[0];
 				StateMinor[ID.M.LevelChunkLoader] += equipStat[1];
 				StateMinor[ID.M.LevelFlare] += equipStat[2];
 				StateMinor[ID.M.LevelSearchlight] += equipStat[3];
@@ -5697,13 +5697,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	//get # inv pages ship have
   	public int getInventoryPageSize()
   	{
-  		return this.StateMinor[ID.M.InvSize];
+  		return this.StateMinor[ID.M.DrumState];
   	}
   	
   	//set # inv pages ship have
   	public void setInventoryPageSize(int par1)
   	{
-  		this.StateMinor[ID.M.InvSize] = par1;
+  		this.StateMinor[ID.M.DrumState] = par1;
   	}
   	
   	/** set flare on target */
@@ -6010,7 +6010,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		case 21:
 			return this.StateMinor[ID.M.Morale];
 		case 22:
-			return this.StateMinor[ID.M.InvSize];
+			return this.StateMinor[ID.M.DrumState];
 		case 23:
 			return this.getStateFlagI(ID.F.PickItem);
 		case 24:
@@ -6101,7 +6101,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.StateMinor[ID.M.Morale] = value;
 			break;
 		case 22:
-			this.StateMinor[ID.M.InvSize] = value;
+			this.StateMinor[ID.M.DrumState] = value;
 			break;
 		case 23:
 			this.setStateFlagI(ID.F.PickItem, value);

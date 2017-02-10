@@ -10,7 +10,6 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -68,20 +67,13 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
         playerUID = nbt.getInteger("pid");
         
         //load pos
-        try
-        {
-            int[] pos =  nbt.getIntArray("lastPos");
-            this.lastPos = new BlockPos(pos[0], pos[1], pos[2]);
-            
-            pos =  nbt.getIntArray("nextPos");
-            this.nextPos = new BlockPos(pos[0], pos[1], pos[2]);
-        }
-        catch (Exception e)
-        {
-        	LogHelper.info("EXCEPTION: TileEntityCrane load position fail, reset to BlockPos.ORIGIN");
-        	this.lastPos = BlockPos.ORIGIN;
-        	this.nextPos = BlockPos.ORIGIN;
-        }
+        int[] pos =  nbt.getIntArray("lastPos");
+        if (pos == null || pos.length != 3) this.lastPos = BlockPos.ORIGIN;
+        else this.lastPos = new BlockPos(pos[0], pos[1], pos[2]);
+        
+        pos =  nbt.getIntArray("nextPos");
+        if (pos == null || pos.length != 3) this.nextPos = BlockPos.ORIGIN;
+        else this.nextPos = new BlockPos(pos[0], pos[1], pos[2]);
     }
 	
 	//將資料寫進nbt

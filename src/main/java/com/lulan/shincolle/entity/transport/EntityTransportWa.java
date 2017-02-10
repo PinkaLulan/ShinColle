@@ -252,7 +252,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
   	@Override
   	public void calcShipAttributes()
   	{
-  		StateMinor[ID.M.InvSize] = 2;
+  		StateMinor[ID.M.DrumState] = 2;
   		
   		super.calcShipAttributes();	
   	}

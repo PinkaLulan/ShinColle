@@ -181,6 +181,26 @@ public class EnchantHelper
 	}
 	
 	/**
+	 * sum of enchantment number
+	 */
+	public static int calcEnchantNumber(ItemStack stack)
+	{
+		int number = 0;
+        NBTTagList nbttaglist = stack.getEnchantmentTagList();
+
+        if (nbttaglist != null)
+        {
+            for (int i = 0; i < nbttaglist.tagCount(); ++i)
+            {
+                int lv = nbttaglist.getCompoundTagAt(i).getShort("lvl");
+                number += lv;
+            }
+        }
+        
+        return number;
+	}
+	
+	/**
 	 * apply random enchant to equip by lv and type
 	 * 
 	 * enchLv: 0:none, 1:40%=1 ench, 2:30%=1 30%=2, 3:30%=1 30%=2 20%=3  
