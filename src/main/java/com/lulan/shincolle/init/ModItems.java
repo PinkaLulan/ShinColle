@@ -32,6 +32,7 @@ import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.item.RepairGoddess;
 import com.lulan.shincolle.item.ShipSpawnEgg;
+import com.lulan.shincolle.item.ShipTank;
 import com.lulan.shincolle.item.TargetWrench;
 import com.lulan.shincolle.item.ToyAirplane;
 import com.lulan.shincolle.item.TrainingBook;
@@ -75,6 +76,7 @@ public class ModItems
 	public static BasicItem OwnerPaper;
 	public static BasicItem PointerItem;
 	public static BasicItem RepairGoddess;
+	public static BasicItem ShipTank;
 	public static BasicItem TargetWrench;
 	public static BasicItem TrainingBook;
 	//toy
@@ -124,6 +126,7 @@ public class ModItems
 		OwnerPaper = initItems(OwnerPaper.class);
 		PointerItem = initItems(PointerItem.class);
 		RepairGoddess = initItems(RepairGoddess.class);
+		ShipTank = initItems(ShipTank.class);
 		TargetWrench = initItems(TargetWrench.class);
 		TrainingBook = initItems(TrainingBook.class);
 		

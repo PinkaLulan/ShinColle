@@ -1,11 +1,13 @@
 package com.lulan.shincolle.client.gui.inventory;
 
-import net.minecraft.inventory.IInventory;
+import javax.annotation.Nullable;
+
+import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.item.BasicEquip;
+
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import com.lulan.shincolle.item.BasicEquip;
 
 /**CUSTOM SHIP INVENTORY
  * slot: S0(80,19) S1(80,37) S2(80,55) S3(80,73) S4(80,91) S5~S22(8,112)
@@ -16,9 +18,9 @@ public class SlotShipInventory extends Slot
 {
 
 	private int slotIndex;  //slot index
-	private IInventory capa;
+	private CapaShipInventory capa;
 
-	public SlotShipInventory(IInventory capa, int slotIndex, int x, int y)
+	public SlotShipInventory(CapaShipInventory capa, int slotIndex, int x, int y)
 	{
 		super(capa, slotIndex, x, y);
 		this.capa = capa;
@@ -50,5 +52,55 @@ public class SlotShipInventory extends Slot
 		return false;
     }
 	
+	//get itemstack in slot with paging
+	@Override
+    @Nullable
+    public ItemStack getStack()
+    {
+		//if equip slots, show slot 0~5
+		if (this.slotIndex < 6)
+		{
+			return this.inventory.getStackInSlot(this.slotIndex);
+		}
+		//inventory slots, show paged slots
+		else
+		{
+			return this.inventory.getStackInSlot(this.slotIndex + this.capa.getInventoryPage() * 18);
+		}
+    }
+	
+	//set itemstack to slot with paging
+	@Override
+    public void putStack(@Nullable ItemStack stack)
+    {
+		//if equip slots, show slot 0~5
+		if (this.slotIndex < 6)
+		{
+			this.inventory.setInventorySlotContents(this.slotIndex, stack);
+		}
+		//inventory slots, show paged slots
+		else
+		{
+			this.inventory.setInventorySlotContents(this.slotIndex + this.capa.getInventoryPage() * 18, stack);
+		}
+        
+        this.onSlotChanged();
+    }
+	
+	@Override
+    public ItemStack decrStackSize(int amount)
+    {
+		//if equip slots, show slot 0~5
+		if (this.slotIndex < 6)
+		{
+			return this.inventory.decrStackSize(this.slotIndex, amount);
+		}
+		//inventory slots, show paged slots
+		else
+		{
+			return this.inventory.decrStackSize(this.slotIndex + this.capa.getInventoryPage() * 18, amount);
+		}
+    }
+
 	
 }

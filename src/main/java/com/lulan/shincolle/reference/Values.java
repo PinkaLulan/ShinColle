@@ -584,7 +584,7 @@ public class Values
 	/** ITEMSTACK MAP FOR ICON
 	 *  
 	 */
-	public static final Map<Byte, ItemStack> ItemIconMap = Collections.unmodifiableMap(new HashMap<Byte, ItemStack>()
+	public static final Map<Short, ItemStack> ItemIconMap = Collections.unmodifiableMap(new HashMap<Short, ItemStack>()
 	{{
 		put(ID.Icon.IronIG,     new ItemStack(Items.IRON_INGOT));
 		put(ID.Icon.Grudge,     new ItemStack(ModItems.Grudge));
@@ -636,6 +636,11 @@ public class Values
 		put(ID.Icon.Piston,     new ItemStack(Blocks.PISTON));
 		put(ID.Icon.TrainBook,  new ItemStack(ModItems.TrainingBook));
 		put(ID.Icon.MagmaB,     new ItemStack(Blocks.MAGMA));
+		put(ID.Icon.Tank0,      new ItemStack(ModItems.ShipTank, 1, 0));
+		put(ID.Icon.Tank1,      new ItemStack(ModItems.ShipTank, 1, 1));
+		put(ID.Icon.Tank2,      new ItemStack(ModItems.ShipTank, 1, 2));
+		put(ID.Icon.Tank3,      new ItemStack(ModItems.ShipTank, 1, 3));
+		put(ID.Icon.Cauldron,   new ItemStack(Items.CAULDRON));
 	}});
 	
 	
@@ -749,14 +754,14 @@ public class Values
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
 								new int[] {2, 0, 3,  -3, ID.Icon.KHammer},
-								new int[] {2, 0, 23, -3, ID.Icon.SpawnEgg2},
+								new int[] {2, 0, 23, -3, ID.Icon.SpawnEgg0},
 								new int[] {2, 0, 43, -3, ID.Icon.SpawnEgg0},
-								new int[] {2, 0, 3,  17, ID.Icon.SpawnEgg2},
-								new int[] {2, 0, 23, 17, ID.Icon.SpawnEgg2},
-								new int[] {2, 0, 43, 17, ID.Icon.SpawnEgg1},
-								new int[] {2, 0, 3,  37, ID.Icon.SpawnEgg2},
-								new int[] {2, 0, 23, 37, ID.Icon.SpawnEgg1},
-								new int[] {2, 0, 43, 37, ID.Icon.SpawnEgg2},
+								new int[] {2, 0, 3,  17, ID.Icon.SpawnEgg0},
+								new int[] {2, 0, 23, 17, ID.Icon.SpawnEgg0},
+								new int[] {2, 0, 43, 17, ID.Icon.SpawnEgg0},
+								new int[] {2, 0, 3,  37, ID.Icon.SpawnEgg0},
+								new int[] {2, 0, 23, 37, ID.Icon.SpawnEgg0},
+								new int[] {2, 0, 43, 37, ID.Icon.SpawnEgg0},
 								new int[] {2, 0, 81, 17, ID.Icon.ModTool}));
 		//page 9: instant mats
 		put(1009, Arrays.asList(new int[] {0, 0, 0, 0},
@@ -918,6 +923,54 @@ public class Values
 		put(1024, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {2, 0, 23, 17, ID.Icon.TrainBook}));
+		//page 25: ship tank
+		put(1025, Arrays.asList(new int[] {3, 6, 1},
+								new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 0, 3,  -3, ID.Icon.PolymIG},
+								new int[] {2, 0, 23, -3, ID.Icon.Cauldron},
+								new int[] {2, 0, 43, -3, ID.Icon.PolymIG},
+								new int[] {2, 0, 3,  17, ID.Icon.PolymIG},
+								new int[] {2, 0, 23, 17, ID.Icon.Cauldron},
+								new int[] {2, 0, 43, 17, ID.Icon.PolymIG},
+								new int[] {2, 0, 3,  37, ID.Icon.PolymIG},
+								new int[] {2, 0, 23, 37, ID.Icon.Cauldron},
+								new int[] {2, 0, 43, 37, ID.Icon.PolymIG},
+								new int[] {2, 0, 81, 17, ID.Icon.Tank0},
+								new int[] {1, 2, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 2, 3,  -3, ID.Icon.ObsidianB},
+								new int[] {2, 2, 23, -3, ID.Icon.Tank0},
+								new int[] {2, 2, 43, -3, ID.Icon.ObsidianB},
+								new int[] {2, 2, 3,  17, ID.Icon.ObsidianB},
+								new int[] {2, 2, 23, 17, ID.Icon.Tank0},
+								new int[] {2, 2, 43, 17, ID.Icon.ObsidianB},
+								new int[] {2, 2, 3,  37, ID.Icon.ObsidianB},
+								new int[] {2, 2, 23, 37, ID.Icon.Tank0},
+								new int[] {2, 2, 43, 37, ID.Icon.ObsidianB},
+								new int[] {2, 2, 81, 17, ID.Icon.Tank1},
+								new int[] {1, 4, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 4, 3,  -3, ID.Icon.AbyssB},
+								new int[] {2, 4, 23, -3, ID.Icon.Tank1},
+								new int[] {2, 4, 43, -3, ID.Icon.AbyssB},
+								new int[] {2, 4, 3,  17, ID.Icon.AbyssB},
+								new int[] {2, 4, 23, 17, ID.Icon.Tank1},
+								new int[] {2, 4, 43, 17, ID.Icon.AbyssB},
+								new int[] {2, 4, 3,  37, ID.Icon.AbyssB},
+								new int[] {2, 4, 23, 37, ID.Icon.Tank1},
+								new int[] {2, 4, 43, 37, ID.Icon.AbyssB},
+								new int[] {2, 4, 81, 17, ID.Icon.Tank2},
+								new int[] {1, 6, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 6, 3,  -3, ID.Icon.GrudgeBH},
+								new int[] {2, 6, 23, -3, ID.Icon.Tank2},
+								new int[] {2, 6, 43, -3, ID.Icon.GrudgeBH},
+								new int[] {2, 6, 3,  17, ID.Icon.GrudgeBH},
+								new int[] {2, 6, 23, 17, ID.Icon.Tank2},
+								new int[] {2, 6, 43, 17, ID.Icon.GrudgeBH},
+								new int[] {2, 6, 3,  37, ID.Icon.GrudgeBH},
+								new int[] {2, 6, 23, 37, ID.Icon.Tank2},
+								new int[] {2, 6, 43, 37, ID.Icon.GrudgeBH},
+								new int[] {2, 6, 81, 17, ID.Icon.Tank3}));
 		//chap 2: construction
 		//page 0: vent
 		put(2000, Arrays.asList(new int[] {0, 0, 0, 0},

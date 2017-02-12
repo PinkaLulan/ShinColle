@@ -9,6 +9,7 @@ import com.lulan.shincolle.handler.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -122,7 +123,9 @@ public class LayerShipHeldItem implements LayerRenderer<EntityLivingBase>
             		GlStateManager.scale(ConfigHandler.scaleHeldItem[0], ConfigHandler.scaleHeldItem[0], ConfigHandler.scaleHeldItem[0]);
             	}
             	
+            	RenderHelper.enableGUIStandardItemLighting();
                 Minecraft.getMinecraft().getItemRenderer().renderItemSide(entity, stack, type, flag);
+                RenderHelper.disableStandardItemLighting();
     		}
         }
         

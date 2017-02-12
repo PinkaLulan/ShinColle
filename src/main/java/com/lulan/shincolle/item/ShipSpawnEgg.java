@@ -63,54 +63,25 @@ public class ShipSpawnEgg extends BasicItem
         initEggList();
     }
     
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean hasEffect(ItemStack stack)
+    {
+        return stack.hasTagCompound();
+    }
+    
     /** IGNORE this method!! */
+    @Override
     public int getTypes()
 	{
 		return 0;
 	}
 	
-	/** IGNORE this method!! */
 	public int getIconTypes()
 	{
-		return 3;
-	}
-
-  	/** 0:small egg  1:large egg  2:custom egg */
-	public int getIconFromDamage(int meta)
-	{
-		return meta > 2 ? 2 : meta;
+		return 11;
 	}
 	
-	/** 依照getIconFromDamage設定對應的texture */
-	@SideOnly(Side.CLIENT)
-	@Override
-    public void initModel()
-	{
-		ModelResourceLocation[] models = new ModelResourceLocation[3];
-		
-		//宣告並設定textures位置
-		for (int i = 0; i < 3; i++)
-		{
-			models[i] = new ModelResourceLocation(getRegistryName() + String.valueOf(i), "inventory");
-		}
-
-		//登錄全部textures
-	    ModelBakery.registerItemVariants(this, models);
-		
-	    //依照各meta值設定各自texture
-	    for (int meta : shipList)
-		{
-	    	if (meta >= 0 && meta < 2)
-	    	{
-	    		ModelLoader.setCustomModelResourceLocation(this, meta, models[meta]);
-	    	}
-	    	else
-	    	{
-	    		ModelLoader.setCustomModelResourceLocation(this, meta, models[2]);
-	    	}
-		}
-    }
-  	
     //format: item.MOD_ID:EGG_NAME.name
     //item name for different metadata
   	@Override
@@ -128,6 +99,96 @@ public class ShipSpawnEgg extends BasicItem
   			return String.format("item." + Reference.MOD_ID + ":shipegg" + metaid);
   		}		
   	}
+	
+	/** 依照getIconFromDamage設定對應的texture */
+	@SideOnly(Side.CLIENT)
+	@Override
+    public void initModel()
+	{
+		ModelResourceLocation[] models = new ModelResourceLocation[getIconTypes()];
+		
+		//宣告並設定textures位置
+		for (int i = 0; i < getIconTypes(); i++)
+		{
+			models[i] = new ModelResourceLocation(getRegistryName() + String.valueOf(i), "inventory");
+		}
+
+		//登錄全部textures
+	    ModelBakery.registerItemVariants(this, models);
+		
+	    //依照各meta值設定各自texture
+	    for (int i : shipList)
+		{
+	    	 ModelLoader.setCustomModelResourceLocation(this, i, models[getIconFromDamage(i)]);
+		}
+    }
+
+	public int getIconFromDamage(int meta)
+	{
+		switch (meta)
+		{
+		case ID.Ship.DestroyerI+2:				//DD
+		case ID.Ship.DestroyerRO+2:
+		case ID.Ship.DestroyerHA+2:
+		case ID.Ship.DestroyerNI+2:
+		case ID.Ship.DestroyerAkatsuki+2:
+		case ID.Ship.DestroyerAkatsuki+2002:
+		case ID.Ship.DestroyerHibiki+2:
+		case ID.Ship.DestroyerHibiki+2002:
+		case ID.Ship.DestroyerIkazuchi+2:
+		case ID.Ship.DestroyerIkazuchi+2002:
+		case ID.Ship.DestroyerInazuma+2:
+		case ID.Ship.DestroyerInazuma+2002:
+		case ID.Ship.DestroyerShimakaze+2:
+		case ID.Ship.DestroyerShimakaze+2002:
+			return 2;
+		case ID.Ship.LightCruiserTenryuu+2:		//CL
+		case ID.Ship.LightCruiserTenryuu+2002:
+		case ID.Ship.LightCruiserTatsuta+2:
+		case ID.Ship.LightCruiserTatsuta+2002:
+			return 3;
+		case ID.Ship.HeavyCruiserRI+2:			//CA
+		case ID.Ship.HeavyCruiserNE+2:
+			return 4;
+		case ID.Ship.BattleshipRU+2:			//BB
+		case ID.Ship.BattleshipTA+2:
+		case ID.Ship.BattleshipRE+2:
+		case ID.Ship.BattleshipNagato+2:
+		case ID.Ship.BattleshipNagato+2002:
+		case ID.Ship.BattleshipYamato+2:
+		case ID.Ship.BattleshipYamato+2002:
+			return 5;
+		case ID.Ship.TransportWA+2:				//AO, AR
+			return 6;
+		case ID.Ship.SubmarineKA+2:				//SS
+		case ID.Ship.SubmarineYO+2:
+		case ID.Ship.SubmarineSO+2:
+		case ID.Ship.SubmarineU511+2:
+		case ID.Ship.SubmarineU511+2002:
+		case ID.Ship.SubmarineRo500+2:
+		case ID.Ship.SubmarineRo500+2002:
+			return 7;
+		case ID.Ship.CarrierWD+2:				//DE, demon, water demon
+			return 8;
+		case ID.Ship.CarrierHime+2:				//PR
+		case ID.Ship.AirfieldHime+2:
+		case ID.Ship.BattleshipHime+2:
+		case ID.Ship.HarbourHime+2:
+		case ID.Ship.NorthernHime+2:
+			return 9;
+		case ID.Ship.CarrierWO+2:				//CV
+		case ID.Ship.CarrierKaga+2:
+		case ID.Ship.CarrierKaga+2002:
+		case ID.Ship.CarrierAkagi+2:
+		case ID.Ship.CarrierAkagi+2002:
+			return 10;
+		case 1:		//large egg
+			return 1;
+		case 0:		//small egg
+		default:
+			return 0;
+		}
+	}
   	
   	/** add egg to list
   	 *  and turn ship id to item meta value
@@ -156,14 +217,7 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.HarbourHime+2);
   		shipList.add(ID.Ship.NorthernHime+2);
   		shipList.add(ID.Ship.CarrierWD+2);
-  		shipList.add(ID.Ship.BattleshipNagato+2);
-  		shipList.add(ID.Ship.BattleshipNagato+2002);	//hostile entity
-  		shipList.add(ID.Ship.BattleshipYamato+2);
-  		shipList.add(ID.Ship.BattleshipYamato+2002);	//hostile entity
-  		shipList.add(ID.Ship.CarrierKaga+2);
-  		shipList.add(ID.Ship.CarrierKaga+2002);			//hostile entity
-  		shipList.add(ID.Ship.CarrierAkagi+2);
-  		shipList.add(ID.Ship.CarrierAkagi+2002);		//hostile entity
+  		//hostile ship
   		shipList.add(ID.Ship.DestroyerAkatsuki+2);
   		shipList.add(ID.Ship.DestroyerAkatsuki+2002);	//hostile entity
   		shipList.add(ID.Ship.DestroyerHibiki+2);
@@ -178,6 +232,14 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.LightCruiserTenryuu+2002);	//hostile entity
   		shipList.add(ID.Ship.LightCruiserTatsuta+2);
   		shipList.add(ID.Ship.LightCruiserTatsuta+2002);	//hostile entity
+  		shipList.add(ID.Ship.CarrierKaga+2);
+  		shipList.add(ID.Ship.CarrierKaga+2002);			//hostile entity
+  		shipList.add(ID.Ship.CarrierAkagi+2);
+  		shipList.add(ID.Ship.CarrierAkagi+2002);		//hostile entity
+  		shipList.add(ID.Ship.BattleshipNagato+2);
+  		shipList.add(ID.Ship.BattleshipNagato+2002);	//hostile entity
+  		shipList.add(ID.Ship.BattleshipYamato+2);
+  		shipList.add(ID.Ship.BattleshipYamato+2002);	//hostile entity
   		shipList.add(ID.Ship.SubmarineU511+2);
   		shipList.add(ID.Ship.SubmarineU511+2002);		//hostile entity
   		shipList.add(ID.Ship.SubmarineRo500+2);

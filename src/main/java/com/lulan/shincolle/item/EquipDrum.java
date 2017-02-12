@@ -125,7 +125,7 @@ public class EquipDrum extends BasicEquip
 			list.add(TextFormatting.GRAY + I18n.format("gui.shincolle:drum1"));
 			
 			//show fluid rate
-			int num = EnchantHelper.calcEnchantNumber(stack) * ConfigHandler.drumLiquid[1];
+			int num = EnchantHelper.calcEnchantNumber(stack) * ConfigHandler.drumLiquid[1] + ConfigHandler.drumLiquid[0];
 			if (num > 0) list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:equip.rateliq") + " " + num + " mB/t");
 		}
 		break;
@@ -135,7 +135,7 @@ public class EquipDrum extends BasicEquip
 			else list.add(TextFormatting.GRAY + I18n.format("gui.shincolle:drum2b"));
 			
 			//show EU rate
-			int num = EnchantHelper.calcEnchantNumber(stack) * ConfigHandler.drumEU[1];
+			int num = EnchantHelper.calcEnchantNumber(stack) * ConfigHandler.drumEU[1] + ConfigHandler.drumEU[0];
 			if (num > 0) list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:equip.rateeu") + " " + num + " EU/t");
 		}
 		break;

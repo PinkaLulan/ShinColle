@@ -113,25 +113,26 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 	{
 		validateSlotIndex(i);
 		
-		//access within page
-		if (i < getSizeInventory())
-		{
-			//get equip slot
-			if (i < ContainerShipInventory.SLOTS_SHIPINV)
-			{
-				return this.stacks[i];
-			}
-			//get inventory slot
-			else
-			{
-				return stacks[i + this.inventoryPage * 18];
-			}
-		}
-		//access across pages
-		else
-		{
+		//TODO test
+//		//access within page
+//		if (i < getSizeInventory())
+//		{
+//			//get equip slot
+//			if (i < ContainerShipInventory.SLOTS_SHIPINV)
+//			{
+//				return this.stacks[i];
+//			}
+//			//get inventory slot
+//			else
+//			{
+//				return stacks[i + this.inventoryPage * 18];
+//			}
+//		}
+//		//access across pages
+//		else
+//		{
 			return stacks[i];
-		}
+//		}
 	}
 	
 	public ItemStack getStackInSlotWithoutPaging(int i)
@@ -152,7 +153,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
   			if (id >= 0 && id < getSlots() && getStackInSlot(id) != null && count > 0)
   	        {
   	            ItemStack itemstack = getStackInSlot(id).splitStack(count);
-
+  	            
   	            if (getStackInSlot(id).stackSize == 0)
   	            {
   	            	setStackInSlot(id, null);
@@ -184,27 +185,28 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 	 *  若id傳入大小超過24格, 則視為對全部page存取, 此時範圍最大到this.stacks.length
 	 */
 	@Override
-	public void setInventorySlotContents(int id, ItemStack stack)
+	public void setInventorySlotContents(int i, ItemStack stack)
 	{
-		//access within page
-		if (id < getSizeInventory())
-		{
-			//equip slot
-			if (id < ContainerShipInventory.SLOTS_SHIPINV)
-			{
-				setStackInSlot(id, stack);
-			}
-			//inv slot
-			else
-			{
-				setStackInSlot(id + this.inventoryPage * 18, stack);
-			}
-		}
-		//access across pages
-		else
-		{
-			setStackInSlot(id, stack);
-		}
+		//TODO test
+//		//access within page
+//		if (i < getSizeInventory())
+//		{
+//			//equip slot
+//			if (i < ContainerShipInventory.SLOTS_SHIPINV)
+//			{
+//				setStackInSlot(i, stack);
+//			}
+//			//inv slot
+//			else
+//			{
+//				setStackInSlot(i + this.inventoryPage * 18, stack);
+//			}
+//		}
+//		//access across pages
+//		else
+//		{
+			setStackInSlot(i, stack);
+//		}
 		
 		//若手上物品超過該格子限制數量, 則只能放進限制數量
 		if (stack != null && stack.stackSize > getInventoryStackLimit())
@@ -213,7 +215,28 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		}
 		
 		//change equip slot
-		if (!this.hostObj.world.isRemote && id < 6)
+		if (!this.hostObj.world.isRemote && i < 6)
+		{
+			this.hostObj.calcEquipAndUpdateState();  //update equip and attribute value
+		}
+	}
+	
+	//set slots item without paging
+	public void setInventorySlotWithoutPaging(int i, ItemStack stack)
+	{
+		//check slot id
+		if (i < 0 || i >= this.getSizeInventoryPaged() || i >= stacks.length)
+            throw new RuntimeException("Slot " + i + " not in valid range - [0," + stacks.length + ")");
+        
+		//set itemstack
+		if (!ItemStack.areItemStacksEqual(this.stacks[i], stack))
+		{
+	        this.stacks[i] = stack;
+	        onContentsChanged(i);
+		}
+		
+		//if change equip slot
+		if (!this.hostObj.world.isRemote && i < 6)
 		{
 			this.hostObj.calcEquipAndUpdateState();  //update equip and attribute value
 		}

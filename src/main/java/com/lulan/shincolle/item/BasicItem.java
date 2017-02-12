@@ -39,6 +39,8 @@ abstract public class BasicItem extends Item implements ICustomModels
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List list)
 	{
+		if (item == null) return;
+		
 		if (getTypes() <= 1)
 		{
 			list.add(new ItemStack(item));

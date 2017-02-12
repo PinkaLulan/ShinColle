@@ -181,8 +181,27 @@ public class ContainerShipInventory extends Container
 	@Override
 	public void detectAndSendChanges()
 	{
-		super.detectAndSendChanges();
+		//check slots
+		int pageTemp = this.entity.getField(27);
 		
+        for (int i = 0; i < this.inventorySlots.size(); ++i)
+        {
+            ItemStack itemNew = ((Slot)this.inventorySlots.get(i)).getStack();
+            ItemStack itemBackup = (ItemStack)this.inventoryItemStacks.get(i);
+
+            //if page number or itemstack changed, send sync packet
+            if (!ItemStack.areItemStacksEqual(itemBackup, itemNew) || pageTemp != this.valueTemp[27])
+            {
+            	itemBackup = itemNew == null ? null : itemNew.copy();
+                this.inventoryItemStacks.set(i, itemBackup);
+
+                for (int j = 0; j < this.listeners.size(); ++j)
+                {
+                    ((IContainerListener)this.listeners.get(j)).sendSlotContents(this, i, itemBackup);
+                }
+            }
+        }
+        
 		//對所有開啟gui的人發送更新, 若數值有改變則發送更新封包
 		for (int i = 0; i < this.listeners.size(); ++i)
         {

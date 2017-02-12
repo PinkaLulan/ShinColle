@@ -43,6 +43,10 @@ item.shincolle:ModernKit.name=Modernization Toolkit
 item.shincolle:OwnerPaper.name=Shinkeiseikan Ownership Paper
 item.shincolle:PointerItem.name=Wo-Class Command Scepter
 item.shincolle:RepairGoddess.name=The Grudge of Abyssal Goddess
+item.shincolle:ShipTank.name=Abyssal Fluid Drum (S)
+item.shincolle:ShipTank1.name=Abyssal Fluid Drum (M)
+item.shincolle:ShipTank2.name=Abyssal Fluid Drum (L)
+item.shincolle:ShipTank3.name=Abyssal Fluid Drum (XL)
 item.shincolle:TargetWrench.name=Target Wrench
 item.shincolle:ToyAirplane.name=Model 21 Zero Fighter (1/48)
 item.shincolle:TrainingBook.name=Maintenance Personnel Training Book
@@ -330,6 +334,9 @@ gui.shincolle:book.chap1.text23d1=§9Top Left§0 button is §9Power Switch§0.<b
 gui.shincolle:book.chap1.title24=Maintenance Personnel Training Book
 gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>Right click this book on ship can increase the ship level 5 ~ 10.<br><br>This book can only be found in dungeon chest.
 gui.shincolle:book.chap1.text24d1=
+gui.shincolle:book.chap1.title25=Abyssal Fluid Drum
+gui.shincolle:book.chap1.text25d0=<br><br><br><br><br><br><br><br><br>A fluid container for ship fluid transport. There are 4 sizes of fluid container.<br>Ship have to equip at least one §9Abyssal Pumps Station§0 to transfer fluid to the containers in the ship's inventory at Abyssal Crane.
+gui.shincolle:book.chap1.text25d1=
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
@@ -709,6 +716,7 @@ gui.shincolle:combatration3=Grudge flavored rice ball, it looks red and shiny<br
 gui.shincolle:combatration4=It's mellow, dense, refreshing and smooth,<br>the best ice cream to beat the heat!
 gui.shincolle:combatration5=It's mellow, dense, refreshing and smooth,<br>don't afraid to get fat by having this<br>low-grudge ice cream!
 gui.shincolle:trainingbook=Level up 5~10
+gui.shincolle:shiptank=A fluid container for ship transport.
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!

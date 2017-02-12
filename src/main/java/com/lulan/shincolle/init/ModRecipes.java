@@ -82,7 +82,10 @@ public class ModRecipes
 		ItemStack ration3 = new ItemStack(ModItems.CombatRation, 1, 3);
 		ItemStack ration4 = new ItemStack(ModItems.CombatRation, 1, 4);
 		ItemStack ration5 = new ItemStack(ModItems.CombatRation, 1, 5);
-		
+		ItemStack shiptank0 = new ItemStack(ModItems.ShipTank, 1, 0);
+		ItemStack shiptank1 = new ItemStack(ModItems.ShipTank, 1, 1);
+		ItemStack shiptank2 = new ItemStack(ModItems.ShipTank, 1, 2);
+		ItemStack shiptank3 = new ItemStack(ModItems.ShipTank, 1, 3);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
@@ -182,7 +185,6 @@ public class ModRecipes
 		GameRegistry.addRecipe(new ShapedOreRecipe(frame16,"a a"," o ","a a",'o',Blocks.OBSIDIAN,'a',abyssiumStack));
 		//crane
 		GameRegistry.addRecipe(new ShapedOreRecipe(crane,"aaa","aga","apa",'a',abyssiumStack,'p',Blocks.PISTON,'g',grudeBlock));
-		
 		//combat ration
 		GameRegistry.addRecipe(new ShapedOreRecipe(ration0,"www","bgc","www",'b',Items.BREAD,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
 		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_BEEF,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',Items.WHEAT));
@@ -198,6 +200,11 @@ public class ModRecipes
 		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_MUTTON,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',"foodFlour"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_PORKCHOP,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',"foodFlour"));
 		GameRegistry.addRecipe(new ShapedOreRecipe(ration2,"www","bgc","www",'b',Items.COOKED_RABBIT,'c',Items.GOLDEN_CARROT,'g',grudeStack,'w',"foodFlour"));
+		//ship tank
+		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank0,"mtm","mtm","mtm",'m',polymetalStack,'t',Items.CAULDRON));
+		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank1,"mtm","mtm","mtm",'m',Blocks.OBSIDIAN,'t',shiptank0));
+		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank2,"mtm","mtm","mtm",'m',abyssiumBlock,'t',shiptank1));
+		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank3,"mtm","mtm","mtm",'m',grudeHeavyBlock,'t',shiptank2));
 	}
 
 	

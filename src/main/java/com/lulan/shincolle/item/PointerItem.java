@@ -605,7 +605,7 @@ public class PointerItem extends BasicItem
 					}
 				}//end hitObj2 = block
 			}//end hitObj2 != null
-		}
+		}//end client side
 		
 		return new ActionResult(EnumActionResult.PASS, stack);
     }

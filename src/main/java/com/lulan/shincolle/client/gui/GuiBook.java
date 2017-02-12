@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Enums;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
@@ -42,11 +42,13 @@ public class GuiBook
 //	private static final ResourceLocation guiBookPic02 = new ResourceLocation(Reference.TEXTURES_GUI+"book/BookPic02.png");
 	
 	private static TextureManager tm = ClientProxy.getMineraft().getTextureManager();
-	private static GuiContainer gui;
+	private static GuiDesk gui;
 	private static FontRenderer font;
 	private static RenderItem itemRender;
 	private static int numChap;
 	private static int numPage;
+	public static int PageLeftCurrent = 0;  //current page for random icon counting
+	public static int PageRightCurrent = 0; //current page for random icon counting
 	public static int PageWidth = 135; //page width, no scale = 106
 	public static int Page0LX = 13;    //left page X pos, no scale = 13
 	public static int Page0RX = 133;   //right page X pos, no scale = 133
@@ -54,12 +56,12 @@ public class GuiBook
 	public static int PageTLX = 13;    //left page X pos for text
 	public static int PageTRX = 162;   //right page X pos for text
 	public static int PageTY = 58;     //page Y pos for text
-	public static final int[] PageLimit = new int[] {1,24,6,15,20,13,4};  //max page number
+	public static final int[] PageLimit = new int[] {1,25,6,15,20,13,4};  //max page number
 	
 	public GuiBook() {}
 	
 	/** draw book content */
-	public static void drawBookContent(GuiContainer par1, FontRenderer par2, int chap, int page)
+	public static void drawBookContent(GuiDesk par1, FontRenderer par2, int chap, int page)
 	{
 		itemRender = Minecraft.getMinecraft().getRenderItem();
 		
@@ -74,11 +76,57 @@ public class GuiBook
 		numChap = chap;
 		numPage = page;
 		
-//		/***********   DEBUG: test page      *********/
-//		if(numChap == 3 && numPage == 13) {
-//			cont =  Arrays.asList(new int[] {0, 0, 0, 0},
+		/***********   DEBUG: test page      *********/
+//		if (numChap == 1 && numPage == 25)
+//		{
+//			cont =  Arrays.asList(
+//					new int[] {3, 6, 1},
+//					new int[] {0, 0, 0, 0},
 //					new int[] {0, 1, 0, 0},
-//					new int[] {1, 0, 0, 120, 0, 100, 245, 100, 11}
+//					new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+//					new int[] {2, 0, 3,  -3, ID.Icon.PolymIG},
+//					new int[] {2, 0, 23, -3, ID.Icon.Cauldron},
+//					new int[] {2, 0, 43, -3, ID.Icon.PolymIG},
+//					new int[] {2, 0, 3,  17, ID.Icon.PolymIG},
+//					new int[] {2, 0, 23, 17, ID.Icon.Cauldron},
+//					new int[] {2, 0, 43, 17, ID.Icon.PolymIG},
+//					new int[] {2, 0, 3,  37, ID.Icon.PolymIG},
+//					new int[] {2, 0, 23, 37, ID.Icon.Cauldron},
+//					new int[] {2, 0, 43, 37, ID.Icon.PolymIG},
+//					new int[] {2, 0, 81, 17, ID.Icon.Tank0},
+//					new int[] {1, 2, 0, -6, 0, 100, 72, 100, 62},
+//					new int[] {2, 2, 3,  -3, ID.Icon.ObsidianB},
+//					new int[] {2, 2, 23, -3, ID.Icon.Tank0},
+//					new int[] {2, 2, 43, -3, ID.Icon.ObsidianB},
+//					new int[] {2, 2, 3,  17, ID.Icon.ObsidianB},
+//					new int[] {2, 2, 23, 17, ID.Icon.Tank0},
+//					new int[] {2, 2, 43, 17, ID.Icon.ObsidianB},
+//					new int[] {2, 2, 3,  37, ID.Icon.ObsidianB},
+//					new int[] {2, 2, 23, 37, ID.Icon.Tank0},
+//					new int[] {2, 2, 43, 37, ID.Icon.ObsidianB},
+//					new int[] {2, 2, 81, 17, ID.Icon.Tank1},
+//					new int[] {1, 4, 0, -6, 0, 100, 72, 100, 62},
+//					new int[] {2, 4, 3,  -3, ID.Icon.AbyssB},
+//					new int[] {2, 4, 23, -3, ID.Icon.Tank1},
+//					new int[] {2, 4, 43, -3, ID.Icon.AbyssB},
+//					new int[] {2, 4, 3,  17, ID.Icon.AbyssB},
+//					new int[] {2, 4, 23, 17, ID.Icon.Tank1},
+//					new int[] {2, 4, 43, 17, ID.Icon.AbyssB},
+//					new int[] {2, 4, 3,  37, ID.Icon.AbyssB},
+//					new int[] {2, 4, 23, 37, ID.Icon.Tank1},
+//					new int[] {2, 4, 43, 37, ID.Icon.AbyssB},
+//					new int[] {2, 4, 81, 17, ID.Icon.Tank2},
+//					new int[] {1, 6, 0, -6, 0, 100, 72, 100, 62},
+//					new int[] {2, 6, 3,  -3, ID.Icon.GrudgeBH},
+//					new int[] {2, 6, 23, -3, ID.Icon.Tank2},
+//					new int[] {2, 6, 43, -3, ID.Icon.GrudgeBH},
+//					new int[] {2, 6, 3,  17, ID.Icon.GrudgeBH},
+//					new int[] {2, 6, 23, 17, ID.Icon.Tank2},
+//					new int[] {2, 6, 43, 17, ID.Icon.GrudgeBH},
+//					new int[] {2, 6, 3,  37, ID.Icon.GrudgeBH},
+//					new int[] {2, 6, 23, 37, ID.Icon.Tank2},
+//					new int[] {2, 6, 43, 37, ID.Icon.GrudgeBH},
+//					new int[] {2, 6, 81, 17, ID.Icon.Tank3}
 //		);}
 //		PageWidth = 135;  //page width, no scale = 106
 //		Page0LX = 13;	  //left page start X pos, no scale = 13
@@ -95,25 +143,58 @@ public class GuiBook
 								  new int[] {0, 1, 0, 0});
 		}
 		
+		drawBookContent(cont);
+	}
+	
+	//draw book content
+	private static void drawBookContent(List<int[]> cont)
+	{
 		if (cont != null)
 		{
+			int leftRand = 0;
+			int rightRand = 1;
+			
+			//page++ every X ms
+			if ((gui.tickGUI & 127) == 0)
+			{
+				PageLeftCurrent += 2;
+				PageRightCurrent += 2;
+			}
+			
+			//draw content
 			for (int[] getc : cont)
 			{
 				//check content existence
-				if (getc != null && getc.length > 3)
+				if (getc != null)
 				{
 					//get draw type
 					switch (getc[0])
 					{
-					case 0:    //text
+					case 0:		//text
 						drawBookText(getc[1], getc[2], getc[3]);
-						break;
-					case 1:    //picture
-						drawBookPic(getc);
-						break;
-					case 2:    //icon
-						drawBookIcon(getc[1], getc[2], getc[3], getc[4]);
-						break;
+					break;
+					case 1:		//picture
+						if (PageLeftCurrent > leftRand) PageLeftCurrent = 0;
+						if (PageRightCurrent > rightRand) PageRightCurrent = 1;
+						
+						if (getc[1] == PageLeftCurrent || getc[1] == PageRightCurrent)
+							drawBookPic(getc);
+					break;
+					case 2:		//icon
+						if (PageLeftCurrent > leftRand) PageLeftCurrent = 0;
+						if (PageRightCurrent > rightRand) PageRightCurrent = 1;
+						
+						if (getc[1] == PageLeftCurrent || getc[1] == PageRightCurrent)
+							drawBookIcon(getc[1], getc[2], getc[3], getc[4]);
+					break;
+					/** page setting: random page number, ex:
+					 *    cont = {3, 2, 3} => left page will be 0 or 2, right page will be 1 or 3
+					 *    cont = {3, 8, 7} => left = 0,2,4,6,8, right = 1,3,5,7
+					 */
+					case 3:		//
+						leftRand = getc[1];
+						rightRand = getc[2];
+					break;
 					}
 				}
 			}//for every item in list
@@ -220,10 +301,10 @@ public class GuiBook
 		}
 		
 		//set x, y offset
-		int picY = Page0Y + posY;			//add y offset
-		int picX = Page0LX;					//left page
-		if (pageSide > 0) picX = Page0RX;	//right page
-		picX += posX;						//add x offset
+		int picY = Page0Y + posY;					//add y offset
+		int picX = Page0LX;							//left page
+		if ((pageSide & 1) == 1) picX = Page0RX;	//right page
+		picX += posX;								//add x offset
 		
 		//set picture texture
 		switch (picID)
@@ -244,14 +325,18 @@ public class GuiBook
 		GlStateManager.disableBlend();
 	}
 	
-	/** draw book item icon */
+	/**
+	 * draw book item icon
+	 * 
+	 * pageSide: 0:left, 1:right, 2:left random, 3:right random
+	 */
 	private static void drawBookIcon(int pageSide, int offX, int offY, int iconID)
 	{
 		//set x, y offset
-		int picY = Page0Y + offY;			//add y offset
-		int picX = Page0LX;					//left page
-		if(pageSide > 0) picX = Page0RX;	//right page
-		picX += offX;						//add x offset
+		int picY = Page0Y + offY;					//add y offset
+		int picX = Page0LX;							//left page
+		if ((pageSide & 1) == 1) picX = Page0RX;	//right page
+		picX += offX;								//add x offset
 		
 		drawItemIcon(getItemStackForIcon(iconID), picX, picY, false);
 	}
@@ -283,7 +368,7 @@ public class GuiBook
 	//get itemstack for icon
 	public static ItemStack getItemStackForIcon(int itemID)
 	{
-		return Values.ItemIconMap.get((byte)itemID);
+		return Values.ItemIconMap.get((short)itemID);
 	}
 	
 	

@@ -39,6 +39,11 @@ public class CapaInventory<T> extends ItemStackHandler
         }
     }
     
+    public T getHost()
+    {
+    	return this.hostObj;
+    }
+    
     /** get slots at a time: IN: start slot id, length */
     public ItemStack[] getStacksInSlots(int slotStart, int length)
     {
@@ -68,14 +73,14 @@ public class CapaInventory<T> extends ItemStackHandler
 	{
         switch (hostType)
         {
-        case 0:  //tile
+        case 0:  //ship entity
         	//send packet TODO
         	break;
         case 1:  //tile
         	((TileEntity) hostObj).markDirty();
         	//send packet TODO
         	break;
-        case 2:  //entity
+        case 2:  //other entity
         	//send packet TODO
         	break;
         case 3:  //item

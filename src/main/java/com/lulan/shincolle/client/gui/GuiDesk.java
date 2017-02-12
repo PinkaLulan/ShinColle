@@ -74,8 +74,9 @@ public class GuiDesk extends GuiContainer
 	private static final ResourceLocation guiNameIcon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	
 	private TileEntityDesk tile;
+	public int tickGUI;
 	private int xClick, yClick, xMouse, yMouse, tempCD, lastXMouse, lastYMouse;
-	private int tickGUI, guiFunc, type;
+	private int guiFunc, type;
 	private float GuiScale, GuiScaleInv;
 	private int[] listNum, listClicked; //list var: 0:radar 1:team 2:target 3:teamAlly 4:teamBan
 	private static final int CLICKCD = 60;
@@ -344,10 +345,11 @@ public class GuiDesk extends GuiContainer
         		{
         			for (int[] getc : cont)
         			{
-        				if (getc != null && getc.length == 5)
+        				if (getc != null && getc.length == 5 && getc[0] == 2 &&
+        					(getc[1] == GuiBook.PageLeftCurrent || getc[1] == GuiBook.PageRightCurrent))
         				{
         					int xa = getc[2] + GuiBook.Page0LX - 1;              //at left page
-        					if (getc[1] > 0) xa = getc[2] + GuiBook.Page0RX - 1;  //at right page
+        					if ((getc[1] & 1) == 1) xa = getc[2] + GuiBook.Page0RX - 1;  //at right page
         					int xb = xa + 16;
         					int ya = getc[3] + GuiBook.Page0Y;
         					int yb = ya + 16;

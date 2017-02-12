@@ -170,7 +170,7 @@ public class TargetWrench extends BasicItem
 						resetPos();
 					}
 				}
-			}//end server side
+			}//end client side
 		}//end get player
 		
 		return EnumActionResult.PASS;

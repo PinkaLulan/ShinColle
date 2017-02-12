@@ -43,6 +43,10 @@ item.shincolle:ModernKit.name=近代化改修工具
 item.shincolle:OwnerPaper.name=深海棲艦所有權書
 item.shincolle:PointerItem.name=ヲ級的指揮權杖
 item.shincolle:RepairGoddess.name=深海女神的怨念
+item.shincolle:ShipTank.name=深海液體運輸罐 (小)
+item.shincolle:ShipTank1.name=深海液體運輸罐 (中)
+item.shincolle:ShipTank2.name=深海液體運輸罐 (大)
+item.shincolle:ShipTank3.name=深海液體運輸罐 (特大)
 item.shincolle:TargetWrench.name=目標設定扳手
 item.shincolle:ToyAirplane.name=零式21型艦戰 (1/48)
 item.shincolle:TrainingBook.name=整備員訓練書
@@ -330,6 +334,9 @@ gui.shincolle:book.chap1.text23d1=介面說明：<br><br>§9左上§0為起重�
 gui.shincolle:book.chap1.title24=整備員訓練書
 gui.shincolle:book.chap1.text24d0=<br><br><br><br><br><br><br><br><br>§c深海棲艦§0整備員訓練書，對船艦使用後可以提昇目標的等級5~10。<br><br>訓練書可以在地牢之中的寶箱中發現。
 gui.shincolle:book.chap1.text24d1=
+gui.shincolle:book.chap1.title25=深海液體運輸罐
+gui.shincolle:book.chap1.text25d0=<br><br><br><br><br><br><br><br><br>可以裝載各種液體以方便船艦運輸的容器，有四種大小等級。將運輸罐放置於船艙任何欄位中，然後船艦裝備至少一個§9深海抽水機組§0即可於深海起重機中裝載液體。
+gui.shincolle:book.chap1.text25d1=
  
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -709,6 +716,7 @@ gui.shincolle:combatration3=經過怨念調味的飯糰，看起來紅到發亮�
 gui.shincolle:combatration4=香醇綿密，冰涼滑順的冰淇淋，是消暑最佳聖品！
 gui.shincolle:combatration5=香醇綿密，冰涼滑順的冰淇淋，怨念含量低不用怕發胖！
 gui.shincolle:trainingbook=隨機提昇等級 5~10
+gui.shincolle:shiptank=方便船舶運輸的液體儲存容器
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上！

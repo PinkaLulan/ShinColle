@@ -118,7 +118,7 @@ public class ConfigHandler
 	public static double[] tileShipyardLarge = new double[] {1382400D,    48D,         1D};
 	public static double[] tileVolCore = new double[] {      9600D,       16D,         240D};
 	//crane setting                            liquid tank capa, EU capa
-	public static int[] tileCrane = new int[] {128000,           4000000};
+	public static int[] tileCrane = new int[] {2048000,         160000000};
 
 	//WORLD GEN
 	public static int polyOreBaseRate = 7;
@@ -196,7 +196,7 @@ public class ConfigHandler
 		//是否開啟林業支援
 		enableForestry = config.getBoolean("Mod_Forestry", CATE_INTERMOD, true, "Enable Forestry module if mod existed: add bees and comb.");
 		enableIC2 = config.getBoolean("Mod_IC2", CATE_INTERMOD, true, "Enable IC2 module if mod existed: add EU related function.");
-		propDrumEU = config.get(CATE_INTERMOD, "Drum_EU", drumEU, "EU transport rate: base transfer rate (EU/t), additional rate per enchantment (EU/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate + EnchantRate * #TotalEnchant)");
+		propDrumEU = config.get(CATE_INTERMOD, "Drum_EU", drumEU, "EU transport rate: base transfer rate (EU/t), additional rate per enchantment (EU/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate * #TotalTransformers + EnchantRate * #TotalEnchantments)");
 		
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", CATE_SHIP, true, "Can ship spawn Flare lighting effect, CLIENT SIDE only");
@@ -225,7 +225,7 @@ public class ConfigHandler
 		propExp = config.get(CATE_SHIP, "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
 		propMobSpawn = config.get(CATE_SHIP, "Limit_MobSpawnNumber", mobSpawn, "Mob ship spawn MAX number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
 		propHeldItem = config.get(CATE_SHIP, "Held_Item", scaleHeldItem, "Ship held item scaling: scale, offset X, offset Y, offset Z");
-		propDrumLiquid = config.get(CATE_SHIP, "Drum_Liquid", drumLiquid, "liquid transport rate: base transfer rate (mB/t), additional rate per enchantment (mB/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate + EnchantRate * #TotalEnchant)");
+		propDrumLiquid = config.get(CATE_SHIP, "Drum_Liquid", drumLiquid, "liquid transport rate: base transfer rate (mB/t), additional rate per enchantment (mB/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate * #TotalPumps + EnchantRate * #TotalEnchantments)");
 		
 		propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", tileShipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
 		propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", tileShipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
