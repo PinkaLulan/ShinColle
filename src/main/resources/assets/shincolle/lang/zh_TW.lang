@@ -182,6 +182,10 @@ item.shincolle:shipegg58.name=輕巡洋艦 天龍
 item.shincolle:shipegg2058.name=輕巡洋艦 天龍 (Mob)
 item.shincolle:shipegg59.name=輕巡洋艦 龍田
 item.shincolle:shipegg2059.name=輕巡洋艦 龍田 (Mob)
+item.shincolle:shipegg60.name=重巡洋艦 愛宕
+item.shincolle:shipegg2060.name=重巡洋艦 愛宕 (Mob)
+item.shincolle:shipegg61.name=重巡洋艦 高雄
+item.shincolle:shipegg2061.name=重巡洋艦 高雄 (Mob)
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=飛行場姬
@@ -206,6 +210,10 @@ entity.shincolle.EntityCarrierKagaMob.name=空母 加賀
 entity.shincolle.EntityCarrierHime.name=空母棲姬
 entity.shincolle.EntityCarrierWD.name=空母水鬼
 entity.shincolle.EntityCarrierWo.name=空母ヲ級
+entity.shincolle.EntityCruiserAtago.name=重巡洋艦 愛宕
+entity.shincolle.EntityCruiserAtagoMob.name=重巡洋艦 愛宕
+entity.shincolle.EntityCruiserTakao.name=重巡洋艦 高雄
+entity.shincolle.EntityCruiserTakaoMob.name=重巡洋艦 高雄
 entity.shincolle.EntityCruiserTenryuu.name=輕巡洋艦 天龍
 entity.shincolle.EntityCruiserTenryuuMob.name=輕巡洋艦 天龍
 entity.shincolle.EntityCruiserTatsuta.name=輕巡洋艦 龍田
@@ -523,6 +531,12 @@ gui.shincolle:book.chap5.text12d1=§9名稱：§0 天龍<br><br>§9艦種：§0 
 gui.shincolle:book.chap5.title13=
 gui.shincolle:book.chap5.text13d0=
 gui.shincolle:book.chap5.text13d1=§9名稱：§0 龍田<br><br>§9艦種：§0 天龍級 輕巡洋艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 夜晚時爆擊,閃避率+15%%<br><br>Cup E的槍兵，會把擅自靠近天龍的任何生物(包括主人)戳得破破爛爛的，真是~太棒了♪<br><br>近戰可造成100%%砲擊傷害，重型攻擊可造成50%%x1~3 + 150%%x1的雷裝傷害(依等級決定)。
+gui.shincolle:book.chap5.title14=
+gui.shincolle:book.chap5.text14d0=
+gui.shincolle:book.chap5.text14d1=§9名稱：§0 愛宕<br><br>§9艦種：§0 高雄級 重巡洋艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 使攻擊者緩速<br><br>具有跟港灣棲姬同等級的胸部裝甲，驅逐艦等小船衝撞到的話可能就會乓乓咖乓地大破。
+gui.shincolle:book.chap5.title15=
+gui.shincolle:book.chap5.text15d0=
+gui.shincolle:book.chap5.text15d1=§9名稱：§0 高雄<br><br>§9艦種：§0 高雄級 重巡洋艦<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 使攻擊者緩速<br><br>其胸前巨大的邪惡的質量已經大到產生明顯重力場，導致靠近的棲艦移動速度變得緩慢。
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=指令說明

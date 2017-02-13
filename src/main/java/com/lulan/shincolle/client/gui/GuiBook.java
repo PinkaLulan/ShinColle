@@ -49,14 +49,14 @@ public class GuiBook
 	private static int numPage;
 	public static int PageLeftCurrent = 0;  //current page for random icon counting
 	public static int PageRightCurrent = 0; //current page for random icon counting
-	public static int PageWidth = 135; //page width, no scale = 106
-	public static int Page0LX = 13;    //left page X pos, no scale = 13
-	public static int Page0RX = 133;   //right page X pos, no scale = 133
-	public static int Page0Y = 48;     //page Y pos, no scale = 48
-	public static int PageTLX = 13;    //left page X pos for text
-	public static int PageTRX = 162;   //right page X pos for text
-	public static int PageTY = 58;     //page Y pos for text
-	public static final int[] PageLimit = new int[] {1,25,6,15,20,13,4};  //max page number
+	public static int PageWidth = 135;		//page width, no scale = 106
+	public static int Page0LX = 13;			//left page X pos, no scale = 13
+	public static int Page0RX = 133;		//right page X pos, no scale = 133
+	public static int Page0Y = 48;			//page Y pos, no scale = 48
+	public static int PageTLX = 13;			//left page X pos for text
+	public static int PageTRX = 162;		//right page X pos for text
+	public static int PageTY = 58;			//page Y pos for text
+	public static final int[] PageLimit = new int[] {1,25,6,15,20,15,4};  //max page number
 	
 	public GuiBook() {}
 	

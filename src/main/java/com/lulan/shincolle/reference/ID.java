@@ -671,6 +671,8 @@ public class ID
 		
 		public static final short LightCruiserTenryuu = 56;
 		public static final short LightCruiserTatsuta = 57;
+		public static final short HeavyCruiserAtago = 58;
+		public static final short HeavyCruiserTakao = 59;
 	}
 	
 	/** ship misc entity id for renderer */

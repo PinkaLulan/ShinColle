@@ -275,7 +275,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
     		
         	this.setStateEmotion(ID.S.Phase, atkPhase, true);
         }
-        this.atkSpeed = 4F;//TODO
+        
         //show emotes
 		applyEmotesReaction(3);
         

@@ -147,7 +147,11 @@ public class ShipSpawnEgg extends BasicItem
 		case ID.Ship.LightCruiserTatsuta+2:
 		case ID.Ship.LightCruiserTatsuta+2002:
 			return 3;
-		case ID.Ship.HeavyCruiserRI+2:			//CA
+		case ID.Ship.HeavyCruiserAtago+2:		//CA
+		case ID.Ship.HeavyCruiserAtago+2002:
+//		case ID.Ship.HeavyCruiserTakao+2:
+//		case ID.Ship.HeavyCruiserTakao+2002:
+		case ID.Ship.HeavyCruiserRI+2:
 		case ID.Ship.HeavyCruiserNE+2:
 			return 4;
 		case ID.Ship.BattleshipRU+2:			//BB
@@ -228,6 +232,10 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.DestroyerInazuma+2002);	//hostile entity
   		shipList.add(ID.Ship.DestroyerShimakaze+2);
   		shipList.add(ID.Ship.DestroyerShimakaze+2002);	//hostile entity
+  		shipList.add(ID.Ship.HeavyCruiserAtago+2);
+  		shipList.add(ID.Ship.HeavyCruiserAtago+2002);	//hostile entity
+//  		shipList.add(ID.Ship.HeavyCruiserTakao+2);
+//  		shipList.add(ID.Ship.HeavyCruiserTakao+2002);	//hostile entity
   		shipList.add(ID.Ship.LightCruiserTenryuu+2);
   		shipList.add(ID.Ship.LightCruiserTenryuu+2002);	//hostile entity
   		shipList.add(ID.Ship.LightCruiserTatsuta+2);

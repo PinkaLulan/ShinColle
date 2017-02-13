@@ -4,6 +4,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
@@ -16,7 +17,7 @@ public class KaitaiHammer extends BasicItem
 {
 	
 	private static final String NAME = "KaitaiHammer";
-	
+
 	
 	public KaitaiHammer()
 	{
@@ -26,6 +27,8 @@ public class KaitaiHammer extends BasicItem
 		this.setMaxStackSize(1);
 		this.setMaxDamage(20);
 		this.setFull3D();
+		this.setNoRepair();
+		this.setHasSubtypes(false);
         
         GameRegistry.register(this);
 	}
@@ -41,16 +44,14 @@ public class KaitaiHammer extends BasicItem
 	@Override
 	public ItemStack getContainerItem(ItemStack stack)
 	{
+		//耐久度--
 		int meta = stack.getItemDamage() + 1;
+		stack.stackSize = 0;
 		
-		stack.setItemDamage(meta);	//耐久度--
+		//物品達到耐久度上限, 回傳空物品
+		if (meta >= this.getMaxDamage(stack)) return null;
 		
-		if (meta >= this.getMaxDamage())
-		{	//物品達到耐久度上限, 回傳空物品
-			return null;
-		}
-		
-		return stack;
+		return new ItemStack(ModItems.KaitaiHammer, 1, meta);
 	}
 
 	//避免meta值影響到物品名稱

@@ -99,6 +99,8 @@ public class Values
 		//cruiser
 		put(ID.Ship.LightCruiserTenryuu,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.4F});
 		put(ID.Ship.LightCruiserTatsuta,new float[] {42F,  13F, 16F, 1.0F, 0.42F, 8F,  0.4F,  0.4F,  0.2F,  0.6F,  0.9F,  0.4F});
+		put(ID.Ship.HeavyCruiserAtago,  new float[] {62F,  15F, 18F, 1.0F, 0.42F, 9F,  0.5F,  0.42F, 0.22F, 0.56F, 0.84F, 0.5F});
+		put(ID.Ship.HeavyCruiserTakao,  new float[] {62F,  15F, 18F, 1.0F, 0.42F, 9F,  0.5F,  0.42F, 0.22F, 0.56F, 0.84F, 0.5F});
 		//battleship
 		put(ID.Ship.BattleshipNagato,   new float[] {135F, 40F, 26F, 1.0F, 0.32F, 14F, 0.85F, 0.8F,  0.25F, 0.63F, 0.64F, 0.6F});
 		put(ID.Ship.BattleshipYamato,   new float[] {150F, 55F, 36F, 1.0F, 0.3F,  20F, 1F,    1F,    0.3F,  0.7F,  0.6F,  0.7F});
@@ -123,8 +125,10 @@ public class Values
 		put(ID.Ship.DestroyerInazuma,   new float[] {0.35F, 0.35F, 0.35F, 1F,    1.1F,  0.7F});
 		put(ID.Ship.DestroyerShimakaze, new float[] {0.4F,  0.5F,  0.4F,  1.2F,  1.2F,  0.75F});
 		//cruiser
-		put(ID.Ship.LightCruiserTenryuu,new float[] {0.5F,  0.6F,  0.5F,  1F,    0.9F,  0.8F});
-		put(ID.Ship.LightCruiserTatsuta,new float[] {0.5F,  0.6F,  0.5F,  1F,    0.9F,  0.8F});
+		put(ID.Ship.LightCruiserTenryuu,new float[] {0.55F, 0.6F,  0.5F,  1F,    0.9F,  0.8F});
+		put(ID.Ship.LightCruiserTatsuta,new float[] {0.55F, 0.6F,  0.5F,  1F,    0.9F,  0.8F});
+		put(ID.Ship.HeavyCruiserAtago,  new float[] {0.8F,  0.8F,  0.8F,  0.8F,  0.8F,  0.9F});
+		put(ID.Ship.HeavyCruiserTakao,  new float[] {0.8F,  0.8F,  0.8F,  0.8F,  0.8F,  0.9F});
 		//battleship
 		put(ID.Ship.BattleshipNagato,   new float[] {1.1F,  1.1F,  1.1F,  1F,    0.8F,  1.05F});
 		put(ID.Ship.BattleshipYamato,   new float[] {1.2F,  1.2F,  1.2F,  1.2F,  0.8F,  1.1F});
@@ -139,7 +143,6 @@ public class Values
 	/** SHIP LEASH HEIGHT
 	 * 
 	 *  map <ship id(short), data(float[])>
-	 *  
 	 *  data: 0:Width, 1:Ride, 2:RideSit, 3:Sit, 4:Stand
 	 */
 	public static final Map<Short, float[]> ShipLeashHeight = Collections.unmodifiableMap(new HashMap<Short, float[]>()
@@ -205,6 +208,8 @@ public class Values
 		//CL
 		put(ID.Ship.LightCruiserTenryuu,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
 		put(ID.Ship.LightCruiserTatsuta,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
+		put(ID.Ship.HeavyCruiserAtago,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
+		put(ID.Ship.HeavyCruiserTakao,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
 		//BB
 		put(ID.Ship.BattleshipNagato,	new float[] {0.1F, 0.95F, 0.95F, 0.95F, 0.1F});
 		put(ID.Ship.BattleshipYamato,	new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.15F});
@@ -214,7 +219,6 @@ public class Values
 		//CV
 		put(ID.Ship.CarrierKaga,		new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
 		put(ID.Ship.CarrierAkagi,		new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		
 	}});
 	
 	
@@ -296,6 +300,8 @@ public class Values
 		put(ID.Ship.Raiden,				new int[] {0, 0,  180});
 		put(ID.Ship.LightCruiserTenryuu,new int[] {0, 11, 180});
 		put(ID.Ship.LightCruiserTatsuta,new int[] {0, 22, 180});
+		put(ID.Ship.HeavyCruiserAtago,  new int[] {0, 33, 180});
+		put(ID.Ship.HeavyCruiserTakao,  new int[] {0, 44, 180});
 	}});
 	
 	/**SHIP LIST for guidebook
@@ -308,28 +314,21 @@ public class Values
 		add((int)ID.Ship.DestroyerRO);
 		add((int)ID.Ship.DestroyerHA);
 		add((int)ID.Ship.DestroyerNI);
-		
 		add((int)ID.Ship.HeavyCruiserRI);
 		add((int)ID.Ship.HeavyCruiserNE);
-		
 		add((int)ID.Ship.CarrierWO);
-		
 		add((int)ID.Ship.BattleshipTA);
 		add((int)ID.Ship.BattleshipRE);
-		
 		add((int)ID.Ship.AirfieldHime);
 		add((int)ID.Ship.BattleshipHime);
 		add((int)ID.Ship.HarbourHime);
 		add((int)ID.Ship.NorthernHime);
 		add((int)ID.Ship.CarrierWD);
-		
 		add((int)ID.Ship.TransportWA);
 		add((int)ID.Ship.SubmarineKA);
 		add((int)ID.Ship.SubmarineYO);
 		add((int)ID.Ship.SubmarineSO);
-		
 		add((int)ID.Ship.CarrierHime);
-		
 		add((int)ID.Ship.BattleshipRU);
 	}});
 	
@@ -343,18 +342,17 @@ public class Values
 		add((int)ID.Ship.BattleshipNagato);
 		add((int)ID.Ship.SubmarineU511);
 		add((int)ID.Ship.SubmarineRo500);
-		
 		add((int)ID.Ship.BattleshipYamato);
 		add((int)ID.Ship.CarrierKaga);
 		add((int)ID.Ship.CarrierAkagi);
-		
 		add((int)ID.Ship.DestroyerAkatsuki);
 		add((int)ID.Ship.DestroyerHibiki);
 		add((int)ID.Ship.DestroyerIkazuchi);
 		add((int)ID.Ship.DestroyerInazuma);
-		
 		add((int)ID.Ship.LightCruiserTenryuu);
 		add((int)ID.Ship.LightCruiserTatsuta);
+		add((int)ID.Ship.HeavyCruiserAtago);
+		add((int)ID.Ship.HeavyCruiserTakao);
 	}});
 	
 	

@@ -18,6 +18,7 @@ import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -196,8 +197,9 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 			
 			boolean setdead = false;
 			
-			//owner消失(通常是server restart)
-			if (this.host == null)
+			//owner消失(通常是server restart) or host dead
+			if (this.host == null ||
+				(this.host instanceof EntityLivingBase && !((EntityLivingBase)this.host).isEntityAlive()))
 			{
 				setdead = true;
 			}

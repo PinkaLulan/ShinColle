@@ -459,6 +459,15 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 								workDoing[3] = false;
 							}
 							
+							//add exp to transport ship, every work +X exp to ship
+							if (this.ship != null && this.ship.getShipType() == ID.ShipType.TRANSPORT)
+							{
+								for (boolean b : workDoing)
+								{
+									this.ship.addShipExp(ConfigHandler.expGain[6]);
+								}
+							}
+							
 							//check craning ending
 							switch (this.craneMode)
 							{

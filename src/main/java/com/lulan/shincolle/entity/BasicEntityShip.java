@@ -22,6 +22,7 @@ import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
 import com.lulan.shincolle.capability.CapaTeitoku;
@@ -35,6 +36,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.item.IShipCombatRation;
 import com.lulan.shincolle.item.IShipFoodItem;
 import com.lulan.shincolle.item.OwnerPaper;
@@ -2505,9 +2507,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			if (this.ticksExisted % 8 == 0)
 			{
         		//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
-        		if (ConfigHandler.canSearchlight)
+        		if (ConfigHandler.canSearchlight && this.isEntityAlive())
         		{
-            		updateSearchlight();
+        			updateSearchlight();
         		}
         		
         		//check every 16 ticks
@@ -2654,122 +2656,130 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		//check every 16 ticks
             	if ((ticksExisted & 15) == 0)
             	{
-            		//waypoint move
-            		if (!(this.getRidingEntity() instanceof BasicEntityMount))
+            		if (this.isEntityAlive())
             		{
-            			if (EntityHelper.updateWaypointMove(this))
-            			{
-            				sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
-            			}
-            		}
-            		
-            		//cancel mounts
-            		if (this.canSummonMounts())
-            		{
-            			if (getStateEmotion(ID.S.State) < ID.State.EQUIP00)
-            			{
-          	  	  			//cancel riding
-          	  	  			if (this.isRiding() && this.getRidingEntity() instanceof BasicEntityMount)
-          	  	  			{
-          	  	  				this.dismountRidingEntity();
-          	  	  			}
-          	  	  		}
+                		//waypoint move
+                		if (!(this.getRidingEntity() instanceof BasicEntityMount))
+                		{
+                			if (EntityHelper.updateWaypointMove(this))
+                			{
+                				sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
+                			}
+                		}
+                		
+                		//cancel mounts
+                		if (this.canSummonMounts())
+                		{
+                			if (getStateEmotion(ID.S.State) < ID.State.EQUIP00)
+                			{
+              	  	  			//cancel riding
+              	  	  			if (this.isRiding() && this.getRidingEntity() instanceof BasicEntityMount)
+              	  	  			{
+              	  	  				this.dismountRidingEntity();
+              	  	  			}
+              	  	  		}
+                		}
             		}
             		
             		//check every 32 ticks
                 	if ((ticksExisted & 31) == 0)
                 	{
-                		//use bucket automatically
-                		if ((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F))
+                		if (this.isEntityAlive())
                 		{
-        	                if (decrSupplies(7))
-        	                {
-        		                this.heal(this.getMaxHealth() * 0.08F + 15F);
-        	                
-        		                //airplane++
-        		                if (this instanceof BasicEntityShipCV)
-        		                {
-        		                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
-        		                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
-        		                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
-        		                }
-        	                }
-        	            }
+	                		//use bucket automatically
+	                		if ((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F))
+	                		{
+	        	                if (decrSupplies(7))
+	        	                {
+	        		                this.heal(this.getMaxHealth() * 0.08F + 15F);
+	        	                
+	        		                //airplane++
+	        		                if (this instanceof BasicEntityShipCV)
+	        		                {
+	        		                	BasicEntityShipCV ship = (BasicEntityShipCV) this;
+	        		                	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
+	        		                	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
+	        		                }
+	        	                }
+	        	            }
+                		}
                 		
-                		//check every 64 ticks
-                		if ((ticksExisted & 63) == 0)
-                		{
-                			//check every 128 ticks
-                        	if ((ticksExisted & 127) == 0)
-                        	{
-                        		//delayed init, waiting for player entity loaded
-                        		if (!this.initWaitAI && ticksExisted >= 128)
-                        		{
-                        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
-                        			this.initWaitAI = true;
-                        		}
+            			//check every 128 ticks
+                    	if ((ticksExisted & 127) == 0)
+                    	{
+                    		//delayed init, waiting for player entity loaded
+                    		if (!this.initWaitAI && ticksExisted >= 128)
+                    		{
+                    			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
+                    			this.initWaitAI = true;
+                    		}
 
-                        		//check owner online
-                        		if (this.getPlayerUID() > 0)
+                    		//check owner online
+                    		if (this.getPlayerUID() > 0)
+                    		{
+                    			//get owner
+                    			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+                    			
+                    			//owner exists (online and same world)
+                    			if (player != null)
+                    			{
+                					//update owner entity id (could be changed when owner change dimension or dead)
+                        			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
+                        			//sync guard position
+                        			this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, false);
+                        		}
+                    		}
+                    		
+                    		if (this.isEntityAlive())
+                    		{
+	                    		//use combat ration automatically
+	                    		if (getMoraleLevel() >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
+	                    		{
+	                    			useCombatRation();
+	                    		}
+	                    		
+	                    		//update mount
+	                    		updateMountSummon();
+	                    		
+	                    		//update consume item
+	                    		updateConsumeItem();
+	                    		
+	                    		//update morale value
+	                    		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
+                    		}
+                    		
+                    		//check every 256 ticks
+                        	if ((this.ticksExisted & 255) == 0)
+                        	{
+                        		//update buff (slow update)
+                        		calcEquipAndUpdateState();
+                        		
+                        		if (this.isEntityAlive())
                         		{
-                        			//get owner
-                        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-                        			
-                        			//owner exists (online and same world)
-                        			if (player != null)
-                        			{
-                    					//update owner entity id (could be changed when owner change dimension or dead)
-                            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
-                            			//sync guard position
-                            			this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, false);
-                            		}
+	                        		//show idle emotes
+	                        		if (!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
+	                        		
+	                        		//HP auto regen
+	                        		if (this.getHealth() < this.getMaxHealth())
+	                        		{
+	                        			this.heal(this.getMaxHealth() * 0.03F + 1F);
+	                        		}
                         		}
                         		
-                        		//use combat ration automatically
-                        		if (getMoraleLevel() >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
+                        		//food saturation--
+                        		int f = this.getFoodSaturation();
+                        		if (f > 0)
                         		{
-                        			useCombatRation();
+                        			this.setFoodSaturation(--f);
                         		}
-                        		
-                        		//update mount
-                        		updateMountSummon();
-                        		
-                        		//update consume item
-                        		updateConsumeItem();
-                        		
-                        		//update morale value
-                        		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
-                        		
-                        		//check every 256 ticks
-                            	if ((this.ticksExisted & 255) == 0)
-                            	{
-                            		//update buff (slow update)
-                            		calcEquipAndUpdateState();
-                            		
-                            		//show idle emotes
-                            		if (!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
-                            		
-                            		//HP auto regen
-                            		if (this.getHealth() < this.getMaxHealth())
-                            		{
-                            			this.heal(this.getMaxHealth() * 0.03F + 1F);
-                            		}
-                            		
-                            		//food saturation--
-                            		int f = this.getFoodSaturation();
-                            		if (f > 0)
-                            		{
-                            			this.setFoodSaturation(--f);
-                            		}
-                            	}//end every 256 ticks
-                        	}//end every 128 ticks
-                		}//end every 64 ticks
+                        	}//end every 256 ticks
+                    	}//end every 128 ticks
                 	}//end every 32 ticks
             	}//end every 16 ticks
         	}//end every 8 ticks
         	
         	//play timekeeping sound
-        	if (ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper))
+        	if (ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper) && this.isEntityAlive())
         	{
         		int checkHour = getWorldHourTime();
         		if (checkHour >= 0) playTimeSound(checkHour);
@@ -3961,7 +3971,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//update hp state
   	protected void updateMountSummon()
   	{
-    	if (this.canSummonMounts() && this.isEntityAlive())
+    	if (this.canSummonMounts())
     	{
     		//summon mount if emotion state >= equip00
   	  		if (getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
@@ -6224,6 +6234,79 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	
         if (this.deathTime == ConfigHandler.deathTick)
         {
+        	//spawn ship egg
+	    	if (!this.world.isRemote && this.getStateFlag(ID.F.CanDrop))
+	    	{
+	    		//set flag to false to prevent multiple drop from unknown bug
+	    		this.setStateFlag(ID.F.CanDrop, false);
+	    		
+	    		//save ship attributes to ship spawn egg
+	    		ItemStack egg = new ItemStack(ModItems.ShipSpawnEgg, 1, this.getShipClass()+2);
+		    	BasicEntityItem entityItem2 = new BasicEntityItem(this.world, this.posX, this.posY+0.5D, this.posZ, egg);
+		    	NBTTagCompound nbt = new NBTTagCompound();
+		    	CapaShipInventory shipInv = this.getCapaShipInventory();
+		    	String ownerUUID = EntityHelper.getPetPlayerUUID(this);
+		    	String name = EntityHelper.getOwnerName(this);
+		    	
+				//get ship misc data
+		    	int[] attrs = new int[7];
+		    	
+		    	if (this.getLevel() > 1) attrs[0] = this.getLevel() - 1;	//decrease level 1
+		    	else attrs[0] = 1;
+		    	
+		    	attrs[1] = this.getBonusPoint(ID.HP);
+		    	attrs[2] = this.getBonusPoint(ID.ATK);
+		    	attrs[3] = this.getBonusPoint(ID.DEF);
+		    	attrs[4] = this.getBonusPoint(ID.SPD);
+		    	attrs[5] = this.getBonusPoint(ID.MOV);
+		    	attrs[6] = this.getBonusPoint(ID.HIT);
+		    	
+		    	//get ship misc data 2
+		    	int[] attrs2 = new int[7];
+		    	
+		    	attrs2[0] = this.getStateEmotion(ID.S.State);
+		    	attrs2[1] = this.getStateEmotion(ID.S.State2);
+		    	attrs2[2] = this.getStateMinor(ID.M.FollowMin);
+		    	attrs2[3] = this.getStateMinor(ID.M.FollowMax);
+		    	attrs2[4] = this.getStateMinor(ID.M.FleeHP);
+		    	attrs2[5] = this.getStateMinor(ID.M.WpStay);
+		    	attrs2[6] = this.getStateMinor(ID.M.UseCombatRation);
+		    	
+		    	//get ship flag data
+		    	byte[] flags = new byte[15];
+		    	
+		    	flags[0] = this.getStateFlag(ID.F.IsMarried) ? (byte)1 : (byte)0;
+		    	flags[1] = this.getStateFlag(ID.F.UseMelee) ? (byte)1 : (byte)0;
+		    	flags[2] = this.getStateFlag(ID.F.UseAmmoLight) ? (byte)1 : (byte)0;
+		    	flags[3] = this.getStateFlag(ID.F.UseAmmoHeavy) ? (byte)1 : (byte)0;
+		    	flags[4] = this.getStateFlag(ID.F.UseAirLight) ? (byte)1 : (byte)0;
+		    	flags[5] = this.getStateFlag(ID.F.UseAirHeavy) ? (byte)1 : (byte)0;
+		    	flags[6] = this.getStateFlag(ID.F.UseRingEffect) ? (byte)1 : (byte)0;
+		    	flags[7] = this.getStateFlag(ID.F.OnSightChase) ? (byte)1 : (byte)0;
+		    	flags[8] = this.getStateFlag(ID.F.PVPFirst) ? (byte)1 : (byte)0;
+		    	flags[9] = this.getStateFlag(ID.F.AntiAir) ? (byte)1 : (byte)0;
+		    	flags[10] = this.getStateFlag(ID.F.AntiSS) ? (byte)1 : (byte)0;
+		    	flags[11] = this.getStateFlag(ID.F.PassiveAI) ? (byte)1 : (byte)0;
+		    	flags[12] = this.getStateFlag(ID.F.TimeKeeper) ? (byte)1 : (byte)0;
+		    	flags[13] = this.getStateFlag(ID.F.PickItem) ? (byte)1 : (byte)0;
+		    	flags[14] = this.getStateFlag(ID.F.ShowHeldItem) ? (byte)1 : (byte)0;
+		    	
+		    	//save ship attributes
+		    	nbt.setString("owner", ownerUUID);									//owner UUID
+		    	nbt.setString("ownername", name);									//owner name
+		    	nbt.setInteger("PlayerID", this.getStateMinor(ID.M.PlayerUID));	//owner UID
+		    	nbt.setTag(CapaInventory.InvName, shipInv.serializeNBT());			//inventory data
+		    	nbt.setIntArray("Attrs", attrs);									//misc data
+		    	nbt.setIntArray("Attrs2", attrs2);									//misc data2
+		    	nbt.setByteArray("Flags", flags);									//flag data
+		    	nbt.setInteger("ShipID", this.getStateMinor(ID.M.ShipUID));		//ship UID
+		    	nbt.setString("customname", this.getCustomNameTag());				//custom name
+		    	
+		    	entityItem2.getEntityItem().setTagCompound(nbt);	  				//save nbt to entity item
+		    	this.world.spawnEntity(entityItem2);								//spawn entity item
+	    	}
+        	
+        	//spawn XP orb
             if (!this.world.isRemote && (this.isPlayer() || this.recentlyHit > 0 && this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot")))
             {
                 int i = this.getExperiencePoints(this.attackingPlayer);
@@ -6236,8 +6319,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 }
             }
 
+            //set dead
             this.setDead();
 
+            //spawn smoke particle
             for (int k = 0; k < 20; ++k)
             {
                 double d2 = this.rand.nextGaussian() * 0.02D;
@@ -6246,6 +6331,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 this.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d2, d0, d1, new int[0]);
             }
         }
+        //clear bug entity
         else if (this.deathTime > ConfigHandler.deathTick && !this.isDead)
         {
         	this.setDead();

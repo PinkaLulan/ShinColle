@@ -299,6 +299,14 @@ public class ShipCalc
   			return "shincolle.EntityCruiserTatsuta";
   		case ID.Ship.LightCruiserTatsuta+2000:
   			return "shincolle.EntityCruiserTatsutaMob";
+  		case ID.Ship.HeavyCruiserAtago:
+  			return "shincolle.EntityCruiserAtago";
+  		case ID.Ship.HeavyCruiserAtago+2000:
+  			return "shincolle.EntityCruiserAtagoMob";
+  		case ID.Ship.HeavyCruiserTakao:
+  			return "shincolle.EntityCruiserTakao";
+  		case ID.Ship.HeavyCruiserTakao+2000:
+  			return "shincolle.EntityCruiserTakaoMob";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	
@@ -330,7 +338,7 @@ public class ShipCalc
   		//30% for rare level
   		else if (ran1 > 45)
   		{
-  			switch (rand.nextInt(4))
+  			switch (rand.nextInt(6))
   			{
   			case 1:
   				return getEntityToSpawnName(ID.Ship.CarrierKaga+2000);
@@ -338,6 +346,10 @@ public class ShipCalc
   				return getEntityToSpawnName(ID.Ship.LightCruiserTenryuu+2000);
   			case 3:
   				return getEntityToSpawnName(ID.Ship.LightCruiserTatsuta+2000);
+  			case 4:
+  				return getEntityToSpawnName(ID.Ship.HeavyCruiserAtago+2000);
+//  			case 5:
+//  				return getEntityToSpawnName(ID.Ship.HeavyCruiserTakao+2000);
   			default:
   				return getEntityToSpawnName(ID.Ship.CarrierAkagi+2000);
   			}
@@ -450,6 +462,8 @@ public class ShipCalc
   			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
   			amount[3] = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 1);
   			break;
+  		case ID.Ship.HeavyCruiserAtago:
+  		case ID.Ship.HeavyCruiserTakao:
   		case ID.Ship.LightCruiserTenryuu:
   		case ID.Ship.LightCruiserTatsuta:
   			amount[0] = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));

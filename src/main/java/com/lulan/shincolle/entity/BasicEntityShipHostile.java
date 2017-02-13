@@ -17,6 +17,7 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CReactPackets;
@@ -929,7 +930,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
                     	setAir(300);
                     }
             		
-            		applyEmotesReaction(4);
+            		if (this.isEntityAlive()) applyEmotesReaction(4);
             	}//end every 256 ticks
         	}//end every 16 ticks	
         }//end server side
@@ -1723,6 +1724,22 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         
         if (this.deathTime == ConfigHandler.deathTick)
         {
+        	//spawn ship egg
+    		if (!this.world.isRemote && this.canDrop && this.world.getGameRules().getBoolean("doMobLoot"))
+    		{
+    			//set drop flag to false
+    			this.canDrop = false;
+    			
+    			ItemStack bossEgg = this.getDropEgg();
+    			
+    			if (bossEgg != null)
+    			{
+    				BasicEntityItem entityItem1 = new BasicEntityItem(this.world, this.posX, this.posY+0.5D, this.posZ, bossEgg);
+    				this.world.spawnEntity(entityItem1);
+    			}
+    		}	
+    		
+    		//spawn xp orb
             if (!this.world.isRemote && (this.isPlayer() || this.recentlyHit > 0 && this.canDropLoot() && this.world.getGameRules().getBoolean("doMobLoot")))
             {
                 int i = this.getExperiencePoints(this.attackingPlayer);

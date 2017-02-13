@@ -182,6 +182,10 @@ item.shincolle:shipegg58.name=Light Cruiser Tenryuu
 item.shincolle:shipegg2058.name=Light Cruiser Tenryuu (Mob)
 item.shincolle:shipegg59.name=Light Cruiser Tatsuta
 item.shincolle:shipegg2059.name=Light Cruiser Tatsuta (Mob)
+item.shincolle:shipegg60.name=Heavy Cruiser Atago
+item.shincolle:shipegg2060.name=Heavy Cruiser Atago (Mob)
+item.shincolle:shipegg61.name=Heavy Cruiser Takao
+item.shincolle:shipegg2061.name=Heavy Cruiser Takao (Mob)
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=Airfield Princess
@@ -206,6 +210,10 @@ entity.shincolle.EntityCarrierKagaMob.name=Standard Carrier Kaga
 entity.shincolle.EntityCarrierHime.name=Aircraft Carrier Princess
 entity.shincolle.EntityCarrierWD.name=Aircraft Carrier Water Demon
 entity.shincolle.EntityCarrierWo.name=Standard Carrier Wo-Class
+entity.shincolle.EntityCruiserAtago.name=Heavy Cruiser Atago
+entity.shincolle.EntityCruiserAtagoMob.name=Heavy Cruiser Atago
+entity.shincolle.EntityCruiserTakao.name=Heavy Cruiser Takao
+entity.shincolle.EntityCruiserTakaoMob.name=Heavy Cruiser Takao
 entity.shincolle.EntityCruiserTenryuu.name=Light Cruiser Tenryuu
 entity.shincolle.EntityCruiserTenryuuMob.name=Light Cruiser Tenryuu
 entity.shincolle.EntityCruiserTatsuta.name=Light Cruiser Tatsuta
@@ -523,6 +531,12 @@ gui.shincolle:book.chap5.text12d1=§9Name:§0 Tenryuu<br><br>§9Class:§0 Tenryu
 gui.shincolle:book.chap5.title13=
 gui.shincolle:book.chap5.text13d0=
 gui.shincolle:book.chap5.text13d1=§9Name:§0 Tatsuta<br><br>§9Class:§0 Tenryuu Class CL<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Cri,Dodge+15%% at night<br><br>Lancer with Cup E. She will riddle anyone (including master) close to Tenryuu ...HOORAY♪<br><br>Melee deal 100%% firepower damage, TenryuuSlash deal 50%%x1~3 + 150%% torpedo damage (depend on level).
+gui.shincolle:book.chap5.title14=
+gui.shincolle:book.chap5.text14d0=
+gui.shincolle:book.chap5.text14d1=§9Name:§0 Atago<br><br>§9Class:§0 Takao Class CA<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Slow attacker on damaged<br><br>She has the same level of chest armor with Harbour Princess. Small ship like DD will become panpakapanly broken if crash into her chest.
+gui.shincolle:book.chap5.title15=
+gui.shincolle:book.chap5.text15d0=
+gui.shincolle:book.chap5.text15d1=§9Name:§0 Takao<br><br>§9Class:§0 Takao Class CA<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Slow attacker on damaged<br><br>Her huge mass of evil on the chest has been enough to produce significant gravity field to slow down nearby ships.
 
 # GUI: Book Text Chap 6
 gui.shincolle:book.chap6.title=Commands
