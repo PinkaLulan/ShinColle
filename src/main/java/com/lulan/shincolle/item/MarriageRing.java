@@ -8,6 +8,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import baubles.api.BaubleType;
@@ -149,7 +150,7 @@ public class MarriageRing extends BasicItem implements IBauble
 			//server side
 			if (!world.isRemote)
 			{
-				if (inUse && (entity.ticksExisted & 63) == 0)
+				if (inUse && slot != 0 && (entity.ticksExisted & 63) == 0)
 				{
 					//apply shy emotion to nearby ship
 		  			List<BasicEntityShip> slist = world.getEntitiesWithinAABB(BasicEntityShip.class, entity.getEntityBoundingBox().expand(6D, 5D, 6D));

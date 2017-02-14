@@ -9,19 +9,13 @@ import java.util.Random;
 public interface IShipEmotion extends IShipFlags
 {
 	
-	/**Get emotion value
-	 * id = 0: return damaged state
-	 * id = 1: return 0:NORMAL 1:BLINK 2:T_T 3:O_O 4:BORED 5:HUNGRY
-	 * id = 2: return attack emotion / tilt state
-	 */
+	/** get emotion value */
 	public byte getStateEmotion(int id);
-	
-	/**Set emotion value
-	 * id: 0:damage state, 1:emotion1, 2:emotion2
-	 * value: emotion type
-	 * sync: send sync packet to client?
-	 */
 	public void setStateEmotion(int id, int value, boolean sync);
+	
+	/** get emotion timer */
+	public int getStateTimer(int id);
+	public void setStateTimer(int id, int value);
 	
 	/**GET/SET emotion start time
 	 * emotion start time for individual entity

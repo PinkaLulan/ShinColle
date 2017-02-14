@@ -5,11 +5,13 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityCruiserAtago extends BasicEntityShipSmall
 {
 
+	
 	public EntityCruiserAtago(World world)
 	{
 		super(world);
@@ -89,6 +91,20 @@ public class EntityCruiserAtago extends BasicEntityShipSmall
 			if (i > ID.State.EQUIP02) i = ID.State.NORMAL;
 			setStateEmotion(ID.S.State, i, true);
 		}
+	}
+	
+	//
+	@Override
+    public boolean attackEntityFrom(DamageSource source, float atk)
+	{
+		if (super.attackEntityFrom(source, atk))
+		{
+			//TODO slow attacker
+			
+			return true;
+		}
+		
+		return false;
 	}
 
 

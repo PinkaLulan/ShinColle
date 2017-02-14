@@ -115,10 +115,10 @@ public class ModEntity
 		createEntity(EntityCarrierHime.class, "EntityCarrierHime", modEntityID++);
 		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);
 		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
-		createEntity(EntityCruiserAtago.class, "EntityCruiserTenryuu", modEntityID++);
-		createEntity(EntityCruiserAtagoMob.class, "EntityCruiserTenryuu", modEntityID++);
-//		createEntity(EntityCruiserTakao.class, "EntityCruiserTenryuu", modEntityID++);
-//		createEntity(EntityCruiserTakaoMob.class, "EntityCruiserTenryuu", modEntityID++);
+		createEntity(EntityCruiserAtago.class, "EntityCruiserAtago", modEntityID++);
+		createEntity(EntityCruiserAtagoMob.class, "EntityCruiserAtagoMob", modEntityID++);
+//		createEntity(EntityCruiserTakao.class, "EntityCruiserTakao", modEntityID++);
+//		createEntity(EntityCruiserTakaoMob.class, "EntityCruiserTakaoMob", modEntityID++);
 		createEntity(EntityCruiserTenryuu.class, "EntityCruiserTenryuu", modEntityID++);
 		createEntity(EntityCruiserTenryuuMob.class, "EntityCruiserTenryuuMob", modEntityID++);
 		createEntity(EntityCruiserTatsuta.class, "EntityCruiserTatsuta", modEntityID++);

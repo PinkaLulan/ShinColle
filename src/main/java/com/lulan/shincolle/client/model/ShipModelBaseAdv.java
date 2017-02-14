@@ -545,7 +545,7 @@ abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotio
 		
 		int t = (ent.getTickExisted() + (ent.getStateMinor(ID.M.ShipUID) << 7)) & 255;
 		
-		if (t < 140)
+		if (t < 180)
 		{
 			this.setFace(0);
 			

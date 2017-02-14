@@ -1874,5 +1874,18 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		this.deathTime = par1;
 	}
 	
+	@Override
+	public int getStateTimer(int id)
+	{
+		if (this.host != null) this.host.getStateTimer(id);
+		return 0;
+	}
+
+	@Override
+	public void setStateTimer(int id, int value)
+	{
+		if (this.host != null) this.host.setStateTimer(id, value);
+	}
+	
 	
 }

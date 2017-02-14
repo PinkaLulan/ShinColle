@@ -1786,5 +1786,18 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		this.deathTime = par1;
 	}
 	
+	//TODO no use for now
+	@Override
+	public int getStateTimer(int id)
+	{
+		return 0;
+	}
+
+	//TODO no use for now
+	@Override
+	public void setStateTimer(int id, int value)
+	{
+	}
+	
   	
 }

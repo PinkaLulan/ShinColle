@@ -1027,6 +1027,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return EffectFormationFixed[id];
 	}
 	
+	@Override
 	public int getStateTimer(int id)
 	{
 		return StateTimer[id];
@@ -1532,6 +1533,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		TypeModify[ID.HIT] = getStat[ID.ShipAttr.ModHIT];
 	}
 
+	@Override
 	public void setStateTimer(int id, int value)
 	{
 		StateTimer[id] = value;
@@ -3079,7 +3081,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return false;
 	}
 	
-	//be attacked method, 包括其他entity攻擊, anvil攻擊, arrow攻擊, fall damage都使用此方法 
 	@Override
     public boolean attackEntityFrom(DamageSource source, float atk)
 	{
@@ -3942,13 +3943,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//random Emotion
 				switch (this.getStateEmotion(ID.S.Emotion))
 				{
-				case ID.Emotion.NORMAL:		//if normal, 25% to bored
-					if (this.getRNG().nextInt(4) == 0)
+				case ID.Emotion.NORMAL:		//if normal, 33% to bored
+					if (this.getRNG().nextInt(3) == 0)
 						this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
 				break;
-				default:					//other, 50% return normal
-					if (this.getRNG().nextInt(2) == 0)
+				default:					//other, 25% return normal
+					if (this.getRNG().nextInt(4) == 0)
+					{
 						this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+					}
 				break;
 				}
 				
@@ -3959,8 +3962,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					if (this.getRNG().nextInt(3) == 0)
 						this.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
 				break;
-				default:					//other, 50% return normal
-					if (this.getRNG().nextInt(2) == 0)
+				default:					//other, 33% return normal
+					if (this.getRNG().nextInt(3) == 0)
 						this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
 				break;
 				}
@@ -4619,6 +4622,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	//caress state for model display
   	protected void isCaressed()
   	{
+  		LogHelper.debug("AAAAAAAAA "+getHitHeightID()); //TODO
   		//default: only top or head = caressed
   		if (getHitHeightID() <= 1)
   		{
