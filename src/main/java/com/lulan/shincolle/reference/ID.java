@@ -53,38 +53,17 @@ public class ID
 	/** ship body part */
 	public static final class Body
 	{
-		public static final byte UBelly = 20;
-		public static final byte Chest = 21;
-		public static final byte Butt = 22;
-		public static final byte Neck = 23;
-		public static final byte Face = 24;
-		public static final byte Back = 25;
-		public static final byte Belly = 26;
-		public static final byte Top = 27;
-		public static final byte Head = 28;
-		public static final byte Leg = 29;
-		public static final byte Arm = 30;
-		
-		/** by height */
-		public static final class Height
-		{
-			public static final byte Top = 0;
-			public static final byte Head = 1;
-			public static final byte Neck = 2;
-			public static final byte Chest = 3;
-			public static final byte Belly = 4;
-			public static final byte UBelly = 5;
-			public static final byte Leg = 6;
-		}
-		
-		/** by angle */
-		public static final class Side
-		{
-			public static final byte Back = 10;
-			public static final byte Right = 11;
-			public static final byte Front = 12;
-			public static final byte Left = 13;
-		}
+		public static final byte UBelly = 0;
+		public static final byte Chest = 1;
+		public static final byte Butt = 2;
+		public static final byte Neck = 3;
+		public static final byte Face = 4;
+		public static final byte Back = 5;
+		public static final byte Belly = 6;
+		public static final byte Top = 7;
+		public static final byte Head = 8;
+		public static final byte Leg = 9;
+		public static final byte Arm = 10;
 	}
 	
 	/** Shipyard build type*/

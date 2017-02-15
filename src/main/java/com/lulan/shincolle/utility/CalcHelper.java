@@ -12,7 +12,6 @@ import com.lulan.shincolle.reference.Values;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
@@ -368,47 +367,21 @@ public class CalcHelper
 	}
 	
 	/** get entity hit height by player's sight ray (client player sight)
-	 * 
+	 *  return height percent by entity height
+	 *  
+	 *  calculation:
+	 *    x1 = (distance - target.width / 2) * tan(pitch)
+	 *    x2 = host.posY + host.eyeHeight - target.posY
+	 *    hit height = x2 - x1
+	 *    
+	 *  note:
+	 *    1. too close -> tan approach infinity -> retrurn 110 or -10
 	 */
 	@SideOnly(Side.CLIENT)
 	public static int getEntityHitHeightByClientPlayer(Entity target)
 	{
-		int result = 0;
+		return getEntityHitHeight(ClientProxy.getClientPlayer(), target);
 		
-		if (target != null)
-		{
-			float eyeH = 1.62F;  //normal player eye height
-			
-			//calc player eye height
-			EntityPlayer player = ClientProxy.getClientPlayer();
-			
-			if (player.getEyeHeight() != 0.12F)
-			{  //is morph player
-				eyeH = (float) (player.getEntityBoundingBox().maxY - player.getEntityBoundingBox().minY + player.getEyeHeight());
-			}
-			
-			//calc sight ray (host to target) length
-			float dx = (float) (player.posX - target.posX);
-			float dz = (float) (player.posZ - target.posZ);
-			float rayLen = MathHelper.sqrt(dx * dx + dz * dz + eyeH * eyeH);
-			rayLen -= target.width;
-			rayLen = rayLen * MathHelper.sin(player.rotationPitch * Values.N.DIV_PI_180);
-			
-			//calc hit height
-			float hitHeight = (float) (player.getEntityBoundingBox().minY + eyeH - target.getEntityBoundingBox().minY - rayLen);
-			
-			//hit height convert to percentage
-			if (hitHeight > 0F && hitHeight <= target.height * 1.5F)
-			{
-				result = (int) (hitHeight / target.height * 100F);
-			}
-			else
-			{
-				result = 0;  //not hit, error
-			}
-		}
-		
-		return result;
 	}
 	
 	/** get entity hit height by entity's sight ray */
@@ -416,30 +389,28 @@ public class CalcHelper
 	{
 		int result = 0;
 		
-		if (host != null && target != null)
+		if (target != null && host != null && target.height > 0.1F)
 		{
-			//get random eye height
-			float eyeH = host.height * (host.world.rand.nextFloat() * 0.5F + 0.5F);
+			//calc tan(pitch)
+			float x1 = (float) Math.tan(host.rotationPitch * Values.N.DIV_PI_180);
 			
-			//calc sight ray (host to target) length
-			float dx = (float) (host.posX - target.posX);
-			float dz = (float) (host.posZ - target.posZ);
-			float rayLen = MathHelper.sqrt(dx * dx + dz * dz + eyeH * eyeH);
-			rayLen -= target.width;
-			rayLen = rayLen * MathHelper.sin(host.rotationPitch * Values.N.DIV_PI_180);
+			//check tan infinity
+			if (x1 > 30) return -10;		//look down inf
+			else if (x1 < -30) return 110;	//look up inf
 			
-			//calc hit height
-			float hitHeight = (float) (host.getEntityBoundingBox().minY + eyeH - target.getEntityBoundingBox().minY - rayLen);
+			//calc distance
+			float dist = host.getDistanceToEntity(target) - target.width * 0.5F;
 			
-			//hit height convert to percentage
-			if (hitHeight > 0F && hitHeight <= target.height * 1.5F)
-			{
-				result = (int) (hitHeight / target.height * 100F);
-			}
-			else
-			{
-				result = 0;  //not hit, error
-			}
+			//check dist > 0
+			if (dist < 0) dist = 0;
+			
+			x1 *= dist;
+			
+			float x2 = (float) (host.posY + host.getEyeHeight() - target.posY);
+			float x = x2 - x1;
+			
+			//turn height(float) to percent(int)
+			result = (int) (x / target.height * 100F);
 		}
 		
 		return result;

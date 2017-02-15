@@ -6,6 +6,7 @@ import com.lulan.shincolle.client.particle.Particle91Type;
 import com.lulan.shincolle.client.particle.ParticleChi;
 import com.lulan.shincolle.client.particle.ParticleCraning;
 import com.lulan.shincolle.client.particle.ParticleCube;
+import com.lulan.shincolle.client.particle.ParticleDebugPlane;
 import com.lulan.shincolle.client.particle.ParticleEmotion;
 import com.lulan.shincolle.client.particle.ParticleGradient;
 import com.lulan.shincolle.client.particle.ParticleLaser;
@@ -21,6 +22,7 @@ import com.lulan.shincolle.client.particle.ParticleSweep;
 import com.lulan.shincolle.client.particle.ParticleTeam;
 import com.lulan.shincolle.client.particle.ParticleTexts;
 import com.lulan.shincolle.client.particle.ParticleTextsCustom;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
@@ -719,6 +721,30 @@ public class ParticleHelper
 			//											 ent, type, height, eye x, eye z, 4~7:RGBA, height
 			ParticleSparkle spark1 = new ParticleSparkle(ent, 1, (float)par1, (float)par2, (float)par3, 0F, 1F, 1F, 1F);
 			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
+		}
+		break;
+		case 18:	//raytrace target indicator, parms: target entity, type, hit height, hit side, NO_USE
+		{
+			ParticleDebugPlane plane = new ParticleDebugPlane(ent, 0, (float)par1, (float)par2, (float)par3);
+			Minecraft.getMinecraft().effectRenderer.addEffect(plane);
+		}
+		break;
+		case 19:	//raytrace body cube indicator, parms: target entity, type, cube top, cube bottom, bodyID
+		{
+			if (ent instanceof BasicEntityShip)
+			{
+				ParticleDebugPlane plane = new ParticleDebugPlane(ent, 1, (float)par1, (float)par2, (float)par3);
+				Minecraft.getMinecraft().effectRenderer.addEffect(plane);
+			}
+		}
+		break;
+		case 20:	//raytrace body cube indicator, parms: target entity, type, cube top, cube bottom, bodyID
+		{
+			if (ent instanceof BasicEntityShip)
+			{
+				ParticleDebugPlane plane = new ParticleDebugPlane(ent, 2, (float)par1, (float)par2, (float)par3);
+				Minecraft.getMinecraft().effectRenderer.addEffect(plane);
+			}
 		}
 		break;
 		case 36:	//emotion

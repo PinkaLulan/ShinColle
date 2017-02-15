@@ -48,6 +48,8 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.Enums;
+import com.lulan.shincolle.reference.Enums.BodyHeight;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.server.CacheDataShip;
@@ -163,6 +165,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected boolean[] StateFlag;
 	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected byte[] BonusPoint;
+	/** BodyHeightRange: */
+	protected byte[] BodyHeightStand;
+	protected byte[] BodyHeightSit;
 	/** TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
 	protected float[] TypeModify;
 	/** ModelPos: posX, posY, posZ, scale (in ship inventory) */
@@ -228,6 +233,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 								       };
 		this.UpdateFlag = new boolean[] {false};
 		this.BonusPoint = new byte[6];
+		this.BodyHeightStand = new byte[] {92, 78, 73, 58, 47, 37};
+		this.BodyHeightSit = new byte[] {64, 49, 44, 29, 23, 12};
 		this.TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		this.ModelPos = new float[] {0F, 0F, 0F, 50F};
 		this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
@@ -1826,8 +1833,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					setShipOutfit(player.isSneaking());
 					return EnumActionResult.SUCCESS;
 				}
-				//use pointer item (caress head mode)
-				else if (stack.getItem() == ModItems.PointerItem && stack.getMetadata() > 2)
+				//use pointer item (caress head mode server side)
+				else if (stack.getItem() == ModItems.PointerItem && stack.getMetadata() > 2 && !player.isSneaking())
 				{
 					interactPointer(player, stack);
 					return EnumActionResult.SUCCESS;
@@ -1881,7 +1888,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					return EnumActionResult.SUCCESS;
 				}
 			}//end item != null
-		
+			
 			//owner right click
 			if (TeamHelper.checkSameOwner(this, player))
 			{
@@ -1909,7 +1916,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 			}
     	}//end server side
-		
+    	//client side
+    	else
+    	{
+    		if (stack != null)
+    		{
+    			//use pointer item (caress head mode CLIENT side)
+    			if (stack.getItem() == ModItems.PointerItem && stack.getMetadata() > 2 && !player.isSneaking())
+    			{
+    				this.setHitHeight(CalcHelper.getEntityHitHeightByClientPlayer(this));
+    				this.setHitAngle(CalcHelper.getEntityHitSideByClientPlayer(this));
+    				this.checkCaressed();
+    			}
+    		}
+    	}//end client side
+    	
 		return EnumActionResult.PASS;
     }
     
@@ -2735,7 +2756,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		if (this.isEntityAlive())
                     		{
 	                    		//use combat ration automatically
-	                    		if (getMoraleLevel() >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
+	                    		if (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
 	                    		{
 	                    			useCombatRation();
 	                    		}
@@ -4308,6 +4329,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	{
   		//attack motion timer
   		if (this.StateTimer[ID.T.AttackTime] > 0) this.StateTimer[ID.T.AttackTime]--;
+  		
+		//caress reaction time
+		if (this.StateTimer[ID.T.Emotion3Time] > 0)
+		{
+			this.StateTimer[ID.T.Emotion3Time]--;
+			
+			if (this.StateTimer[ID.T.Emotion3Time] == 0)
+			{
+				this.setStateEmotion(ID.S.Emotion3, 0, false);
+			}
+		}
   	}
   	
   	/** update server timer */
@@ -4327,17 +4359,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
   		//emotes delay
 		if (this.StateTimer[ID.T.EmoteDelay] > 0) this.StateTimer[ID.T.EmoteDelay]--;
-  		
-		//caress reaction time
-		if (this.StateTimer[ID.T.Emotion3Time] > 0)
-		{
-			this.StateTimer[ID.T.Emotion3Time]--;
-			
-			if (this.StateTimer[ID.T.Emotion3Time] == 0)
-			{
-				this.setStateEmotion(ID.S.Emotion3, 0, true);
-			}
-		}
   	}
   	
   	/** update both side timer */
@@ -4361,206 +4382,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** change ship outfit by right click cake on ship */
   	abstract public void setShipOutfit(boolean isSneaking);
   	
-  	/** morale level
-  	 *  0:excited, 1:happy, 2:normal, 3:tired, 4:exhausted
-  	 */
-  	public int getMoraleLevel()
-  	{
-  		int m = this.getStateMinor(ID.M.Morale);
-  		
-  		if (m > 5100)
-  		{  //excited
-			return ID.Morale.Excited;
-		}
-		else if (m > 3900)
-		{
-			return ID.Morale.Happy;
-		}
-		else if (m > 2100)
-		{
-			return ID.Morale.Normal;
-		}
-		else if (m > 900)
-		{
-			return ID.Morale.Tired;
-		}
-		else
-		{
-			return ID.Morale.Exhausted;
-		}
-  	}
-  	
-  	/** hit body part by hit height level
-  	 *  height:        part:
-  	 *  150~100        top
-  	 *  100~80         head
-  	 *  80~70          neck
-  	 *  70~45          back
-  	 *  45~35          belly
-  	 *  35~30          ubelly
-  	 *  0~30           leg
-  	 */
-  	protected int getHitHeightID()
-  	{
-  		int h = getHitHeight();
-  		if (this.isSitting())
-  		{
-  			if (h > 60)
-  			{
-  	  			return ID.Body.Height.Top;
-  	  		}
-  	  		else if (h > 32)
-  	  		{
-  	  			return ID.Body.Height.Head;
-  	  		}
-  	  		else if (h > 30)
-  	  		{
-  	  			return ID.Body.Height.Neck;
-  	  		}
-  	  		else if (h > 15)
-  	  		{
-  	  			return ID.Body.Height.Chest;
-  	  		}
-  	  		else if (h > 12)
-  	  		{
-  	  			return ID.Body.Height.Belly;
-  	  		}
-  	  		else if (h > 10)
-  	  		{
-  	  			return ID.Body.Height.UBelly;
-  	  		}
-  	  		else
-  	  		{
-  	  			return ID.Body.Height.Leg;
-  	  		}
-  		}
-  		else
-  		{
-  			if (h > 100)
-  			{
-  	  			return ID.Body.Height.Top;
-  	  		}
-  	  		else if (h > 76)
-  	  		{
-  	  			return ID.Body.Height.Head;
-  	  		}
-  	  		else if (h > 70)
-  	  		{
-  	  			return ID.Body.Height.Neck;
-  	  		}
-  	  		else if (h > 51)
-  	  		{
-  	  			return ID.Body.Height.Chest;
-  	  		}
-  	  		else if (h > 42)
-  	  		{
-  	  			return ID.Body.Height.Belly;
-  	  		}
-  	  		else if (h > 37)
-  	  		{
-  	  			return ID.Body.Height.UBelly;
-  	  		}
-  	  		else
-  	  		{
-  	  			return ID.Body.Height.Leg;
-  	  		}
-  		}
-  	}
-  	
-  	/** hit body part by hit height level (angle always positive)
-  	 *  angle:         part:
-  	 *  
-  	 *  0 ~ -70        back
-  	 *  290 ~ 360
-  	 *  250 ~ 290      right
-  	 *  110 ~ 250      front
-  	 *  70 ~ 110       left
-  	 */
-  	protected int getHitAngleID()
-  	{
-  		int a = getHitAngle();
 
-		if (a >= 250 && a < 290)
-		{  //right
-  			return ID.Body.Side.Right;
-		}
-		else if (a >= 110 && a < 250)
-		{  //front
-			return ID.Body.Side.Front;
-		}
-		else if (a >= 70 && a < 110)
-		{  //left
-			return ID.Body.Side.Left;
-		}
-		else
-		{  //back
-			return ID.Body.Side.Back;
-		}
-  	}
-  	
-  	/** hit body part by hit height level
-  	 * 
-  	 *  (default)      back   right    front    left
-  	 *  height \ angle  0     -90      -180     -270
-  	 *  150~100        top     top      top      top
-  	 *  100~80         head    head     face     head
-  	 *  80~70          neck    neck     neck     neck
-  	 *  70~45          back    arm      chest    arm
-  	 *  45~35          butt    arm      belly    arm
-  	 *  35~30          butt    butt     ubelly   butt
-  	 *  0~30           leg     leg      leg      leg
-  	 * 
-  	 */
-  	protected int getHitBodyID()
-  	{
-  		switch (getHitHeightID())
-  		{
-  		case ID.Body.Height.Top:
-  			return ID.Body.Top;
-  		case ID.Body.Height.Head:
-  			if (getHitAngleID() == ID.Body.Side.Front)
-  			{
-  				return ID.Body.Face;
-  			}
-  			else
-  			{
-  				return ID.Body.Head;
-  			}
-  		case ID.Body.Height.Neck:
-  			return ID.Body.Neck;
-  		case ID.Body.Height.Chest:
-  			switch (getHitAngleID())
-  			{
-  			case ID.Body.Side.Front:
-  				return ID.Body.Chest;
-  			case ID.Body.Side.Back:
-  				return ID.Body.Back;
-  			default:
-  				return ID.Body.Arm;
-  			}
-  		case ID.Body.Height.Belly:
-  			switch (getHitAngleID())
-  			{
-  			case ID.Body.Side.Front:
-  				return ID.Body.Belly;
-  			case ID.Body.Side.Back:
-  				return ID.Body.Butt;
-  			default:
-  				return ID.Body.Arm;
-  			}
-  		case ID.Body.Height.UBelly:
-  			if (getHitAngleID() == ID.Body.Side.Front)
-  			{
-  				return ID.Body.UBelly;
-  			}
-  			else
-  			{
-  				return ID.Body.Butt;
-  			}
-		default:  //leg
-			return ID.Body.Leg;
-  		}
-  	}
   	
   	public void setSensitiveBody(int par1)
   	{
@@ -4572,9 +4394,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		return getStateMinor(ID.M.SensBody);
   	}
   	
-  	/** set random sensitive body id, ref: ID.Body
-  	 *  body id: 20~30
-  	 */
+  	/** set random sensitive body id, ref: ID.Body */
   	public void randomSensitiveBody()
   	{
   		int ran = this.rand.nextInt(100);
@@ -4591,10 +4411,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   		else
   		{  //55%
-  			bodyid = 23 + this.rand.nextInt(8);  //roll 23~30
+  			bodyid = 3 + this.rand.nextInt(8);  //roll 3~10
   		}
   		
-  		//if HEAD/BACK reroll to ubelly
+  		//reroll if HEAD/BACK
 		if (bodyid == ID.Body.Head || bodyid == ID.Body.Back) bodyid = ID.Body.UBelly;
 		if (bodyid == ID.Body.Arm || bodyid == ID.Body.Butt) bodyid = ID.Body.Chest;
   		
@@ -4619,14 +4439,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
 	}
   	
-  	//caress state for model display
-  	protected void isCaressed()
+  	//check caress state for model display, CLIENT SIDE
+  	public void checkCaressed()
   	{
-  		LogHelper.debug("AAAAAAAAA "+getHitHeightID()); //TODO
+  		BodyHeight hit = getBodyIDFromHeight();
+  		
   		//default: only top or head = caressed
-  		if (getHitHeightID() <= 1)
+  		if (hit == BodyHeight.TOP || hit == BodyHeight.HEAD ||
+  			hit == BodyHeight.NECK || hit == BodyHeight.CHEST)
   		{
-  			setStateEmotion(ID.S.Emotion3, ID.Emotion3.CARESS, true);
+  			setStateEmotion(ID.S.Emotion3, ID.Emotion3.CARESS, false);
   			setStateTimer(ID.T.Emotion3Time, 80);
   		}
   	}
@@ -4636,15 +4458,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	{
   		Random ran = new Random();
   		int m = getStateMinor(ID.M.Morale);
-  		int body = getHitBodyID();
+  		int body = EntityHelper.getHitBodyID(this);
   		int baseMorale = (int) ((float)ConfigHandler.baseCaressMorale * 2.5F);
   		LogHelper.debug("DEBUG: hit ship: Morale: "+m+" BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
   		
-  		//change emotion3 to caressed
-  		isCaressed();
-  		
   		//show emotes by morale level
-		switch (getMoraleLevel())
+		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
 		{
 		case 0:   //excited
 			//check sensitive body
@@ -5001,7 +4820,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** stranger (not owner) emotes */
   	protected void reactionStranger()
   	{
-  		int body = getHitBodyID();
+  		int body = EntityHelper.getHitBodyID(this);
   		LogHelper.debug("DEBUG: hit ship: BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
 
 		//check sensitive body
@@ -5115,7 +4934,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionAttack()
   	{
   		//show emotes by morale level
-		switch (getMoraleLevel())
+		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
 		{
 		case 0:   //excited
 	  		//apply emotion
@@ -5172,10 +4991,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** damaged emotes */
   	protected void reactionDamaged()
   	{
-  		int body = getHitBodyID();
+  		int body = EntityHelper.getHitBodyID(this);
   		
   		//show emotes by morale level
-		switch (getMoraleLevel())
+		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
 		{
 		case 0:   //excited
 		case 1:   //happy
@@ -5269,7 +5088,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionIdle()
   	{
   		//show emotes by morale level
-		switch (getMoraleLevel())
+		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
 		{
 		case 0:   //excited
 		case 1:   //happy
@@ -5394,7 +5213,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionCommand()
   	{
   		//show emotes by morale level
-		switch (getMoraleLevel())
+		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
 		{
 		case 0:   //excited
 		case 1:   //happy
@@ -6387,6 +6206,26 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		return true;
 	}
+	
+	public byte[] getBodyHeightStand()
+	{
+		return this.BodyHeightStand;
+	}
+	
+	public byte[] getBodyHeightSit()
+	{
+		return this.BodyHeightSit;
+	}
+	
+  	public Enums.BodyHeight getBodyIDFromHeight()
+  	{
+  		return EntityHelper.getBodyIDFromHeight(getHitHeight(), this);
+  	}
+  	
+  	public Enums.BodySide getHitAngleID()
+  	{
+  		return EntityHelper.getHitAngleID(getHitAngle());
+  	}
 	
 	
 }

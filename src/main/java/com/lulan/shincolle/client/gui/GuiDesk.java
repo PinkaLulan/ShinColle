@@ -1201,7 +1201,7 @@ public class GuiDesk extends GuiContainer
 					
 					int ix = 44;
 					
-					switch (s2.getMoraleLevel())
+					switch (EntityHelper.getMoraleLevel(s2.getStateMinor(ID.M.Morale)))
 					{
 					case ID.Morale.Excited:
 						ix = 0;

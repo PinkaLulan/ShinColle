@@ -31,7 +31,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 	public EntityBattleshipRe(World world)
 	{
 		super(world);
-		this.setSize(0.6F, 1.8F);
+		this.setSize(0.6F, 1.55F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);

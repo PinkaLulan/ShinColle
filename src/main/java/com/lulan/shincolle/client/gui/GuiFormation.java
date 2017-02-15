@@ -12,6 +12,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -438,7 +439,7 @@ public class GuiFormation extends GuiContainer
     			{
     				int ix = 44;
     				
-    				switch (shipList[i].getMoraleLevel())
+    				switch (EntityHelper.getMoraleLevel(shipList[i].getStateMinor(ID.M.Morale)))
     				{
     				case ID.Morale.Excited:
     					ix = 0;

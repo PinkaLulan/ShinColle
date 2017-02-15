@@ -29,6 +29,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.server.CacheDataPlayer;
 import com.lulan.shincolle.server.CacheDataShip;
@@ -1496,6 +1497,234 @@ public class EntityHelper
 		
 		return true;
 	}
+    
+  	/** morale level
+  	 *  0:excited, 1:happy, 2:normal, 3:tired, 4:exhausted
+  	 */
+  	public static int getMoraleLevel(int m)
+  	{
+  		if (m > 5100)
+  		{  //excited
+			return ID.Morale.Excited;
+		}
+		else if (m > 3900)
+		{
+			return ID.Morale.Happy;
+		}
+		else if (m > 2100)
+		{
+			return ID.Morale.Normal;
+		}
+		else if (m > 900)
+		{
+			return ID.Morale.Tired;
+		}
+		else
+		{
+			return ID.Morale.Exhausted;
+		}
+  	}
+  	
+  	/** check body cube height array, return arrayIndex of body cube */
+  	public static int getBodyArrayIDFromHeight(int heightPercent, BasicEntityShip ship)
+  	{
+  		int hit = -1;
+  		
+  		if (ship != null)
+  		{
+  	  		byte[] heightArray;
+  	  		
+  	  		//check stand or sit
+  			if (ship.isSitting()) heightArray = ship.getBodyHeightSit();
+  			else heightArray = ship.getBodyHeightStand();
+  			
+  			//check height
+  			for (int i = 0; i < heightArray.length; i++)
+  			{
+  				if (heightPercent > heightArray[i])
+  				{
+  					hit = i;
+  					break;
+  				}
+  			}
+  		}
+  		
+  		return hit;
+  	}
+  	
+  	/** get body cube range from ray trace height(%) */
+  	public static int[] getBodyRangeFromHeight(int heightPercent, BasicEntityShip ship)
+  	{
+  		if (ship != null)
+  		{
+  	  		int hit = getBodyArrayIDFromHeight(heightPercent, ship);
+  	  		byte[] heightArray;
+  	  		
+  	  		//check stand or sit
+  			if (ship.isSitting()) heightArray = ship.getBodyHeightSit();
+  			else heightArray = ship.getBodyHeightStand();
+  			
+  			//get body id
+  	  		switch (hit)
+  	  		{
+  	  		case 0:
+  	  			return new int[] {120, heightArray[0]};
+  	  		case 1:
+  	  		case 2:
+  	  		case 3:
+  	  		case 4:
+  	  		case 5:
+  	  			return new int[] {heightArray[hit-1], heightArray[hit]};
+  	  		default:
+  	  			return new int[] {heightArray[5], -20};
+  	  		}
+  		}
+  		
+  		return new int[] {1, 0};
+  	}
+  	
+  	/** hit body part by hit height level
+  	 *  default:
+  	 *  height:        part:
+  	 *  >100           top
+  	 *  100~80         head
+  	 *  80~70          neck
+  	 *  70~45          back
+  	 *  45~35          belly
+  	 *  35~30          ubelly
+  	 *  <30            leg
+  	 */
+  	public static Enums.BodyHeight getBodyIDFromHeight(int heightPercent, BasicEntityShip ship)
+  	{
+  		if (ship != null)
+  		{
+  	  		int hit = getBodyArrayIDFromHeight(heightPercent, ship);
+  			
+  			//get body id
+  	  		switch (hit)
+  	  		{
+  	  		case 0:
+  	  			return Enums.BodyHeight.TOP;
+  	  		case 1:
+  	  			return Enums.BodyHeight.HEAD;
+  	  		case 2:
+  	  			return Enums.BodyHeight.NECK;
+  	  		case 3:
+  	  			return Enums.BodyHeight.CHEST;
+  	  		case 4:
+  	  			return Enums.BodyHeight.BELLY;
+  	  		case 5:
+  	  			return Enums.BodyHeight.UBELLY;
+  	  		default:
+  	  			return Enums.BodyHeight.LEG;
+  	  		}
+  		}
+  		
+  		return Enums.BodyHeight.LEG;
+  	}
+  	
+  	/** get hit side by hit angle (angle always positive)
+  	 *  may change on different ship
+  	 *  
+  	 *  default:
+  	 *  angle:         part:
+  	 *  0 ~ -70        back
+  	 *  290 ~ 360
+  	 *  250 ~ 290      right
+  	 *  110 ~ 250      front
+  	 *  70 ~ 110       left
+  	 */
+  	public static Enums.BodySide getHitAngleID(int angle)
+  	{
+  		//right
+		if (angle >= 250 && angle < 290)
+		{
+  			return Enums.BodySide.RIGHT;
+		}
+		//front
+		else if (angle >= 110 && angle < 250)
+		{
+			return Enums.BodySide.FRONT;
+		}
+		//left
+		else if (angle >= 70 && angle < 110)
+		{
+			return Enums.BodySide.LEFT;
+		}
+		//back
+		else
+		{
+			return Enums.BodySide.BACK;
+		}
+  	}
+  	
+  	public static int getHitBodyID(BasicEntityShip ship)
+  	{
+  		return getHitBodyID(ship.getBodyIDFromHeight(), ship.getHitAngleID());
+  	}
+  	
+  	/** hit body part by hit height level
+  	 * 
+  	 *  (default)      back   right    front    left
+  	 *  height \ angle  0     -90      -180     -270
+  	 *  Top            top     top      top      top
+  	 *  Head           head    head     face     head
+  	 *  Neck           neck    neck     neck     neck
+  	 *  Chest          back    arm      chest    arm
+  	 *  Belly          butt    arm      belly    arm
+  	 *  UBelly         butt    butt     ubelly   butt
+  	 *  Leg            leg     leg      leg      leg
+  	 */
+  	public static int getHitBodyID(Enums.BodyHeight h, Enums.BodySide s)
+  	{
+  		switch (h)
+  		{
+  		case TOP:
+  			return ID.Body.Top;
+  		case HEAD:
+  			if (s == Enums.BodySide.FRONT)
+  			{
+  				return ID.Body.Face;
+  			}
+  			else
+  			{
+  				return ID.Body.Head;
+  			}
+  		case NECK:
+  			return ID.Body.Neck;
+  		case CHEST:
+  			switch (s)
+  			{
+  			case FRONT:
+  				return ID.Body.Chest;
+  			case BACK:
+  				return ID.Body.Back;
+  			default:
+  				return ID.Body.Arm;
+  			}
+  		case BELLY:
+  			switch (s)
+  			{
+  			case FRONT:
+  				return ID.Body.Belly;
+  			case BACK:
+  				return ID.Body.Butt;
+  			default:
+  				return ID.Body.Arm;
+  			}
+  		case UBELLY:
+  			if (s == Enums.BodySide.FRONT)
+  			{
+  				return ID.Body.UBelly;
+  			}
+  			else
+  			{
+  				return ID.Body.Butt;
+  			}
+		default:  //leg
+			return ID.Body.Leg;
+  		}
+  	}
   	
   	
 }

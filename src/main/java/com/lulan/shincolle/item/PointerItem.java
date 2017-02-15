@@ -10,6 +10,7 @@ import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.utility.BlockHelper;
@@ -428,11 +429,6 @@ public class PointerItem extends BasicItem
 					if (hitObj.entityHit instanceof BasicEntityShip)
 					{
 						ship = (BasicEntityShip)hitObj.entityHit;
-						int hitHeight = CalcHelper.getEntityHitHeightByClientPlayer(ship);
-						int hitAngle = CalcHelper.getEntityHitSideByClientPlayer(ship);
-						
-						//send hit height packet
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.HitHeight, ship.getEntityId(), hitHeight, hitAngle));
 					}
 					else
 					{
@@ -629,6 +625,40 @@ public class PointerItem extends BasicItem
 	{
 		if (world.isRemote)
 		{
+			//show caress position if debug mode
+			if (inUse && ConfigHandler.debugMode)
+			{
+				EntityPlayer p = ClientProxy.getClientPlayer();
+				
+				//every 2 ticks
+				if (p != null && (p.ticksExisted & 1) == 0)
+				{
+					//ray trace for entity
+					RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(6D, 1F);
+					
+					//get entity
+					if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.ENTITY)
+					{
+						int hith = CalcHelper.getEntityHitHeightByClientPlayer(hitObj.entityHit);
+						int hits = CalcHelper.getEntityHitSideByClientPlayer(hitObj.entityHit);
+						ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, hith * 0.01F * hitObj.entityHit.height, 0D, 0D, (byte)18);
+					
+						//if target is ship, show body cube indicator
+						if (hitObj.entityHit instanceof BasicEntityShip)
+						{
+							BasicEntityShip ship = (BasicEntityShip) hitObj.entityHit;
+							int hitBodyID = EntityHelper.getBodyArrayIDFromHeight(hith, ship);
+							int[] cubeRange = EntityHelper.getBodyRangeFromHeight(hith, ship);
+							byte parType = 19;
+							
+							if (EntityHelper.getHitBodyID(EntityHelper.getBodyIDFromHeight(hith, ship), EntityHelper.getHitAngleID(hits)) == ship.getSensitiveBody()) parType = 20;
+							
+							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, cubeRange[0] * 0.01F * hitObj.entityHit.height, cubeRange[1] * 0.01F * hitObj.entityHit.height, hitBodyID, parType);
+						}
+					}
+				}
+			}//end show caress position
+			
 			//count format command cd, CLIENT SIDE ONLY
 			if (this.formatFlag)
 			{

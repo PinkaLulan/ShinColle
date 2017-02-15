@@ -3,6 +3,30 @@ package com.lulan.shincolle.reference;
 public class Enums
 {
 	
+	/**
+	 * body ID
+	 */
+	public static enum BodyHeight
+	{
+		TOP,
+		HEAD,
+		NECK,
+		CHEST,
+		BELLY,
+		UBELLY,
+		LEG
+	}
+	
+	/**
+	 * body side
+	 */
+	public static enum BodySide
+	{
+		LEFT,
+		FRONT,
+		RIGHT,
+		BACK
+	}
 	
 	/**
 	 * color enum for gui

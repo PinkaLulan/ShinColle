@@ -130,13 +130,13 @@ public class S2CEntitySync implements IMessage
 		switch (this.packetType)
 		{
 		case PID.SyncShip_All:	//sync all attr
-			this.valueInt1 = PacketHelper.readIntArray(buf, 1+29);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 1+30);
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+11+14);
-			this.valueByte1 = PacketHelper.readByteArray(buf, 5+6);
+			this.valueByte1 = PacketHelper.readByteArray(buf, 4+6);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 18);
 		break;
 		case PID.SyncShip_Emo: //entity emotion only
-			this.valueByte1 = PacketHelper.readByteArray(buf, 5);
+			this.valueByte1 = PacketHelper.readByteArray(buf, 4);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 1);
 		break;
 		case PID.SyncShip_Flag: //entity flag only
@@ -147,7 +147,7 @@ public class S2CEntitySync implements IMessage
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 1);
 		break;
 		case PID.SyncShip_Minor: //entity minor only
-			this.valueInt1 = PacketHelper.readIntArray(buf, 29);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 30);
 		break;
 		case PID.SyncShip_Guard:  //sync guard for particle display
 			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
@@ -253,6 +253,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.WpStay));
 			buf.writeInt(entity.getStateMinor(ID.M.UseCombatRation));
 			buf.writeInt(entity.getStateTimer(ID.T.CraneTime));
+			buf.writeInt(entity.getStateMinor(ID.M.SensBody));
 			
 			buf.writeFloat(entity.getStateFinal(ID.HP));
 			buf.writeFloat(entity.getStateFinal(ID.ATK));
@@ -293,7 +294,6 @@ public class S2CEntitySync implements IMessage
 			buf.writeByte(entity.getStateEmotion(ID.S.State2));
 			buf.writeByte(entity.getStateEmotion(ID.S.Emotion));
 			buf.writeByte(entity.getStateEmotion(ID.S.Phase));
-			buf.writeByte(entity.getStateEmotion(ID.S.Emotion3));
 			buf.writeByte(entity.getBonusPoint(ID.HP));
 			buf.writeByte(entity.getBonusPoint(ID.ATK));
 			buf.writeByte(entity.getBonusPoint(ID.DEF));
@@ -329,7 +329,6 @@ public class S2CEntitySync implements IMessage
 			buf.writeByte(entity.getStateEmotion(ID.S.State2));
 			buf.writeByte(entity.getStateEmotion(ID.S.Emotion));
 			buf.writeByte(entity.getStateEmotion(ID.S.Phase));
-			buf.writeByte(entity.getStateEmotion(ID.S.Emotion3));
 			
 			buf.writeBoolean(entity.getStateFlag(ID.F.NoFuel));
 		}
@@ -391,6 +390,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.LevelSearchlight));
 			buf.writeInt(entity.getStateMinor(ID.M.WpStay));
 			buf.writeInt(entity.getStateMinor(ID.M.UseCombatRation));
+			buf.writeInt(entity.getStateMinor(ID.M.SensBody));
 		}
 		break;
 		case PID.SyncShip_Guard:	//sync guard for particle display
@@ -702,6 +702,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.WpStay, msg.valueInt1[27]);
 				ship.setStateMinor(ID.M.UseCombatRation, msg.valueInt1[28]);
 				ship.setStateTimer(ID.T.CraneTime, msg.valueInt1[29]);
+				ship.setStateMinor(ID.M.SensBody, msg.valueInt1[30]);
 				
 				ship.setStateFinal(ID.HP, msg.valueFloat1[0]);
 				ship.setStateFinal(ID.ATK, msg.valueFloat1[1]);
@@ -742,13 +743,12 @@ public class S2CEntitySync implements IMessage
 				ship.setStateEmotion(ID.S.State2, msg.valueByte1[1], false);
 				ship.setStateEmotion(ID.S.Emotion, msg.valueByte1[2], false);
 				ship.setStateEmotion(ID.S.Phase, msg.valueByte1[3], false);
-				ship.setStateEmotion(ID.S.Emotion3, msg.valueByte1[4], false);
-				ship.setBonusPoint(ID.HP, msg.valueByte1[5]);
-				ship.setBonusPoint(ID.ATK, msg.valueByte1[6]);
-				ship.setBonusPoint(ID.DEF, msg.valueByte1[7]);
-				ship.setBonusPoint(ID.SPD, msg.valueByte1[8]);
-				ship.setBonusPoint(ID.MOV, msg.valueByte1[9]);
-				ship.setBonusPoint(ID.HIT, msg.valueByte1[10]);
+				ship.setBonusPoint(ID.HP, msg.valueByte1[4]);
+				ship.setBonusPoint(ID.ATK, msg.valueByte1[5]);
+				ship.setBonusPoint(ID.DEF, msg.valueByte1[6]);
+				ship.setBonusPoint(ID.SPD, msg.valueByte1[7]);
+				ship.setBonusPoint(ID.MOV, msg.valueByte1[8]);
+				ship.setBonusPoint(ID.HIT, msg.valueByte1[9]);
 
 				ship.setStateFlag(ID.F.CanFloatUp, msg.valueBoolean1[0]);
 				ship.setStateFlag(ID.F.IsMarried, msg.valueBoolean1[1]);
@@ -778,7 +778,6 @@ public class S2CEntitySync implements IMessage
 				ship.setStateEmotion(ID.S.State2, msg.valueByte1[1], false);
 				ship.setStateEmotion(ID.S.Emotion, msg.valueByte1[2], false);
 				ship.setStateEmotion(ID.S.Phase, msg.valueByte1[3], false);
-				ship.setStateEmotion(ID.S.Emotion3, msg.valueByte1[4], false);
 				
 				ship.setStateFlag(ID.F.NoFuel, msg.valueBoolean1[0]);
 			}
@@ -854,6 +853,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.LevelSearchlight, msg.valueInt1[26]);
 				ship.setStateMinor(ID.M.WpStay, msg.valueInt1[27]);
 				ship.setStateMinor(ID.M.UseCombatRation, msg.valueInt1[28]);
+				ship.setStateMinor(ID.M.SensBody, msg.valueInt1[29]);
 			}
 			break;
 			case PID.SyncShip_Guard:  //sync guard for particle display

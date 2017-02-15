@@ -18,6 +18,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.GuiHelper;
 
 import net.minecraft.client.Minecraft;
@@ -598,7 +599,7 @@ public class GuiShipInventory extends GuiContainer
 	//draw ship morale
 	private void drawIconMorale()
 	{
-		int ix = this.entity.getMoraleLevel() * 11;
+		int ix = EntityHelper.getMoraleLevel(this.entity.getStateMinor(ID.M.Morale)) * 11;
         drawTexturedModalRect(guiLeft+239, guiTop+18, ix, 240, 11, 11);
         
 	}
@@ -615,7 +616,7 @@ public class GuiShipInventory extends GuiContainer
 		//Morale tooltip
 		if (xMouse >= 238+guiLeft && xMouse < 251+guiLeft && yMouse >= 17+guiTop && yMouse < 30+guiTop)
 		{
-			mouseoverList.add(this.strMorale[this.entity.getMoraleLevel()]);
+			mouseoverList.add(this.strMorale[EntityHelper.getMoraleLevel(this.entity.getStateMinor(ID.M.Morale))]);
 			this.drawHoveringText(mouseoverList, 200, 45, this.fontRendererObj);
 		}
 		//HP tooltip
