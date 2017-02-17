@@ -28,6 +28,7 @@ public class ID
 		public static final byte ShipInv_WpStay = 17;
 		public static final byte ShipInv_ShowHeld = 18;
 		public static final byte ShipInv_AutoCR = 19;
+		public static final byte ShipInv_AutoPump = 20;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -350,6 +351,7 @@ public class ID
 		public static final byte PickItem = 23;			//active picking item
 		public static final byte CanPickItem = 24;		//can pick item
 		public static final byte ShowHeldItem = 25;
+		public static final byte AutoPump = 26;
 	}
 	
 	/** Update Flag */

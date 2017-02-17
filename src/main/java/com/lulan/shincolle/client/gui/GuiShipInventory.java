@@ -53,7 +53,7 @@ public class GuiShipInventory extends GuiContainer
 	  strMiAmmoH, strMiGrudge, canMelee, canLATK, canHATK, canALATK, canAHATK, auraEffect,
 	  followMin, followMax, fleeHP, tarAI, strOnSight, strPVP, strAA, strASM, strTimeKeep,
 	  strPick, strWpStay, strAttrModern, strAttrXP, strAttrGrudge, strAttrAmmo, strAttrHPRES,
-	  strShowHeld, strAutoCR;
+	  strShowHeld, strAutoCR, strAutoPump;
 	private static String[] strMorale;
 	private static int widthHoveringText1, widthHoveringText2, widthHoveringText3;
 	
@@ -66,8 +66,8 @@ public class GuiShipInventory extends GuiContainer
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass, showPageInv,
 				wpStayPos, autoCRPos, xClick, yClick;
 	private float xMouse, yMouse;
-	private boolean mousePress, switchPick;
-	private boolean[] switchPage1a, switchPage1b, switchPage3, switchPage6;
+	private boolean mousePress;
+	private boolean[] switchPage1a, switchPage1b, switchPage3, switchPage4, switchPage6;
 	private int[][] iconXY;  //icon array:  [ship type, ship name][file,x,y]
 	
 
@@ -96,6 +96,7 @@ public class GuiShipInventory extends GuiContainer
 		this.switchPage1a = new boolean[6];	//page 1 button value
 		this.switchPage1b = new boolean[6];	//page 1 button value
 		this.switchPage3 = new boolean[6];	//page 3 button value
+		this.switchPage4 = new boolean[6];	//page 4 button value
 		this.switchPage6 = new boolean[6];	//page 6 button value
 		
 		if (this.entity != null)
@@ -200,6 +201,7 @@ public class GuiShipInventory extends GuiContainer
 		strWpStay = I18n.format("gui.shincolle:ai.wpstay");
 		strShowHeld = I18n.format("gui.shincolle:showhelditem");
 		strAutoCR = I18n.format("gui.shincolle:autocombatration");
+		strAutoPump = I18n.format("gui.shincolle:autopump");
 		
 		//get max string width for hovering text drawing
 		int temp = this.fontRendererObj.getStringWidth(strAttrAtk1);
@@ -452,11 +454,14 @@ public class GuiShipInventory extends GuiContainer
         	this.pageIndicator = 246;
     		this.pageIndicatorAI = 131;
     		
+    		//get button value
+    		this.switchPage4[0] = this.entity.getStateFlag(ID.F.PickItem);
+    		this.switchPage4[1] = this.entity.getStateFlag(ID.F.AutoPump);
+    		
             //draw button
             if (this.entity.getStateFlag(ID.F.CanPickItem))
             {
-            	this.switchPick = this.entity.getStateFlag(ID.F.PickItem);
-            	if (this.switchPick)
+            	if (this.switchPage4[0])
                 {
                 	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
                 }
@@ -464,6 +469,15 @@ public class GuiShipInventory extends GuiContainer
                 {
                 	drawTexturedModalRect(guiLeft+174, guiTop+132, 11, 214, 11, 11);
                 }
+            }
+            
+        	if (this.switchPage4[1])
+            {
+            	drawTexturedModalRect(guiLeft+174, guiTop+144, 0, 214, 11, 11);
+            }
+            else
+            {
+            	drawTexturedModalRect(guiLeft+174, guiTop+144, 11, 214, 11, 11);
             }
             
     		break;
@@ -511,11 +525,6 @@ public class GuiShipInventory extends GuiContainer
     		
     		//get button value
     		this.switchPage6[0] = this.entity.getStateFlag(ID.F.ShowHeldItem);
-//    		this.switchPage6[1] = this.entity.getStateFlag(ID.F);
-//    		this.switchPage6[2] = this.entity.getStateFlag(ID.F);
-//    		this.switchPage6[3] = this.entity.getStateFlag(ID.F);
-//    		this.switchPage6[4] = this.entity.getStateFlag(ID.F);
-//    		this.switchPage6[5] = this.entity.getStateFlag(ID.F);
     		
             //draw button
             int iconY = 132;
@@ -1362,8 +1371,8 @@ public class GuiShipInventory extends GuiContainer
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TarAI, getInverseInt(this.switchPage3[0])));
     		break;
         	case 4:		//page 4: pick item AI
-        		this.switchPick = this.entity.getStateFlag(ID.F.PickItem);
-        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_PickitemAI, getInverseInt(this.switchPick)));
+        		this.switchPage4[0] = this.entity.getStateFlag(ID.F.PickItem);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_PickitemAI, getInverseInt(this.switchPage4[0])));
     		break;
         	case 6:		//page 6: show held item
         		this.switchPage6[0] = this.entity.getStateFlag(ID.F.ShowHeldItem);
@@ -1372,15 +1381,20 @@ public class GuiShipInventory extends GuiContainer
         	}
         break;
         case 4:	//AI operation 1 
-        	if (this.showPageAI == 1)
-        	{	//page 1: use ammo light button
+        	switch (this.showPageAI)
+        	{
+        	case 1:		//page 1: use ammo light button
         		this.switchPage1a[1] = this.entity.getStateFlag(ID.F.UseAmmoLight);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AmmoLight, getInverseInt(this.switchPage1a[1])));
-        	}
-        	else if (this.showPageAI == 3)
-        	{	//page 3: change onsight AI
+    		break;
+        	case 3:		//page 3: change onsight AI
         		this.switchPage3[1] = this.entity.getStateFlag(ID.F.OnSightChase);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_OnSightAI, getInverseInt(this.switchPage3[1])));
+        	break;
+        	case 4:		//page 4: auto pump
+        		this.switchPage4[1] = this.entity.getStateFlag(ID.F.AutoPump);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AutoPump, getInverseInt(this.switchPage4[1])));
+    		break;
         	}
         break;
         case 5:	//AI operation 2

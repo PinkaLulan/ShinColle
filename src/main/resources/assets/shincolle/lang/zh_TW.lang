@@ -673,6 +673,7 @@ gui.shincolle:ai.wpstay=路徑點停留時間
 gui.shincolle:modernlevel=近代化改修等級
 gui.shincolle:showhelditem=顯示手持物品
 gui.shincolle:autocombatration=使用戰鬥糧食
+gui.shincolle:autopump=自動抽水
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足

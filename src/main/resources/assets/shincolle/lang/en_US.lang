@@ -673,6 +673,7 @@ gui.shincolle:ai.wpstay=WP Stay Time
 gui.shincolle:modernlevel=Modernization Level
 gui.shincolle:showhelditem=Show Held Item
 gui.shincolle:autocombatration=Autouse CombatRation
+gui.shincolle:autopump=Auto Pump
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

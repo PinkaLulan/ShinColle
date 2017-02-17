@@ -160,7 +160,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
 	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 23:PickItem
-	 *  24:canPickItem 25:ShowHeldItem  
+	 *  24:canPickItem 25:ShowHeldItem 26:AutoPump
 	 */
 	protected boolean[] StateFlag;
 	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
@@ -229,7 +229,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 								        true, false, true, true, true,
 								        true, true, false, true, false,
 								        false, false, true, true, false,
-								        true
+								        true, false
 								       };
 		this.UpdateFlag = new boolean[] {false};
 		this.BonusPoint = new byte[6];
@@ -2648,6 +2648,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	
         	//timer ticking
         	updateServerTimer();
+        	
+        	//pump liquid
+        	if (this.StateFlag[ID.F.AutoPump]) EntityHelper.autoPumpFluid(this);
         	
         	//check every 8 ticks
         	if ((ticksExisted & 7) == 0)
@@ -5791,7 +5794,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 */
 	public int getFieldCount()
 	{
-		return 30;
+		return 31;
 	}
 	
 	public int getField(int id)
@@ -5858,6 +5861,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.getStateFlagI(ID.F.ShowHeldItem);
 		case 29:
 			return this.StateMinor[ID.M.UseCombatRation];
+		case 30:
+			return this.getStateFlagI(ID.F.AutoPump);
 		}
 		
 		return 0;
@@ -5869,94 +5874,97 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 		case 0:
 			this.StateMinor[ID.M.ExpCurrent] = value;
-			break;
+		break;
 		case 1:
 			this.StateMinor[ID.M.NumAmmoLight] = value;
-			break;
+		break;
 		case 2:
 			this.StateMinor[ID.M.NumAmmoHeavy] = value;
-			break;
+		break;
 		case 3:
 			this.StateMinor[ID.M.NumAirLight] = value;
-			break;
+		break;
 		case 4:
 			this.StateMinor[ID.M.NumAirHeavy] = value;
-			break;
+		break;
 		case 5:
 			this.setStateFlagI(ID.F.UseMelee, value);
-			break;
+		break;
 		case 6:
 			this.setStateFlagI(ID.F.UseAmmoLight, value);
-			break;
+		break;
 		case 7:
 			this.setStateFlagI(ID.F.UseAmmoHeavy, value);
-			break;
+		break;
 		case 8:
 			this.setStateFlagI(ID.F.UseAirLight, value);
-			break;
+		break;
 		case 9:
 			this.setStateFlagI(ID.F.UseAirHeavy, value);
-			break;
+		break;
 		case 10:
 			this.setStateFlagI(ID.F.IsMarried, value);
-			break;
+		break;
 		case 11:
 			this.StateMinor[ID.M.FollowMin] = value;
-			break;
+		break;
 		case 12:
 			this.StateMinor[ID.M.FollowMax] = value;
-			break;
+		break;
 		case 13:
 			this.StateMinor[ID.M.FleeHP] = value;
-			break;
+		break;
 		case 14:
 			this.setStateFlagI(ID.F.PassiveAI, value);
-			break;
+		break;
 		case 15:
 			this.setStateFlagI(ID.F.UseRingEffect, value);
-			break;
+		break;
 		case 16:
 			this.setStateFlagI(ID.F.OnSightChase, value);
-			break;
+		break;
 		case 17:
 			this.setStateFlagI(ID.F.PVPFirst, value);
-			break;
+		break;
 		case 18:
 			this.setStateFlagI(ID.F.AntiAir, value);
-			break;
+		break;
 		case 19:
 			this.setStateFlagI(ID.F.AntiSS, value);
-			break;
+		break;
 		case 20:
 			this.setStateFlagI(ID.F.TimeKeeper, value);
-			break;
+		break;
 		case 21:
 			this.StateMinor[ID.M.Morale] = value;
-			break;
+		break;
 		case 22:
 			this.StateMinor[ID.M.DrumState] = value;
-			break;
+		break;
 		case 23:
 			this.setStateFlagI(ID.F.PickItem, value);
-			break;
+		break;
 		case 24:
 			this.StateMinor[ID.M.WpStay] = value;
-			break;
+		break;
 		case 25:
 			this.StateMinor[ID.M.Kills] = value;
-			break;
+		break;
 		case 26:
 			this.StateMinor[ID.M.NumGrudge] = value;
-			break;
+		break;
 		case 27:
 			this.itemHandler.setInventoryPage(value);
-			break;
+		break;
 		case 28:
 			this.setStateFlagI(ID.F.ShowHeldItem, value);
-			break;
+		break;
 		case 29:
 			this.StateMinor[ID.M.UseCombatRation] = value;
-			break;
+		break;
+		case 30:
+			this.setStateFlagI(ID.F.AutoPump, value);
+		break;
 		}
 		
 	}

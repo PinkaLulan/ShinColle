@@ -5,6 +5,8 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.BasicEntitySummon;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.ShipTank;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
@@ -19,9 +21,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -52,6 +57,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte Request_SyncModel = 5;
 		public static final byte Waypoint_Set = 6;
 		public static final byte Request_Riding = 7;
+		public static final byte Request_PlaceFluid = 8;
 	}
 	
 	
@@ -90,6 +96,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
 		case PID.Waypoint_Set:		//waypoint pairing packet
+		case PID.Request_PlaceFluid://ship tank place fluid packet
 			try
 			{
 				this.value = buf.readInt();  //int array length
@@ -126,6 +133,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
 		case PID.Waypoint_Set:		//waypoint pairing packet
+		case PID.Request_PlaceFluid://ship tank place fluid packet
 			//send int array
 			if (this.value3 != null)
 			{
@@ -326,6 +334,32 @@ public class C2SInputPackets implements IMessage
 							}
 						}
 					break;
+					}
+				}
+			}
+			break;
+			case PID.Request_PlaceFluid://ship tank place fluid packet
+			{
+				if (player != null)
+				{
+					//check held item = ship tank
+					ItemStack stack = player.inventory.getCurrentItem();
+					
+					if (stack != null && stack.getItem() == ModItems.ShipTank)
+					{
+						//check fluid in tank
+						IFluidHandler fh = FluidUtil.getFluidHandler(stack);
+						
+						if (fh != null)
+						{
+							//check player permission
+							BlockPos pos = new BlockPos(msg.value3[0], msg.value3[1], msg.value3[2]);
+							
+							if (player.world.isBlockModifiable(player, pos))
+							{
+								ShipTank.tryPlaceContainedLiquid(player, player.world, pos, fh);
+							}
+						}
 					}
 				}
 			}

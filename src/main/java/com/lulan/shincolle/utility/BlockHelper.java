@@ -157,7 +157,7 @@ public class BlockHelper
 		return false;
 	}
 	
-	/** check nearby block is liquid */
+	/** check nearby block has at least one liquid block */
 	public static boolean checkBlockNearbyIsLiquid(World world, int x, int y, int z, int range)
 	{
 		for (int ix = -range; ix <= range; ix++)
@@ -175,6 +175,50 @@ public class BlockHelper
 		}
 		
 		return false;
+	}
+	
+	/** check block nearby is the same block, only sample 3 columns */
+	public static boolean checkBlockNearbyIsSameBlock(World world, Block target, int x, int y, int z, int rangeXZ, int rangeY)
+	{
+		//only sample 3 column
+		int[][] posXZ = new int[][] {{rand.nextInt(rangeXZ) - rangeXZ / 2, rand.nextInt(rangeXZ) - rangeXZ / 2},
+				{rand.nextInt(rangeXZ) - rangeXZ / 2, rand.nextInt(rangeXZ) - rangeXZ / 2},
+				{rand.nextInt(rangeXZ) - rangeXZ / 2, rand.nextInt(rangeXZ) - rangeXZ / 2}};
+		
+		for (int[] pos : posXZ)
+		{
+			for (int y2 = 0; y2 < rangeY; y2++)
+			{
+				if (world.getBlockState(new BlockPos(x + pos[0], y - y2, z + pos[1])).getBlock() != target)
+				{
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	/** check block nearby is the same block, only sample 3 columns */
+	public static boolean checkBlockNearbyIsSameMaterial(World world, Material target, int x, int y, int z, int rangeXZ, int rangeY)
+	{
+		//only sample 3 column
+		int[][] posXZ = new int[][] {{rand.nextInt(rangeXZ) - rangeXZ / 2, rand.nextInt(rangeXZ) - rangeXZ / 2},
+				{rand.nextInt(rangeXZ) - rangeXZ / 2, rand.nextInt(rangeXZ) - rangeXZ / 2},
+				{rand.nextInt(rangeXZ) - rangeXZ / 2, rand.nextInt(rangeXZ) - rangeXZ / 2}};
+		
+		for (int[] pos : posXZ)
+		{
+			for (int y2 = 0; y2 < rangeY; y2++)
+			{
+				if (world.getBlockState(new BlockPos(x + pos[0], y - y2, z + pos[1])).getMaterial() != target)
+				{
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	/** check ship entity can stand at the block */
@@ -548,6 +592,50 @@ public class BlockHelper
 		}
 		
 		return false;
+	}
+	
+	//get nearby liquid block (area 3x3, host position last), return null if no liquid
+	public static BlockPos getNearbyLiquid(Entity host)
+	{
+		if (host == null) return null;
+		
+  		BlockPos pos;
+  		IBlockState state;
+  		
+  		//check around
+  		for (int y = 1; y > -2; y--)
+  		{
+			for (int x = -3; x < 4; x++)
+	  		{
+	  			for (int z = -3; z < 4; z++)
+	  			{
+	  				//skip host position
+	  				if (x == 0 && z == 0) continue;
+	  					
+	  				pos = new BlockPos(host.posX + x, host.posY + y, host.posZ + z);
+	  				state = host.world.getBlockState(pos);
+	  				
+  					if (state.getBlock() instanceof BlockLiquid &&
+  						((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0 ||
+  						state.getBlock() instanceof IFluidBlock)
+  						return pos;
+				}
+			}
+  		}
+		
+		//check host position Y = +1 ~ +0
+  		for (int y = 1; y > -2; y--)
+  		{
+  			pos = new BlockPos(host.posX, host.posY + y, host.posZ);
+			state = host.world.getBlockState(pos);
+			
+			if (state.getBlock() instanceof BlockLiquid &&
+				((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0 ||
+				state.getBlock() instanceof IFluidBlock)
+				return pos;
+  		}
+  		
+  		return null;
 	}
 	
 	

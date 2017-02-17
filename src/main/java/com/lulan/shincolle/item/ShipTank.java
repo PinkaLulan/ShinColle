@@ -5,7 +5,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.capability.CapaFluidContainer;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.network.C2SInputPackets;
+import com.lulan.shincolle.proxy.CommonProxy;
 
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -39,6 +40,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * ship liquid tank
+ * 
+ * right click: place liquid block in the air
  * 
  * meta:
  *   0: polymetal tank = 32    buckets
@@ -90,19 +93,47 @@ public class ShipTank extends BasicItem
 	@Override
     public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
     {
-		if (world.isRemote) return new ActionResult(EnumActionResult.PASS, stack);
+		if (player == null) return new ActionResult(EnumActionResult.PASS, stack);
 		
+		//server side
         RayTraceResult raytraceresult = this.rayTrace(world, player, true);
+        IFluidHandler fh = FluidUtil.getFluidHandler(stack);
+        BlockPos pos;
         
+		//client side
+		if (world.isRemote)
+		{
+			if (raytraceresult == null)
+			{
+	        	pos = getBlockInFrontOfPlayer(player);
+	        	
+	            //check player permission
+	            if (!world.isBlockModifiable(player, pos))
+	            {
+	                return new ActionResult(EnumActionResult.FAIL, stack);
+	            }
+	            else
+	            {
+	            	CommonProxy.channelI.sendToServer(new C2SInputPackets(
+	            			C2SInputPackets.PID.Request_PlaceFluid, pos.getX(), pos.getY(), pos.getZ()));
+	            			
+	            	return new ActionResult(EnumActionResult.SUCCESS, stack);
+	            }
+			}
+			
+			return new ActionResult(EnumActionResult.PASS, stack);
+		}
+        
+		//server side
         //no target
         if (raytraceresult == null)
         {
-            return new ActionResult(EnumActionResult.PASS, stack);
+            return new ActionResult(EnumActionResult.FAIL, stack);
         }
         //hit block
         else if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK)
         {
-            BlockPos pos = raytraceresult.getBlockPos();
+            pos = raytraceresult.getBlockPos();
             
             //check player permission
             if (!world.isBlockModifiable(player, pos) ||
@@ -112,7 +143,6 @@ public class ShipTank extends BasicItem
             }
             else
             {
-            	IFluidHandler fh = FluidUtil.getFluidHandler(stack);
             	IBlockState state = world.getBlockState(pos);
             	TileEntity tile = world.getTileEntity(pos);
             	FluidStack fs = null;
@@ -214,9 +244,34 @@ public class ShipTank extends BasicItem
         
         return new ActionResult(EnumActionResult.PASS, stack);
     }
+	
+	//get 1 block in front of player
+	private static BlockPos getBlockInFrontOfPlayer(EntityPlayer player)
+	{
+		float yaw = player.rotationYaw % 360F;
+		if (yaw > 180F) yaw -= 360F;
+		else if (yaw < -180F) yaw += 360F;
+		
+		if (yaw <= -112.5F && yaw > -157.5F)
+			return new BlockPos(player.posX + 1, player.posY + 1, player.posZ - 1);
+		else if (yaw <= -67.5F && yaw > -112.5F)
+			return new BlockPos(player.posX + 1, player.posY + 1, player.posZ);
+		else if (yaw <= -22.5F && yaw > -67.5F)
+			return new BlockPos(player.posX + 1, player.posY + 1, player.posZ + 1);
+		else if (yaw <= 22.5F && yaw > -22.5F)
+			return new BlockPos(player.posX, player.posY + 1, player.posZ + 1);
+		else if (yaw <= 67.5F && yaw > 22.5F)
+			return new BlockPos(player.posX - 1, player.posY + 1, player.posZ + 1);
+		else if (yaw <= 112.5F && yaw > 67.5F)
+			return new BlockPos(player.posX - 1, player.posY + 1, player.posZ);
+		else if (yaw <= 157.5F && yaw > 112.5F)
+			return new BlockPos(player.posX - 1, player.posY + 1, player.posZ - 1);
+		else
+			return new BlockPos(player.posX, player.posY + 1, player.posZ - 1);
+	}
     
 	//place liquid block to world
-    public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World world, BlockPos pos, IFluidHandler fh)
+    public static boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World world, BlockPos pos, IFluidHandler fh)
     {
     	//null check
     	if (fh == null) return false;
@@ -263,6 +318,9 @@ public class ShipTank extends BasicItem
                 //liquid--
                 fh.drain(1000, true);
 
+                //send block update
+                world.notifyBlockOfStateChange(pos, world.getBlockState(pos).getBlock());
+                
                 return true;
             }//end can place block
         }//end get liquid

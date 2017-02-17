@@ -232,7 +232,7 @@ public class ConfigHandler
 		propVolCore = config.get(CATE_GENERAL, "Tile_VolCore", tileVolCore, "Volcano Core: max fuel storage, fuel consume speed, fuel value per grudge item");
 		propCrane = config.get(CATE_GENERAL, "Tile_Crane", tileCrane, "Crane: internal fluid tank capacity (mB), internal energy capacity (EU)");
 		propRingAbility = config.get(CATE_GENERAL, "Ring_Ability", ringAbility, "Ring ability related married number, -1 = disable, 0~N = active or max limit number: water breath (active number), fly in water (active number), dig speed boost (max limit number), fog in liquid (max limit number), immune to fire (active number)");
-		propInfLiquid = config.get(CATE_GENERAL, "Infinite_Pump", infLiquid, "Can ship pump liquid without destroying block: ");
+		propInfLiquid = config.get(CATE_GENERAL, "Infinite_Pump", infLiquid, "Can ship pump infinite water or lava without destroying block: min water depth, min lava depth");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("DmgTaken_SvS", CATE_SHIP, 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");

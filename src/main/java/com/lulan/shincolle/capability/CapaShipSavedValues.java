@@ -100,6 +100,7 @@ public class CapaShipSavedValues
 		nbtExt_add4.setBoolean("TimeKeeper", ship.getStateFlag(ID.F.TimeKeeper));
 		nbtExt_add4.setBoolean("PickItem", ship.getStateFlag(ID.F.PickItem));
 		nbtExt_add4.setBoolean("HeldItem", ship.getStateFlag(ID.F.ShowHeldItem));
+		nbtExt_add4.setBoolean("AutoPump", ship.getStateFlag(ID.F.AutoPump));
 		
 		//save timer
 		nbtExt.setTag("Timer", nbtExt_add5);
@@ -191,6 +192,7 @@ public class CapaShipSavedValues
 		ship.setStateFlag(ID.F.TimeKeeper, nbt_load.getBoolean("TimeKeeper"));
 		ship.setStateFlag(ID.F.PickItem, nbt_load.getBoolean("PickItem"));
 		ship.setStateFlag(ID.F.ShowHeldItem, nbt_load.getBoolean("HeldItem"));
+		ship.setStateFlag(ID.F.AutoPump, nbt_load.getBoolean("AutoPump"));
 		
 		//load timer
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Timer");

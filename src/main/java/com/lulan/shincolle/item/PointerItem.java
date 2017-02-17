@@ -626,7 +626,7 @@ public class PointerItem extends BasicItem
 		if (world.isRemote)
 		{
 			//show caress position if debug mode
-			if (inUse && ConfigHandler.debugMode)
+			if (inUse && ConfigHandler.debugMode && item.getItemDamage() > 2)
 			{
 				EntityPlayer p = ClientProxy.getClientPlayer();
 				

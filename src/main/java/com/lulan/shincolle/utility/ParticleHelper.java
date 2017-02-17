@@ -747,6 +747,13 @@ public class ParticleHelper
 			}
 		}
 		break;
+		case 21:	//fill fluid particle
+		{
+			//											 ent, type, scale, rad, NO_USE, NO_USE, 4~7:RGBA, height
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 0, 0.1F, ent.width * 2F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.4F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
+		}
+		break;
 		case 36:	//emotion
 		{
 			ParticleEmotion partEmo = new ParticleEmotion(world, ent,

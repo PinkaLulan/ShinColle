@@ -304,6 +304,9 @@ public class PacketHelper
 			case ID.B.ShipInv_AutoCR:
 				entity.setStateMinor(ID.M.UseCombatRation, value);
 			break;
+			case ID.B.ShipInv_AutoPump:
+				entity.setStateFlagI(ID.F.AutoPump, value);
+			break;
 			}
 		}
 		else

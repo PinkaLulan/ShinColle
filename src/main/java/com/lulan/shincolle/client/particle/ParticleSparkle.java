@@ -68,9 +68,23 @@ public class ParticleSparkle extends Particle
         case 5:
         case 6:
         case 7:
-        case 8:
         case 9:
         case 10:
+        	this.particleScale = parms[0];
+        	this.beamFad = parms[1];
+        	this.beamSpd = parms[2];
+        	this.beamThick = parms[3];
+        	this.particleRed = parms[4];
+            this.particleGreen = parms[5];
+            this.particleBlue = parms[6];
+            this.particleAlpha = parms[7];
+            this.beamHeight = parms[8];
+            this.particleMaxAge = 20;
+            this.NumBeam = (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 30;
+            this.beamPos = new float[NumBeam][8];
+            this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
+        break;	
+        case 8:
         	this.particleScale = parms[0];
         	this.beamFad = parms[1];
         	this.beamSpd = parms[2];
