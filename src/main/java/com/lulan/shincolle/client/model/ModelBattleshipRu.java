@@ -39,7 +39,6 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
     public ModelRenderer Hair01;
     public ModelRenderer Hair02;
     public ModelRenderer LegLeft01;
-    public ModelRenderer Skirt01;
     public ModelRenderer LegRight01;
     public ModelRenderer LegLeft02;
     public ModelRenderer Shoe01;
@@ -113,6 +112,8 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
+    public ModelRenderer Skirt01;
+    
 
     public ModelBattleshipRu()
     {

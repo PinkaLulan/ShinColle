@@ -54,7 +54,8 @@ public class ShipCalc
 		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserNE,  256,  2});
 		
 		//large build
-		EquipLarge.add(new int[] {ID.Ship.CarrierWO,       500,  3});
+		EquipLarge.add(new int[] {ID.Ship.DestroyerHime,   500,  0});
+		EquipLarge.add(new int[] {ID.Ship.CarrierWO,       650,  3});
 		EquipLarge.add(new int[] {ID.Ship.BattleshipTA,    800,  2});
 		EquipLarge.add(new int[] {ID.Ship.BattleshipRU,    800,  2});
 		EquipLarge.add(new int[] {ID.Ship.NorthernHime,    2600, 1});
@@ -241,6 +242,8 @@ public class ShipCalc
   			return "shincolle.EntityCarrierHime";
   		case ID.Ship.BattleshipHime:
   			return "shincolle.EntityBattleshipHime";
+  		case ID.Ship.DestroyerHime:
+  			return "shincolle.EntityDestroyerHime";	
   		case ID.Ship.HarbourHime:
   			return "shincolle.EntityHarbourHime";
   		case ID.Ship.NorthernHime:

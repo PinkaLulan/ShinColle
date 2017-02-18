@@ -1877,6 +1877,12 @@ public class EntityHelper
   		
   		if (amountMoved > 0 && inv.getHost() != null)
   		{
+  			//add exp to transport ship
+  			if (inv.getHost().getShipType() == ID.ShipType.TRANSPORT)
+  			{
+  				inv.getHost().addShipExp(ConfigHandler.expGain[6]);
+  			}
+  			
   			//apply particle
   			TargetPoint tp = new TargetPoint(inv.getHost().dimension, inv.getHost().posX, inv.getHost().posY, inv.getHost().posZ, 48D);
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(inv.getHost(), 21, 0D, 0.1D, 0D), tp);

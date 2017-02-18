@@ -39,6 +39,7 @@ import com.lulan.shincolle.entity.hime.EntityAirfieldHime;
 import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
 import com.lulan.shincolle.entity.hime.EntityCarrierHime;
 import com.lulan.shincolle.entity.hime.EntityCarrierWD;
+import com.lulan.shincolle.entity.hime.EntityDestroyerHime;
 import com.lulan.shincolle.entity.hime.EntityHarbourHime;
 import com.lulan.shincolle.entity.hime.EntityNorthernHime;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
@@ -127,6 +128,7 @@ public class ModEntity
 		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
 		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);
 		createEntity(EntityDestroyerNi.class, "EntityDestroyerNi", modEntityID++);
+		createEntity(EntityDestroyerHime.class, "EntityDestroyerHime", modEntityID++);
 		createEntity(EntityDestroyerAkatsuki.class, "EntityDestroyerAkatsuki", modEntityID++);
 		createEntity(EntityDestroyerAkatsukiMob.class, "EntityDestroyerAkatsukiMob", modEntityID++);
 		createEntity(EntityDestroyerHibiki.class, "EntityDestroyerHibiki", modEntityID++);

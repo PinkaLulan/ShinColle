@@ -20,6 +20,7 @@ import com.lulan.shincolle.client.model.ModelCruiserTenryuu;
 import com.lulan.shincolle.client.model.ModelDestroyerAkatsuki;
 import com.lulan.shincolle.client.model.ModelDestroyerHa;
 import com.lulan.shincolle.client.model.ModelDestroyerHibiki;
+import com.lulan.shincolle.client.model.ModelDestroyerHime;
 import com.lulan.shincolle.client.model.ModelDestroyerI;
 import com.lulan.shincolle.client.model.ModelDestroyerIkazuchi;
 import com.lulan.shincolle.client.model.ModelDestroyerInazuma;
@@ -90,6 +91,8 @@ public class RenderShipEntity extends RenderBasic
 	private static final ModelBase MD_Hime_Airfield = new ModelAirfieldHime();
 	private static final ResourceLocation TEX_Hime_Battleship = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipHime.png");
 	private static final ModelBase MD_Hime_Battleship = new ModelBattleshipHime();
+	private static final ResourceLocation TEX_Hime_Destroyer = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerHime.png");
+	private static final ModelBase MD_Hime_Destroyer = new ModelDestroyerHime();
 	private static final ResourceLocation TEX_Hime_Carrier = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierHime.png");
 	private static final ModelBase MD_Hime_Carrier = new ModelCarrierHime();
 	private static final ResourceLocation TEX_Hime_Harbour = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHarbourHime.png");
@@ -192,6 +195,8 @@ public class RenderShipEntity extends RenderBasic
 			return TEX_Hime_Airfield;
 		case ID.Ship.BattleshipHime:
 			return TEX_Hime_Battleship;
+		case ID.Ship.DestroyerHime:
+			return TEX_Hime_Destroyer;
 		case ID.Ship.CarrierHime:
 			return TEX_Hime_Carrier;
 		case ID.Ship.HarbourHime:
@@ -301,6 +306,9 @@ public class RenderShipEntity extends RenderBasic
 		case ID.Ship.BattleshipHime:
 			this.mainModel = MD_Hime_Battleship;
 		break;
+		case ID.Ship.DestroyerHime:
+			this.mainModel = MD_Hime_Destroyer;
+		break;
 		case ID.Ship.CarrierHime:
 			this.mainModel = MD_Hime_Carrier;
 		break;
@@ -403,6 +411,7 @@ public class RenderShipEntity extends RenderBasic
 		break;
 		case ID.Ship.LightCruiserTenryuu:
 		case ID.Ship.LightCruiserTatsuta:
+		case ID.Ship.DestroyerHime:
 			this.shadowSize = 0.6F;
 		break;
 		case ID.Ship.HarbourHime:

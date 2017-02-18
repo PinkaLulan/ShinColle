@@ -44,6 +44,7 @@ import com.lulan.shincolle.entity.hime.EntityAirfieldHime;
 import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
 import com.lulan.shincolle.entity.hime.EntityCarrierHime;
 import com.lulan.shincolle.entity.hime.EntityCarrierWD;
+import com.lulan.shincolle.entity.hime.EntityDestroyerHime;
 import com.lulan.shincolle.entity.hime.EntityHarbourHime;
 import com.lulan.shincolle.entity.hime.EntityNorthernHime;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
@@ -161,6 +162,7 @@ public class ClientProxy extends CommonProxy
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerRo.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerHa.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerNi.class, RenderShipEntity.FACTORY_SHIP);
+		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerHime.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerAkatsuki.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerAkatsukiMob.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityDestroyerHibiki.class, RenderShipEntity.FACTORY_SHIP);

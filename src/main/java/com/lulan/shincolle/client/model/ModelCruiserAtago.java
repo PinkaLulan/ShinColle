@@ -1032,9 +1032,19 @@ public class ModelCruiserAtago extends ShipModelBaseAdv
 			this.ArmLeft01.rotateAngleX = -3.14F;
 			this.ArmLeft01.rotateAngleY = 0.0F;
 			this.ArmLeft01.rotateAngleZ = 0.52F;
+			this.ArmLeft02.rotateAngleX = 0F;
+			this.ArmLeft02.rotateAngleY = 0F;
+			this.ArmLeft02.rotateAngleZ = 0F;
+			this.ArmLeft02.offsetX = 0F;
+			this.ArmLeft02.offsetZ = 0F;
 			this.ArmRight01.rotateAngleX = -3.14F;
 			this.ArmRight01.rotateAngleY = 0.0F;
 			this.ArmRight01.rotateAngleZ = -0.52F;
+			this.ArmRight02.rotateAngleX = 0F;
+			this.ArmRight02.rotateAngleY = 0F;
+			this.ArmRight02.rotateAngleZ = 0F;
+			this.ArmRight02.offsetX = 0F;
+			this.ArmRight02.offsetZ = 0F;
 		}
 
 	    if (ent.getIsSprinting() || f1 > 0.9F)
@@ -1215,9 +1225,19 @@ public class ModelCruiserAtago extends ShipModelBaseAdv
 			this.ArmLeft01.rotateAngleX = -3.14F;
 			this.ArmLeft01.rotateAngleY = 0.0F;
 			this.ArmLeft01.rotateAngleZ = 0.52F;
+			this.ArmLeft02.rotateAngleX = 0F;
+			this.ArmLeft02.rotateAngleY = 0F;
+			this.ArmLeft02.rotateAngleZ = 0F;
+			this.ArmLeft02.offsetX = 0F;
+			this.ArmLeft02.offsetZ = 0F;
 			this.ArmRight01.rotateAngleX = -3.14F;
 			this.ArmRight01.rotateAngleY = 0.0F;
 			this.ArmRight01.rotateAngleZ = -0.52F;
+			this.ArmRight02.rotateAngleX = 0F;
+			this.ArmRight02.rotateAngleY = 0F;
+			this.ArmRight02.rotateAngleZ = 0F;
+			this.ArmRight02.offsetX = 0F;
+			this.ArmRight02.offsetZ = 0F;
 	    }
 	    
 	    //swing arm

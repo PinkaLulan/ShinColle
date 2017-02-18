@@ -1,12 +1,22 @@
 package com.lulan.shincolle.entity.cruiser;
 
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityCruiserAtago extends BasicEntityShipSmall
 {
@@ -93,19 +103,109 @@ public class EntityCruiserAtago extends BasicEntityShipSmall
 		}
 	}
 	
-	//
+	//slow attacker
 	@Override
     public boolean attackEntityFrom(DamageSource source, float atk)
 	{
-		if (super.attackEntityFrom(source, atk))
+		if (super.attackEntityFrom(source, atk) && source.getEntity() instanceof EntityLivingBase &&
+			!source.getEntity().equals(this.getHostEntity()))
 		{
-			//TODO slow attacker
+			//slow attacker
+			((EntityLivingBase) source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100, getStateMinor(ID.M.ShipLevel) / 50));
 			
 			return true;
 		}
 		
 		return false;
 	}
+	
+  	//reset emotion4
+  	protected void updateEmotionState()
+  	{
+  		float hpState = this.getHealth() / this.getMaxHealth();
+		
+		//check hp state
+		if (hpState > 0.75F)
+		{	//normal
+			this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
+		}
+		else if (hpState > 0.5F)
+		{	//minor damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
+		}
+		else if (hpState > 0.25F)
+		{	//moderate damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);   			
+		}
+		else
+		{	//heavy damage
+			this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
+		}
+		
+		//roll emtion: hungry > T_T > bored
+		if (getStateFlag(ID.F.NoFuel))
+		{
+			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY)
+			{
+				this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
+			}
+		}
+		else
+		{
+			if (hpState < 0.35F)
+			{
+    			if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T)
+    			{
+    				this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
+    			}			
+    		}
+			else
+			{
+				//random Emotion
+				switch (this.getStateEmotion(ID.S.Emotion))
+				{
+				case ID.Emotion.NORMAL:		//if normal, 33% to bored
+					if (this.getRNG().nextInt(3) == 0)
+						this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
+				break;
+				default:					//other, 25% return normal
+					if (this.getRNG().nextInt(4) == 0)
+					{
+						this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+					}
+				break;
+				}
+				
+				//reset Emotion4
+				switch (this.getStateEmotion(ID.S.Emotion4))
+				{
+				default:					//other, 33% return normal
+						this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
+				break;
+				}
+			}
+		}
+  	}
+  	
+  	//play custom sound and set Emotion4 to BORED (sync only, server will reset to NORMAL)
+    @Override
+    @Nullable
+    protected SoundEvent getAmbientSound()
+    {
+    	SoundEvent event = getCustomSound(0, this);
+    	
+    	if (event == ModSounds.CUSTOM_SOUND.get((this.getShipClass() + 2) * 100))
+    	{
+    		this.StateEmotion[ID.S.Emotion4] = ID.Emotion.BORED;
+    		
+			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_Emo), point);
+    		
+			this.StateEmotion[ID.S.Emotion4] = ID.Emotion.NORMAL;
+    	}
+    	
+		return event;
+    }
 
 
 }

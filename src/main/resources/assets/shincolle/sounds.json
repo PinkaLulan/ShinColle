@@ -365,7 +365,16 @@
     "shincolle:hitg4",
     "shincolle:hitg5",
     "shincolle:hitg6"
-  ]}
+  ]},
+  
+  "ship-idle-60": { "sounds": [
+    "shincolle:pan1",
+    "shincolle:pan2"
+  ]},
 
+  "ship-hit-60": { "sounds": [
+    "shincolle:pan1",
+    "shincolle:pan2"
+  ]}
   
 }
