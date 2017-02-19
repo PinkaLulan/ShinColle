@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Enums;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;

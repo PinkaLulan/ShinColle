@@ -6,11 +6,12 @@ import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.math.BlockPos;
 
 /**SHIP FLOATING ON WATER AI
  * 若在水中, 且水上一格為空氣, 則會嘗試上浮並站在水面上
@@ -152,25 +153,33 @@ public class EntityAIShipFloating extends EntityAIBase
     }
     
     //check is in guard position
-    public boolean isInGuardPosition(IShipGuardian entity)
+    public static boolean isInGuardPosition(IShipGuardian host)
     {
-    	//若guard中, 則檢查是否達到guard距離
-		if (!entity.getStateFlag(ID.F.CanFollow))
+    	//若目前位置上方一格即是空氣, 則可上浮
+    	Entity ent = (Entity) host;
+    	
+    	if (ent.world.getBlockState(new BlockPos(ent).up()).getBlock() == Blocks.AIR)
 		{
-			float fMin = entity.getStateMinor(ID.M.FollowMin) + ((Entity)entity).width * 0.5F;
+    		return false;
+		}
+    	
+    	//若guard中, 則檢查是否達到guard距離
+		if (!host.getStateFlag(ID.F.CanFollow))
+		{
+			float fMin = host.getStateMinor(ID.M.FollowMin) + ((Entity)host).width * 0.5F;
 			fMin = fMin * fMin;
 			
 			//若守衛entity, 檢查entity距離
-			if (entity.getGuardedEntity() != null)
+			if (host.getGuardedEntity() != null)
 			{
-				double distSq = ((Entity)entity).getDistanceSqToEntity(entity.getGuardedEntity());
+				double distSq = ((Entity)host).getDistanceSqToEntity(host.getGuardedEntity());
 				if (distSq < fMin) return true;
 			}
 			//若守衛某地點, 則檢查與該點距離
-			else if (entity.getStateMinor(ID.M.GuardY) > 0)
+			else if (host.getStateMinor(ID.M.GuardY) > 0)
 			{
-				double distSq = ((Entity)entity).getDistanceSq(entity.getStateMinor(ID.M.GuardX), entity.getStateMinor(ID.M.GuardY), entity.getStateMinor(ID.M.GuardZ));
-				if (distSq < fMin && ((Entity)entity).posY >= entity.getStateMinor(ID.M.GuardY)) return true;
+				double distSq = ((Entity)host).getDistanceSq(host.getStateMinor(ID.M.GuardX), host.getStateMinor(ID.M.GuardY), host.getStateMinor(ID.M.GuardZ));
+				if (distSq < fMin && ((Entity)host).posY >= host.getStateMinor(ID.M.GuardY)) return true;
 			}
 		}
 		
