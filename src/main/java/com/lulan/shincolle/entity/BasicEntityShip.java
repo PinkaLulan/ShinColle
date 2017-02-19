@@ -2650,7 +2650,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	updateServerTimer();
         	
         	//pump liquid
-        	if (this.StateFlag[ID.F.AutoPump]) EntityHelper.autoPumpFluid(this);
+        	if (this.StateFlag[ID.F.AutoPump] && this.isEntityAlive() && !this.isSitting()) EntityHelper.autoPumpFluid(this);
         	
         	//check every 8 ticks
         	if ((ticksExisted & 7) == 0)
@@ -6104,7 +6104,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		    	attrs2[6] = this.getStateMinor(ID.M.UseCombatRation);
 		    	
 		    	//get ship flag data
-		    	byte[] flags = new byte[15];
+		    	byte[] flags = new byte[16];
 		    	
 		    	flags[0] = this.getStateFlag(ID.F.IsMarried) ? (byte)1 : (byte)0;
 		    	flags[1] = this.getStateFlag(ID.F.UseMelee) ? (byte)1 : (byte)0;
@@ -6121,6 +6121,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		    	flags[12] = this.getStateFlag(ID.F.TimeKeeper) ? (byte)1 : (byte)0;
 		    	flags[13] = this.getStateFlag(ID.F.PickItem) ? (byte)1 : (byte)0;
 		    	flags[14] = this.getStateFlag(ID.F.ShowHeldItem) ? (byte)1 : (byte)0;
+		    	flags[15] = this.getStateFlag(ID.F.AutoPump) ? (byte)1 : (byte)0;
 		    	
 		    	//save ship attributes
 		    	nbt.setString("owner", ownerUUID);									//owner UUID

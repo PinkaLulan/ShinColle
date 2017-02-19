@@ -1118,9 +1118,8 @@ public class GuiShipInventory extends GuiContainer
 			this.fontRendererObj.drawString(canAHATK, 187, 182, 0);
 			if (entity.getAttackType(ID.F.HaveRingEffect))
 			this.fontRendererObj.drawString(auraEffect, 187, 194, 0);
-			
-			break;
 		}
+		break;
 		case 2:
 		{	//AI page 2
 			//draw string
@@ -1162,9 +1161,8 @@ public class GuiShipInventory extends GuiContainer
 			{
 				this.fontRendererObj.drawStringWithShadow(fleeHPValue, 174, 193, Enums.EnumColors.YELLOW.getValue());
 			}
-			
-			break;
 		}
+		break;
 		case 3:
 		{	//AI page 3
 			//draw string
@@ -1174,15 +1172,14 @@ public class GuiShipInventory extends GuiContainer
 			this.fontRendererObj.drawString(strAA, 187, 170, 0);
 			this.fontRendererObj.drawString(strASM, 187, 182, 0);
 			this.fontRendererObj.drawString(strTimeKeep, 187, 194, 0);
-			
-			break;
 		}
+		break;
 		case 4:		//AI page 4
 		{
 			if (this.entity.getStateFlag(ID.F.CanPickItem)) this.fontRendererObj.drawString(strPick, 187, 134, 0);
-
-			break;
+			this.fontRendererObj.drawString(strAutoPump, 187, 146, 0);
 		}
+		break;
 		case 5:		//AI page 5
 		{
 			//draw string
@@ -1221,9 +1218,8 @@ public class GuiShipInventory extends GuiContainer
 					this.fontRendererObj.drawStringWithShadow(this.strMorale[temp], 174, 169, Enums.EnumColors.YELLOW.getValue());
 				}
 			}
-			
-			break;
 		}
+		break;
 		case 6:		//AI page 6
 		{	//AI page 6
 			//draw string
@@ -1233,9 +1229,8 @@ public class GuiShipInventory extends GuiContainer
 //			this.fontRendererObj.drawString(, 187, 170, 0);
 //			this.fontRendererObj.drawString(, 187, 182, 0);
 //			this.fontRendererObj.drawString(, 187, 194, 0);
-			
-			break;
 		}
+		break;
 		}//end AI page switch
 	}
 	

@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.hime;
 
+import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -48,6 +49,9 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
 
 		//use range attack
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
+		
+		//pick item
+		this.tasks.addTask(20, new EntityAIShipPickItem(this, 4F));
 	}
   	
   	@Override

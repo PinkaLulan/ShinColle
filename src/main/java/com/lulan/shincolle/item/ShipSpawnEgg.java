@@ -336,7 +336,7 @@ public class ShipSpawnEgg extends BasicItem
 				
 				try
 				{
-					if (flags.length >= 15)
+					if (flags.length >= 16)
 					{
 						entity.setStateFlag(ID.F.IsMarried, flags[0] > 0 ? true : false);
 				    	entity.setStateFlag(ID.F.UseMelee, flags[1] > 0 ? true : false);
@@ -353,6 +353,7 @@ public class ShipSpawnEgg extends BasicItem
 				    	entity.setStateFlag(ID.F.TimeKeeper, flags[12] > 0 ? true : false);
 				    	entity.setStateFlag(ID.F.PickItem, flags[13] > 0 ? true : false);
 				    	entity.setStateFlag(ID.F.ShowHeldItem, flags[14] > 0 ? true : false);
+				    	entity.setStateFlag(ID.F.AutoPump, flags[15] > 0 ? true : false);
 					}
 					
 					if (attrs2.length >= 7)

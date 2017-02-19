@@ -38,6 +38,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -417,6 +418,9 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 						this.tickRedstone = 18;
 						this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
 					}
+					
+					//crane <-> chest liquid transfer
+					this.applyPreLiquidTransfer(this.modeLiquid);
 					
 					if (this.chest != null && ship != null)
 					{
@@ -841,6 +845,108 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * transfer liquid: crane tank <-> inventory
+	 */
+	private void applyPreLiquidTransfer(int mode)
+	{
+		if (this.chest != null)
+		{
+			IFluidHandler fh;
+			FluidStack fs;
+			boolean checkNextChest = true;
+			
+			//get fluid from chest inventory
+			if (mode == 1)
+			{
+				//check all fluid container in chest
+				for (int i = 0; i < this.chest.getSizeInventory(); i++)
+				{
+					fh = FluidUtil.getFluidHandler(this.chest.getStackInSlot(i));
+					
+					if (fh != null)
+					{
+						fs = FluidUtil.tryFluidTransfer(this.tank, fh, 64000, true);
+						
+						//only do 1 stack every 16 ticks
+						if (fs != null)
+						{
+							checkNextChest = false;
+							break;
+						}
+					}
+				}
+				
+				//if chest is TileEntityChest, check nearby chest
+				if (checkNextChest && this.chest instanceof TileEntityChest)
+				{
+					TileEntityChest chest2 = getAdjChest((TileEntityChest) this.chest);
+					
+					if (chest2 != null)
+					{
+						//check all fluid container in chest
+						for (int i = 0; i < chest2.getSizeInventory(); i++)
+						{
+							fh = FluidUtil.getFluidHandler(chest2.getStackInSlot(i));
+							
+							if (fh != null)
+							{
+								fs = FluidUtil.tryFluidTransfer(this.tank, fh, 64000, true);
+								
+								//only do 1 stack every 16 ticks
+								if (fs != null) break;
+							}
+						}
+					}
+				}
+			}//end mode 1
+			//transfer fluid to chest inventory
+			else if (mode == 2 && this.tank.getFluid() != null)
+			{
+				//check all fluid container in chest
+				for (int i = 0; i < this.chest.getSizeInventory(); i++)
+				{
+					fh = FluidUtil.getFluidHandler(this.chest.getStackInSlot(i));
+					
+					if (fh != null)
+					{
+						fs = FluidUtil.tryFluidTransfer(fh, this.tank, 16000, true);
+						
+						//only do 1 stack every 16 ticks
+						if (fs != null)
+						{
+							checkNextChest = false;
+							break;
+						}
+					}
+				}
+				
+				//if chest is TileEntityChest, check nearby chest
+				if (checkNextChest && this.chest instanceof TileEntityChest)
+				{
+					TileEntityChest chest2 = getAdjChest((TileEntityChest) this.chest);
+					
+					if (chest2 != null)
+					{
+						//check all fluid container in chest
+						for (int i = 0; i < chest2.getSizeInventory(); i++)
+						{
+							fh = FluidUtil.getFluidHandler(chest2.getStackInSlot(i));
+							
+							if (fh != null)
+							{
+								fs = FluidUtil.tryFluidTransfer(fh, this.tank, 16000, true);
+								
+								//only do 1 stack every 16 ticks
+								if (fs != null) break;
+							}
+						}
+					}
+				}
+			}//end mode 2
+		}//end get chest
 	}
 	
 	/**

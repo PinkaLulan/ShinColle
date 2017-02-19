@@ -80,7 +80,7 @@ public class ParticleSparkle extends Particle
             this.particleAlpha = parms[7];
             this.beamHeight = parms[8];
             this.particleMaxAge = 20;
-            this.NumBeam = (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 30;
+            this.NumBeam = (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 15;
             this.beamPos = new float[NumBeam][8];
             this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
         break;	
