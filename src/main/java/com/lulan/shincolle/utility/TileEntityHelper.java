@@ -3,13 +3,19 @@ package com.lulan.shincolle.utility;
 import com.lulan.shincolle.tileentity.BasicTileInventory;
 import com.lulan.shincolle.tileentity.ITileFurnace;
 import com.lulan.shincolle.tileentity.ITileLiquidFurnace;
+import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -329,5 +335,50 @@ public class TileEntityHelper
 		
 	}
 	
+	/** pairing waypoints, called by C2S packet
+	 * 
+	 *  parms: pid: packet sender uid, posF: from pos, posT: to pos
+	 */
+	public static void pairingWaypoints(EntityPlayer player, int pid, World w, BlockPos posF, BlockPos posT)
+	{
+		if (pid <= 0) return;
+		
+		TileEntity tileF = w.getTileEntity(posF);
+		TileEntity tileT = w.getTileEntity(posT);
+
+		if (tileF instanceof ITileWaypoint && tileT instanceof ITileWaypoint)
+		{
+			ITileWaypoint wpFrom = (ITileWaypoint) tileF;
+			ITileWaypoint wpTo = (ITileWaypoint) tileT;
+			BlockPos nextWpTo = wpTo.getNextWaypoint();
+			
+			//check owner
+			if (wpFrom.getPlayerUID() != pid)
+			{
+				//not the owner, return
+				player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
+						.appendText(" "+wpFrom.getPlayerUID()));
+				return;
+			}
+			
+			//set waypoint
+			wpFrom.setNextWaypoint(posT);
+			
+			//若wpTo的next不是連到wpFrom (即沒有形成cycle) 則正常將wpTo的last設為wpFrom (若形成cycle則不修改wpTo的last wp)
+			if (nextWpTo.getX() != posF.getX() || nextWpTo.getY() != posF.getY() || nextWpTo.getZ() != posF.getZ())
+			{
+				wpTo.setLastWaypoint(posF);
+			}
+			
+			TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
+			text.getStyle().setColor(TextFormatting.YELLOW);
+			player.sendMessage
+			(
+				text.appendText(" " + TextFormatting.GREEN + posF.getX() + " " + posF.getY() + " " + posF.getZ() + 
+				TextFormatting.AQUA + " --> " + TextFormatting.GOLD +
+				posT.getX() + " " + posT.getY() + " " + posT.getZ())
+			);
+		}
+	}
 
 }

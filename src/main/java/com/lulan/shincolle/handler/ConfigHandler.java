@@ -99,7 +99,7 @@ public class ConfigHandler
 	//EU drum setting                       base, enchant
 	public static int[] drumEU = new int[] {400, 100};
 	//can ship pump infinite liquid            min water depth, min lava depth
-	public static int[] infLiquid = new int[] {25,              8};
+	public static int[] infLiquid = new int[] {12,              8};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20

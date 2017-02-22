@@ -949,7 +949,7 @@ public class EntityHelper
 	public static boolean updateWaypointMove(IShipGuardian entity)
 	{
 		boolean updatePos = false;
-
+		
   		//in guard block mode
   		if (!entity.getStateFlag(ID.F.CanFollow) && entity.getGuardedPos(1) > 0 && !entity.getIsSitting() && !entity.getIsLeashed() && !entity.getIsRiding())
   		{
@@ -969,7 +969,7 @@ public class EntityHelper
   			//is waypoint block
   			if (tile instanceof TileEntityCrane)
   			{
-  				//ship wait for craning (xz < 2 blocks, y < 5 blocks)
+  				//ship is ready for craning (xz < 2 blocks, y < 5 blocks)
   				if (distsq < 25D)
 				{
   					if (entity.getStateMinor(ID.M.CraneState) == 0)
@@ -1015,6 +1015,10 @@ public class EntityHelper
   			//is waypoint block
   			if (tile instanceof TileEntityWaypoint)
   			{
+  				//if is in formation mode, only update moving by flag ship (formatPos = 0)
+  				if (entity.getStateMinor(ID.M.FormatType) > 0 &&
+  					entity.getStateMinor(ID.M.FormatPos) > 0) return false;
+  				
   	  			if (distsq < 9D)
   	  			{
 	  	  			try
@@ -1026,6 +1030,21 @@ public class EntityHelper
 	  	  				{
 	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
 	  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
+	  	  				
+	  	  					//if ship is flag ship, apply same moving to other ships
+		  	  				if (entity.getStateMinor(ID.M.FormatType) > 0 &&
+		  	    				entity.getStateMinor(ID.M.FormatPos) == 0)
+		  	  				{
+		  	  					if (entity instanceof BasicEntityMount)
+		  	  					{
+		  	  						BasicEntityShip host = (BasicEntityShip) ((BasicEntityMount) entity).getHostEntity();
+		  	  						if (host != null) applyMovingToShipTeam((BasicEntityShip) host, host.getGuardedPos(0) + 0.5D, host.getGuardedPos(1), host.getGuardedPos(2) + 0.5D);
+		  	  					}
+		  	  					else
+		  	  					{
+		  	  						applyMovingToShipTeam((BasicEntityShip) entity, entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D);
+		  	  					}
+		  	  				}
 	  	  				}
 	  	  				
 	  	  				return updatePos;
@@ -1037,17 +1056,51 @@ public class EntityHelper
   	  			}
   	  			else
   	  			{
-  	  				if (entity.getTickExisted() % 128 == 0)
+  	  				//move back to waypoint position every 128 ticks
+  	  				if ((entity.getTickExisted() & 127) == 0)
   	  				{
   	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
   	  				}
   	  			}
-  				
   			}
   		}//end in guard mode
   		
   		return updatePos;
   	}
+	
+	public static void applyMovingToShipTeam(BasicEntityShip ship, double gx, double gy, double gz)
+	{
+		//get player data
+		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(ship.getPlayerUID());
+		if (capa == null) return;
+		
+		//get ship team id and flag ship
+		int[] teamslot = capa.checkIsInFormationTeam(ship.getShipUID());
+		if (teamslot == null || teamslot[0] <= 0 || teamslot[1] != 0) return;
+		
+		//get all ship in team
+		ArrayList<BasicEntityShip> ships = capa.getShipEntityAllList(teamslot[0]);
+		if (ships == null || ships.size() <= 0) return;
+		
+		//apply moving
+		FormationHelper.applyFormationMoving(ships, ship.getStateMinor(ID.M.FormatType), (int)gx, (int)gy, (int)gz);
+	
+		for (BasicEntityShip s : ships)
+		{
+			if (s != null && s.isEntityAlive()) s.getShipNavigate().tryMoveToXYZ(s.getGuardedPos(0) + 0.5D, s.getGuardedPos(1), s.getGuardedPos(2) + 0.5D, 1D);
+		}
+	}
+	
+	/** get all ship entity in the team */
+	public static BasicEntityShip[] getAllShipInTheTeam(CapaTeitoku capa, int tid)
+	{
+		if (capa != null)
+		{
+			return capa.getShipEntityAll(tid);
+		}
+		
+		return null;
+	}
 	
 	/** set next waypoint by checking last and next waypoint, return true if changed */
 	public static boolean applyNextWaypoint(ITileWaypoint tile, IShipGuardian entity, boolean checkWpStay, int checkDelay)

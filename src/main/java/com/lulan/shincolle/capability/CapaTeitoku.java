@@ -363,6 +363,21 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 	}
 	
+	public ArrayList<BasicEntityShip> getShipEntityAllList(int tid)
+	{
+		ArrayList<BasicEntityShip> list = new ArrayList<BasicEntityShip>();
+		
+		if (teamList != null && teamList[tid] != null)
+		{
+			for (BasicEntityShip s : teamList[tid])
+			{
+				list.add(s);
+			}
+		}
+		
+		return list;
+	}
+	
 	public BasicEntityShip[][] getShipEntityAllTeams()
 	{
 		try
@@ -379,7 +394,8 @@ public class CapaTeitoku implements ICapaTeitoku
 	
 	/** get ships for pointer by pointer's mode: 0:single, 1:group, 2:formation */
 	public ArrayList<BasicEntityShip> getShipEntityByMode(int mode)
-	{	//meta為pointer的item damage
+	{
+		//meta為pointer的item damage
 		ArrayList<BasicEntityShip> ships = new ArrayList<BasicEntityShip>();
 		boolean shouldSync = false;
 		

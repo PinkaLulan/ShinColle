@@ -187,10 +187,10 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
 		break;
 		case PID.TileWaypoint:	//sync tile waypoint
-			this.valueInt1 = PacketHelper.readIntArray(buf, 10);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 11);
 		break;
 		case PID.TileCrane:		//sync tile crane
-			this.valueInt1 = PacketHelper.readIntArray(buf, 15);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 16);
 			this.valueByte1 = PacketHelper.readByteArray(buf, 4);
 		break;
 		case PID.SyncShipInv:	//sync ship GUI
@@ -453,6 +453,15 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getField(5));
 			buf.writeInt(tile2.getPlayerUID());
 			
+			if (tile2.owner != null)
+			{
+				buf.writeInt(tile2.owner.getEntityId());
+			}
+			else
+			{
+				buf.writeInt(0);
+			}
+			
 			buf.writeByte(tile2.getField(2));
 			buf.writeByte(tile2.getField(3));
 			buf.writeByte(tile2.getField(4));
@@ -473,6 +482,15 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getNextWaypoint().getY());
 			buf.writeInt(tile2.getNextWaypoint().getZ());
 			buf.writeInt(tile2.getPlayerUID());
+			
+			if (tile2.owner != null)
+			{
+				buf.writeInt(tile2.owner.getEntityId());
+			}
+			else
+			{
+				buf.writeInt(0);
+			}
 		}
 		break;
 		case PID.SyncPlayerProp:	//sync player props
@@ -804,6 +822,7 @@ public class S2CGUIPackets implements IMessage
 				
 				((TileEntityWaypoint) tile).setSyncData(data);
 				((TileEntityWaypoint) tile).setPlayerUID(msg.valueInt1[9]);
+				((TileEntityWaypoint) tile).owner = EntityHelper.getEntityPlayerByID(msg.valueInt1[10], 0, true);
 			}
 		}
 		break;
@@ -833,6 +852,8 @@ public class S2CGUIPackets implements IMessage
 				tile2.setField(8, msg.valueByte1[3]);
 				tile2.setField(5, msg.valueInt1[13]);
 				tile2.setField(11, msg.valueInt1[14]);
+				tile2.owner = EntityHelper.getEntityPlayerByID(msg.valueInt1[15], 0, true);
+				
 				
 				if (entity instanceof BasicEntityShip)
 				{

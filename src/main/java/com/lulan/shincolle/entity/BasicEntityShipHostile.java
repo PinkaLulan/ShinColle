@@ -396,8 +396,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		
 		if (sync && !world.isRemote)
 		{
-			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_Emo), point);
+			this.sendSyncPacket(4);
 		}
 	}
 
@@ -811,6 +810,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	 *        1: motion
 	 *        2: rotation & position
 	 *        3: rotation
+	 *        4: emotion
 	 */
 	public void sendSyncPacket(int type)
 	{
@@ -831,6 +831,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			break;
 			case 3:
 				pid = S2CEntitySync.PID.SyncEntity_Rot;
+			break;
+			case 4:
+				pid = S2CEntitySync.PID.SyncEntity_Emo;
 			break;
 			default:
 				return;
@@ -920,18 +923,24 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
             	{
             		this.setEntityTarget(this.getAttackTarget());
             	}
-
-            	//check every 256 ticks
-            	if ((this.ticksExisted & 255) == 0)
-            	{
-            		//set air value
-            		if (this.getAir() < 300)
-            		{
-                    	setAir(300);
-                    }
-            		
-            		if (this.isEntityAlive()) applyEmotesReaction(4);
-            	}//end every 256 ticks
+            	
+    			//every 64 ticks
+    			if ((this.ticksExisted & 63) == 0)
+    			{
+    				updateEmotionState();
+    				
+                	//check every 256 ticks
+                	if ((this.ticksExisted & 255) == 0)
+                	{
+                		//set air value
+                		if (this.getAir() < 300)
+                		{
+                        	setAir(300);
+                        }
+                		
+                		if (this.isEntityAlive()) applyEmotesReaction(4);
+                	}//end every 256 ticks
+            	}//end 64 ticks
         	}//end every 16 ticks	
         }//end server side
         //client side
@@ -959,17 +968,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     			default:
     				break;
     			}
-    			
-    			//every 64 ticks
-    			if ((this.ticksExisted & 63) == 0)
-    			{
-    				updateEmotionState();
-            	}//end 64 ticks
     		}//end 16 ticks
         }//end client side
 	}
 	
-  	//update hp state, CLIENT SIDE ONLY!
+  	//update hp state, SERVER SIDE ONLY!
   	protected void updateEmotionState()
   	{
   		float hpState = this.getHealth() / this.getMaxHealth();
@@ -1038,6 +1041,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 				}
 			}
 		}
+		
+		//send sync packet
+		this.sendSyncPacket(4);
   	}
 	
 	@Override

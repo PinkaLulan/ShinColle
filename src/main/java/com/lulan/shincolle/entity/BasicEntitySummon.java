@@ -288,12 +288,12 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		{
 		case 1:
 			stateEmotion = (byte) value;
-			break;
+		break;
 		case 2:
 			stateEmotion2 = (byte) value;
-			break;
+		break;
 		default:
-			break;
+		break;
 		}
 		
 		if (sync && !world.isRemote)

@@ -15,6 +15,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -358,7 +359,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	{
 		if (this.isSitting())
 		{
-			if (getStateEmotion(ID.S.State) > ID.State.NORMAL)
+			if (getStateEmotion(ID.S.State) > ID.State.EQUIP00)
 			{
 				return this.height * 0.42F;
 			}

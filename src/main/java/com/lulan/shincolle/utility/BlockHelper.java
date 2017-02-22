@@ -131,14 +131,16 @@ public class BlockHelper
 	/** check block is safe (not solid block) */
 	public static boolean checkBlockSafe(World world, int x, int y, int z)
 	{
-		IBlockState block = world.getBlockState(new BlockPos(x, y, z));
-		return checkBlockSafe(block);
+		BlockPos pos = new BlockPos(x, y, z);
+		IBlockState state = world.getBlockState(pos);
+		
+		return checkBlockSafe(state) || state.getBlock().isPassable(world, pos);
 	}
 
 	/** check block is safe (not solid block) */
-	public static boolean checkBlockSafe(IBlockState block)
+	public static boolean checkBlockSafe(IBlockState state)
 	{
-		if (block == null || block.getMaterial() == Material.AIR || checkBlockIsLiquid(block))
+		if (state == null || state.getMaterial() == Material.AIR || checkBlockIsLiquid(state))
 		{
 			return true;
 		}
@@ -147,9 +149,9 @@ public class BlockHelper
 	}
 
 	/** check block is liquid (not air or solid block) */
-	public static boolean checkBlockIsLiquid(IBlockState block)
+	public static boolean checkBlockIsLiquid(IBlockState state)
 	{
-	    if (block != null && (block instanceof IFluidBlock || block instanceof BlockLiquid || block.getMaterial().isLiquid()))
+	    if (state != null && (state instanceof IFluidBlock || state instanceof BlockLiquid || state.getMaterial().isLiquid()))
 	    {
 	        return true;
 	    }

@@ -7,22 +7,18 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.ShipTank;
-import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.tileentity.ITileWaypoint;
-import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.TeamHelper;
+import com.lulan.shincolle.utility.TileEntityHelper;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidUtil;
@@ -55,7 +51,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte CmdChOwner = 3;
 		public static final byte CmdShipAttr = 4;
 		public static final byte Request_SyncModel = 5;
-		public static final byte Waypoint_Set = 6;
+		public static final byte Request_WpSet = 6;
 		public static final byte Request_Riding = 7;
 		public static final byte Request_PlaceFluid = 8;
 	}
@@ -68,8 +64,8 @@ public class C2SInputPackets implements IMessage
 	 * type 2:(1 parms) sync current item: 0:item slot
 	 * type 3:(2 parms) command: change owner: 0:owner eid, 1:ship eid
 	 * type 4:(9 parms) command: set ship attrs: 0:ship id, 1:world id, 2:ship level, 3~8:bonus value
-	 * type 5:(2 parms) request server to sync model parms: 0:world id, 1:entity id
-	 * type 6:(9 parms) setting waypoint 
+	 * type 5:(2 parms) request server to sync model: 0:world id, 1:entity id
+	 * type 6:(9 parms) setting waypoint: 
 	 * type 7:(2 parms) request server to sync riding: 0:world id, 1:ship eid
 	 */
 	public C2SInputPackets(byte id, int...parms)
@@ -95,7 +91,7 @@ public class C2SInputPackets implements IMessage
 		case PID.CmdShipAttr:   	//command: set ship attrs
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
-		case PID.Waypoint_Set:		//waypoint pairing packet
+		case PID.Request_WpSet:		//waypoint pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 			try
 			{
@@ -132,7 +128,7 @@ public class C2SInputPackets implements IMessage
 		case PID.CmdShipAttr:   //command: set ship attrs
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
-		case PID.Waypoint_Set:		//waypoint pairing packet
+		case PID.Request_WpSet:		//waypoint pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 			//send int array
 			if (this.value3 != null)
@@ -286,55 +282,21 @@ public class C2SInputPackets implements IMessage
 				}
 			}
 			break;
-			case PID.Waypoint_Set:		//waypoint pairing packet
+			case PID.Request_WpSet:		//waypoint pairing packet
 			{
 				/**
 				 * waypoint pairing packet:
-				 * data: 0:type, 1: worldID, 2:playerUID, 3~5:host xyz, 6~8:target xyz
-				 * type: 0:set last, 1:set next, 2:set chest
+				 * data: 0:playerUID, 1~3:from xyz, 4~6:to xyz
 				 */
-				World w = ServerProxy.getServerWorld(msg.value3[1]);
+				EntityPlayer p = ctx.getServerHandler().playerEntity;
+				World w = null;
+				if (p != null) w = p.world;
 				
 				if (w != null)
 				{
-					BlockPos p1 = new BlockPos(msg.value3[3], msg.value3[4], msg.value3[5]);
-					BlockPos p2 = new BlockPos(msg.value3[6], msg.value3[7], msg.value3[8]);
-					TileEntity tile1 = w.getTileEntity(p1);
-					TileEntity tile2 = w.getTileEntity(p2);
-					
-					switch (msg.value3[0])
-					{
-					case 0:	//set last
-						if (tile1 instanceof ITileWaypoint && tile2 instanceof ITileWaypoint)
-						{
-							//check host tile is same owner
-							if (((ITileWaypoint)tile1).getPlayerUID() == msg.value3[2])
-							{
-								((ITileWaypoint)tile1).setLastWaypoint(p2);
-							}
-						}
-					break;
-					case 1:	//set next
-						if (tile1 instanceof ITileWaypoint && tile2 instanceof ITileWaypoint)
-						{
-							//check host tile is same owner
-							if (((ITileWaypoint)tile1).getPlayerUID() == msg.value3[2])
-							{
-								((ITileWaypoint)tile1).setNextWaypoint(p2);
-							}
-						}
-					break;
-					case 2:	//set chest
-						if (tile1 instanceof TileEntityCrane && tile2 instanceof IInventory)
-						{
-							//check host tile is same owner
-							if (((TileEntityCrane)tile1).getPlayerUID() == msg.value3[2])
-							{
-								((TileEntityCrane)tile1).setPairedChest(p2, false);
-							}
-						}
-					break;
-					}
+					TileEntityHelper.pairingWaypoints(p, msg.value3[0], w,
+							new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
+							new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
 				}
 			}
 			break;

@@ -2650,7 +2650,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	updateServerTimer();
         	
         	//pump liquid
-        	if (this.StateFlag[ID.F.AutoPump] && this.isEntityAlive() && !this.isSitting()) EntityHelper.autoPumpFluid(this);
+        	if (this.StateFlag[ID.F.AutoPump] && this.isEntityAlive() && !this.isSitting() &&
+        		!this.getStateFlag(ID.F.NoFuel)) EntityHelper.autoPumpFluid(this);
         	
         	//check every 8 ticks
         	if ((ticksExisted & 7) == 0)
@@ -2730,76 +2731,83 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	        	            }
                 		}
                 		
-            			//check every 128 ticks
-                    	if ((ticksExisted & 127) == 0)
-                    	{
-                    		//delayed init, waiting for player entity loaded
-                    		if (!this.initWaitAI && ticksExisted >= 128)
-                    		{
-                    			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
-                    			this.initWaitAI = true;
-                    		}
-
-                    		//check owner online
-                    		if (this.getPlayerUID() > 0)
-                    		{
-                    			//get owner
-                    			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-                    			
-                    			//owner exists (online and same world)
-                    			if (player != null)
-                    			{
-                					//update owner entity id (could be changed when owner change dimension or dead)
-                        			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
-                        			//sync guard position
-                        			this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, false);
-                        		}
-                    		}
+                		//check every 64 ticks
+                		if ((ticksExisted & 63) == 0)
+                		{
+                    		//update random emotion
+                    		updateEmotionState();
                     		
-                    		if (this.isEntityAlive())
-                    		{
-	                    		//use combat ration automatically
-	                    		if (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
-	                    		{
-	                    			useCombatRation();
-	                    		}
-	                    		
-	                    		//update mount
-	                    		updateMountSummon();
-	                    		
-	                    		//update consume item
-	                    		updateConsumeItem();
-	                    		
-	                    		//update morale value
-	                    		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
-                    		}
-                    		
-                    		//check every 256 ticks
-                        	if ((this.ticksExisted & 255) == 0)
+                    		//check every 128 ticks
+                        	if ((ticksExisted & 127) == 0)
                         	{
-                        		//update buff (slow update)
-                        		calcEquipAndUpdateState();
+                        		//delayed init, waiting for player entity loaded
+                        		if (!this.initWaitAI && ticksExisted >= 128)
+                        		{
+                        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
+                        			this.initWaitAI = true;
+                        		}
+
+                        		//check owner online
+                        		if (this.getPlayerUID() > 0)
+                        		{
+                        			//get owner
+                        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+                        			
+                        			//owner exists (online and same world)
+                        			if (player != null)
+                        			{
+                    					//update owner entity id (could be changed when owner change dimension or dead)
+                            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
+                            			//sync guard position
+                            			this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, false);
+                            		}
+                        		}
                         		
                         		if (this.isEntityAlive())
                         		{
-	                        		//show idle emotes
-	                        		if (!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
-	                        		
-	                        		//HP auto regen
-	                        		if (this.getHealth() < this.getMaxHealth())
-	                        		{
-	                        			this.heal(this.getMaxHealth() * 0.03F + 1F);
-	                        		}
+    	                    		//use combat ration automatically
+    	                    		if (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
+    	                    		{
+    	                    			useCombatRation();
+    	                    		}
+    	                    		
+    	                    		//update mount
+    	                    		updateMountSummon();
+    	                    		
+    	                    		//update consume item
+    	                    		updateConsumeItem();
+    	                    		
+    	                    		//update morale value
+    	                    		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
                         		}
                         		
-                        		//food saturation--
-                        		int f = this.getFoodSaturation();
-                        		if (f > 0)
-                        		{
-                        			this.setFoodSaturation(--f);
-                        		}
-                        	}//end every 256 ticks
-                    	}//end every 128 ticks
+                        		//check every 256 ticks
+                            	if ((this.ticksExisted & 255) == 0)
+                            	{
+                            		//update buff (slow update)
+                            		calcEquipAndUpdateState();
+                            		
+                            		if (this.isEntityAlive())
+                            		{
+    	                        		//show idle emotes
+    	                        		if (!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
+    	                        		
+    	                        		//HP auto regen
+    	                        		if (this.getHealth() < this.getMaxHealth())
+    	                        		{
+    	                        			this.heal(this.getMaxHealth() * 0.03F + 1F);
+    	                        		}
+                            		}
+                            		
+                            		//food saturation--
+                            		int f = this.getFoodSaturation();
+                            		if (f > 0)
+                            		{
+                            			this.setFoodSaturation(--f);
+                            		}
+                            	}//end every 256 ticks
+                        	}//end every 128 ticks
+                		}//end every 64 ticks
                 	}//end every 32 ticks
             	}//end every 16 ticks
         	}//end every 8 ticks
@@ -2825,12 +2833,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		this.sendSyncRequest(0);
         	}
         	
-        	//every 64 ticks
-        	if ((this.ticksExisted & 63) == 0)
-        	{
-        		//update random emotion
-        		updateEmotionState();
-        	}//end 64 ticks
+//        	//every 64 ticks
+//        	if ((this.ticksExisted & 63) == 0)
+//        	{
+//        		//update random emotion
+//        		updateEmotionState();
+//        	}//end 64 ticks
         	
         }//end client side
         
@@ -3922,7 +3930,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return par1;
   	}
 
-  	//update emotion, CLIENT SIDE ONLY!
+  	//update emotion, SERVER SIDE ONLY!
   	protected void updateEmotionState()
   	{
   		float hpState = this.getHealth() / this.getMaxHealth();
@@ -3992,6 +4000,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				break;
 				}
 			}
+		}
+		
+		//send sync packet
+		if (!this.world.isRemote)
+		{
+			this.sendSyncPacketEmotion();
 		}
   	}
   	

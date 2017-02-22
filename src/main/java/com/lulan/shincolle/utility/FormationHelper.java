@@ -233,7 +233,7 @@ public class FormationHelper
 				}
 				else
 				{
-					owner = null;  //clear
+					return;
 				}
 			}
 		}
@@ -274,7 +274,7 @@ public class FormationHelper
 						break;
 					default:
 						//apply moving
-						applyShipGuard(s, x, y, z);
+						applyShipGuard(s, x, y, z, true);
 						break;
 					}
 					
@@ -304,7 +304,7 @@ public class FormationHelper
 		if (pos != null)
 		{
 			//apply moving
-			applyShipGuard(ship, pos[0], pos[1], pos[2]);
+			applyShipGuard(ship, pos[0], pos[1], pos[2], true);
 			LogHelper.debug("DEBUG: apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
 			
 			//return next pos
@@ -320,7 +320,7 @@ public class FormationHelper
 		else
 		{
 			//apply moving
-			applyShipGuard(ship, x, y, z);
+			applyShipGuard(ship, x, y, z, true);
 			LogHelper.info("DEBUG : apply formation move: not safe: "+x+" "+y+" "+z);
 			
 			return new int[] {x, y, z};
@@ -362,13 +362,13 @@ public class FormationHelper
 		if (pos != null)
 		{
 			//apply moving
-			applyShipGuard(ship, pos[0], pos[1], pos[2]);
+			applyShipGuard(ship, pos[0], pos[1], pos[2], true);
 			LogHelper.debug("DEBUG: apply formation move: safe: "+pos[0]+" "+pos[1]+" "+pos[2]);
 		}
 		else
 		{
 			//apply moving
-			applyShipGuard(ship, x, y, z);
+			applyShipGuard(ship, x, y, z, true);
 			LogHelper.debug("DEBUG: apply formation move: not safe: "+x+" "+y+" "+z);
 		}
 	}
@@ -892,7 +892,7 @@ public class FormationHelper
 	 * 
 	 *  GuardType = 1: guard a block
 	 */
-	public static void applyShipGuard(BasicEntityShip ship, int x, int y, int z)
+	public static void applyShipGuard(BasicEntityShip ship, int x, int y, int z, boolean forceSet)
 	{
 		if (ship != null)
 		{
@@ -906,7 +906,7 @@ public class FormationHelper
 			ship.setEntityTarget(null);
 			
 			//same guard position, cancel guard mode
-			if (gx == x && gy == y && gz == z && gd == ship.world.provider.getDimension())
+			if (!forceSet && gx == x && gy == y && gz == z && gd == ship.world.provider.getDimension())
 			{
 				ship.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
 				ship.setGuardedEntity(null);
@@ -1078,7 +1078,7 @@ public class FormationHelper
 						player.getDistanceToEntity(ship) < 64F)
 					{
 						//設定ship移動地點
-						applyShipGuard(ship, parms[4], parms[5], parms[6]);
+						applyShipGuard(ship, parms[4], parms[5], parms[6], false);
 						//sync guard
 						CommonProxy.channelE.sendTo(new S2CEntitySync(ship, S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) player);
 					}

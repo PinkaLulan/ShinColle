@@ -6,10 +6,9 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.PointerItem;
-import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -27,6 +26,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	//waypoint
 	private int tick, wpstay, playerUID;
 	private BlockPos lastPos, nextPos;
+	public EntityPlayer owner;
 	
 	
 	public TileEntityWaypoint()
@@ -103,7 +103,8 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	@Override
 	public void update()
 	{
-		tick++;
+		//both side
+		this.tick++;
 		
 		//client side
 		if (this.world.isRemote)
@@ -122,12 +123,14 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 			if (item != null && (item.getItem() instanceof ItemBlockWaypoint || item.getItem() == ModItems.TargetWrench ||
 			   (item.getItem() instanceof PointerItem && item.getItemDamage() < 3)))
 			{
-				if (this.tick % 8 == 0)
+				//every 8 ticks
+				if ((this.tick & 7) == 0)
 				{
 					//draw arrow mark
 					ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()-0.25D, pos.getZ()+0.5D, 0.2D, 9D, 0D, (byte) 25);
 					
-					if (this.tick % 16 == 0)
+					//every 16 ticks
+					if ((this.tick & 15) == 0)
 					{
 						//draw next point spray
 						if (this.nextPos.getY() > 0)
@@ -142,24 +145,34 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 							ParticleHelper.spawnAttackParticleAt(this.pos.getX()+0.5D, this.pos.getY()+0.5D, this.pos.getZ()+0.5D, dx, dy, dz, (byte) 38);
 						}
 						
-						if (this.tick % 32 == 0)
+						//every 32 ticks
+						if ((this.tick & 31) == 0)
 						{
 							//draw point text
 							if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
 							{
+								String name = "";
 								String postext1 = "";
 								String postext2 = "";
+								int len0 = 0;
 								int len1 = 0;
 								int len2 = 0;
 								
+								if (this.owner != null)
+								{
+									name = TextFormatting.GREEN + this.owner.getName();
+									len0 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(name);
+								}
+								
 								postext1 = "F: " + TextFormatting.LIGHT_PURPLE + this.lastPos.getX() + ", " + this.lastPos.getY() + ", " + this.lastPos.getZ();
 								len1 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext1);
+								len1 = len1 > len0 ? len1 : len0;
 								postext2 = "T: " + TextFormatting.AQUA + this.nextPos.getX() + ", " + this.nextPos.getY() + ", " + this.nextPos.getZ();
 								len2 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext2);
-								postext1 = postext1 + "\n" + TextFormatting.WHITE + postext2;
+								postext1 = name + "\n" + TextFormatting.WHITE + postext1 + "\n" + TextFormatting.WHITE + postext2;
 								len1 = len1 > len2 ? len1 : len2;
 								
-								ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.7D, this.pos.getZ()+0.5D, (byte) 0, 2, len1+1);
+								ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.7D, this.pos.getZ()+0.5D, (byte) 0, 3, len1+1);
 							}
 							
 							//draw circle mark
@@ -172,10 +185,16 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		//server side
 		else
 		{
-			//sync waypoint
-			if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+			//get owner entity
+			if ((this.tick & 15) == 0 && this.owner == null && this.playerUID > 0)
 			{
-				if (this.tick >= 128)
+				this.owner = EntityHelper.getEntityPlayerByUID(this.playerUID);
+			}
+			
+			//sync waypoint
+			if (this.playerUID > 0 || this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+			{
+				if (this.tick > 128)
 				{
 					this.tick = 0;
 					this.sendSyncPacket();
@@ -200,13 +219,8 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		{
 			this.nextPos = pos;
 			
-			if (this.world.isRemote)
-			{
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
-						1, this.world.provider.getDimension(), this.playerUID,
-						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
-						this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()));
-			}
+			//sync to client
+			if (!this.world.isRemote) this.sendSyncPacket();
 		}
 	}
 
@@ -223,13 +237,8 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		{
 			this.lastPos = pos;
 			
-			if (this.world.isRemote)
-			{
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
-						0, this.world.provider.getDimension(), this.playerUID,
-						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
-						this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()));
-			}
+			//sync to client
+			if (!this.world.isRemote) this.sendSyncPacket();
 		}
 	}
 

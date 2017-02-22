@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.network.C2SGUIPackets;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
@@ -297,10 +298,12 @@ public class TargetWrench extends BasicItem
 				TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.toofar");
 				str.getStyle().setColor(TextFormatting.YELLOW);
 				player.sendMessage(str);
+				
+				//clear data
+				resetPos();
+				
+				return false;
 			}
-			
-			//clear data
-			resetPos();
 		}
 		//waypoint pairing
 		else if (tiles[0] instanceof ITileWaypoint && tiles[1] instanceof ITileWaypoint)
@@ -314,38 +317,10 @@ public class TargetWrench extends BasicItem
 				this.switchPoint();
 				ITileWaypoint wpTo = (ITileWaypoint) tiles[this.pointID];
 				BlockPos posT = tilePoint[this.pointID];
-				BlockPos nextWpTo = wpTo.getNextWaypoint();
 				
-				//check owner
-				if (wpFrom.getPlayerUID() != uid)
-				{
-					//not the owner, return
-					player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
-							.appendText(" "+wpFrom.getPlayerUID()));
-					
-					//clear data
-					resetPos();
-					
-					return false;
-				}
-				
-				//set waypoint
-				wpFrom.setNextWaypoint(posT);
-				
-				//若from wp的next的next wp不等於自己 (即wp沒有連回來形成cycle), 則將from wp設為to wp的last wp
-				if (nextWpTo.getX() != posF.getX() || nextWpTo.getY() != posF.getY() || nextWpTo.getZ() != posF.getZ())
-				{
-					wpTo.setLastWaypoint(posF);
-				}
-				
-				TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
-				text.getStyle().setColor(TextFormatting.YELLOW);
-				player.sendMessage
-				(
-					text.appendText(" " + TextFormatting.GREEN + posF.getX() + " " + posF.getY() + " " + posF.getZ() + 
-					TextFormatting.AQUA + " --> " + TextFormatting.GOLD +
-					posT.getX() + " " + posT.getY() + " " + posT.getZ())
-				);
+				//send pairing request packet
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_WpSet,
+					uid, posF.getX(), posF.getY(), posF.getZ(), posT.getX(), posT.getY(), posT.getZ()));
 				
 				//clear data
 				resetPos();
@@ -358,10 +333,12 @@ public class TargetWrench extends BasicItem
 				TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.wptoofar");
 				str.getStyle().setColor(TextFormatting.YELLOW);
 				player.sendMessage(str);
+				
+				//clear data
+				resetPos();
+				
+				return false;
 			}
-			
-			//clear data
-			resetPos();
 		}
 		else
 		{
@@ -371,9 +348,9 @@ public class TargetWrench extends BasicItem
 			
 			//clear data
 			resetPos();
+			
+			return false;
 		}
-
-		return false;
 	}
 	
 

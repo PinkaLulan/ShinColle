@@ -13,7 +13,6 @@ import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.item.PointerItem;
-import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -73,6 +72,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	private static final int[] NOSLOT = new int[] {}; 
 	
 	//target
+	public EntityPlayer owner;
 	private BasicEntityShip ship;
 	private IInventory chest;
 	
@@ -262,15 +262,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			this.chestPos = pos;
 			this.isPaired = true;
 			this.chest = (IInventory) tile;
-			
-			//send chest paired packet
-			if (sendPacket && this.world.isRemote)
-			{
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
-						2, this.world.provider.getDimension(), this.playerUID,
-						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
-						this.chestPos.getX(), this.chestPos.getY(), this.chestPos.getZ()));
-			}
 		}
 		else
 		{
@@ -331,13 +322,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		{
 			this.nextPos = pos;
 			
-			if (this.world.isRemote)
-			{
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
-						1, this.world.provider.getDimension(), this.playerUID,
-						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
-						this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()));
-			}
+			//sync to client
+			if (!this.world.isRemote) this.sendSyncPacket();
 		}
 	}
 
@@ -354,13 +340,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		{
 			this.lastPos = pos;
 			
-			if (this.world.isRemote)
-			{
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Waypoint_Set,
-						0, this.world.provider.getDimension(), this.playerUID,
-						this.pos.getX(), this.pos.getY(), this.pos.getZ(),
-						this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()));
-			}
+			//sync to client
+			if (!this.world.isRemote) this.sendSyncPacket();
 		}
 	}
 
@@ -400,6 +381,13 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 				{
 					this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
 				}
+			}
+			
+			//check owner
+			//get owner entity
+			if ((this.tick & 15) == 0 && this.owner == null && this.playerUID > 0)
+			{
+				this.owner = EntityHelper.getEntityPlayerByUID(this.playerUID);
 			}
 
 			//can work
@@ -627,24 +615,33 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 						//draw point text
 						if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
 						{
+							String name = "";
 							String postext1 = "";
 							String postext2 = "";
 							String postext3 = "";
+							int len0 = 0;
 							int len1 = 0;
 							int len2 = 0;
 							int len3 = 0;
 							
+							if (this.owner != null)
+							{
+								name = TextFormatting.GREEN + this.owner.getName();
+								len0 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(name);
+							}
+							
 							postext1 = "F: " + TextFormatting.LIGHT_PURPLE + this.lastPos.getX() + ", " + this.lastPos.getY() + ", " + this.lastPos.getZ();
 							len1 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext1);
+							len1 = len1 > len0 ? len1 : len0;
 							postext2 = "T: " + TextFormatting.AQUA + this.nextPos.getX() + ", " + this.nextPos.getY() + ", " + this.nextPos.getZ();
 							len2 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext2);
 							if (len1 < len2) len1 = len2;
 							postext3 = "C: " + TextFormatting.YELLOW + this.chestPos.getX() + ", " + this.chestPos.getY() + ", " + this.chestPos.getZ();
 							len3 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext3);
 							if (len1 < len3) len1 = len3;
-							postext1 = postext1 + "\n" + TextFormatting.WHITE + postext2 + "\n" + TextFormatting.WHITE + postext3;
+							postext1 = name + "\n" + TextFormatting.WHITE + postext1 + "\n" + TextFormatting.WHITE + postext2 + "\n" + TextFormatting.WHITE + postext3;
 							
-							ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.9D, this.pos.getZ()+0.5D, (byte) 0, 3, len1+1);
+							ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.9D, this.pos.getZ()+0.5D, (byte) 0, 4, len1+1);
 						}
 					}//end every 32 ticks
 				}//end holding item
