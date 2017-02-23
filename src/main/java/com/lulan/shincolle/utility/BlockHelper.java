@@ -127,8 +127,15 @@ public class BlockHelper
 		LogHelper.debug("DEBUG: find block fail");
 		return null;
 	}
+	
+	/** check block is safe (not solid block), WITH PASSABLE CHECKING */
+	public static boolean checkBlockSafe(Entity target)
+	{
+		if (target == null) return false;
+		return checkBlockSafe(target.world, MathHelper.floor(target.posX), (int)target.posY, MathHelper.floor(target.posZ));
+	}
 
-	/** check block is safe (not solid block) */
+	/** check block is safe (not solid block), WITH PASSABLE CHECKING */
 	public static boolean checkBlockSafe(World world, int x, int y, int z)
 	{
 		BlockPos pos = new BlockPos(x, y, z);
@@ -137,10 +144,11 @@ public class BlockHelper
 		return checkBlockSafe(state) || state.getBlock().isPassable(world, pos);
 	}
 
-	/** check block is safe (not solid block) */
+	/** check block is safe (not solid block), NO PASSABLE CHECKING */
 	public static boolean checkBlockSafe(IBlockState state)
 	{
-		if (state == null || state.getMaterial() == Material.AIR || checkBlockIsLiquid(state))
+		if (state == null || state.getMaterial() == Material.AIR || checkBlockIsLiquid(state) ||
+			state.getBlock() == ModBlocks.BlockWaypoint)
 		{
 			return true;
 		}
@@ -338,7 +346,7 @@ public class BlockHelper
 			}//end mode switch
 			
 			//check block safe
-			if (checkBlockSafe(host.world.getBlockState(new BlockPos((int)newPos[0], (int)newPos[1], (int)newPos[2]))))
+			if (checkBlockSafe(host.world, (int)newPos[0], (int)newPos[1], (int)newPos[2]))
 			{
 				return newPos;
 			}	
@@ -371,9 +379,8 @@ public class BlockHelper
 			
 			posoffset = CalcHelper.rotateXZByAxis(6F, 0F, rand.nextFloat() * 360F * Values.N.DIV_PI_180, 1F);
 			newpos = pos.add((int)posoffset[1], 0, (int)posoffset[0]);
-			IBlockState state = target.world.getBlockState(newpos);
 			
-			if (checkBlockSafe(state))
+			if (checkBlockSafe(target))
 			{
 				//return new pos
 				return newpos;
@@ -402,9 +409,8 @@ public class BlockHelper
 			loops--;
 			
 			newpos = pos.add(0, loops, 0);
-			IBlockState state = target.world.getBlockState(newpos);
 			
-			if (checkBlockSafe(state))
+			if (checkBlockSafe(target))
 			{
 				//return new pos
 				return newpos;

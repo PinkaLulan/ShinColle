@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 /**SERVANT BLOCK: POLYMETAL
  * servant block的所有方法都是跟master block呼叫
@@ -25,7 +24,6 @@ public class TileMultiPolymetal extends BasicTileMulti
 		
 		//use master's inventory
 		this.itemHandler = new CapaInventory(0, this);
-		
 	}
 
 	@Override
@@ -58,6 +56,7 @@ public class TileMultiPolymetal extends BasicTileMulti
 		{
 			return ((TileMultiGrudgeHeavy) tile).isItemValidForSlot(slot, itemstack);
 		}
+		
 		return false;
 	}
   	
@@ -77,46 +76,32 @@ public class TileMultiPolymetal extends BasicTileMulti
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
-    	//check capability: inventory
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-        {
-        	TileEntity master = this.getMaster();
-        	
-        	if (master != null) 
-        	{
-        		return master.hasCapability(capability, facing);
-        	}
-        	else
-        	{
-        		return false;
-        	}
-        }
-        
-        //check other capability
-        return super.hasCapability(capability, facing);
+    	TileEntity master = this.getMaster();
+    	
+    	if (master != null) 
+    	{
+    		return master.hasCapability(capability, facing);
+    	}
+    	else
+    	{
+    		return false;
+    	}
     }
 
     //get capability
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
-    	//get capability: inventory
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-        {
-        	TileEntity master = this.getMaster();
-        	
-        	if (master != null) 
-        	{
-        		return master.getCapability(capability, facing);
-        	}
-        	else
-        	{
-        		return null;
-        	}
-        }
-        
-        //get other capability
-        return super.getCapability(capability, facing);
+    	TileEntity master = this.getMaster();
+    	
+    	if (master != null) 
+    	{
+    		return master.getCapability(capability, facing);
+    	}
+    	else
+    	{
+    		return null;
+    	}
     }
     
     /** methods for IInventory to access IItemHandler
@@ -182,24 +167,14 @@ public class TileMultiPolymetal extends BasicTileMulti
   	@Override
 	public ItemStack removeStackFromSlot(int id)
 	{
-		try
+		TileEntity tile = this.getMaster();
+		
+		//type 1: large shipyard
+		if (tile instanceof TileMultiGrudgeHeavy)
 		{
-			if (id >= 0 && id < itemHandler.getSlots())
-	        {
-	            ItemStack itemstack = itemHandler.getStackInSlot(id);
-	            itemHandler.setStackInSlot(id, null);
-	            return itemstack;
-	        }
-	        else
-	        {
-	            return null;
-	        }
+			return ((TileMultiGrudgeHeavy) tile).removeStackFromSlot(id);
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		return null;
 	}
 	
   	@Override
@@ -226,73 +201,6 @@ public class TileMultiPolymetal extends BasicTileMulti
 		}
 		return false;
   	}
-  	
-//	@Override
-//	public int fill(ForgeDirection from, FluidStack fluid, boolean doFill)
-//	{
-//		TileEntity tile = this.getMaster();
-//		
-//		//type 1: large shipyard
-//		if(tile instanceof TileMultiGrudgeHeavy) {
-//			return ((TileMultiGrudgeHeavy)tile).fill(from, fluid, doFill);
-//		}
-//		return 0;
-//	}
-//
-//	@Override
-//	public FluidStack drain(ForgeDirection from, FluidStack fluid, boolean doDrain) {
-//		TileEntity tile = this.getMaster();
-//		
-//		//type 1: large shipyard
-//		if(tile instanceof TileMultiGrudgeHeavy) {
-//			return ((TileMultiGrudgeHeavy)tile).drain(from, fluid, doDrain);
-//		}
-//		return null;
-//	}
-//
-//	@Override
-//	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
-//		TileEntity tile = this.getMaster();
-//		
-//		//type 1: large shipyard
-//		if(tile instanceof TileMultiGrudgeHeavy) {
-//			return ((TileMultiGrudgeHeavy)tile).drain(from, maxDrain, doDrain);
-//		}
-//		return null;
-//	}
-//
-//	@Override
-//	public boolean canFill(ForgeDirection from, Fluid fluid) {
-//		TileEntity tile = this.getMaster();
-//		
-//		//type 1: large shipyard
-//		if(tile instanceof TileMultiGrudgeHeavy) {
-//			return ((TileMultiGrudgeHeavy)tile).canFill(from, fluid);
-//		}
-//		return false;
-//	}
-//
-//	@Override
-//	public boolean canDrain(ForgeDirection from, Fluid fluid) {
-//		TileEntity tile = this.getMaster();
-//		
-//		//type 1: large shipyard
-//		if(tile instanceof TileMultiGrudgeHeavy) {
-//			return ((TileMultiGrudgeHeavy)tile).canDrain(from, fluid);
-//		}
-//		return false;
-//	}
-//
-//	@Override
-//	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
-//		TileEntity tile = this.getMaster();
-//		
-//		//type 1: large shipyard
-//		if(tile instanceof TileMultiGrudgeHeavy) {
-//			return ((TileMultiGrudgeHeavy)tile).getTankInfo(from);
-//		}
-//		return null;
-//	}
   	
   	
 }

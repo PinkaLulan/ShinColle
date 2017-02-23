@@ -14,6 +14,7 @@ import com.lulan.shincolle.reference.Values;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.MathHelper;
 
 /** FORMATION HELPER
  * 
@@ -71,7 +72,7 @@ public class FormationHelper
 					//ship is NOT guarding entity and NOT follow owner
 					if (s.getStateMinor(ID.M.GuardType) != 2 && !s.getStateFlag(ID.F.CanFollow))
 					{
-						applyFormationMoving(ships, formatID, (int)s.posX, (int)s.posY, (int)s.posZ);
+						applyFormationMoving(ships, formatID, MathHelper.floor(s.posX), (int)s.posY, MathHelper.floor(s.posZ));
 					}
 				}
 			}
@@ -849,7 +850,7 @@ public class FormationHelper
 	/** calc formation position */
 	public static int[] calcFormationPos(int formatID, int formatPos, double[] flagshipPos, boolean[] faceXP)
 	{
-		int[] newPos = new int[] {(int)flagshipPos[0], (int)(flagshipPos[1]+0.5D), (int)flagshipPos[2]};
+		int[] newPos = new int[] {MathHelper.floor(flagshipPos[0]), (int)(flagshipPos[1]+0.5D), MathHelper.floor(flagshipPos[2])};
 		
 		//host is flagship
 		if (formatPos == 0)

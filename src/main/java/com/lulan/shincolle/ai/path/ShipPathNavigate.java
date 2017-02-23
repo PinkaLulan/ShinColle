@@ -95,7 +95,7 @@ public class ShipPathNavigate
      */
     public boolean tryMoveToXYZ(double x, double y, double z, double speed)
     {
-        ShipPath path = this.getPathToXYZ(MathHelper.floor(x), ((int)y), MathHelper.floor(z));
+        ShipPath path = this.getPathToXYZ(MathHelper.floor(x), (int)y, MathHelper.floor(z));
         return this.setPath(path, speed);
     }
 
@@ -162,12 +162,39 @@ public class ShipPathNavigate
         return pathentity != null ? this.setPath(pathentity, speed) : false;
     }
 
-    /**
-     * sets the active path data if path is 100% unique compared to old path, checks to adjust path for sun avoiding
-     * ents and stores end coords
-     */
+    /** set path, path can be null (to clear path) */
     public boolean setPath(ShipPath pathEntity, double speed)
     {
+//        //若路徑為null, 表示找不到路徑
+//    	if (pathEntity == null)
+//    	{
+//            this.currentPath = null;
+//            return false;
+//        }
+//        else
+//        {
+//        	//比較新舊路徑是否相同, 不同時將舊路徑蓋掉
+//            if (!pathEntity.isSamePath(this.currentPath))
+//            {
+//                this.currentPath = pathEntity;
+//            }
+//            
+//            //若路徑長度為0, 表示沒path
+//            if (this.currentPath.getCurrentPathLength() == 0)
+//            {
+//                return false;
+//            }
+//            //成功設定path
+//            else
+//            {
+//                this.speed = speed;
+//                Vec3d vec3 = this.getEntityPosition();
+//                this.ticksAtLastPos = this.pathTicks;
+//                this.lastPosCheck = vec3;
+//                return true;
+//            }
+//        }
+    	
         //若路徑為null, 表示找不到路徑
     	if (pathEntity == null)
     	{
@@ -176,20 +203,15 @@ public class ShipPathNavigate
         }
         else
         {
-        	//比較新舊路徑是否相同, 不同時將舊路徑蓋掉
-            if (!pathEntity.isSamePath(this.currentPath))
-            {
-                this.currentPath = pathEntity;
-            }
-            
             //若路徑長度為0, 表示沒path
-            if (this.currentPath.getCurrentPathLength() == 0)
+            if (pathEntity.getCurrentPathLength() == 0)
             {
                 return false;
             }
             //成功設定path
             else
             {
+            	this.currentPath = pathEntity;
                 this.speed = speed;
                 Vec3d vec3 = this.getEntityPosition();
                 this.ticksAtLastPos = this.pathTicks;

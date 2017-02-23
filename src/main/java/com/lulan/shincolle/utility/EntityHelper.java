@@ -103,8 +103,7 @@ public class EntityHelper
 	/**check entity is free to move (stand in, y+0.5D) the block */
 	public static boolean checkEntityIsFree(Entity entity)
 	{
-		IBlockState block = entity.world.getBlockState(new BlockPos(MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor(entity.posZ)));
-		return BlockHelper.checkBlockSafe(block);
+		return BlockHelper.checkBlockSafe(entity.world, MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor(entity.posZ));
 	}
 	
 	/**check entity is air or underwater mob, return 0:default 1:air 2:water */
@@ -1030,7 +1029,7 @@ public class EntityHelper
 	  	  				{
 	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
 	  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
-	  	  				
+	  	  					
 	  	  					//if ship is flag ship, apply same moving to other ships
 		  	  				if (entity.getStateMinor(ID.M.FormatType) > 0 &&
 		  	    				entity.getStateMinor(ID.M.FormatPos) == 0)
@@ -1076,14 +1075,14 @@ public class EntityHelper
 		
 		//get ship team id and flag ship
 		int[] teamslot = capa.checkIsInFormationTeam(ship.getShipUID());
-		if (teamslot == null || teamslot[0] <= 0 || teamslot[1] != 0) return;
+		if (teamslot == null || teamslot[0] < 0 || teamslot[1] != 0) return;
 		
 		//get all ship in team
 		ArrayList<BasicEntityShip> ships = capa.getShipEntityAllList(teamslot[0]);
 		if (ships == null || ships.size() <= 0) return;
 		
 		//apply moving
-		FormationHelper.applyFormationMoving(ships, ship.getStateMinor(ID.M.FormatType), (int)gx, (int)gy, (int)gz);
+		FormationHelper.applyFormationMoving(ships, ship.getStateMinor(ID.M.FormatType), MathHelper.floor(gx), (int)gy, MathHelper.floor(gz));
 	
 		for (BasicEntityShip s : ships)
 		{

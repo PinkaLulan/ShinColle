@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.lulan.shincolle.block.BlockWaypoint;
 import com.lulan.shincolle.reference.Enums.EnumPathType;
 import com.lulan.shincolle.utility.BlockHelper;
 
@@ -459,7 +460,8 @@ public class ShipPathFinder
                 		}
                 		
                 		//其他可穿越的方塊 (特別列出block.isPassable = false但卻可以通過的例外)
-                		if (block instanceof BlockRailBase)
+                		if (block instanceof BlockRailBase ||
+                			block instanceof BlockWaypoint)
                 		{
                 			type = EnumPathType.OPEN;
                 		}

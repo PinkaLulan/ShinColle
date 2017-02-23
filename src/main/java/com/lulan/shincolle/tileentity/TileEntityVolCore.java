@@ -19,7 +19,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -50,7 +49,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 	public static int CONSUMEDSPEED;	//power cost per tick
 	public static int POWERMAX;			//max power storage
 	public static int FUELMAGN;			//fuel value per grudge item
-	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
+	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8};  //dont care side
 
 	
 	public TileEntityVolCore()

@@ -42,6 +42,7 @@ import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
@@ -69,7 +70,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	 *  23~25: wait 120+(N-23)*60 min
 	 */
 	private int craneMode;  //mode: 0:no wait, 1:wait forever, 2~5: NYI, 6~N:wait X-5 min
-	private static final int[] NOSLOT = new int[] {}; 
+	public static final int[] NOSLOT = new int[] {};
 	
 	//target
 	public EntityPlayer owner;
@@ -228,6 +229,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
+    	if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return false;
         return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
@@ -235,6 +237,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
+    	if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return null;
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing != EnumFacing.DOWN) return (T) tank;
         return super.getCapability(capability, facing);
     }
@@ -244,6 +247,12 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	{
 		return true;
 	}
+	
+  	@Override
+  	public boolean canInsertItem(int slot, ItemStack item, EnumFacing face)
+  	{
+  		return false;
+  	}
 	
 	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
 	@Override
@@ -263,9 +272,10 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			this.isPaired = true;
 			this.chest = (IInventory) tile;
 		}
-		else
+		
+		if (!this.world.isRemote && sendPacket)
 		{
-			clearPairedChest();
+			this.sendSyncPacket();
 		}
 	}
 	
@@ -281,7 +291,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 				
 				if (tile instanceof IInventory)
 				{
-					chest = (IInventory) tile;
+					this.chest = (IInventory) tile;
 				}
 			}
 			
@@ -1746,13 +1756,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
   	public int getInventoryStackLimit()
   	{
   		return 0;
-  	}
-  	
-  	//使用管線/漏斗輸入時呼叫, 不適用於手動置入
-  	@Override
-  	public boolean canInsertItem(int id, ItemStack stack, EnumFacing side)
-  	{
-  		return false;
   	}
   	
   	//get waiting time (min)

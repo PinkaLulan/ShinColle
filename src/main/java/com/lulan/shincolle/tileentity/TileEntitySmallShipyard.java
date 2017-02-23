@@ -57,7 +57,9 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 	public static int BUILDSPEED;	//power cost per tick
 	public static int POWERMAX; 	//max power storage
 	public static float FUELMAGN; 	//fuel magnification
-	private static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};  //dont care side
+	
+	/** slots: 0:grudge, 1:abyssium, 2:ammo, 3:polymetal, 4:fuel, 5:output */
+	public static final int[] ALLSLOTS = new int[] {0, 1, 2, 3, 4, 5};
 	
 	//fluid tank
 	protected FluidTank tank;
@@ -210,6 +212,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) return (T) tank;
+        
         return super.getCapability(capability, facing);
     }
 	
@@ -234,15 +237,21 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 			case 3:		//polymetal slot
 				return item == ModItems.AbyssMetal && meta == 1;
 			case 4:		//fuel slot
-				//slot must be empty
-				if (this.itemHandler.getStackInSlot(slot) == null)
+				ItemStack stack2 = this.itemHandler.getStackInSlot(slot);
+				
+				if (stack2 != null)
 				{
-					return TileEntityHelper.getItemFuelValue(stack) > 0 || item == ModItems.InstantConMat ||
-						   item instanceof IFluidContainerItem ||
-						   FluidContainerRegistry.getFluidForFilledItem(stack) != null ||
-						   stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+					//if fluid container is already in slot, return false
+					if (stack2.getItem() instanceof IFluidContainerItem ||
+						FluidContainerRegistry.getFluidForFilledItem(stack2) != null ||
+						stack2.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
+						return false;
 				}
-			break;
+				
+				return TileEntityHelper.getItemFuelValue(stack) > 0 || item == ModItems.InstantConMat ||
+					   item instanceof IFluidContainerItem ||
+					   FluidContainerRegistry.getFluidForFilledItem(stack) != null ||
+					   stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
 			}
 		}
 		

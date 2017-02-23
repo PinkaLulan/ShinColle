@@ -64,8 +64,8 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
     	//check capability: inventory
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-//            return true;
-        	return false;
+            return true;
+//        	return false;
         }
         
         //check other capability
@@ -83,8 +83,8 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
     	//get capability: inventory
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
         {
-//            return (T) itemHandler;
-        	return null;
+            return (T) itemHandler;
+//        	return null;
         }
         
         //get other capability

@@ -11,7 +11,6 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -59,7 +58,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	public static float FUELMAGN; 	//fuel magnification
 	public static final int SLOTS_NUM = 10;  //total slots
 	public static final int SLOTS_OUT = 0;   //output slot
-	public static final int[] SLOTS_ALL = new int[] {0,2,3,4,5,6,7,8,9}; //slot 1 for fuel
+	public static final int[] ALLSLOTS = new int[] {0,2,3,4,5,6,7,8,9}; //slot 1 for fuel
 
 	//fluid tank
 	protected FluidTank tank;
@@ -133,7 +132,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 		//side 0:bottom 1:top 2~5:side
 		if (this.structType == 1)
 		{
-			return SLOTS_ALL;
+			return ALLSLOTS;
 		}
 		
 		return new int[] {};
@@ -190,6 +189,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) return (T) tank;
+        
         return super.getCapability(capability, facing);
     }
 	
@@ -221,14 +221,17 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 	@Override
 	public boolean canExtractItem(int slot, ItemStack stack, EnumFacing face)
 	{
-		//only release mode or output slot can be extracted
+		//for "release mode" or output slot
 		if (slot == SLOTS_OUT || invMode == 1)
 		{
 			return true;
 		}
-		//for other slot
+		//for "recycle mode" or other slots
 		else
 		{
+			if (stack == null) return false;
+			
+			/** for fluid container, empty container will always be extracted */
 			//is IFluidContainerItem (1.7.10)
 			if (stack.getItem() instanceof IFluidContainerItem)
 			{
@@ -255,8 +258,11 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 				//check 1.7.10 FluidContainerRegistry
 				FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
 				
-				//fluid empty
-				if (fluid == null) return true;
+				//fluid empty or not fluid container
+				if (fluid == null)
+				{
+					if (invMode != 0) return true;
+				}
 				//fluid remaining
 				else if (fluid.amount < 1000)
 				{

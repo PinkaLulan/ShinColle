@@ -54,6 +54,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte Request_WpSet = 6;
 		public static final byte Request_Riding = 7;
 		public static final byte Request_PlaceFluid = 8;
+		public static final byte Request_ChestSet = 9;
 	}
 	
 	
@@ -92,6 +93,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
 		case PID.Request_WpSet:		//waypoint pairing packet
+		case PID.Request_ChestSet:	//chest and crane pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 			try
 			{
@@ -129,6 +131,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
 		case PID.Request_WpSet:		//waypoint pairing packet
+		case PID.Request_ChestSet:	//chest and crane pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 			//send int array
 			if (this.value3 != null)
@@ -295,6 +298,24 @@ public class C2SInputPackets implements IMessage
 				if (w != null)
 				{
 					TileEntityHelper.pairingWaypoints(p, msg.value3[0], w,
+							new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
+							new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
+				}
+			}
+			break;
+			case PID.Request_ChestSet:	//chest and crane pairing packet
+			{
+				/**
+				 * chest and crane pairing packet:
+				 * data: 0:playerUID, 1~3:crane xyz, 4~6:chest xyz
+				 */
+				EntityPlayer p = ctx.getServerHandler().playerEntity;
+				World w = null;
+				if (p != null) w = p.world;
+				
+				if (w != null)
+				{
+					TileEntityHelper.pairingCraneAndChest(p, msg.value3[0], w,
 							new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
 							new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
 				}

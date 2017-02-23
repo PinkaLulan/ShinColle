@@ -4,12 +4,16 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.tileentity.BasicTileInventory;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.ItemStackHandler;
 
 /** inventory capability
  *  for tile / entity / itemstack
+ *  
+ *  if canInsertSlot/canExtractSlot is null, all slot will be insertable/extractable
  */
 public class CapaInventory<T> extends ItemStackHandler
 {
@@ -18,21 +22,22 @@ public class CapaInventory<T> extends ItemStackHandler
 	
 	//host type:  -1:error  0:tile  1:entity  2:item
 	protected int hostType = -1;
-	protected T hostObj;
+	protected T host;
+	protected ISidedInventory hostInv;	//for slot insertion/extraction checking
 	
 	
     public CapaInventory(int size, T host)
     {
         super(size);
+        this.host = host;
         
-        //set host
-        hostObj = host;
+        if (host instanceof ISidedInventory) this.hostInv = (ISidedInventory) host;
         
         //check host
-        if (hostObj instanceof BasicEntityShip) { hostType = 0; }
-        else if (hostObj instanceof BasicTileInventory) { hostType = 1; }
-        else if (hostObj instanceof Entity) { hostType = 2; }
-        else if (hostObj instanceof ItemStack) { hostType = 3; }
+        if (this.host instanceof BasicEntityShip) { hostType = 0; }
+        else if (this.host instanceof BasicTileInventory) { hostType = 1; }
+        else if (this.host instanceof Entity) { hostType = 2; }
+        else if (this.host instanceof ItemStack) { hostType = 3; }
         else
         {
         	throw new IllegalArgumentException("Capability: Inventory is only for Tile/Entity/Item host!");
@@ -41,7 +46,7 @@ public class CapaInventory<T> extends ItemStackHandler
     
     public T getHost()
     {
-    	return this.hostObj;
+    	return this.host;
     }
     
     /** get slots at a time: IN: start slot id, length */
@@ -77,7 +82,7 @@ public class CapaInventory<T> extends ItemStackHandler
         	//send packet TODO
         	break;
         case 1:  //tile
-        	((TileEntity) hostObj).markDirty();
+        	((TileEntity) this.host).markDirty();
         	//send packet TODO
         	break;
         case 2:  //other entity
@@ -95,8 +100,45 @@ public class CapaInventory<T> extends ItemStackHandler
 	@Override
 	protected void onLoad()
     {
-
     }
 	
+	//insert item
+    @Override
+    public ItemStack insertItem(int slot, ItemStack stack, boolean simulate)
+    {
+    	if (this.hostInv != null)
+    	{
+    		if (this.hostInv.canInsertItem(slot, stack, EnumFacing.UP))
+    		{
+    			return super.insertItem(slot, stack, simulate);
+    		}
+    		else
+    		{
+    			return stack;	//disable insertion
+    		}
+    	}
+    	
+    	return super.insertItem(slot, stack, simulate);
+    }
 	
+    //extract item
+    @Override
+    public ItemStack extractItem(int slot, int amount, boolean simulate)
+    {
+    	if (this.hostInv != null)
+    	{
+    		if (this.hostInv.canExtractItem(slot, this.getStackInSlot(slot), EnumFacing.UP))
+    		{
+    			return super.extractItem(slot, amount, simulate);
+    		}
+    		else
+    		{
+    			return null;	//disable extraction
+    		}
+    	}
+    	
+    	return super.extractItem(slot, amount, simulate);
+    }
+    
+    
 }

@@ -35,6 +35,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -479,7 +480,7 @@ public class PointerItem extends BasicItem
 						else
 						{
 							//移動到該ship旁邊
-							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, MathHelper.floor(hitObj.entityHit.posX), (int)hitObj.entityHit.posY, MathHelper.floor(hitObj.entityHit.posZ)));
 							//在目標上畫出標記
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 4D, 0D, (byte)2);
 						}
@@ -501,7 +502,7 @@ public class PointerItem extends BasicItem
 						else
 						{
 							//移動到該PLAYER旁邊
-							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj.entityHit.posX, (int)hitObj.entityHit.posY, (int)hitObj.entityHit.posZ));
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, MathHelper.floor(hitObj.entityHit.posX), (int)hitObj.entityHit.posY, MathHelper.floor(hitObj.entityHit.posZ)));
 							//在目標上畫出標記
 							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 4D, 0D, (byte)2);
 						}
@@ -585,16 +586,6 @@ public class PointerItem extends BasicItem
 						//在目標上畫出標記
 						ParticleHelper.spawnAttackParticleAt(x+0.5D, y, z+0.5D, 0.3D, 4D, 0D, (byte)25);
 					}
-//					//抓到entity (非預期狀況, 正常應該不會再抓到entity)
-//					else if (hitObj2.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY)
-//					{
-//						LogHelper.debug("DEBUG: pointer right click: ENTITY (method 2) "+hitObj2.entityHit.getClass().getSimpleName());
-//						//move to entity
-//						//移動到該ship旁邊
-//						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetMove, meta, 1, (int)hitObj2.entityHit.posX, (int)hitObj2.entityHit.posY, (int)hitObj2.entityHit.posZ));
-//						//在目標上畫出標記
-//						ParticleHelper.spawnAttackParticleAt(hitObj2.entityHit.posX+0.5D, hitObj2.entityHit.posY, hitObj2.entityHit.posZ+0.5D, 0.3D, 4D, 0D, (byte)25);
-//					}
 					else
 					{
 						LogHelper.debug("DEBUG: pointer right click: MISS");

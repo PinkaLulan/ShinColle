@@ -4,10 +4,12 @@ import com.lulan.shincolle.tileentity.BasicTileInventory;
 import com.lulan.shincolle.tileentity.ITileFurnace;
 import com.lulan.shincolle.tileentity.ITileLiquidFurnace;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
+import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -336,7 +338,46 @@ public class TileEntityHelper
 	}
 	
 	/** pairing waypoints, called by C2S packet
-	 * 
+	 *  parms: pid: packet sender uid, posF: from pos, posT: to pos
+	 */
+	public static void pairingCraneAndChest(EntityPlayer player, int pid, World w, BlockPos posCrane, BlockPos posChest)
+	{
+		if (pid <= 0) return;
+		
+		TileEntity pos1 = w.getTileEntity(posCrane);
+		TileEntity pos2 = w.getTileEntity(posChest);
+		
+		if (pos1 instanceof TileEntityCrane && pos2 instanceof IInventory)
+		{
+			TileEntityCrane crane = (TileEntityCrane) pos1;
+			IInventory chest = (IInventory) pos2;
+			
+			//check owner
+			if (crane.getPlayerUID() != pid)
+			{
+				//not the owner, return
+				player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
+						.appendText(" "+crane.getPlayerUID()));
+				return;
+			}
+			
+			//set chest
+			crane.setPairedChest(posChest, true);
+			
+			//send msg
+			TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
+			text.getStyle().setColor(TextFormatting.AQUA);
+			player.sendMessage
+			(
+				text.appendText(" " + TextFormatting.GREEN +
+				posCrane.getX() + " " + posCrane.getY() + " " + posCrane.getZ() +
+	        	TextFormatting.AQUA + " & " + TextFormatting.GOLD +
+	        	posChest.getX() + " " + posChest.getY() + " " + posChest.getZ())
+			);
+		}
+	}
+	
+	/** pairing waypoints, called by C2S packet
 	 *  parms: pid: packet sender uid, posF: from pos, posT: to pos
 	 */
 	public static void pairingWaypoints(EntityPlayer player, int pid, World w, BlockPos posF, BlockPos posT)

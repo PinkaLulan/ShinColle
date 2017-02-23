@@ -242,55 +242,32 @@ public class TargetWrench extends BasicItem
 			tiles[1] instanceof IInventory && !(tiles[1] instanceof TileEntityCrane) && tiles[0] instanceof TileEntityCrane)
 		{
 			//check dist < ~6 blocks
-			if (dist <= 40)
+			if (dist < 40)
 			{
-				TileEntityCrane crane = null;
-				BlockPos targetPos = null;
+				BlockPos cranePos = null;
+				BlockPos chestPos = null;
 				
 				//set chest pair
 				if (tiles[0] instanceof TileEntityCrane)
 				{
-					crane = (TileEntityCrane) tiles[0];
-					targetPos = tilePoint[1];
+					cranePos = tilePoint[0];
+					chestPos = tilePoint[1];
 				}
 				else
 				{
-					crane = (TileEntityCrane) tiles[1];
-					targetPos = tilePoint[0];
+					cranePos = tilePoint[1];
+					chestPos = tilePoint[0];
 				}
 				
-				//check same player UID
-				if (crane.getPlayerUID() == uid)
-				{
-					crane.setPairedChest(targetPos, true);
-				}
-				else
-				{
-					//not the owner, return
-					player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
-							.appendText(" "+crane.getPlayerUID()));
-					
-					//clear data
-					resetPos();
-					
-					return false;
-				}
+				//send pairing request packet
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_ChestSet,
+					uid, cranePos.getX(), cranePos.getY(), cranePos.getZ(),
+					chestPos.getX(), chestPos.getY(), chestPos.getZ()));
 				
-				//send msg
-				TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
-				text.getStyle().setColor(TextFormatting.AQUA);
-				player.sendMessage
-				(
-					text.appendText(" " + TextFormatting.GREEN +
-					tilePoint[0].getX() + " " + tilePoint[0].getY() + " " + tilePoint[0].getZ() +
-	            	TextFormatting.AQUA + " & " + TextFormatting.GOLD +
-	            	tilePoint[1].getX() + " " + tilePoint[1].getY() + " " + tilePoint[1].getZ())
-				);
+				//clear data
+				resetPos();
 				
-            	//reset
-            	resetPos();
-				
-            	return true;
+				return true;
 			}
 			//send too far away msg
 			else
