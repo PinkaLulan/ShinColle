@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -19,7 +18,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -196,81 +194,98 @@ public class ShipCmdGetShip extends CommandBase
 						{
 							BasicEntityShip ship = (BasicEntityShip) ent;
 							
-							//dismount
-							ship.dismountRidingEntity();
-							//clear attack target
-							ship.setAttackTarget(null);
-							ship.setEntityTarget(null);
-							//clear move
-							ship.motionX = 0D;
-							ship.motionY = 0D;
-							ship.motionZ = 0D;
-							//teleport ship
-							ship.setPosition(pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord);
-							//set guard pos
-							ship.setSitting(false);
-							ship.setGuardedEntity(null);
-							ship.setGuardedPos((int)pos1.xCoord, (int)(pos1.yCoord + 0.5D), (int)pos1.zCoord, ship.world.provider.getDimension(), 1);
-							ship.setStateFlag(ID.F.CanFollow, false);
-							//update ship cache
-							ship.updateShipCacheDataWithoutNewID();
-							ship.sendSyncPacketAllValue();
-							//send text
-							sender.sendMessage
-							(
-								new TextComponentTranslation("chat.shincolle:command.command")
-								.appendSibling(new TextComponentString(" ship: "+TextFormatting.YELLOW+"get: "+uid
-							)));
-							return;
-						}
-						//entity not exist
-						else
-						{
-							try
+							//check ship uid is same
+							if (ship.getShipUID() == uid)
 							{
-								String name = ShipCalc.getEntityToSpawnName(data.classID);
+								//dismount
+								ship.dismountRidingEntity();
+								//clear attack target
+								ship.setAttackTarget(null);
+								ship.setEntityTarget(null);
+								//clear move
+								ship.motionX = 0D;
+								ship.motionY = 0D;
+								ship.motionZ = 0D;
+								//teleport ship
+								ship.setPosition(pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord);
+								//set guard pos
+								ship.setSitting(false);
+								ship.setGuardedEntity(null);
+								ship.setGuardedPos((int)pos1.xCoord, (int)(pos1.yCoord + 0.5D), (int)pos1.zCoord, ship.world.provider.getDimension(), 1);
+								ship.setStateFlag(ID.F.CanFollow, false);
+								//update ship cache
+								ship.updateShipCacheDataWithoutNewID();
+								ship.sendSyncPacketAllValue();
 								
-								//create new ship entity
-								if (EntityList.NAME_TO_CLASS.containsKey(name))
+								//send text
+								sender.sendMessage
+								(
+									new TextComponentTranslation("chat.shincolle:command.command")
+									.appendSibling(new TextComponentString(" ship: "+TextFormatting.YELLOW+"get: "+uid
+								)));
+								
+								return;
+							}//end get existed ship
+							//not same ship, entity id is overlapped, create new entity
+							else
+							{
+								ent = EntityHelper.createShipEntity(player.world,
+										data.classID, data.entityNBT,
+										pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord, true);
+								
+								if (ent != null)
 					            {
-									BasicEntityShip ship = (BasicEntityShip) EntityList.createEntityByName(name, player.world);
-					                
-									if (ship != null)
+									if (ent instanceof BasicEntityShip)
 									{
-										//read entity nbt data
-										ship.readFromNBT(data.entityNBT);
-										//set alive
-										ship.setHealth(ship.getMaxHealth());
-										ship.isDead = false;
-										ship.deathTime = 0;
-										//clear motion
-										ship.motionX = 0D;
-										ship.motionY = 0D;
-										ship.motionZ = 0D;
-						                //set pos
-										ship.setPosition(pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord);
-						                //spawn entity
-						                player.world.spawnEntity(ship);
-						                //update ship cache
-										ship.updateShipCacheDataWithoutNewID();
-						                //send text
+										//send text
 										sender.sendMessage
 										(
 											new TextComponentTranslation("chat.shincolle:command.command")
 											.appendSibling(new TextComponentString(" ship: "+TextFormatting.GREEN+"spawn: "+uid
 										)));
+										
 										return;
+									}
+									else
+									{
+										ent.setDead();
 									}
 					            }
 								
 								//spawn fail
-								throw new Exception();
-							}
-							catch (Exception e)
-							{
-				            	sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.shipnull").appendText(" "+uid));
+								sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.shipnull").appendText(" "+uid));
 								return;
-							}
+							}//end spawn new ship
+						}//end get ship
+						//entity not exist
+						else
+						{
+							ent = EntityHelper.createShipEntity(player.world,
+									data.classID, data.entityNBT,
+									pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord, true);
+							
+							if (ent != null)
+				            {
+								if (ent instanceof BasicEntityShip)
+								{
+									//send text
+									sender.sendMessage
+									(
+										new TextComponentTranslation("chat.shincolle:command.command")
+										.appendSibling(new TextComponentString(" ship: "+TextFormatting.GREEN+"spawn: "+uid
+									)));
+									
+									return;
+								}
+								else
+								{
+									ent.setDead();
+								}
+				            }
+							
+							//spawn fail
+							sender.sendMessage(new TextComponentTranslation("chat.shincolle:command.shipnull").appendText(" "+uid));
+							return;
 						}
 					}
 					//too far away

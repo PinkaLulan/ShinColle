@@ -8,8 +8,6 @@ import javax.annotation.Nullable;
 
 import org.lwjgl.input.Keyboard;
 
-import com.lulan.shincolle.capability.CapaInventory;
-import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -17,7 +15,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -518,7 +515,22 @@ public class EventHandler
 		//get ship
 		if (event.getEntity() instanceof BasicEntityShip)
 		{
-			((BasicEntityShip) event.getEntity()).updateChunkLoader();
+			BasicEntityShip ship = (BasicEntityShip) event.getEntity();
+			
+			//update chunk loader
+			ship.updateChunkLoader();
+			
+			//FIX: "Wrong location!" bug
+	        int i = MathHelper.floor(ship.posX / 16D);
+	        int j = MathHelper.floor(ship.posZ / 16D);
+
+	        if (i != event.getNewChunkX() || j != event.getNewChunkZ())
+	        {
+	        	ship.isDead = false;
+	        	
+	        	//stop riding
+	        	ship.dismountRidingEntity();
+	        }
 		}
 	}
 	

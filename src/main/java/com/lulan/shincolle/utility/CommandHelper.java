@@ -251,6 +251,7 @@ public class CommandHelper
 			if (div == page)
 			{
 				int uid = entry.getKey();
+				int pid = 0;
 				int level = -1;
 				String ownerName = null;
 				CacheDataShip data = entry.getValue();
@@ -262,14 +263,17 @@ public class CommandHelper
 					
 					if (nbt != null)
 					{
+						//get owner data
+						pid = nbt.getInteger("PlayerUID");
+						ownerName = nbt.getString("Owner");
+						
+						//get ship level
 						NBTTagCompound nbt2 = (NBTTagCompound) nbt.getTag("Minor");
 						
 						if (nbt2 != null)
 						{
 							level = nbt2.getInteger("Level");
 						}
-						
-						ownerName = nbt.getString("Owner");
 					}
 				}
 				
@@ -281,6 +285,7 @@ public class CommandHelper
 				buf.writeInt(data.posY);
 				buf.writeInt(data.posZ);
 				buf.writeInt(level);
+				buf.writeInt(pid);
 				buf.writeBoolean(data.isDead);
 				buf.writeBoolean(entity != null);
 				PacketHelper.sendString(buf, ownerName);
@@ -332,12 +337,12 @@ public class CommandHelper
 		{
 			for (int i = 0; i < data1[2]; i++)
 			{
-				String shipClassName = I18n.format("entity." + ShipCalc.getEntityToSpawnName(data2[i * 7 + 2]) + ".name");
+				String shipClassName = I18n.format("entity." + ShipCalc.getEntityToSpawnName(data2[i * 8 + 2]) + ".name");
 				
 				sender.sendMessage(new TextComponentString
 				(
-					"  UID: " + TextFormatting.AQUA + data2[i * 7 + 0] + TextFormatting.RESET +
-					"  WID: " + TextFormatting.DARK_PURPLE + data2[i * 7 + 1] + TextFormatting.RESET +
+					"  UID: " + TextFormatting.AQUA + data2[i * 8 + 0] + TextFormatting.RESET +
+					"  WID: " + TextFormatting.DARK_PURPLE + data2[i * 8 + 1] + TextFormatting.RESET +
 					"  D/E: " + TextFormatting.RED + data3[i * 2 + 0] + TextFormatting.RESET +
 					"/" + TextFormatting.LIGHT_PURPLE + data3[i * 2 + 1] + TextFormatting.RESET +
 					"  Cls: " + TextFormatting.YELLOW + shipClassName + TextFormatting.RESET
@@ -345,10 +350,10 @@ public class CommandHelper
 				
 				sender.sendMessage(new TextComponentString
 				(
-					"       Pos( " + TextFormatting.GRAY + data2[i * 7 + 3] + " " + data2[i * 7 + 4] +
-					" " + data2[i * 7 + 5] + TextFormatting.RESET + " )" +
-					"  Lv: " + TextFormatting.GOLD + data2[i * 7 + 6] + TextFormatting.RESET +
-					"  Owner: " + TextFormatting.GREEN + data4[i] + TextFormatting.RESET
+					"       Pos( " + TextFormatting.GRAY + data2[i * 8 + 3] + " " + data2[i * 8 + 4] +
+					" " + data2[i * 8 + 5] + TextFormatting.RESET + " )" +
+					"  Lv: " + TextFormatting.GOLD + data2[i * 8 + 6] + TextFormatting.RESET +
+					"  Owner: " + TextFormatting.GREEN + data2[i * 8 + 7] + " " + data4[i] + TextFormatting.RESET
 				));
 			}
 		}//end has data

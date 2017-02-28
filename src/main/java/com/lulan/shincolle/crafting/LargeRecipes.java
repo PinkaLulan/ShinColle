@@ -9,6 +9,7 @@ import com.lulan.shincolle.item.IShipResourceItem;
 import com.lulan.shincolle.item.ShipSpawnEgg;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -157,11 +158,11 @@ public class LargeRecipes
 	}
 
 	//新增資材到matsStock中
-	public static boolean addMaterialStock(TileMultiGrudgeHeavy tile, ItemStack item)
+	public static boolean addMaterialStock(TileMultiGrudgeHeavy tile, ItemStack stack)
 	{
 		boolean canAdd = false;
 		
-		if (item != null)
+		if (stack != null)
 		{
 			try
 			{
@@ -183,11 +184,11 @@ public class LargeRecipes
 				if (canAdd)
 				{
 					//is resource item
-					if (item.getItem() instanceof IShipResourceItem)
+					if (stack.getItem() instanceof IShipResourceItem)
 					{
-						int meta = item.getItemDamage();
+						int meta = stack.getItemDamage();
 
-						int[] addMats = ((IShipResourceItem)item.getItem()).getResourceValue(meta);
+						int[] addMats = ((IShipResourceItem)stack.getItem()).getResourceValue(meta);
 					
 						//check easy mode
 						if (ConfigHandler.easyMode)
@@ -208,10 +209,10 @@ public class LargeRecipes
 						return true;
 					}
 					//is ship spawn egg
-					else if (item.getItem() instanceof ShipSpawnEgg && item.getItemDamage() > 1)
+					else if (stack.getItem() instanceof ShipSpawnEgg && stack.getItemDamage() > 1)
 					{
 						//get ship recycle items
-						ItemStack[] items = ShipCalc.getKaitaiItems(item.getItemDamage() - 2);
+						ItemStack[] items = ShipCalc.getKaitaiItems(stack.getItemDamage() - 2);
 						
 						for (ItemStack i : items)
 						{
@@ -251,6 +252,46 @@ public class LargeRecipes
 						
 						return true;
 					}//end item is shipegg
+					//is heavy grudge
+					else if (Block.getBlockFromItem(stack.getItem()) == ModBlocks.BlockGrudgeHeavy)
+					{
+						int[] addMats = new int[] {0, 0, 0, 0};
+						
+						//get tag data
+						if (stack.hasTagCompound())
+						{
+							NBTTagCompound nbt = stack.getTagCompound();
+							int[] mats = nbt.getIntArray("mats");
+							
+							addMats[0] = 81 + mats[0];
+							addMats[1] = mats[1];
+							addMats[2] = mats[2];
+							addMats[3] = mats[3];
+						}
+						//no tag data
+						else
+						{
+							addMats[0] = 81;
+						}
+						
+						//check easy mode
+						if (ConfigHandler.easyMode)
+						{
+							//x10
+							for (int i = 0; i < 4; i++)
+							{
+								addMats[i] *= 10;
+							}
+						}
+						
+						//add material
+						for (int k = 0; k < 4; k++)
+						{
+							tile.addMatStock(k, addMats[k]);
+						}
+						
+						return true;
+					}
 				}//end can add
 			}//end try
 			catch (Exception e)

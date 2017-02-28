@@ -93,14 +93,14 @@ public class S2CReactPackets implements IMessage
 			
 			if (this.valueInt[2] > 0)
 			{
-				this.valueInt2 = new int[this.valueInt[2] * 7];
+				this.valueInt2 = new int[this.valueInt[2] * 8];
 				this.valueBoolean = new boolean[this.valueInt[2] * 2];
 				this.valueStr = new String[this.valueInt[2]];
 				
 				for (int i = 0; i < this.valueInt[2]; i++)
 				{
 					//get int data
-					for (int j = 0; j < 7; j++) this.valueInt2[i * 7 + j] = buf.readInt();
+					for (int j = 0; j < 8; j++) this.valueInt2[i * 8 + j] = buf.readInt();
 					//get boolean data
 					for (int k = 0; k < 2; k++) this.valueBoolean[i * 2 + k] = buf.readBoolean();
 					//get string data

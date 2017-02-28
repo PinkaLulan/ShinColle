@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,7 +26,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -276,27 +274,32 @@ public class ShipSpawnEgg extends BasicItem
         //server side
     	if (player != null && !player.world.isRemote)
     	{
-    		//check player is real player
-    		if (checkPlayer)
-    		{
-    			int uid = EntityHelper.getPlayerUID(player);
-        		if (uid <= 0) return null;
-    		}
-    		
     		//get ship type
-    		String entityName = ShipCalc.getEntityToSpawnName(ShipCalc.rollShipType(item));
-            LogHelper.debug("DEBUG: ShipSpawnEgg: spawn entity: "+entityName);
+    		Entity ship = EntityHelper.createShipEntity(player.world, ShipCalc.rollShipType(item),
+    						null, pos.getX(), pos.getY(), pos.getZ(), false);
             
-            if (EntityList.NAME_TO_CLASS.containsKey(entityName))
+            if (ship != null)
             {
-            	Entity ent = EntityList.createEntityByName(entityName, player.world);
-            	ent.setLocationAndAngles(pos.getX(), pos.getY(), pos.getZ(), MathHelper.wrapDegrees(player.world.rand.nextFloat()* 360F), 0F);
+            	if (ship instanceof BasicEntityShip)
+            	{
+            		//valid player
+            		if (checkPlayer)
+            		{
+            			int uid = EntityHelper.getPlayerUID(player);
+            			
+                		if (uid <= 0)
+            			{
+                			ship.setDead();
+                			return null;
+            			}
+            		}
+            	}
             	
-            	return ent;
+            	return ship;
             }
             else
             {
-                LogHelper.debug("DEBUG: ShipSpawnEgg: entity not found: "+entityName);
+                LogHelper.info("INFO: ShipSpawnEgg: entity spawn failed: classID: " + ShipCalc.rollShipType(item));
             }
         }
         
@@ -530,7 +533,6 @@ public class ShipSpawnEgg extends BasicItem
                     //if boss egg
                     if (stack.getItemDamage() > 2000)
                     {
-                    	LogHelper.debug("DEBUG: use boss egg");
                     	BasicEntityShipHostile ship = (BasicEntityShipHostile) getSpawnEntity(player, stack, hitPos.up(), false);
                         
                     	if (ship != null)
@@ -543,7 +545,6 @@ public class ShipSpawnEgg extends BasicItem
                     //normal egg
                     else
                     {
-                    	LogHelper.debug("DEBUG: use normal egg");
                     	BasicEntityShip ship = (BasicEntityShip) getSpawnEntity(player, stack, hitPos.up(), true);
                         
                         if (ship != null)

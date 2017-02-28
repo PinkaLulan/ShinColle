@@ -35,6 +35,7 @@ public class ConfigHandler
 	public static boolean useWakamoto = true;
 	public static boolean alwaysShowTeamParticle = false;
 	public static boolean polyAsMn = false;
+	public static boolean vortexDepth = false;
 	public static float dropGrudge = 1.0F;
 	public static int closeGUIDist = 64;
 	public static int bossCooldown = 4800;
@@ -189,6 +190,9 @@ public class ConfigHandler
 		//是否開啟若本語音
 		useWakamoto = config.getBoolean("Sound_Wakamoto", CATE_GENERAL, true, "enable Wakamoto sound for mounts");
 		
+		//畫深海熱漩是否開啟景深
+		vortexDepth = config.getBoolean("Depth_HadalVortex", CATE_GENERAL, false, "Enable depth while rendering Hadal Vortex block.");
+				
 		//野生艦隊生成數量
 		spawnBossNum = config.getInt("Spawn_Boss_Number", CATE_GENERAL, 2, 1, 10, "large hostile ship (boss) number per spawn");
 		spawnMobNum = config.getInt("Spawn_Mob_Number", CATE_GENERAL, 4, 1, 10, "small hostile ship number per spawn");

@@ -72,7 +72,7 @@ public class FormationHelper
 					//ship is NOT guarding entity and NOT follow owner
 					if (s.getStateMinor(ID.M.GuardType) != 2 && !s.getStateFlag(ID.F.CanFollow))
 					{
-						applyFormationMoving(ships, formatID, MathHelper.floor(s.posX), (int)s.posY, MathHelper.floor(s.posZ));
+						applyFormationMoving(ships, formatID, MathHelper.floor(s.posX), (int)s.posY, MathHelper.floor(s.posZ), false);
 					}
 				}
 			}
@@ -213,7 +213,7 @@ public class FormationHelper
  	 *           5
 	 *         6
 	 */
-	public static void applyFormationMoving(ArrayList<BasicEntityShip> ships, int formatID, int x, int y, int z)
+	public static void applyFormationMoving(ArrayList<BasicEntityShip> ships, int formatID, int x, int y, int z, boolean samePosChecking)
 	{
 		//get flag ship
 		BasicEntityShip flagShip = null;
@@ -241,6 +241,14 @@ public class FormationHelper
 		
 		if (flagShip != null && owner != null)
 		{
+			//backup flagship guard position
+			int[] oldPosition = null;
+			
+			if (flagShip.getGuardedPos(1) > 0 && flagShip.getGuardedPos(4) >= 0)
+			{
+				oldPosition = new int[] {flagShip.getGuardedPos(0), flagShip.getGuardedPos(1), flagShip.getGuardedPos(2)};
+			}
+			
 			//along x axis, face positive direction
 			boolean[] faceXP = getFormationDirection(x, z, flagShip.posX, flagShip.posZ);
 			
@@ -286,6 +294,23 @@ public class FormationHelper
 					CommonProxy.channelE.sendTo(new S2CEntitySync(s, S2CEntitySync.PID.SyncShip_Minor), (EntityPlayerMP) owner);
 				}
 			}//end apply to all ships
+			
+			//check flag ship is same position
+			if (samePosChecking && oldPosition != null && flagShip.getGuardedPos(0) == oldPosition[0] &&
+				flagShip.getGuardedPos(1) == oldPosition[1] && flagShip.getGuardedPos(2) == oldPosition[2])
+			{
+				//clear guard state for all ships in team
+				for (BasicEntityShip s : ships)
+				{
+					if (s != null)
+					{
+						s.setGuardedPos(-1, -1, -1, 0, 0);		//reset guard position
+						s.setGuardedEntity(null);
+						s.setStateFlag(ID.F.CanFollow, true);	//set follow
+					}
+				}
+			}
+			
 		}//end get flag ship
 	}
 	
@@ -1070,7 +1095,7 @@ public class FormationHelper
 			
 			if (ships.isEmpty()) return;
 			
-			//若為formation mode且有設定陣型, 則只有在5 or 6船時可以下命令
+			//single/group mode
 			if (parms[2] < 2 && formatID <= 0)
 			{
 				for (BasicEntityShip ship : ships)
@@ -1085,6 +1110,7 @@ public class FormationHelper
 					}
 				}
 			}//end single/group move
+			//formation mode: 有設定陣型時, 則只有在5 or 6船時可以下命令
 			else if (parms[2] == 2)
 			{
 				if (ships.size() > 4 || formatID == 0)
@@ -1101,7 +1127,7 @@ public class FormationHelper
 					}
 					
 					//set formation position
-					applyFormationMoving(ships, formatID, parms[4], parms[5], parms[6]);
+					applyFormationMoving(ships, formatID, parms[4], parms[5], parms[6], true);
 				}
 			}//end formation move
 		}

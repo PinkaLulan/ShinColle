@@ -15,6 +15,7 @@ import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
+import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
@@ -44,6 +45,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
@@ -60,6 +62,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
@@ -1082,7 +1085,7 @@ public class EntityHelper
 		if (ships == null || ships.size() <= 0) return;
 		
 		//apply moving
-		FormationHelper.applyFormationMoving(ships, ship.getStateMinor(ID.M.FormatType), MathHelper.floor(gx), (int)gy, MathHelper.floor(gz));
+		FormationHelper.applyFormationMoving(ships, ship.getStateMinor(ID.M.FormatType), MathHelper.floor(gx), (int)gy, MathHelper.floor(gz), false);
 	
 		for (BasicEntityShip s : ships)
 		{
@@ -1202,17 +1205,27 @@ public class EntityHelper
 			int dodge = (int) ent.getEffectEquip(ID.EquipEffect.DODGE);
 			Entity ent2 = (Entity) ent;
 			
-			if (ent instanceof IShipInvisible && dist > 36F)
-			{	//dist > 6 blocks
-				dodge += (int) ((IShipInvisible)ent).getInvisibleLevel();
-				//check limit
-				if(dodge > (int) ConfigHandler.limitShipEffect[6]) dodge = (int) ConfigHandler.limitShipEffect[6];
+			if (ent instanceof IShipInvisible)
+			{
+				if (dist > 36F)
+				{
+					//dist > 6 blocks
+					dodge += (int) ((IShipInvisible)ent).getInvisibleLevel();
+					//check limit
+					if (dodge > (int) ConfigHandler.limitShipEffect[6]) dodge = (int) ConfigHandler.limitShipEffect[6];
+				}
+				
+				//submarine will increase dodge if dist > 16 blocks, without config limit
+				if (dist > 256F)
+				{
+					dodge += 50F;
+				}
 			}
 			
 			//roll dodge
 			if (rand.nextInt(101) <= dodge)
 			{
-				//spawn miss particle
+				//spawn dodge particle
 				TargetPoint point = new TargetPoint(ent2.dimension, ent2.posX, ent2.posY, ent2.posZ, 32D);
 				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(ent2, 34, false), point);
 				return true;
@@ -1962,6 +1975,55 @@ public class EntityHelper
   		}
   		
   		return false;
+  	}
+  	
+  	/** create ship entity, nbt can be null */
+  	public static Entity createShipEntity(World world, int classID, NBTTagCompound nbt, double px, double py, double pz, boolean updateUID)
+  	{
+  		String name = ShipCalc.getEntityToSpawnName(classID);
+		
+		//create new ship entity
+		if (EntityList.NAME_TO_CLASS.containsKey(name))
+        {
+			Entity ent = EntityList.createEntityByName(name, world);
+            
+			if (ent != null)
+			{
+				//set pos
+				ent.motionX = 0D;
+				ent.motionY = 0D;
+				ent.motionZ = 0D;
+				ent.setPosition(px, py, pz);
+				
+                //spawn entity
+                world.spawnEntity(ent);
+			}
+			else
+			{
+				return null;
+			}
+			
+			//set ship attrs
+			if (ent instanceof BasicEntityShip)
+			{
+				BasicEntityShip ship = (BasicEntityShip) ent;
+				
+				//set alive
+				ship.setHealth(ship.getMaxHealth());
+				ship.isDead = false;
+				ship.deathTime = 0;
+				
+				//read entity nbt data
+				if (nbt != null) ship.readFromNBT(nbt);
+				
+                //update ship cache
+				if (updateUID) ship.updateShipCacheDataWithoutNewID();
+			}
+
+			return ent;
+        }
+		
+		return null;
   	}
   	
   	

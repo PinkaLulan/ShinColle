@@ -282,8 +282,8 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
     			return;
     		}
     		
-    		//發射超過10 sec, 設定為死亡(消失), 注意server restart後此值會歸零
-    		if (this.ticksExisted > 200)
+    		//發射超過8 sec, 設定為死亡(消失), 注意server restart後此值會歸零
+    		if (this.ticksExisted > 160)
     		{
     			this.setDead();	//直接抹消, 不觸發爆炸
     			return;

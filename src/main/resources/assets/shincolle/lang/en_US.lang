@@ -8,6 +8,7 @@ tile.shincolle:BlockDesk.name=Abyssal Adrmiral's Desk
 tile.shincolle:BlockFrame.name=Abyssal Frame
 tile.shincolle:BlockGrudge.name=Grudge Lump
 tile.shincolle:BlockGrudgeHeavy.name=Heavy Grudge Lump
+tile.shincolle:BlockGrudgeHeavyDeco.name=Heavy Grudge Lump (Decoration)
 tile.shincolle:BlockPolymetal.name=Polymetallic Block
 tile.shincolle:BlockPolymetalGravel.name=Polymetallic Gravel
 tile.shincolle:BlockPolymetalOre.name=Polymetallic Ore

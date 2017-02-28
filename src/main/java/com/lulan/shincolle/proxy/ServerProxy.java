@@ -612,6 +612,47 @@ public class ServerProxy extends CommonProxy
 		}
 	}
 	
+	/**
+	 * if uid existed in server cache, check is same entity
+	 * deleted the older entity and return the newer entity
+	 */
+	public static BasicEntityShip checkShipIsDupe(BasicEntityShip ship, int uid)
+	{
+		//check cache exist
+		if (mapShipID.containsKey(uid))
+		{
+			CacheDataShip olddata = mapShipID.get(uid);
+			Entity ent = EntityHelper.getEntityByID(olddata.entityID, olddata.worldID, false);
+			
+			//if cache existed and entity is not the same entity, delete old entity
+			if (ent instanceof BasicEntityShip && ent.getEntityId() != ship.getEntityId() &&
+				((BasicEntityShip)ent).getShipUID() == uid)
+			{
+				LogHelper.info("INFO: ServerProxy: ships with same uid found: uid: "+uid);
+				LogHelper.info("      ent1: eid: "+ent.getEntityId()+" ticks: "+ent.ticksExisted+" "+ent);
+				LogHelper.info("      ent2: eid: "+ship.getEntityId()+" ticks: "+ship.ticksExisted+" "+ship);
+				
+				if (ent.ticksExisted > 200 && ship.ticksExisted > 200 &&
+					ent.isEntityAlive() && ship.isEntityAlive())
+				{
+					if (ent.ticksExisted > ship.ticksExisted)
+					{
+						LogHelper.info("      older entity: "+ent.getEntityId()+" is deleted.");
+						ent.setDead();
+					}
+					else
+					{
+						LogHelper.info("      older entity: "+ship.getEntityId()+" is deleted.");
+						ship.setDead();
+						ship = (BasicEntityShip) ent;
+					}
+				}
+			}
+		}
+		
+		return ship;
+	}
+	
 	/** update ship id */
 	public static void updateShipID(BasicEntityShip ship)
 	{
@@ -624,24 +665,8 @@ public class ServerProxy extends CommonProxy
 		{
 			LogHelper.debug("DEBUG: update ship: update ship id "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			
-			//check cache exist
-			if (mapShipID.containsKey(uid))
-			{
-				CacheDataShip olddata = mapShipID.get(uid);
-				Entity ent = EntityHelper.getEntityByID(olddata.entityID, olddata.worldID, false);
-				
-				//if cache existed and entity is not the same ship, delete old entity
-				if (ent instanceof BasicEntityShip && !ent.equals(ship) &&
-					((BasicEntityShip)ent).getShipUID() == uid)
-				{
-//					LogHelper.info("INFO: ServerProxy: update ship UID: entity dupe bug found, remove old entity: uid: "+uid);
-					LogHelper.info("INFO: ServerProxy: update ship UID: entity dupe bug found: uid: "+uid);
-					LogHelper.info("      OLD ent: "+ent.getEntityId()+" "+ent);
-					LogHelper.info("      NEW ent: "+ship.getEntityId()+" "+ship);
-//					ent.setDead();
-					mapShipID.remove(uid);
-				}
-			}
+			//ship dupe bug checking
+			ship = checkShipIsDupe(ship, uid);
 			
 			//create ship cache data
 			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),

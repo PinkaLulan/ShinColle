@@ -42,7 +42,6 @@ public class ModelVortex extends ModelBase
     	
     	GlStateManager.popMatrix();
     	GlStateManager.popAttrib();
-    	
     }
     
     public void render(float f5)

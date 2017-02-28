@@ -11,9 +11,11 @@ import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -21,21 +23,21 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 abstract public class BasicEntityAirplane extends BasicEntitySummon implements IShipFlyable
 {
 	
-	//AI flag
 	protected boolean backHome, canFindTarget;
-
-    //target selector
     protected TargetHelper.Sorter targetSorter = null;
     protected Predicate<Entity> targetSelector = null;
-	
+    protected Vec3d deadMotion = Vec3d.ZERO;
+    
     
     public BasicEntityAirplane(World world)
     {
@@ -263,6 +265,76 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 
 		super.onUpdate();
 	}
+	
+	@Override
+	public boolean isBurning()
+	{
+		//display fire effect
+		if (this.deathTime > 30) return true;
+		return false;
+	}
+	
+	@Override
+    protected void onDeathUpdate()
+    {
+        ++this.deathTime;
+
+        //dead motion
+        if (this.deathTime == 1)
+        {
+        	this.deadMotion = new Vec3d(this.motionX, this.motionY, this.motionZ);
+        	this.motionX = this.deadMotion.xCoord;
+        	this.motionZ = this.deadMotion.zCoord;
+        }
+        
+        this.motionY -= 0.08D;
+        
+    	//spawn smoke
+    	if (this.world.isRemote)
+    	{
+        	if ((this.ticksExisted & 1) == 0)
+        	{
+        		int maxpar = (int)((3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 1.8F);
+        		double range = this.width * 0.5D;
+        		for (int i = 0; i < maxpar; i++)
+        		ParticleHelper.spawnAttackParticleAt(posX-range+this.rand.nextDouble()*range*2D, posY+this.height*0.3D+this.rand.nextDouble()*0.3D, posZ-range+this.rand.nextDouble()*range*2D, 1.5D, 0D, 0D, (byte)43);
+        	}
+        	
+        	if (this.deathTime >= 79)
+        	{
+        		float ran1, ran2;
+        		
+        		for (int i = 0; i < 12; ++i)
+     			{
+     				ran1 = this.width * (this.rand.nextFloat() - 0.5F);
+     				ran2 = this.width * (this.rand.nextFloat() - 0.5F);
+     				this.world.spawnParticle(EnumParticleTypes.LAVA, this.posX+ran1, this.posY+this.height*0.3D, this.posZ+ran2, 0D, 0D, 0D, new int[0]);
+     			
+     				if ((i & 3) == 0)
+     				{
+     					this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX+ran2, this.posY+this.height*0.5D, this.posZ+ran1, 0D, 0D, 0D, new int[0]);
+     				}
+     			}
+        	}
+    	}
+        
+        //dead particle
+        if (this.deathTime == 80)
+        {
+        	//play sound
+        	this.playSound(ModSounds.SHIP_EXPLODE, ConfigHandler.volumeFire, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
+        	
+            this.setDead();
+
+            for (int k = 0; k < 20; ++k)
+            {
+                double d2 = this.rand.nextGaussian() * 0.02D;
+                double d0 = this.rand.nextGaussian() * 0.02D;
+                double d1 = this.rand.nextGaussian() * 0.02D;
+                this.world.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d2, d0, d1, new int[0]);
+            }
+        }
+    }
 	
 	@Override
   	public float getAttackBaseDamage(int type, Entity target)

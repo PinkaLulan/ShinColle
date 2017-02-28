@@ -2737,6 +2737,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		//update random emotion
                     		updateEmotionState();
                     		
+                    		//sync riding state to client
+                    		if (this.isRiding())
+                    		{
+                    			this.sendSyncPacketRiders();
+                    		}
+                    		
                     		//check every 128 ticks
                         	if ((ticksExisted & 127) == 0)
                         	{
@@ -2797,6 +2803,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	                        		{
     	                        			this.heal(this.getMaxHealth() * 0.03F + 1F);
     	                        		}
+    	                        		
+    	                        		//update ship cache data
+    	                        		updateShipCacheDataWithoutNewID();
                             		}
                             		
                             		//food saturation--
@@ -3783,16 +3792,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return this.getStateMinor(ID.M.DamageType);
 	}
 	
-//	//set slot 6 as held item 
-//	@Override
-//	public ItemStack getHeldItem() {
-//		if(ExtProps != null && ExtProps.slots != null) {
-//			return ExtProps.slots[6];
-//		}
-//		
-//		return super.getHeldItem();
-//	}
-	
 	//update ship id
 	public void updateShipCacheData(boolean forceUpdate)
 	{
@@ -3839,10 +3838,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			if (uid > 0)
 			{
-				CacheDataShip sdata = new CacheDataShip(this.getEntityId(), this.world.provider.getDimension(),
-						this.getShipClass(), this.isDead, this.posX, this.posY, this.posZ,
-						this.writeToNBT(new NBTTagCompound()));
-				ServerProxy.setShipWorldData(uid, sdata);
+				//ship dupe bug checking
+				BasicEntityShip ship = ServerProxy.checkShipIsDupe(this, uid);
+				
+				if (this.equals(ship))
+				{
+					CacheDataShip sdata = new CacheDataShip(this.getEntityId(), this.world.provider.getDimension(),
+							this.getShipClass(), this.isDead, this.posX, this.posY, this.posZ,
+							this.writeToNBT(new NBTTagCompound()));
+					
+					ServerProxy.setShipWorldData(uid, sdata);
+				}
+				else
+				{
+					this.setDead();
+				}
 			}
 		}
 	}

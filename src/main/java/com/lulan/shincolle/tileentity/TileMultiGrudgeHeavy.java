@@ -356,7 +356,7 @@ public class TileMultiGrudgeHeavy extends BasicTileMulti implements ITileLiquidF
 			TileEntityHelper.decrLiquidFuel(this);
 			
 			//inventory mode 0:ADD 1:RELEASE
-			//ADD MODE
+			//RECYCLE MODE
 			if (invMode == 0)
 			{
 				for (int i = SLOTS_OUT + 1; i < SLOTS_NUM; i++)

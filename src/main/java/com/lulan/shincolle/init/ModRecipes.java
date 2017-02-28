@@ -43,8 +43,10 @@ public class ModRecipes
 		ItemStack grudeStack = new ItemStack(ModItems.Grudge);
 		ItemStack grudeStack9 = new ItemStack(ModItems.Grudge,9,0);
 		ItemStack grudeBlock = new ItemStack(ModBlocks.BlockGrudge);
+		ItemStack grudeBlock2 = new ItemStack(ModBlocks.BlockGrudge,2,0);
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
+		ItemStack grudeHeavyBlockDeco = new ItemStack(ModBlocks.BlockGrudgeHeavyDeco);
 		ItemStack gunpowderStack = new ItemStack(Items.GUNPOWDER);
 		ItemStack instantMat8 = new ItemStack(ModItems.InstantConMat, 8);
 		ItemStack instantMat32 = new ItemStack(ModItems.InstantConMat, 64);
@@ -98,7 +100,9 @@ public class ModRecipes
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumStack9, abyssiumBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(abyssiumBlock, ironBlock, grudeBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeStack9, grudeBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeBlock2, grudeHeavyBlockDeco));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeBlock9, grudeHeavyBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(grudeHeavyBlockDeco, grudeBlock, grudeBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack4, polymetalGravel));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalStack9, polymetalBlock));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(polymetalGravel, polymetalStack, polymetalStack, polymetalStack, polymetalStack));

@@ -1425,7 +1425,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		if (ships.size() > 4)
 		{
 			//update formation guard position
-			FormationHelper.applyFormationMoving(ships, getFormatID(tid), (int)ships.get(0).posX, (int)ships.get(0).posY, (int)ships.get(0).posZ);
+			FormationHelper.applyFormationMoving(ships, getFormatID(tid), (int)ships.get(0).posX, (int)ships.get(0).posY, (int)ships.get(0).posZ, false);
 		}
 	}
 	

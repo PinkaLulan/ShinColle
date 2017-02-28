@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.render.block;
 
 import com.lulan.shincolle.client.model.ModelLargeShipyard;
 import com.lulan.shincolle.client.model.ModelVortex;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 
@@ -80,7 +81,7 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEnti
         //render vortex
 		Minecraft.getMinecraft().renderEngine.bindTexture(meta > 1 ? VORTEX_ON : VORTEX_OFF);
 		GlStateManager.pushMatrix();
-		GlStateManager.depthMask(false);
+		GlStateManager.depthMask(ConfigHandler.vortexDepth);
 		GlStateManager.translate((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
 		GlStateManager.rotate(yaw * 57.2957F, 0F, 1F, 0F);
 		GlStateManager.rotate(pitch * 57.2957F, 1F, 0F, 0F);
@@ -88,7 +89,6 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 		this.model_vortex.render(0.03125F);
 		GlStateManager.depthMask(true);
 		GlStateManager.popMatrix();
-		
 	}
 	
 	
