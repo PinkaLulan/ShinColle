@@ -13,7 +13,6 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.GuiHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -200,7 +199,7 @@ public class GuiCrane extends GuiContainer
 			str = strWaitfev;
 			break;
 		default:
-			strnum = String.valueOf(tile.getWaitTimeInMin(btnMode));
+			strnum = String.valueOf(tile.getWaitTime(btnMode));
 			str = I18n.format("gui.shincolle:crane.waitmin", strnum);
 			break;
 		}
@@ -359,28 +358,12 @@ public class GuiCrane extends GuiContainer
         case 1:  //mode
         	if (key == 0)
         	{
-        		if(btnMode == 1)
-        		{
-        			btnMode = 6;
-        		}
-        		else
-        		{
-        			btnMode++;
-        		}
-        		
-        		if (btnMode > 25) btnMode = 25;
+        		btnMode++;
+        		if (btnMode > 24) btnMode = 24;
         	}
         	else
         	{
-        		if (btnMode == 6)
-        		{
-        			btnMode = 1;
-        		}
-        		else
-        		{
-        			btnMode--;
-        		}
-        		
+        		btnMode--;
         		if (btnMode < 0) btnMode = 0;
         	}
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.tile, C2SGUIPackets.PID.TileBtn, ID.B.Crane_Mode, btnMode, 0));
@@ -428,5 +411,3 @@ public class GuiCrane extends GuiContainer
 
 	
 }
-
-

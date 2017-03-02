@@ -510,8 +510,8 @@ public class Values
 		put((int)ID.EquipType.CATAPULT_HI + (int)ID.EquipSubID.CATAPULT_E * 100,        new float[]{3F, 0,   0F,  0F,  0F,  0F,  0F, 2.2F, -0.34F, 8F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.CATAPULT_HI,  4400F,  0F,  5000, 3,  3});
 		//drum
 		put((int)ID.EquipType.DRUM_LO + (int)ID.EquipSubID.DRUM * 100,        		    new float[]{2F, 0,   0F,  0F,  0F,  0F,  0F, 0F,   -0.28F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.DRUM_LO,  	  2000F,  0F,  120,  1,  3});
-		put((int)ID.EquipType.DRUM_LO + (int)ID.EquipSubID.DRUM_F * 100,        		new float[]{2F, 0,   0F,  0F,  0F,  0F,  0F, 0F,   -0.28F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.DRUM_LO,  	  3000F,  0F,  120,  1,  3});
-		put((int)ID.EquipType.DRUM_LO + (int)ID.EquipSubID.DRUM_E * 100,        		new float[]{2F, 0,   0F,  0F,  0F,  0F,  0F, 0F,   -0.28F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.DRUM_LO,  	  3000F,  0F,  120,  1,  3});
+		put((int)ID.EquipType.DRUM_LO + (int)ID.EquipSubID.DRUM_F * 100,        		new float[]{2F, 0,   0F,  0F,  0F,  0F,  0F, 0F,   -0.28F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.DRUM_LO,  	  2500F,  0F,  120,  1,  3});
+		put((int)ID.EquipType.DRUM_LO + (int)ID.EquipSubID.DRUM_E * 100,        		new float[]{2F, 0,   0F,  0F,  0F,  0F,  0F, 0F,   -0.28F, 0F,   0F,    0F,    0F,    0F,    0F,  0F,  ID.EquipType.DRUM_LO,  	  2500F,  0F,  120,  1,  3});
 		//compass
 		put((int)ID.EquipType.COMPASS_LO + (int)ID.EquipSubID.COMPASS * 100,        	new float[]{2F, 0,   0F,  0F,  0F,  0F,  0F, 0F,   -0.01F, 1F,   0F,    0F,    0F,    0.05F, 0F,  0F,  ID.EquipType.COMPASS_LO,   2000F,  0F,  90,   0,  3});
 		//flare

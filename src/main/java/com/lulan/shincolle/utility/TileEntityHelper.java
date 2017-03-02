@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -421,5 +422,34 @@ public class TileEntityHelper
 			);
 		}
 	}
-
+	
+	/** get adj chest for TileEntityChest */
+	public static TileEntityChest getAdjChest(TileEntityChest chest)
+	{
+		TileEntityChest chest2 = null;
+		
+		if (chest != null && !chest.isInvalid())
+		{
+			//check adj chest valid
+			chest.checkForAdjacentChests();
+			
+			//get adj chest
+			chest2 = chest.adjacentChestXNeg;
+			if (chest2 == null)
+			{
+				chest2 = chest.adjacentChestXPos;
+				if (chest2 == null)
+				{
+					chest2 = chest.adjacentChestZNeg;
+					if (chest2 == null) chest2 = chest.adjacentChestZPos;
+				}
+			}
+		}
+		
+		if (chest2 != null && chest2.isInvalid()) return null;
+		
+		return chest2;
+	}
+	
+	
 }

@@ -1,6 +1,7 @@
 package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.tileentity.TileEntityCrane;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
@@ -135,7 +136,7 @@ public class ContainerCrane extends Container
 	public ItemStack slotClick(int id, int key, ClickType type, EntityPlayer player)
 	{
         ItemStack itemstack = player.inventory.getItemStack();
-        
+        LogHelper.debug("AAAAAAAA "+player.world.isRemote); //TODO
         if (id >= 0 && id < 18)
         {
         	Slot slot = (Slot) this.inventorySlots.get(id);

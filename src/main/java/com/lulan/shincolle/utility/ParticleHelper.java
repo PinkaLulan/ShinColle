@@ -801,6 +801,7 @@ public class ParticleHelper
 		switch (type)
 		{
 		case 0:		//雙光束砲
+		{
 			//host check
 			if (host instanceof EntityLivingBase)
 			{
@@ -816,8 +817,10 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser2 = new ParticleLaserNoTexture(world, host2, target, -0.9F, par1, 0F, 0.05F, 0);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser2);
+		}
 		break;
 		case 1:		//yamato cannon beam
+		{
 			//host check
 			if (host instanceof EntityLivingBase)
 			{
@@ -835,8 +838,10 @@ public class ParticleHelper
         	//beam body
 			ParticleLaserNoTexture laser3 = new ParticleLaserNoTexture(world, host2, target, par1, par2, par3, 2F, 1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser3);
+		}
 		break;
 		case 2:		//yamato cannon beam for boss
+		{
 			//host check
 			if (host instanceof EntityLivingBase)
 			{
@@ -854,8 +859,10 @@ public class ParticleHelper
         	//beam body
 			ParticleLaserNoTexture laser4 = new ParticleLaserNoTexture(world, host2, target, par1, par2, par3, 4F, 1);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser4);
+		}
 		break;
 		case 3:		//守衛標示線: entity類
+		{
 			//host check
 			if (host instanceof EntityLivingBase)
 			{
@@ -868,8 +875,10 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser5 = new ParticleLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 2);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser5);
+		}
 		break;
 		case 4:		//補給標示線
+		{
 			//host check
 			if (host instanceof EntityLivingBase)
 			{
@@ -882,6 +891,23 @@ public class ParticleHelper
 			
 			ParticleLaserNoTexture laser6 = new ParticleLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 4);
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser6);
+		}
+		break;
+		case 5:		//位置標示線
+		{
+			//host check
+			if (host instanceof EntityLivingBase)
+			{
+				host2 = (EntityLivingBase) host;
+			}
+			else
+			{
+				return;
+			}
+			
+			ParticleLaserNoTexture laser = new ParticleLaserNoTexture(world, host2, target, 0D, 0D, 0D, 0.1F, 5);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser);
+		}
 		break;
 		default:
 		break;

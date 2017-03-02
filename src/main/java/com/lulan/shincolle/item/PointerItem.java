@@ -682,7 +682,7 @@ public class PointerItem extends BasicItem
 				}//end format CD
 			}//end format flag
 			
-			//restore hotbar position
+			//not using
 			if (!inUse)
 			{
 				if (item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB"))
@@ -693,6 +693,27 @@ public class PointerItem extends BasicItem
 					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
 					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
 					item.getTagCompound().setBoolean("chgHB", false);
+				}
+			}
+			//if using
+			else
+			{
+				GameSettings keys = ClientProxy.getGameSetting();
+				
+				//press CTRL to show ship location particle
+				if (keys.keyBindSprint.isKeyDown() && (player.ticksExisted & 7) == 0)
+				{
+					CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+					
+					if (capa != null)
+					{
+						BasicEntityShip[] ships = capa.getShipEntityAll(capa.getCurrentTeamID());
+						
+						for (BasicEntityShip ship : ships)
+						{
+							ParticleHelper.spawnAttackParticleAtEntity(player, ship, 0D, 0D, 0D, (byte)5, false);
+						}
+					}
 				}
 			}
 		}//end client side

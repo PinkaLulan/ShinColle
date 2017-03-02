@@ -104,6 +104,22 @@ public class ParticleLaserNoTexture extends Particle
         	this.alphaOut = 0.1F;
         	this.alphaIn = 0.2F;
         break;
+        case 5:		//位置標示線
+        	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+        	this.shotYaw = lookDeg[0];
+        	this.shotPitch = lookDeg[1];
+        	this.tarX = target.posX;
+    		this.tarY = target.posY + 0.2D;
+    		this.tarZ = target.posZ;
+        	this.particleMaxAge = 64;
+        	this.particleRed = 1F;
+        	this.particleGreen = 0.6F;
+        	this.particleBlue = 1F;
+        	this.scaleOut = this.particleScale * 0.5F;
+        	this.scaleIn = this.particleScale * 0.125F;
+        	this.alphaOut = 0.6F;
+        	this.alphaIn = 0.8F;
+        break;
         default:	//紅光束砲
         	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	posOffset = CalcHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
@@ -418,6 +434,24 @@ public class ParticleLaserNoTexture extends Particle
         		else
         		{
         			this.alphaIn = 0.2F + particleAge * 0.2F;
+        			this.alphaOut = this.alphaIn * 0.5F;
+        		}
+    		break;
+    		case 5:		//位置標示線
+    			this.tarX = target.posX;
+        		this.tarY = target.posY + 0.2D;
+        		this.tarZ = target.posZ;
+        		this.posX = host.posX;
+            	this.posY = host.posY + 0.65D;
+            	this.posZ = host.posZ;
+            	
+    			lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
+            	this.shotYaw = lookDeg[0];
+            	this.shotPitch = lookDeg[1];
+            	
+        		if (this.particleAge > 56)
+        		{
+        			this.alphaIn *= 0.6F;
         			this.alphaOut = this.alphaIn * 0.5F;
         		}
     		break;
