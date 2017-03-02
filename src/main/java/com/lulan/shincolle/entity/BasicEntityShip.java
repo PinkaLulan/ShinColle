@@ -1387,7 +1387,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				}
 				else
 				{
-					setStateTimer(ID.T.CrandDelay, 40);
+					setStateTimer(ID.T.CrandDelay, 20);
 				}
 			}
 			break;
@@ -2841,14 +2841,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	{
         		this.sendSyncRequest(0);
         	}
-        	
-//        	//every 64 ticks
-//        	if ((this.ticksExisted & 63) == 0)
-//        	{
-//        		//update random emotion
-//        		updateEmotionState();
-//        	}//end 64 ticks
-        	
         }//end client side
         
         /** both side */

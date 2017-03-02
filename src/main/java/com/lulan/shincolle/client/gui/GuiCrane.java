@@ -30,10 +30,10 @@ public class GuiCrane extends GuiContainer
 	private int btnMode, btnRedMode, btnLiquidMode, btnEnergyMode;
 	private boolean btnPower, btnMeta, btnDict, btnNbt, btnLoad, btnUnload, slotMode;
 	private float tickGUI;
-	private static String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strWaitfev, strNowait1,
-						strWaitfev1, strWaitfev2, strRed0, strRed1, strRed2, strLiq0, strLiq1, strLiq2,
-						strEne0, strEne1, strEne2;
-	
+	private static String strLoad, strUnload, strMeta, strDict, strNbt, strNowait, strNowait1,
+						strFull, strFull1, strFull2, strEmpty, strEmpty1, strEmpty2, strExcess,
+						strExcess1, strExcess2, strRemain, strRemain1, strRemain2, strRed0,
+						strRed1, strRed2, strLiq0, strLiq1, strLiq2, strEne0, strEne1, strEne2;
 	
 	public GuiCrane(InventoryPlayer par1, TileEntityCrane par2)
 	{
@@ -56,10 +56,19 @@ public class GuiCrane extends GuiContainer
 		strDict = I18n.format("gui.shincolle:crane.useoredict");
 		strNbt = I18n.format("gui.shincolle:crane.usenbt");
 		strNowait = I18n.format("gui.shincolle:crane.nowait");
-		strWaitfev = I18n.format("gui.shincolle:crane.waitforever");
 		strNowait1 = I18n.format("gui.shincolle:crane.nowait1");
-		strWaitfev1 = I18n.format("gui.shincolle:crane.waitforever1");
-		strWaitfev2 = I18n.format("gui.shincolle:crane.waitforever2");
+		strFull = I18n.format("gui.shincolle:crane.untilfull");
+		strFull1 = I18n.format("gui.shincolle:crane.untilfull1");
+		strFull2 = I18n.format("gui.shincolle:crane.untilfull2");
+		strEmpty = I18n.format("gui.shincolle:crane.untilempty");
+		strEmpty1 = I18n.format("gui.shincolle:crane.untilempty1");
+		strEmpty2 = I18n.format("gui.shincolle:crane.untilempty2");
+		strExcess = I18n.format("gui.shincolle:crane.excess");
+		strExcess1 = I18n.format("gui.shincolle:crane.excess1");
+		strExcess2 = I18n.format("gui.shincolle:crane.excess2");
+		strRemain = I18n.format("gui.shincolle:crane.remain");
+		strRemain1 = I18n.format("gui.shincolle:crane.remain1");
+		strRemain2 = I18n.format("gui.shincolle:crane.remain2");
 		strRed0 = I18n.format("gui.shincolle:crane.red0");
 		strRed1 = I18n.format("gui.shincolle:crane.red1");
 		strRed2 = I18n.format("gui.shincolle:crane.red2");
@@ -166,15 +175,27 @@ public class GuiCrane extends GuiContainer
 		{
 			list.clear();
 			
-			switch (btnMode)
+			switch (this.btnMode)
 			{
-			case 0:
+			case 0:		//no wait
 				list.add(strNowait1);
-				break;
-			case 1:
-				list.add(strWaitfev1);
-				list.add(strWaitfev2);
-				break;
+			break;
+			case 1:		//until full
+				list.add(strFull1);
+				list.add(strFull2);
+			break;
+			case 2:		//until empty
+				list.add(strEmpty1);
+				list.add(strEmpty2);
+			break;
+			case 3:		//excess
+				list.add(strExcess1);
+				list.add(strExcess2);
+			break;
+			case 4:		//remain
+				list.add(strRemain1);
+				list.add(strRemain2);
+			break;
 			}
 			
 			this.drawHoveringText(list, -50, 37, this.fontRendererObj);
@@ -190,18 +211,40 @@ public class GuiCrane extends GuiContainer
 		String strnum = null;
 		int len = 0;
 		
-		switch (btnMode)
+		switch (this.btnMode)
 		{
-		case 0:
+		case 0:		//no wait
 			str = strNowait;
-			break;
-		case 1:
-			str = strWaitfev;
-			break;
+		break;
+		case 1:		//until full
+			str = strFull;
+		break;
+		case 2:		//until empty
+			str = strEmpty;
+		break;
+		case 3:		//excess
+			str = strExcess;
+		break;
+		case 4:		//remain
+			str = strRemain;
+		break;
 		default:
-			strnum = String.valueOf(tile.getWaitTime(btnMode));
-			str = I18n.format("gui.shincolle:crane.waitmin", strnum);
-			break;
+			if (this.btnMode < 10)
+			{
+				strnum = String.format("%.1f", (float)tile.getWaitTime(btnMode) * 0.05F);
+				str = I18n.format("gui.shincolle:crane.waitsec", strnum);
+			}
+			else if (this.btnMode < 15)
+			{
+				strnum = String.valueOf((int)((float)tile.getWaitTime(btnMode) * 0.05F));
+				str = I18n.format("gui.shincolle:crane.waitsec", strnum);
+			}
+			else
+			{
+				strnum = String.valueOf(tile.getWaitTime(btnMode) / 1200);
+				str = I18n.format("gui.shincolle:crane.waitmin", strnum);
+			}
+		break;
 		}
 		
 		len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);

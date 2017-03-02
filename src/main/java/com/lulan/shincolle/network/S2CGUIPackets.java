@@ -854,7 +854,6 @@ public class S2CGUIPackets implements IMessage
 				tile2.setField(11, msg.valueInt1[14]);
 				tile2.owner = EntityHelper.getEntityPlayerByID(msg.valueInt1[15], 0, true);
 				
-				
 				if (entity instanceof BasicEntityShip)
 				{
 					tile2.setShip((BasicEntityShip) entity);

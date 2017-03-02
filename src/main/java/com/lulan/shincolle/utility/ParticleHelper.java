@@ -754,6 +754,13 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
 		}
 		break;
+		case 22:	//craning particle
+		{
+			//											 ent, type, scale, rad, NO_USE, NO_USE, 4~7:RGBA, height
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 3, 0.05F, ent.width * 1F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.4F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
+		}
+		break;
 		case 36:	//emotion
 		{
 			ParticleEmotion partEmo = new ParticleEmotion(world, ent,

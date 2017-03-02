@@ -70,7 +70,6 @@ public class InventoryHelper
 			}//end loop all temp slots
 		}
 		
-		
 		for (int i = 0; i < 9; i++)
 		{
 			//EXCESS MODE: all item amount must GREATER or EQUAL to temp setting

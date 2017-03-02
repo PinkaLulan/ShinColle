@@ -120,7 +120,6 @@ public class ContainerCrane extends Container
 		{
 			this.valueTemp[k] = this.tile.getField(k);
 		}
-            
     }
 
 	//client端container接收新值
@@ -131,31 +130,34 @@ public class ContainerCrane extends Container
 		this.tile.setField(id, value);
     }
 	
-	/** 複製游標上的itemstack到crane裝卸載列表中, 不影響玩家物品欄跟手上的物品 */
+	/** 複製游標上的itemstack到crane裝卸載列表中, 不影響玩家物品欄跟手上的物品, BOTH SIDE */
 	@Override
 	public ItemStack slotClick(int id, int key, ClickType type, EntityPlayer player)
 	{
         ItemStack itemstack = player.inventory.getItemStack();
-        LogHelper.debug("AAAAAAAA "+player.world.isRemote); //TODO
+        
         if (id >= 0 && id < 18)
         {
         	Slot slot = (Slot) this.inventorySlots.get(id);
         	
-        	//left click with item
-        	if (itemstack != null && key == 0)
+        	//click slot with item
+        	if (itemstack != null)
         	{
-        		ItemStack itemstack2 = itemstack.copy();
-        		itemstack2.stackSize = 1;
-        		slot.putStack(itemstack2);
-        		tile.setItemMode(id, false);
-        	}
-        	//other key with item
-        	else if (itemstack != null && key > 0)
-        	{
-        		ItemStack itemstack2 = itemstack.copy();
-        		itemstack2.stackSize = 1;
-        		slot.putStack(itemstack2);
-        		tile.setItemMode(id, true);
+        		//set NOT MODE item
+        		if (key == 1)
+        		{
+            		ItemStack itemstack2 = itemstack.copy();
+            		itemstack2.stackSize = 1;
+            		slot.putStack(itemstack2);
+            		tile.setItemMode(id, true);
+        		}
+        		//set NORMAL MODE item
+        		else
+        		{
+            		ItemStack itemstack2 = itemstack.copy();
+            		slot.putStack(itemstack2);
+            		tile.setItemMode(id, false);
+        		}
         	}
         	//any key without item
         	else
