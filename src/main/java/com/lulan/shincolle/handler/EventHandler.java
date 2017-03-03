@@ -623,6 +623,9 @@ public class EventHandler
 						//spawn mob ship
 						spawnMobShip(event.player, capa);
 						
+						//sync unit names
+						capa.sendSyncPacket(8);
+						
 						//every 256 ticks
 						if ((event.player.ticksExisted & 255) == 0)
 						{
@@ -660,7 +663,7 @@ public class EventHandler
 			}//end server side, extProps != null
 			/** CLIENT SIDE */
 			else if (event.player.world.isRemote)
-			{	
+			{
 				//cd--
 				if (this.keyCooldown > 0) this.keyCooldown--;
 				if (this.debugCooldown > 0) this.debugCooldown--;

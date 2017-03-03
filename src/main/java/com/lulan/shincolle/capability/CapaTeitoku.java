@@ -63,9 +63,10 @@ public class CapaTeitoku implements ICapaTeitoku
 	private int[] formatID;					//ship formation ID
 	private int saveId;						//current ship/empty slot, value = 0~5
 	private int teamId;						//current team
-	private ArrayList<Integer> listShipEID;		//all loaded ships' entity id list for radar
+	private ArrayList<Integer> listShipEID;			//all loaded ships' entity id list for radar
 	private ArrayList<Integer> listColleShip;		//all obtained ships list
 	private ArrayList<Integer> listColleEquip;		//all obtained equipment list
+	private String[] unitNames;				//team names
 	
 	//player id
 	private int playerUID;
@@ -97,6 +98,7 @@ public class CapaTeitoku implements ICapaTeitoku
 		this.bossCooldown = ConfigHandler.bossCooldown;
 		this.teamCooldown = 20;
 		this.teamList = new BasicEntityShip[9][6];
+		this.unitNames = new String[9];
 		this.selectState = new boolean[9][6];
 		this.initSID = false;
 		this.sidList = new int[9][6];
@@ -189,6 +191,19 @@ public class CapaTeitoku implements ICapaTeitoku
 			});
 		}
 		
+		//save team names
+		for (int i = 0; i < 9; i++)
+		{
+			if (this.unitNames[i] != null && this.unitNames[i].length() > 1)
+			{
+				nbtExt.setString("uname"+i, this.unitNames[i]);
+			}
+			else
+			{
+				nbtExt.setString("uname"+i, " ");
+			}
+		}
+		
 		nbt.setTag(CAPA_KEY, nbtExt);
 		LogHelper.debug("DEBUG : save player ExtNBT data on: "+this.player);
 
@@ -256,6 +271,14 @@ public class CapaTeitoku implements ICapaTeitoku
 						this.sidList[i][j] = sid[j];
 					}
 				}
+			}
+			
+			//load team names
+			for (int i = 0; i < 9; i++)
+			{
+				if (this.unitNames == null) this.unitNames = new String[9];
+				
+				this.unitNames[i] = nbtExt.getString("uname"+i);
 			}
 		}
 		catch (Exception e)
@@ -733,6 +756,18 @@ public class CapaTeitoku implements ICapaTeitoku
 		return mov;
 	}
 	
+	public String[] getUnitName()
+	{
+		if (this.unitNames != null) return this.unitNames;
+		return new String[9];
+	}
+	
+	public String getUnitName(int tid)
+	{
+		if (this.unitNames != null) return this.unitNames[tid];
+		return "";
+	}
+	
 	//setter
 	public void setRingActive(boolean par1)
 	{
@@ -1008,6 +1043,17 @@ public class CapaTeitoku implements ICapaTeitoku
 	public void setHasTeam(boolean par1)
 	{
 		this.hasTeam = par1;
+	}
+	
+	public void setUnitName(String[] str)
+	{
+		this.unitNames = str;
+	}
+	
+	public void setUnitName(int tid, String str)
+	{
+		if (str == null) this.unitNames[tid] = "";
+		else this.unitNames[tid] = str;
 	}
 	
 	/** add ship entity to slot and update SID list */
@@ -1340,6 +1386,8 @@ public class CapaTeitoku implements ICapaTeitoku
 	 *  4:all ships in team list<br>
 	 *  5:collected ship list<br>
 	 *  6:collected equip list<br>
+	 *  7:all musc int value
+	 *  8:unit name
 	 */
 	public void sendSyncPacket(int type)
 	{
@@ -1372,6 +1420,9 @@ public class CapaTeitoku implements ICapaTeitoku
 			break;
 			case 7:
 				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_Misc), (EntityPlayerMP) player);
+			break;
+			case 8:
+				CommonProxy.channelG.sendTo(new S2CGUIPackets(this, S2CGUIPackets.PID.SyncPlayerProp_UnitName), (EntityPlayerMP) player);
 			break;
 			}
 		}
@@ -1541,6 +1592,29 @@ public class CapaTeitoku implements ICapaTeitoku
 				 */
 			}//end for loop
 		}//end props != null
+	}
+	
+	//get ship team id, ship can exist in multiple teams
+	public ArrayList<Integer> getShipTeamIDArray(int shipUID)
+	{
+		ArrayList<Integer> tid = new ArrayList<Integer>();
+		
+		if (this.sidList != null)
+		{
+			for (int i = 0; i < 9; i++)
+			{
+				for (int j = 0; j < 6; j++)
+				{
+					if (this.sidList[i][j] == shipUID)
+					{
+						tid.add(i);
+						break;
+					}
+				}
+			}
+		}
+		
+		return tid;
 	}
 	
 	

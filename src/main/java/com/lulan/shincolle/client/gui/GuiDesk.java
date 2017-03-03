@@ -1759,7 +1759,7 @@ public class GuiDesk extends GuiContainer
 	@Override
 	protected void keyTyped(char input, int keyID) throws IOException
 	{
-        if(this.textField.textboxKeyTyped(input, keyID))
+        if (this.textField.textboxKeyTyped(input, keyID))
         {
             //test
         }

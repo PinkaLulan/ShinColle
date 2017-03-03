@@ -761,6 +761,13 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
 		}
 		break;
+		case 23:	//healing particle
+		{
+			//											 ent, type, scale, rad, NO_USE, NO_USE, 4~7:RGBA, height
+			ParticleSparkle spark1 = new ParticleSparkle(ent, 2, 0.075F, ent.width * 1.5F, 0F, 0F, (float)par1, (float)par2, (float)par3, 1F, ent.height * 0.4F);
+			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
+		}
+		break;
 		case 36:	//emotion
 		{
 			ParticleEmotion partEmo = new ParticleEmotion(world, ent,
@@ -930,10 +937,17 @@ public class ParticleHelper
 		//spawn particle
 		switch (type)
 		{
-		case 0:
+		case 0:		//show text on fixed position
 		{
-			ParticleTextsCustom p0 = new ParticleTextsCustom(w, posX, posY, posZ, 1F, 0, text, parms);
-			Minecraft.getMinecraft().effectRenderer.addEffect(p0);
+			ParticleTextsCustom ptx = new ParticleTextsCustom(null, w, posX, posY, posZ, 1F, 0, text, parms);
+			Minecraft.getMinecraft().effectRenderer.addEffect(ptx);
+		}
+		break;
+		case 1:		//show text on entity
+		{
+			Entity host = EntityHelper.getEntityByID(parms[2], 0, true);
+			ParticleTextsCustom ptx = new ParticleTextsCustom(host, w, posX, posY, posZ, 1F, 1, text, parms);
+			Minecraft.getMinecraft().effectRenderer.addEffect(ptx);
 		}
 		break;
 		}

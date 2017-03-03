@@ -473,7 +473,7 @@ gui.shincolle:book.chap4.text14d0=
 gui.shincolle:book.chap4.text14d1=§9Name:§0 Aircraft Carrier Water Demon<br><br>§9Class:§0 Water Demon Class CV<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Polymetal (5000)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>Light attack: Laser Funnel: deal 100%% firepower damage.
 gui.shincolle:book.chap4.title15=
 gui.shincolle:book.chap4.text15d0=
-gui.shincolle:book.chap4.text15d1=§9Name:§0 Wa-Class<br><br>§9Class:§0 Transport<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Abyssium (120)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 Max inventory size, supply ships, pick up items<br><br>Abyssal maid with high payload, she can also pick up items for master.<br><br>Built-in 3 pages inventory.<br>Transport can only melee attack, and consume items to supply nearby ships.
+gui.shincolle:book.chap4.text15d1=§9Name:§0 Wa-Class<br><br>§9Class:§0 Transport<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Abyssium (120)<br><br>§9AuraEffect:§0 Built-in Pump Station<br><br>§9OtherEffect:§0 Max inventory size, supply ships, pick up items<br><br>Abyssal maid with high payload, she can also pick up items for master.<br><br>Built-in 3 pages inventory.<br>Transport can only melee attack, and consume items to supply nearby ships.
 gui.shincolle:book.chap4.title16=
 gui.shincolle:book.chap4.text16d0=
 gui.shincolle:book.chap4.text16d1=§9Name:§0 Ka-Class<br><br>§9Class:§0 Submarine<br><br>§9Factory:§0 Abyssal Vent<br><br>§9Factor:§0 Ammo (140)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 SS base dodge 20%%<br><br>She is very indoorsy although she looks to be a bad girl.
@@ -569,7 +569,7 @@ gui.shincolle:general.cancel=Cancel
 # GUI: Radar Screen
 gui.shincolle:radar.position=C
 gui.shincolle:radar.height=H
-gui.shincolle:radar.gui=Contact
+gui.shincolle:radar.tname=Team Name
 gui.shincolle:radar.recall=Recall
 
 # GUI: Target List

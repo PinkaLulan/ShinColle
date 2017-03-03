@@ -38,11 +38,11 @@ public class EntityAIShipFlee extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
-		this.fleehp = host.getStateMinor(ID.M.FleeHP) / 100F;
+		this.fleehp = (float)host.getStateMinor(ID.M.FleeHP) * 0.01F;
 		
 		//血量低於fleeHP 且不是坐下也不是綁住的狀態才執行flee AI
 		if (!host.isSitting() && !host.getLeashed() && 
-			(host.getHealth() / host.getMaxHealth()) <= fleehp)
+			(host.getHealth() / host.getMaxHealth()) <= this.fleehp)
 		{
 			EntityLivingBase OwnerEntity = (EntityLivingBase) host.getHostEntity();
 			
@@ -56,7 +56,7 @@ public class EntityAIShipFlee extends EntityAIBase
 				this.distZ = this.owner.posZ - this.host.posZ;
 		    	this.distSq = (float) (this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ);
 
-		    	if(distSq > 6F) return true;
+		    	if(distSq > 6F && distSq < 3600F) return true;
 			}
 		}
 		

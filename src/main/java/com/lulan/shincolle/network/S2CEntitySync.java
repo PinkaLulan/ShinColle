@@ -1,5 +1,6 @@
 package com.lulan.shincolle.network;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -44,6 +45,7 @@ public class S2CEntitySync implements IMessage
 	private double[] valueDouble1;
 	private byte[] valueByte1;
 	private boolean[] valueBoolean1;
+	private List<String> valueString1;
 	
 	//packet id
 	public static final class PID
@@ -66,6 +68,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncShip_Guard = 15;
 		public static final byte SyncShip_ID = 16;
 		public static final byte SyncSystem_Config = 17;
+		public static final byte SyncShip_UnitName = 18;
 	}
 
 	
@@ -196,6 +199,9 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncSystem_Config:	//server config sync to client
 			this.valueInt1 = PacketHelper.readIntArray(buf, ConfigHandler.ringAbility.length);
+		break;
+		case PID.SyncShip_UnitName:	//sync ship unit names
+			this.valueString1 = PacketHelper.readListString(buf);
 		break;
 		}//end switch
 		
@@ -618,6 +624,16 @@ public class S2CEntitySync implements IMessage
 			}
 		}
 		break;
+		case PID.SyncShip_UnitName:	//sync ship unit names
+		{
+			BasicEntityShip ship = (BasicEntityShip) this.entity;
+			
+			if (ship.unitNames != null)
+			{
+				PacketHelper.sendListString(buf, ship.unitNames);
+			}
+		}
+		break;
 		}
 	}
 	
@@ -647,6 +663,7 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_Unbuff:
 		case PID.SyncShip_Timer:
 		case PID.SyncShip_Scale:
+		case PID.SyncShip_UnitName:
 		case PID.SyncEntity_Emo:
 			if (entity instanceof BasicEntityShip ||
 				entity instanceof IShipEmotion ||
@@ -1077,10 +1094,18 @@ public class S2CEntitySync implements IMessage
 			}
 			break;
 			case PID.SyncSystem_Config:	//server config sync to client
+			{
 				for (int i = 0; i < ConfigHandler.ringAbility.length; i++)
 				{
 					ConfigHandler.ringAbility[i] = msg.valueInt1[i];
 				}
+			}
+			break;
+			case PID.SyncShip_UnitName:	//sync ship unit names
+			{
+				ship = (BasicEntityShip) entity;
+				ship.unitNames = (ArrayList<String>) msg.valueString1;
+			}
 			break;
 			}//end switch
 		}//end can sync

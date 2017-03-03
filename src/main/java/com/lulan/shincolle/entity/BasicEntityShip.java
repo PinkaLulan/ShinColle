@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -178,6 +179,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected BlockPos[] waypoints;
 	/** owner name */
 	public String ownerName;
+	/** unit names */
+	public ArrayList<String> unitNames;
 	
 	//for model render
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
@@ -201,6 +204,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ignoreFrustumCheck = true;  //即使不在視線內一樣render
 		this.maxHurtResistantTime = 2;   //受傷無敵時間降為2 ticks
 		this.ownerName = "";
+		this.unitNames = new ArrayList<String>();
 		
 		//init value
 		this.itemHandler = new CapaShipInventory(CapaShipInventory.SlotMax, this);
@@ -1693,6 +1697,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_Riders, true);
 	}
 	
+	/** send sync packet: sync riders */
+	public void sendSyncPacketUnitName()
+	{
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_UnitName, true);
+	}
+	
 	/** sync data for GUI display */
 	public void sendSyncPacketGUI()
 	{
@@ -1767,6 +1777,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/**
 	 * request server to send sync packet
 	 *   0: sync model display (StateEmotion)
+	 *   1: sync unit name
 	 */
 	public void sendSyncRequest(int type)
 	{
@@ -1776,6 +1787,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{
 			case 0:		//model display
 				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
+			break;
+			case 1:		//unit name display
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_UnitName, this.getEntityId(), this.world.provider.getDimension()));
 			break;
 			}
 		}
@@ -2633,7 +2647,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.rand.setSeed((this.getShipUID() << 4) + System.currentTimeMillis());
 		}
 		
-        //server side check
+        /** server side */
         if ((!world.isRemote))
         {
 	    	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
@@ -2649,9 +2663,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//timer ticking
         	updateServerTimer();
         	
-        	//pump liquid
-        	if (this.StateFlag[ID.F.AutoPump] && this.isEntityAlive() && !this.isSitting() &&
-        		!this.getStateFlag(ID.F.NoFuel)) EntityHelper.autoPumpFluid(this);
+        	//pump liquid, transport ship has built-in pump equip
+        	if (this.StateFlag[ID.F.AutoPump] &&
+        		this.isEntityAlive() && !this.isSitting() && !this.getStateFlag(ID.F.NoFuel))
+        		EntityHelper.autoPumpFluid(this);
         	
         	//check every 8 ticks
         	if ((ticksExisted & 7) == 0)
@@ -2749,7 +2764,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		//delayed init, waiting for player entity loaded
                         		if (!this.initWaitAI && ticksExisted >= 128)
                         		{
-                        			setUpdateFlag(ID.FU.FormationBuff, true);  //set update formation buff
+                        			//request formation buff update
+                        			setUpdateFlag(ID.FU.FormationBuff, true);
+                        			
                         			this.initWaitAI = true;
                         		}
 
@@ -2785,6 +2802,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	                    		
     	                    		//update morale value
     	                    		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
+    	                    		
+    	                    		//update name string
+    	                    		EntityHelper.updateNameTag(this);
                         		}
                         		
                         		//check every 256 ticks
@@ -2828,7 +2848,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		if (checkHour >= 0) playTimeSound(checkHour);
         	}//end timekeeping
         }//end server side
-        //client side
+        /** client side */
         else
         {
         	super.onLivingUpdate();
@@ -2839,8 +2859,23 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//request sync packet
         	if (this.ticksExisted == 20)
         	{
-        		this.sendSyncRequest(0);
+        		this.sendSyncRequest(0);	//request emotion state sync
+        		this.sendSyncRequest(1);	//request unit name sync
         	}
+        	
+        	//every 32 ticks
+        	if ((this.ticksExisted & 31) == 0)
+        	{
+        		//show unit name and uid on head
+        		EntityHelper.showNameTag(this);
+        		
+            	//every 64 ticks
+            	if ((this.ticksExisted & 63) == 0)
+            	{
+            		//update name string
+            		EntityHelper.updateNameTag(this);
+            	}//end 128 ticks
+        	}//end 32 ticks
         }//end client side
         
         /** both side */
@@ -6058,6 +6093,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public void heal(float healAmount)
     {
+		//apply heal particle, server side only
+		if (!this.world.isRemote)
+		{
+  			//apply particle
+  			TargetPoint tp = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, 0D, 0.1D, 0D), tp);
+		}
+		
 		super.heal(healAmount * this.EffectEquip[ID.EquipEffect.HPRES]);
     }
 	

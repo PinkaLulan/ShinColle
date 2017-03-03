@@ -72,6 +72,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -1821,9 +1822,13 @@ public class EntityHelper
   		
   		if ((ship.ticksExisted & delay) == 0)
   		{
-  	  		//check pump equip
-  	  		CapaShipInventory inv = ship.getCapaShipInventory();
-  	  		if (!checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
+  			CapaShipInventory inv = ship.getCapaShipInventory();
+  			
+  	  		//check pump equip if not transport ship
+  			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
+  			{
+  				if (!checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
+  			}
   	  		
   	  		/**
   	  		 * pump method:
@@ -2024,6 +2029,96 @@ public class EntityHelper
         }
 		
 		return null;
+  	}
+  	
+	/** show name tag on head, CLIENT SIDE ONLY */
+  	public static void showNameTag(BasicEntityShip ship)
+  	{
+		if (ship == null || ship.unitNames == null) return;
+
+		//only show name tag if config enabled or player nearby or player press SPRINT key
+		if (ConfigHandler.alwaysShowTeamParticle ||
+			ClientProxy.getGameSetting().keyBindSprint.isKeyDown() ||
+			ship.getDistanceSqToEntity(ClientProxy.getClientPlayer()) < 144F)
+		{
+			String str;
+			
+			//is owner
+			if (ship.getPlayerUID() == EntityHelper.getPlayerUID(ClientProxy.getClientPlayer()))
+			{
+				str = TextFormatting.YELLOW + "";
+			}
+			//not owner
+			else
+			{
+				str = TextFormatting.GOLD + "";
+			}
+			
+			int strLen = 1;
+			int strH = 0;
+			int strLenTemp = 0;
+			
+			if (ship.unitNames.size() > 0)
+			{
+				//add unit names
+				for (String s : ship.unitNames)
+				{
+					if (s != null && s.length() > 1)
+					{
+						strH++;
+						strLenTemp = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(s);
+						if (strLenTemp > strLen) strLen = strLenTemp;
+						
+						str += s + "\n";
+					}
+				}
+			}
+			
+			//add ship UID if debug mode
+			if (ConfigHandler.debugMode)
+			{
+				String uids = TextFormatting.GREEN + "UID " + ship.getShipUID();
+				
+				strH++;
+				str += uids;
+				strLenTemp = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(uids);
+				if (strLenTemp > strLen) strLen = strLenTemp;
+			}
+			
+			ParticleHelper.spawnAttackParticleAt(str, 0D, ship.height + 0.8D, 0D, (byte)1, strH, strLen+1, ship.getEntityId());
+		}//end can show tag
+	}
+  	
+  	/** update name tag data */
+  	public static void updateNameTag(BasicEntityShip ship)
+  	{
+  		if (ship == null) return;
+  		
+  		CapaTeitoku capa = null;
+  		
+  		//for client side
+  		if (ship.world.isRemote)
+  		{
+  			capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+  		}
+  		//for server side
+  		else
+  		{
+  			capa = CapaTeitoku.getTeitokuCapability(ship.getPlayerUID());
+  		}
+  		
+  		if (capa != null)
+  		{
+  			ArrayList<Integer> tid = capa.getShipTeamIDArray(ship.getShipUID());
+  			ArrayList<String> tname = new ArrayList<String>();
+  			
+  			for (int t : tid)
+  			{
+  				tname.add(capa.getUnitName(t));
+  			}
+  			
+  			ship.unitNames = tname;
+  		}
   	}
   	
   	

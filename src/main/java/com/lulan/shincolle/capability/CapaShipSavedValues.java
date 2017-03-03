@@ -3,6 +3,7 @@ package com.lulan.shincolle.capability;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.NBTHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -112,6 +113,9 @@ public class CapaShipSavedValues
 			nbtExt.setString("Owner", ship.ownerName);
 		}
 		
+		//save unit name
+		nbtExt = NBTHelper.saveStringTagArrayList(nbtExt, "uname", ship.unitNames);
+		
 		nbt.setTag(SHIP_EXTPROP_NAME, nbtExt);
 		
 		LogHelper.debug("DEBUG: save entity ExtNBT data on id: " + ship.getEntityId());
@@ -214,6 +218,9 @@ public class CapaShipSavedValues
 				ship.ownerName = ((EntityPlayer) owner).getName();
 			}
 		}
+		
+		//load unit name
+		ship.unitNames = NBTHelper.loadStringTagArrayList(nbt_tag, "uname");
 		
 		//calc equip and attribute
 		ship.setExpNext();	//for gui display

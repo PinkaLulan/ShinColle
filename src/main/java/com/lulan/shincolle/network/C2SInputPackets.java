@@ -55,6 +55,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte Request_Riding = 7;
 		public static final byte Request_PlaceFluid = 8;
 		public static final byte Request_ChestSet = 9;
+		public static final byte Request_UnitName = 10;
 	}
 	
 	
@@ -95,6 +96,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_WpSet:		//waypoint pairing packet
 		case PID.Request_ChestSet:	//chest and crane pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
+		case PID.Request_UnitName:	//ship unit name
 			try
 			{
 				this.value = buf.readInt();  //int array length
@@ -133,6 +135,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_WpSet:		//waypoint pairing packet
 		case PID.Request_ChestSet:	//chest and crane pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
+		case PID.Request_UnitName:	//ship unit name
 			//send int array
 			if (this.value3 != null)
 			{
@@ -344,6 +347,16 @@ public class C2SInputPackets implements IMessage
 							}
 						}
 					}
+				}
+			}
+			break;
+			case PID.Request_UnitName:	//ship unit name
+			{
+				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
+				
+				if (entity instanceof BasicEntityShip)
+				{
+					((BasicEntityShip) entity).sendSyncPacketUnitName();
 				}
 			}
 			break;

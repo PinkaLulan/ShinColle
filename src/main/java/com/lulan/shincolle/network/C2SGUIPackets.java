@@ -68,6 +68,7 @@ public class C2SGUIPackets implements IMessage
 		public static final byte SwapShip = 33;
 		public static final byte SetUnatkClass = 34;
 		public static final byte HitHeight = 35;
+		public static final byte SetUnitName = 36;
 		//desk gui
 		public static final byte Desk_Create = 70;
 		public static final byte Desk_Rename = 71;
@@ -126,6 +127,7 @@ public class C2SGUIPackets implements IMessage
 	/**
 	 * type 30 add/remove target class: 0:class name
 	 * type 34 add/remove unattackable class: 0:class name
+	 * type 36 set unit name
 	 * type 70 desk create team
 	 * type 71 desk rename team
 	 */
@@ -181,6 +183,7 @@ public class C2SGUIPackets implements IMessage
 		break;
 		case PID.SetTarClass:
 		case PID.SetUnatkClass:
+		case PID.SetUnitName:
 		case PID.Desk_Create:
 		case PID.Desk_Rename:
 			this.valueInt = PacketHelper.readIntArray(buf, 2);
@@ -266,6 +269,7 @@ public class C2SGUIPackets implements IMessage
 		break;
 		case PID.SetTarClass:
 		case PID.SetUnatkClass:
+		case PID.SetUnitName:
 		case PID.Desk_Create:
 		case PID.Desk_Rename:
 		{
@@ -289,14 +293,17 @@ public class C2SGUIPackets implements IMessage
 		switch(msg.packetType)
 		{
 		case PID.ShipBtn:	//ship entity gui click
+		{
 			entity = EntityHelper.getEntityByID(msg.valueInt[0], msg.valueInt[1], false);
 			
 			if (entity instanceof BasicEntityShip)
 			{
 				PacketHelper.setEntityByGUI((BasicEntityShip) entity, msg.valueByte[0], msg.valueByte[1]);
 			}
+		}
 		break;
 		case PID.TileBtn:	//tile entity gui click
+		{
 			world = ServerProxy.getServerWorld(msg.valueInt[0]);
 			
 			if (world != null)
@@ -305,6 +312,7 @@ public class C2SGUIPackets implements IMessage
 									msg.valueInt[1], msg.valueInt[2], msg.valueInt[3])),
 									msg.valueByte[0], msg.valueByte[1], msg.valueByte[2]);
 			}
+		}
 		break;
 		case PID.Desk_FuncSync:	//tile entity gui sync
 		{
@@ -327,6 +335,7 @@ public class C2SGUIPackets implements IMessage
 		}
 		break;
 		case PID.AddTeam: //add team, 1 parm
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			
@@ -353,8 +362,10 @@ public class C2SGUIPackets implements IMessage
 				//sync team list to client
 				capa.sendSyncPacket(0);
 			}
+		}
 		break;
 		case PID.AttackTarget: //attack, 2 parms
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			entity = EntityHelper.getEntityByID(msg.valueInt[3], msg.valueInt[1], false);
 			
@@ -368,6 +379,7 @@ public class C2SGUIPackets implements IMessage
 					FormationHelper.applyTeamAttack(player, msg.valueInt[2], entity);
 				}
 			}
+		}
 		break;
 		case PID.SetMove: //move, 5 parms
 			FormationHelper.applyTeamMove(msg.valueInt);
@@ -382,6 +394,7 @@ public class C2SGUIPackets implements IMessage
 			FormationHelper.applyTeamGuard(msg.valueInt);
 		break;
 		case PID.OpenShipGUI:	//open ship GUI, 1 parm
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			entity = EntityHelper.getEntityByID(msg.valueInt[2], msg.valueInt[1], false);
 			
@@ -389,8 +402,10 @@ public class C2SGUIPackets implements IMessage
 			{
 				FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, msg.valueInt[2], 0, 0);
 			}
+		}
 		break;
 		case PID.SyncPlayerItem:	//sync pointer item, 1 parm
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			
 			if (player != null)
@@ -434,8 +449,10 @@ public class C2SGUIPackets implements IMessage
 					}//end change mode < 3
 				}//end pointer sync
 			}//end get player
+		}
 		break;
 		case PID.ClearTeam:		//clear team, 1 parms
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			capa = CapaTeitoku.getTeitokuCapability(player);
 				
@@ -448,8 +465,10 @@ public class C2SGUIPackets implements IMessage
 				//sync team list
 				capa.sendSyncPacket(0);
 			}
+		}
 		break;
 		case PID.SetShipTeamID: //set team id, 2 parms
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			
@@ -461,8 +480,10 @@ public class C2SGUIPackets implements IMessage
 				//send sync packet to client
 				capa.sendSyncPacket(0);
 			}
+		}
 		break;
 		case PID.SetTarClass:   //set target class
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			
@@ -485,9 +506,11 @@ public class C2SGUIPackets implements IMessage
 					capa.sendSyncPacket(2);
 				}
 			}
+		}
 		break;
 		case PID.Desk_Create:
 		case PID.Desk_Rename:
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			
@@ -512,12 +535,14 @@ public class C2SGUIPackets implements IMessage
 					capa.sendSyncPacket(3);
 				}
 			}
+		}
 		break;
 		case PID.Desk_Disband:
 		case PID.Desk_Ally:
 		case PID.Desk_Break:
 		case PID.Desk_Ban:
 		case PID.Desk_Unban:
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			
@@ -561,11 +586,15 @@ public class C2SGUIPackets implements IMessage
 					}
 				}//player UID != null
 			}//extProps != null
+		}
 		break;
 		case PID.SetFormation:	//set current team formation, 1 parms
+		{
 			FormationHelper.setFormationID(msg.valueInt);
+		}
 		break;
 		case PID.OpenItemGUI:	//open item GUI, 1 parm
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 
 			if (player != null)
@@ -577,8 +606,10 @@ public class C2SGUIPackets implements IMessage
 				break;
 				}
 			}
+		}
 		break;
 		case PID.SwapShip:	//clear team, 1 parms
+		{
 			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			
@@ -588,8 +619,10 @@ public class C2SGUIPackets implements IMessage
 				capa.swapShip(msg.valueInt[2], msg.valueInt[3], msg.valueInt[4]);
 				capa.syncShips(msg.valueInt[2]);
 			}
+		}
 		break;
 		case PID.SetUnatkClass:   //set unattackable list
+		{
 			/** process:
 			 *  1.(done) get mouseover entity (client)
 			 *  2.(done) send player eid and entity to server (c 2 s)
@@ -615,8 +648,10 @@ public class C2SGUIPackets implements IMessage
 			{
 				player.sendMessage(new TextComponentString("Target Wrench: This item is OP ONLY!"));
 			}
+		}
 		break;
 		case PID.HitHeight:
+		{
 			entity = EntityHelper.getEntityByID(msg.valueInt[2], msg.valueInt[1], false);
 			
 			if (entity instanceof BasicEntityShip)
@@ -624,6 +659,19 @@ public class C2SGUIPackets implements IMessage
 				((BasicEntityShip) entity).setHitHeight(msg.valueInt[3]);
 				((BasicEntityShip) entity).setHitAngle(msg.valueInt[4]);
 			}
+		}
+		break;
+		case PID.SetUnitName:
+		{
+			player = ctx.getServerHandler().playerEntity;
+			capa = CapaTeitoku.getTeitokuCapability(player);
+			
+			if (capa != null)
+			{
+				capa.setUnitName(capa.getCurrentTeamID(), msg.valueStr);
+				capa.sendSyncPacket(8);		//sync name string to client
+			}
+		}
 		break;
 		}//end packet type switch
 	}

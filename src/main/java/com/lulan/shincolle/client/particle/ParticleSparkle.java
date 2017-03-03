@@ -240,7 +240,7 @@ public class ParticleSparkle extends Particle
                 	red += this.rand.nextFloat() * 1.2F - 0.5F;
             	break;
                 case 2:
-                	green += this.rand.nextFloat() * 1.2F - 0.5F;
+                	green += this.rand.nextFloat() * 1.2F - 0.3F;
             	break;
                 case 3:
                 	blue += this.rand.nextFloat() * 1.2F - 0.5F;

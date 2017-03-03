@@ -595,6 +595,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 																						dx, dy, dz, (byte) 39);
 					}
 					
+					//every 32 ticks
 					if ((this.tick & 31) == 0)
 					{
 						//draw point text
@@ -1718,6 +1719,11 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		int[] num = new int[] {0, 0};
 		CapaShipInventory inv = ship.getCapaShipInventory();
 		
+		//transport ship will get built-in pump station
+		if (ship.getShipType() == ID.ShipType.TRANSPORT && ship.getStateFlag(ID.F.IsMarried))
+			num[0] = 1;
+		
+		//check equip slots
 		for (int i = 0; i < 6; i++)
 		{
 			ItemStack stack = inv.getStackInSlotWithoutPaging(i);

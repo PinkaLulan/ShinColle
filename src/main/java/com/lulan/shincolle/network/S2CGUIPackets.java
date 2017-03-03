@@ -58,6 +58,7 @@ public class S2CGUIPackets implements IMessage
 	private boolean[] valueBoolean1;
 	private int[][] valueInt2, valueInt2a;
 	private boolean[][] valueBoolean2;
+	private List<String> valueStrs;
 	
 	//packet id
 	public static final class PID
@@ -80,6 +81,7 @@ public class S2CGUIPackets implements IMessage
 		public static final byte TileWaypoint = 15;
 		public static final byte TileCrane = 16;
 		public static final byte SyncPlayerProp_Misc = 17;
+		public static final byte SyncPlayerProp_UnitName = 18;
 	}
 	
 	
@@ -232,6 +234,9 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1[3] = buf.readInt();	//3: marriage num
 			this.valueInt1[4] = buf.readInt();	//4: player uid
 			this.valueInt1[5] = buf.readInt();	//5: team cooldown
+		break;
+		case PID.SyncPlayerProp_UnitName:	//sync unit name
+			this.valueStrs = PacketHelper.readListString(buf);
 		break;
 		case PID.FlagInitSID:	//ship UID init flag
 			this.valueBoolean = buf.readBoolean();
@@ -540,6 +545,19 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(capa.getMarriageNum());
 			buf.writeInt(capa.getPlayerUID());
 			buf.writeInt(capa.getPlayerTeamCooldown());
+		}
+		break;
+		case PID.SyncPlayerProp_UnitName:	//sync unit name
+		{
+			ArrayList<String> strlist = new ArrayList<String>();
+			String[] strarr = this.capa.getUnitName();	//保證必為大小9的string array
+			
+			for (int i = 0; i < 9; i++)
+			{
+				strlist.add(strarr[i]);
+			}
+			
+			PacketHelper.sendListString(buf, strlist);
 		}
 		break;
 		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
@@ -895,6 +913,23 @@ public class S2CGUIPackets implements IMessage
 		{
 			//set value
 			CapaTeitoku.setCapaDataMisc(msg.valueInt1);
+		}
+		break;
+		case PID.SyncPlayerProp_UnitName:	//sync unit name
+		{
+			String[] strarr = new String[9];
+
+			for (int i = 0; i < 9; i++)
+			{
+				strarr[i] = msg.valueStrs.get(i);
+			}
+			
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+			
+			if (capa != null)
+			{
+				capa.setUnitName(strarr);
+			}
 		}
 		break;
 		case PID.SyncShipInv:	//sync ship GUI

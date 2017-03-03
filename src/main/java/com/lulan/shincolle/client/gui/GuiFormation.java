@@ -18,6 +18,7 @@ import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -34,15 +35,17 @@ public class GuiFormation extends GuiContainer
 	private static final ResourceLocation guiFormat = new ResourceLocation(Reference.TEXTURES_GUI+"GuiFormation.png");
 	private static final ResourceLocation guiNameIcon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	
-	private int xClick, yClick, xMouse, yMouse;
-	private int tickGUI, tickTooltip, tickWaitSync;
-	private int listClicked, teamClicked, formatClicked;
-	private int strLen;
-	private static String attrAmmoL, attrAmmoH, attrAirL, attrAirH, attrDEF, attrMOV, attrMISS, attrDODGE,
-						attrCRI, attrDHIT, attrTHIT, attrAA, attrASM, attrTotalFP, strPos, strErr01, strRadar,
-						strNoSig;
-	private String strMOV, strMOVBuff, totalFPL, totalFPH, totalFPAL, totalFPAH, totalFPAA, totalFPASM;
+	private int xClick, yClick, xMouse, yMouse,
+				tickGUI, tickTooltip, tickWaitSync,
+				listClicked, teamClicked, formatClicked,
+				strLen, unitNameState;
+	private static String attrAmmoL, attrAmmoH, attrAirL, attrAirH, attrDEF, attrMOV, attrMISS,
+						attrDODGE, attrCRI, attrDHIT, attrTHIT, attrAA, attrASM, attrTotalFP,
+						strPos, strErr01, strRadar, strNoSig;
+	private String strMOV, strMOVBuff, totalFPL, totalFPH, totalFPAL, totalFPAH, totalFPAA,
+					totalFPASM, strUnitName;
 	private List mouseoverList;
+	private GuiTextField textField;
 
 	//player data
 	EntityPlayer player;
@@ -113,7 +116,17 @@ public class GuiFormation extends GuiContainer
 			setShipName();
 		}
 		
-		mouseoverList = new ArrayList();
+		this.mouseoverList = new ArrayList();
+		
+        //textField: font, x, y, width, height
+        this.textField = new GuiTextField(1, this.fontRendererObj, this.guiLeft + 100, this.guiTop + 180, 150, 12);
+        this.textField.setTextColor(Enums.EnumColors.YELLOW.getValue());					//點選文字框時文字顏色
+        this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
+        this.textField.setEnableBackgroundDrawing(true);	//畫出文字框背景
+        this.textField.setMaxStringLength(250);				//接受最大文字長度
+        this.textField.setEnabled(false);
+        this.textField.setFocused(false);
+        this.unitNameState = -1;
 		
 		//string
 		attrAmmoL = TextFormatting.RED+I18n.format("gui.shincolle:firepower1");
@@ -132,7 +145,7 @@ public class GuiFormation extends GuiContainer
 		attrTotalFP = TextFormatting.LIGHT_PURPLE+I18n.format("gui.shincolle:formation.totalfirepower");
 		strPos = I18n.format("gui.shincolle:formation.position");
 		strErr01 = I18n.format("gui.shincolle:formation.notenough");
-		strRadar = I18n.format("gui.shincolle:radar.gui");
+		strRadar = I18n.format("gui.shincolle:radar.tname");
 		strNoSig = TextFormatting.DARK_RED+""+TextFormatting.OBFUSCATED+I18n.format("gui.shincolle:formation.nosignal");
 		
 		//get max string length
@@ -179,6 +192,21 @@ public class GuiFormation extends GuiContainer
 				setShipName();
 			}
 		}
+		
+		//draw text field
+        if (this.unitNameState >= 0)
+        {
+    		GlStateManager.pushMatrix();
+    		GlStateManager.disableLighting();
+    		GlStateManager.disableBlend();
+        	this.textField.setEnabled(true);
+        	this.textField.drawTextBox();
+        	GlStateManager.popMatrix();
+        }
+        else
+        {
+        	this.textField.setEnabled(false);
+        }
 		
 		//update string
 		if (tickGUI % 32 == 0)
@@ -254,6 +282,8 @@ public class GuiFormation extends GuiContainer
 		this.totalFPAH = TextFormatting.GREEN + String.format("%.1f",floatFPAH);
 		this.totalFPAA = TextFormatting.YELLOW + String.format("%.1f",floatFPAA);
 		this.totalFPASM = TextFormatting.AQUA + String.format("%.1f",floatFPASM);
+		
+		this.strUnitName = "\"" + this.capa.getUnitName(this.teamClicked) + "\"";
 	}
 	
 	//draw tooltip
@@ -381,6 +411,12 @@ public class GuiFormation extends GuiContainer
 			fontRendererObj.drawString(str, 190, 171, Enums.EnumColors.YELLOW.getValue());
 		}
 		
+		//draw unit name
+		if (this.strUnitName != null)
+		{
+			fontRendererObj.drawStringWithShadow(this.strUnitName, 100, 182, Enums.EnumColors.YELLOW.getValue());
+		}
+		
 		//draw string
 		drawFormationText();
 		
@@ -469,6 +505,9 @@ public class GuiFormation extends GuiContainer
 	{
         super.mouseClicked(posX, posY, mouseKey);
         
+        //set focus for textField
+        this.textField.mouseClicked(posX, posY, mouseKey);
+        
         //get click position
         xClick = posX - this.guiLeft;
         yClick = posY - this.guiTop;
@@ -498,18 +537,21 @@ public class GuiFormation extends GuiContainer
         case 12:
         case 13:
         case 14:
-        	this.teamClicked = btn - 6;
-        	//set current team id
-			CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, this.teamClicked, -1));
-        	
-			//get ship list
-			setShipList(this.teamClicked);
-    		this.formatClicked = this.capa.getFormatID(this.teamClicked);
-    		setFormationSpotPos(formatClicked);
-    		setShipName();
-    		
-    		//delay update again
-			this.tickWaitSync = 60;
+        	if (this.unitNameState < 0)
+        	{
+            	this.teamClicked = btn - 6;
+            	//set current team id
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, this.teamClicked, -1));
+            	
+    			//get ship list
+    			setShipList(this.teamClicked);
+        		this.formatClicked = this.capa.getFormatID(this.teamClicked);
+        		setFormationSpotPos(formatClicked);
+        		setShipName();
+        		
+        		//delay update again
+    			this.tickWaitSync = 60;
+        	}
         break;
         case 15: //ship list
         case 16:
@@ -517,7 +559,11 @@ public class GuiFormation extends GuiContainer
         case 18:
         case 19:
         case 20:
+        	int oldClick = this.listClicked;
         	this.listClicked = btn - 15;
+        	
+        	//double click ship list will open ship GUI
+        	if (oldClick == this.listClicked) openShipGUI();
         break;
         case 21: //down button
         	if(this.tickWaitSync <= 0) changeFormationPos(false);
@@ -525,8 +571,23 @@ public class GuiFormation extends GuiContainer
         case 22: //up button
         	if(this.tickWaitSync <= 0) changeFormationPos(true);
         break;
-        case 23: //open GUI
-        	openShipGUI();
+        case 23: //rename team
+        	//not naming state -> enter naming state
+        	if (this.unitNameState < 0)
+        	{
+        		this.unitNameState = this.teamClicked;
+        	}
+        	//naming completed, send string packet
+        	else
+        	{
+    			String str = this.textField.getText();
+    			LogHelper.debug("DEBUG: send unit name: team: "+this.teamClicked+" name: "+str);
+    			
+    			//send string packet
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetUnitName, str));
+    			
+    			this.unitNameState = -1;
+        	}
         break;
         }//end switch
     	
@@ -763,7 +824,8 @@ public class GuiFormation extends GuiContainer
         			}
         			else
         			{
-        				fontRendererObj.drawString(strNoSig, 195, texty, 0);
+        				str = strNoSig + TextFormatting.GRAY + " UID: " + this.capa.getSID(this.capa.getCurrentTeamID(), i);
+        				fontRendererObj.drawString(str, 195, texty, 0);
         				texty += 36;
         			}
         		}
@@ -981,6 +1043,50 @@ public class GuiFormation extends GuiContainer
 				}
     		}
 		}
+	}
+	
+	//按鍵按下時執行此方法, 此方法等同key input event
+	@Override
+	protected void keyTyped(char input, int keyID) throws IOException
+	{
+		//enter
+		if (keyID == 28)
+		{
+			String str = this.textField.getText();
+			LogHelper.debug("DEBUG: send unit name: team: "+this.teamClicked+" name: "+str);
+			
+			//send string packet
+			CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetUnitName, str));
+			
+			this.unitNameState = -1;
+		}
+		//esc
+		else if (keyID == 1)
+		{
+			this.unitNameState = -1;
+		}
+		
+		/**
+		 * key code:
+		 * enter(28) = send string packet
+		 * esc(1) = cancel naming
+		 */
+		//send key input to text field
+		if (this.textField.textboxKeyTyped(input, keyID))
+		{
+		}
+		else
+		{
+			super.keyTyped(input, keyID);
+		}
+    }
+	
+	//close gui if tile dead or too far away
+	@Override
+	public void updateScreen()
+	{
+		super.updateScreen();
+		this.textField.updateCursorCounter();
 	}
 
 

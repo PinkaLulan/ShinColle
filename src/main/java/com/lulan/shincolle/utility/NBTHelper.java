@@ -1,12 +1,12 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraftforge.common.util.Constants;
 
 public class NBTHelper
 {
@@ -34,36 +34,43 @@ public class NBTHelper
 		}
 	}
 	
-	/**
-	 * get fluid stack from item stack, used for 1.7.10 fluid container without capability
-	 */
-	public static FluidStack getFluidStackFromItemStack(ItemStack stack)
+	//load string tag, return array list
+	public static ArrayList<String> loadStringTagArrayList(NBTTagCompound nbt, String tagName)
 	{
-		FluidStack fs = null;
+		//load unit name
+		NBTTagList nameTags = nbt.getTagList(tagName, Constants.NBT.TAG_STRING);
+		ArrayList<String> nameList = new ArrayList<String>();
 		
-		try
+		for (int i = 0; i < nameTags.tagCount(); ++i)
 		{
-			NBTTagCompound tag = stack.getTagCompound();
-			NBTTagCompound tag2 = null;
-			
-			if (tag != null)
+			String str = nameTags.getStringTagAt(i);
+
+			if (str != null && str.length() > 0)
 			{
-				if (tag.hasKey("fluid")) tag2 = tag.getCompoundTag("fluid");
-				else if (tag.hasKey("Fluid")) tag2 = tag.getCompoundTag("Fluid");
-				
-				if (tag2 != null)
-				{
-					fs = new FluidStack(FluidRegistry.getFluid(tag2.getString("FluidName")),
-										tag2.getInteger("Amount"));
-				}
+				nameList.add(str);
 			}
 		}
-		catch (Exception e)
+		
+		return nameList;
+	}
+	
+	//load string tag, return array list
+	public static NBTTagCompound saveStringTagArrayList(NBTTagCompound nbt, String tagName, ArrayList<String> strs)
+	{
+		//save unit name
+		if (strs != null)
 		{
-			return null;
+	    	NBTTagList tagList = new NBTTagList();
+			
+	    	for (String name : strs)
+	    	{
+	    		tagList.appendTag(new NBTTagString(name));
+	    	}
+			
+	    	nbt.setTag(tagName, tagList);
 		}
 		
-		return fs;
+		return nbt;
 	}
 	
 	

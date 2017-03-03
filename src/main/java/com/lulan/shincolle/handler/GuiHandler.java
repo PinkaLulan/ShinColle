@@ -95,6 +95,7 @@ public class GuiHandler implements IGuiHandler
 				capa.sendSyncPacket(3);
 				capa.sendSyncPacket(5);
 				capa.sendSyncPacket(6);
+				capa.sendSyncPacket(8);
 			}
 			
 			//open GUI with TileEntity
