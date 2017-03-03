@@ -15,6 +15,7 @@ import com.lulan.shincolle.client.model.ModelCarrierKaga;
 import com.lulan.shincolle.client.model.ModelCarrierWDemon;
 import com.lulan.shincolle.client.model.ModelCarrierWo;
 import com.lulan.shincolle.client.model.ModelCruiserAtago;
+import com.lulan.shincolle.client.model.ModelCruiserTakao;
 import com.lulan.shincolle.client.model.ModelCruiserTatsuta;
 import com.lulan.shincolle.client.model.ModelCruiserTenryuu;
 import com.lulan.shincolle.client.model.ModelDestroyerAkatsuki;
@@ -128,8 +129,8 @@ public class RenderShipEntity extends RenderBasic
 	//CA
 	private static final ResourceLocation TEX_CA_Atago = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCruiserAtago.png");
 	private static final ModelBase MD_CA_Atago = new ModelCruiserAtago();
-//	private static final ResourceLocation TEX_CA_Takao = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCruiserTakao.png");
-//	private static final ModelBase MD_CA_Takao = new ModelCruiserTakao();
+	private static final ResourceLocation TEX_CA_Takao = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCruiserTakao.png");
+	private static final ModelBase MD_CA_Takao = new ModelCruiserTakao();
 	//DD
 	private static final ResourceLocation TEX_DD_Akatsuki = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityDestroyerAkatsuki.png");
 	private static final ModelBase MD_DD_Akatsuki = new ModelDestroyerAkatsuki();
@@ -233,8 +234,8 @@ public class RenderShipEntity extends RenderBasic
 		//CA
 		case ID.Ship.HeavyCruiserAtago:
 			return TEX_CA_Atago;
-//		case ID.Ship.HeavyCruiserTakao:
-//			return TEX_CA_Takao;
+		case ID.Ship.HeavyCruiserTakao:
+			return TEX_CA_Takao;
 		//DD
 		case ID.Ship.DestroyerAkatsuki:
 			return TEX_DD_Akatsuki;
@@ -358,9 +359,9 @@ public class RenderShipEntity extends RenderBasic
 		case ID.Ship.HeavyCruiserAtago:
 			this.mainModel = MD_CA_Atago;
 		break;
-//		case ID.Ship.HeavyCruiserTakao:
-//			this.mainModel = MD_CA_Takao;
-//		break;
+		case ID.Ship.HeavyCruiserTakao:
+			this.mainModel = MD_CA_Takao;
+		break;
 		//DD
 		case ID.Ship.DestroyerAkatsuki:
 			this.mainModel = MD_DD_Akatsuki;

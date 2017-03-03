@@ -351,8 +351,8 @@ public class ShipCalc
   				return getEntityToSpawnName(ID.Ship.LightCruiserTatsuta+2000);
   			case 4:
   				return getEntityToSpawnName(ID.Ship.HeavyCruiserAtago+2000);
-//  			case 5:
-//  				return getEntityToSpawnName(ID.Ship.HeavyCruiserTakao+2000);
+  			case 5:
+  				return getEntityToSpawnName(ID.Ship.HeavyCruiserTakao+2000);
   			default:
   				return getEntityToSpawnName(ID.Ship.CarrierAkagi+2000);
   			}
