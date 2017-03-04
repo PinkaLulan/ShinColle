@@ -11,11 +11,11 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EntityCruiserTakao extends BasicEntityShipSmall
+public class EntityCATakao extends BasicEntityShipSmall
 {
 
 	
-	public EntityCruiserTakao(World world)
+	public EntityCATakao(World world)
 	{
 		super(world);
 		this.setSize(0.7F, 1.75F);

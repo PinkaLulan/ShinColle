@@ -8,11 +8,11 @@ import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
-public class EntityCruiserTakaoMob extends BasicEntityShipHostile
+public class EntityCATakaoMob extends BasicEntityShipHostile
 {
 	
 
-	public EntityCruiserTakaoMob(World world)
+	public EntityCATakaoMob(World world)
 	{
 		super(world);
 		

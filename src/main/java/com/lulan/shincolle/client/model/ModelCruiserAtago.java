@@ -146,8 +146,8 @@ public class ModelCruiserAtago extends ShipModelBaseAdv
     {
         this.textureWidth = 256;
         this.textureHeight = 128;
-        this.offsetItem = new float[] {0.06F, 1.07F, -0.06F};
-        this.offsetBlock = new float[] {0.06F, 1.07F, -0.06F};
+        this.offsetItem = new float[] {0.06F, 1.01F, -0.06F};
+        this.offsetBlock = new float[] {0.06F, 1.01F, -0.06F};
         
         this.setDefaultFaceModel();
         
@@ -1049,7 +1049,28 @@ public class ModelCruiserAtago extends ShipModelBaseAdv
 
 	    if (ent.getIsSprinting() || f1 > 0.9F)
 	    {
-	    	//無跑步動作
+	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	    	{
+			  	//arm
+		  		this.ArmLeft01.rotateAngleX = -0.35F;
+		  		this.ArmLeft01.rotateAngleY = -1.7F - angleAdd2 * 0.5F;
+			    this.ArmLeft01.rotateAngleZ = 0F;
+				this.ArmLeft02.rotateAngleX = -2.4F;
+				this.ArmLeft02.rotateAngleY = 0F;
+				this.ArmLeft02.rotateAngleZ = 0F;
+				this.ArmLeft02.offsetX = 0F;
+				this.ArmLeft02.offsetY = 0F;
+				this.ArmLeft02.offsetZ = -0.315F;
+			    this.ArmRight01.rotateAngleX = -0.35F;
+			    this.ArmRight01.rotateAngleY = 1.7F + angleAdd1 * 0.5F;
+			    this.ArmRight01.rotateAngleZ = 0F;
+				this.ArmRight02.rotateAngleX = -2.4F;
+				this.ArmRight02.rotateAngleZ = 0F;
+				this.ArmRight02.rotateAngleZ = 0F;
+				this.ArmRight02.offsetX = 0F;
+				this.ArmRight02.offsetY = 0F;
+				this.ArmRight02.offsetZ = -0.315F;
+	    	}
   		}
 	    
 	    //head tilt angle
@@ -1075,9 +1096,9 @@ public class ModelCruiserAtago extends ShipModelBaseAdv
 			this.ArmLeft02.rotateAngleX = 0F;
 			this.ArmLeft02.rotateAngleY = 0F;
 			this.ArmLeft02.rotateAngleZ = 0F;
-			this.LegLeft02.offsetX = 0F;
-			this.LegLeft02.offsetY = 0F;
-			this.LegLeft02.offsetZ = 0F;
+			this.ArmLeft02.offsetX = 0F;
+			this.ArmLeft02.offsetY = 0F;
+			this.ArmLeft02.offsetZ = 0F;
 		    this.ArmRight01.rotateAngleX = -0.6F;
 		    this.ArmRight01.rotateAngleY = 0F;
 		    this.ArmRight01.rotateAngleZ = -0.2618F;

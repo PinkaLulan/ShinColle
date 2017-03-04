@@ -58,6 +58,7 @@ public class ShipCalc
 		EquipLarge.add(new int[] {ID.Ship.CarrierWO,       650,  3});
 		EquipLarge.add(new int[] {ID.Ship.BattleshipTA,    800,  2});
 		EquipLarge.add(new int[] {ID.Ship.BattleshipRU,    800,  2});
+		EquipLarge.add(new int[] {ID.Ship.HeavyCruiserHime,2000, 2});
 		EquipLarge.add(new int[] {ID.Ship.NorthernHime,    2600, 1});
 		EquipLarge.add(new int[] {ID.Ship.HarbourHime,     2800, 1});
 		EquipLarge.add(new int[] {ID.Ship.AirfieldHime,    3000, 1});
@@ -310,6 +311,8 @@ public class ShipCalc
   			return "shincolle.EntityCruiserTakao";
   		case ID.Ship.HeavyCruiserTakao+2000:
   			return "shincolle.EntityCruiserTakaoMob";
+  		case ID.Ship.HeavyCruiserHime:
+  			return "shincolle.EntityCAHime";
   		default:
   			return "shincolle.EntityDestroyerI";
   		}	

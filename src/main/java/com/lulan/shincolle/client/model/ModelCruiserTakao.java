@@ -1,6 +1,8 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -55,8 +57,10 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
     public ModelRenderer ShoeL04_1;
     public ModelRenderer ArmRight02;
     public ModelRenderer ArmRight02a;
+    public ModelRenderer ArmRight02b;
     public ModelRenderer ArmLeft02;
     public ModelRenderer ArmLeft02a;
+    public ModelRenderer ArmLeft02b;
     public ModelRenderer Equip00;
     public ModelRenderer EquipCannonBase;
     public ModelRenderer EquipLIn01;
@@ -119,8 +123,8 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
-        this.offsetItem = new float[] {0.06F, 1.07F, -0.06F};
-        this.offsetBlock = new float[] {0.06F, 1.07F, -0.06F};
+        this.offsetItem = new float[] {0.06F, 1.01F, -0.06F};
+        this.offsetBlock = new float[] {0.06F, 1.01F, -0.06F};
         
         this.setDefaultFaceModel();
         
@@ -173,7 +177,9 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
         this.ArmLeft02a = new ModelRenderer(this, 104, 32);
         this.ArmLeft02a.setRotationPoint(-2.5F, 5.5F, -2.4F);
         this.ArmLeft02a.addBox(-3.0F, 0.0F, -3.0F, 6, 4, 6, 0.0F);
-        this.setRotateAngle(ArmLeft02a, 0.05235987755982988F, 0.0F, 0.0F);
+        this.ArmLeft02b = new ModelRenderer(this, 0, 64);
+        this.ArmLeft02b.setRotationPoint(4F, 1F, 0F);
+        this.ArmLeft02b.addBox(-1F, 0F, 0F, 2, 3, 1, 0F);
         this.EquipC01b = new ModelRenderer(this, 0, 0);
         this.EquipC01b.setRotationPoint(-5.9F, 0.0F, 0.0F);
         this.EquipC01b.addBox(0.0F, -9.0F, -4.5F, 4, 13, 9, 0.0F);
@@ -384,7 +390,9 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
         this.ArmRight02a.mirror = true;
         this.ArmRight02a.setRotationPoint(2.5F, 5.5F, -2.4F);
         this.ArmRight02a.addBox(-3.0F, 0.0F, -3.0F, 6, 4, 6, 0.0F);
-        this.setRotateAngle(ArmRight02a, 0.05235987755982988F, 0.0F, 0.0F);
+        this.ArmRight02b = new ModelRenderer(this, 0, 64);
+        this.ArmRight02b.setRotationPoint(-4F, 1F, 0F);
+        this.ArmRight02b.addBox(-1F, 0F, 0F, 2, 3, 1, 0F);
         this.EquipC01b_1 = new ModelRenderer(this, 0, 0);
         this.EquipC01b_1.setRotationPoint(1.9F, 0.0F, 0.0F);
         this.EquipC01b_1.addBox(0.0F, -9.0F, -4.5F, 4, 13, 9, 0.0F);
@@ -473,6 +481,7 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
         this.BodyMain.addChild(this.EquipBase);
         this.ShoeL01.addChild(this.ShoeL02);
         this.ArmLeft02.addChild(this.ArmLeft02a);
+        this.ArmLeft02a.addChild(this.ArmLeft02b);
         this.EquipC01a.addChild(this.EquipC01b);
         this.Hair.addChild(this.Ahoke);
         this.EquipLIn01.addChild(this.EquipLIn02);
@@ -528,6 +537,7 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
         this.EquipC01b_2.addChild(this.EquipC01e_2);
         this.Equip00.addChild(this.EquipRIn01);
         this.ArmRight02.addChild(this.ArmRight02a);
+        this.ArmRight02a.addChild(this.ArmRight02b);
         this.EquipC01a_1.addChild(this.EquipC01b_1);
         this.LegLeft02.addChild(this.ShoeL01);
         this.ShoeR01.addChild(this.ShoeR02);
@@ -696,42 +706,56 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
 	@Override
 	public void applyDeadPose(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
 	{
-    	GlStateManager.translate(0F, 0.58F + 0.26F * ent.getScaleLevel(), 0F);
-		this.setFaceHungry(ent);
+    	GlStateManager.translate(0F, 0.5F + 0.2F * ent.getScaleLevel(), 0F);
+  		this.setFaceHungry(ent);
 
-    	//body
-    	this.Head.rotateAngleX = 0.55F;
-	  	this.Head.rotateAngleY = -0.2F;
-    	this.BodyMain.rotateAngleX = -0.7F;
-	  	this.BodyMain.rotateAngleY = -0.2618F;
-	  	this.BodyMain.rotateAngleZ = -0.5236F;
-	  	this.Butt.rotateAngleX = -0.2618F;
-	  	this.Cloth01.rotateAngleX = 0.3F;
-	  	//skirt
-	  	this.Skirt01.rotateAngleX = -0.2443F;
-    	//arm
-	  	this.ArmLeft01.rotateAngleX = -0.2618F;
-	  	this.ArmLeft01.rotateAngleY = 0.7F;
-	    this.ArmLeft01.rotateAngleZ = -0.5236F;
-	    this.ArmLeft02.rotateAngleX = -2.1F;
-	    this.ArmLeft02.rotateAngleY = 0F;
-	    this.ArmLeft02.rotateAngleZ = 0F;
-	    this.ArmLeft02.offsetZ = -0.31F;
-		this.ArmRight01.rotateAngleX = 0.7F;
-		this.ArmRight01.rotateAngleY = 0F;
-		this.ArmRight01.rotateAngleZ = 0.5236F;
-		this.ArmRight02.rotateAngleX = -1.45F;
-		this.ArmRight02.rotateAngleY = 0F;
+	    //胸部
+  	    this.BoobL.rotateAngleX = -0.8F;
+  	    this.BoobR.rotateAngleX = -0.8F;
+	  	//Body
+    	this.Head.rotateAngleX = 0.5F;
+    	this.Head.rotateAngleY = 0F;
+    	this.Head.rotateAngleZ = 0F;
+  	    this.Ahoke.rotateAngleY = 0.45F;
+	  	this.BodyMain.rotateAngleX = 0.31F;
+	  	this.BodyMain.rotateAngleY = 0F;
+	  	this.BodyMain.rotateAngleZ = 0F;
+    	this.Butt.rotateAngleX = -0.85F;
+		this.Skirt01.rotateAngleX = -0.33F;
+	    //arm 
+		this.ArmLeft01.rotateAngleX = -1.1F;
+		this.ArmLeft01.rotateAngleY = 0.39F;
+		this.ArmLeft01.rotateAngleZ = -0.05F;
+		this.ArmLeft02.rotateAngleX = -1.46F;
+		this.ArmLeft02.rotateAngleZ = 0F;
+		this.ArmLeft02.offsetX = 0F;
+		this.ArmLeft02.offsetZ = 0F;
+		this.ArmRight01.rotateAngleX = -1.1F;
+	    this.ArmRight01.rotateAngleY = -0.39F;
+		this.ArmRight01.rotateAngleZ = 0.05F;
+		this.ArmRight02.rotateAngleX = -1.46F;
 		this.ArmRight02.rotateAngleZ = 0F;
-    	//leg
-		this.LegLeft01.rotateAngleX = -0.79F;
+		this.ArmRight02.offsetX = 0F;
+		this.ArmRight02.offsetZ = 0F;
+		//leg
+	    this.LegLeft01.rotateAngleX = -0.66F;
 		this.LegLeft01.rotateAngleY = 0F;
-    	this.LegLeft01.rotateAngleZ = -0.14F;
-    	this.LegLeft02.rotateAngleX = 1.4F;
-    	this.LegRight01.rotateAngleX = -0.7F;
-    	this.LegRight01.rotateAngleY = -0.4363F;
-    	this.LegRight01.rotateAngleZ = 0F;
-    	this.LegRight02.rotateAngleX = 0.7F;
+		this.LegLeft01.rotateAngleZ = -0.14F;
+		this.LegLeft02.rotateAngleX = 1.2217F;
+		this.LegLeft02.rotateAngleY = 1.2217F;
+		this.LegLeft02.rotateAngleZ = -1.0472F;
+		this.LegLeft02.offsetX = 0F;
+		this.LegLeft02.offsetY = -0.06F;
+		this.LegLeft02.offsetZ = 0F;
+		this.LegRight01.rotateAngleX = -0.66F;
+		this.LegRight01.rotateAngleY = 0F;
+		this.LegRight01.rotateAngleZ = 0.14F;
+		this.LegRight02.rotateAngleX = 1.2217F;
+		this.LegRight02.rotateAngleY = -1.2217F;
+		this.LegRight02.rotateAngleZ = 1.0472F;
+		this.LegRight02.offsetX = 0F;
+		this.LegRight02.offsetY = -0.06F;
+		this.LegRight02.offsetZ = 0F;
 	}
 
 	@Override
@@ -771,7 +795,7 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
 	  	this.BodyMain.rotateAngleY = 0F;
 	  	this.BodyMain.rotateAngleZ = 0F;
 	  	this.Butt.rotateAngleX = 0.35F;
-	  	this.Skirt01.rotateAngleX = -0.07F;
+	  	this.Skirt01.rotateAngleX = -0.17F;
 	  	//cloth
 	  	this.Hat03.rotateAngleX = angleX * 0.05F + 0.26F;
 	  	this.Cloth01.rotateAngleX = 0F;
@@ -841,33 +865,31 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
 				this.setFace(8);
 			}
 		}
-		else if (ent.getStateEmotion(ID.S.Emotion4) == ID.Emotion.BORED)
-		{
-			spcStand = true;
-			this.setFaceHappy(ent);
-			
-			//arm
-			this.ArmLeft01.rotateAngleX = -3.14F;
-			this.ArmLeft01.rotateAngleY = 0.0F;
-			this.ArmLeft01.rotateAngleZ = 0.52F;
-			this.ArmLeft02.rotateAngleX = 0F;
-			this.ArmLeft02.rotateAngleY = 0F;
-			this.ArmLeft02.rotateAngleZ = 0F;
-			this.ArmLeft02.offsetX = 0F;
-			this.ArmLeft02.offsetZ = 0F;
-			this.ArmRight01.rotateAngleX = -3.14F;
-			this.ArmRight01.rotateAngleY = 0.0F;
-			this.ArmRight01.rotateAngleZ = -0.52F;
-			this.ArmRight02.rotateAngleX = 0F;
-			this.ArmRight02.rotateAngleY = 0F;
-			this.ArmRight02.rotateAngleZ = 0F;
-			this.ArmRight02.offsetX = 0F;
-			this.ArmRight02.offsetZ = 0F;
-		}
 
 	    if (ent.getIsSprinting() || f1 > 0.9F)
 	    {
-	    	//無跑步動作
+	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
+	    	{
+			  	//arm
+		  		this.ArmLeft01.rotateAngleX = -0.35F;
+		  		this.ArmLeft01.rotateAngleY = -1.7F - angleAdd2 * 0.5F;
+			    this.ArmLeft01.rotateAngleZ = 0F;
+				this.ArmLeft02.rotateAngleX = -2.4F;
+				this.ArmLeft02.rotateAngleY = 0F;
+				this.ArmLeft02.rotateAngleZ = 0F;
+				this.ArmLeft02.offsetX = 0F;
+				this.ArmLeft02.offsetY = 0F;
+				this.ArmLeft02.offsetZ = -0.315F;
+			    this.ArmRight01.rotateAngleX = -0.35F;
+			    this.ArmRight01.rotateAngleY = 1.7F + angleAdd1 * 0.5F;
+			    this.ArmRight01.rotateAngleZ = 0F;
+				this.ArmRight02.rotateAngleX = -2.4F;
+				this.ArmRight02.rotateAngleZ = 0F;
+				this.ArmRight02.rotateAngleZ = 0F;
+				this.ArmRight02.offsetX = 0F;
+				this.ArmRight02.offsetY = 0F;
+				this.ArmRight02.offsetZ = -0.315F;
+	    	}
   		}
 	    
 	    //head tilt angle
@@ -891,9 +913,9 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
 			this.ArmLeft02.rotateAngleX = 0F;
 			this.ArmLeft02.rotateAngleY = 0F;
 			this.ArmLeft02.rotateAngleZ = 0F;
-			this.LegLeft02.offsetX = 0F;
-			this.LegLeft02.offsetY = 0F;
-			this.LegLeft02.offsetZ = 0F;
+			this.ArmLeft02.offsetX = 0F;
+			this.ArmLeft02.offsetY = 0F;
+			this.ArmLeft02.offsetZ = 0F;
 		    this.ArmRight01.rotateAngleX = -0.6F;
 		    this.ArmRight01.rotateAngleY = 0F;
 		    this.ArmRight01.rotateAngleZ = -0.2618F;
@@ -1024,23 +1046,14 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
 	    //攻擊動作: 設為30~50會有揮刀動作, 設為100則沒有揮刀動作
 	    if (ent.getAttackTick() > 30)
 	    {
-			//arm
-			this.ArmLeft01.rotateAngleX = -3.14F;
-			this.ArmLeft01.rotateAngleY = 0.0F;
-			this.ArmLeft01.rotateAngleZ = 0.52F;
-			this.ArmLeft02.rotateAngleX = 0F;
-			this.ArmLeft02.rotateAngleY = 0F;
-			this.ArmLeft02.rotateAngleZ = 0F;
-			this.ArmLeft02.offsetX = 0F;
-			this.ArmLeft02.offsetZ = 0F;
-			this.ArmRight01.rotateAngleX = -3.14F;
-			this.ArmRight01.rotateAngleY = 0.0F;
-			this.ArmRight01.rotateAngleZ = -0.52F;
-			this.ArmRight02.rotateAngleX = 0F;
-			this.ArmRight02.rotateAngleY = 0F;
-			this.ArmRight02.rotateAngleZ = 0F;
-			this.ArmRight02.offsetX = 0F;
-			this.ArmRight02.offsetZ = 0F;
+	    	//arm
+	    	this.ArmLeft01.rotateAngleX = -1.5F + this.Head.rotateAngleX * 0.75F;
+		  	this.ArmLeft01.rotateAngleY = 0.17F;
+		  	this.ArmLeft01.rotateAngleZ = 0.1F;
+		    this.ArmLeft02.rotateAngleX = 0F;
+		    this.ArmLeft02.rotateAngleZ = 0F;
+		    this.ArmLeft02.offsetX = 0F;
+		    this.ArmLeft02.offsetZ = 0F;
 	    }
 	    
 	    //swing arm

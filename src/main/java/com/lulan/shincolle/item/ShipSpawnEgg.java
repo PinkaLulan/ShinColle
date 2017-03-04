@@ -174,6 +174,7 @@ public class ShipSpawnEgg extends BasicItem
 		case ID.Ship.CarrierWD+2:				//DE, demon, water demon
 			return 8;
 		case ID.Ship.CarrierHime+2:				//PR
+		case ID.Ship.HeavyCruiserHime+2:
 		case ID.Ship.AirfieldHime+2:
 		case ID.Ship.BattleshipHime+2:
 		case ID.Ship.HarbourHime+2:
@@ -214,10 +215,11 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.SubmarineKA+2);
   		shipList.add(ID.Ship.SubmarineYO+2);
   		shipList.add(ID.Ship.SubmarineSO+2);
-  		shipList.add(ID.Ship.CarrierHime+2);
-  		shipList.add(ID.Ship.AirfieldHime+2);
-  		shipList.add(ID.Ship.BattleshipHime+2);
   		shipList.add(ID.Ship.DestroyerHime+2);
+  		shipList.add(ID.Ship.HeavyCruiserHime+2);
+  		shipList.add(ID.Ship.CarrierHime+2);
+  		shipList.add(ID.Ship.BattleshipHime+2);
+  		shipList.add(ID.Ship.AirfieldHime+2);
   		shipList.add(ID.Ship.HarbourHime+2);
   		shipList.add(ID.Ship.NorthernHime+2);
   		shipList.add(ID.Ship.CarrierWD+2);
@@ -232,14 +234,14 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.Ship.DestroyerInazuma+2002);	//hostile entity
   		shipList.add(ID.Ship.DestroyerShimakaze+2);
   		shipList.add(ID.Ship.DestroyerShimakaze+2002);	//hostile entity
-  		shipList.add(ID.Ship.HeavyCruiserTakao+2);
-  		shipList.add(ID.Ship.HeavyCruiserTakao+2002);	//hostile entity
-  		shipList.add(ID.Ship.HeavyCruiserAtago+2);
-  		shipList.add(ID.Ship.HeavyCruiserAtago+2002);	//hostile entity
   		shipList.add(ID.Ship.LightCruiserTenryuu+2);
   		shipList.add(ID.Ship.LightCruiserTenryuu+2002);	//hostile entity
   		shipList.add(ID.Ship.LightCruiserTatsuta+2);
   		shipList.add(ID.Ship.LightCruiserTatsuta+2002);	//hostile entity
+  		shipList.add(ID.Ship.HeavyCruiserTakao+2);
+  		shipList.add(ID.Ship.HeavyCruiserTakao+2002);	//hostile entity
+  		shipList.add(ID.Ship.HeavyCruiserAtago+2);
+  		shipList.add(ID.Ship.HeavyCruiserAtago+2002);	//hostile entity
   		shipList.add(ID.Ship.CarrierKaga+2);
   		shipList.add(ID.Ship.CarrierKaga+2002);			//hostile entity
   		shipList.add(ID.Ship.CarrierAkagi+2);

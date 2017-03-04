@@ -9,11 +9,11 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
-public class EntityHeavyCruiserRi extends BasicEntityShipSmall
+public class EntityCARi extends BasicEntityShipSmall
 {
 	
 	
-	public EntityHeavyCruiserRi(World world)
+	public EntityCARi(World world)
 	{
 		super(world);
 		this.setSize(0.75F, 1.7F);
@@ -56,8 +56,8 @@ public class EntityHeavyCruiserRi extends BasicEntityShipSmall
 	{
 		if (!this.world.isDaytime())
 		{
-			EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.2F;
-			EffectEquip[ID.EquipEffect.MISS] = EffectEquip[ID.EquipEffect.MISS] + 0.2F;
+			EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.15F;
+			EffectEquip[ID.EquipEffect.MISS] = EffectEquip[ID.EquipEffect.MISS] + 0.15F;
 		}
 		
 		super.calcShipAttributes();	

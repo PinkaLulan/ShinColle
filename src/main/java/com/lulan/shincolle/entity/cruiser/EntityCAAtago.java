@@ -18,11 +18,11 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityCruiserAtago extends BasicEntityShipSmall
+public class EntityCAAtago extends BasicEntityShipSmall
 {
 
 	
-	public EntityCruiserAtago(World world)
+	public EntityCAAtago(World world)
 	{
 		super(world);
 		this.setSize(0.7F, 1.75F);

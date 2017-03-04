@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class EntityHeavyCruiserNe extends BasicEntityShipSmall
+public class EntityCANe extends BasicEntityShipSmall
 {
 	
 	private boolean isPushing = false;
@@ -26,7 +26,7 @@ public class EntityHeavyCruiserNe extends BasicEntityShipSmall
 	private EntityLivingBase targetPush = null;
 	
 	
-	public EntityHeavyCruiserNe(World world)
+	public EntityCANe(World world)
 	{
 		super(world);
 		this.setSize(0.6F, 1.3F);

@@ -71,7 +71,7 @@ public class Values
 //		put(ID.Ship.AnchorageHime,      new float[] {150F, 19F, 32F, 0.9F, 0.3F,  23F, 0.95F, 0.5F,  0.28F, 0.6F,  0.6F,  0.8F});
 //		put(ID.Ship.ArmoredCarrierHime, new float[] {200F, 34F, 35F, 1.0F, 0.42F, 20F, 0.9F,  0.73F, 0.3F,  0.63F, 0.84F, 0.7F});
 		put(ID.Ship.BattleshipHime,     new float[] {220F, 42F, 40F, 1.0F, 0.4F,  16F, 1.0F,  0.8F,  0.32F, 0.73F, 0.8F,  0.6F});
-		put(ID.Ship.CarrierHime,        new float[] {180F, 40F, 32F, 1.0F, 0.45F, 22F, 0.85F, 0.77F, 0.3F,  0.65F, 0.85F, 0.7F});
+		put(ID.Ship.CarrierHime,        new float[] {180F, 40F, 28F, 1.0F, 0.45F, 22F, 0.85F, 0.75F, 0.26F, 0.62F, 0.85F, 0.7F});
 		put(ID.Ship.DestroyerHime,      new float[] {90F,  22F, 20F, 1.0F, 0.5F,  12F, 0.55F, 0.5F,  0.22F, 0.6F,  1F,    0.5F});
 		put(ID.Ship.HarbourHime,        new float[] {260F, 14F, 36F, 0.8F, 0.2F,  24F, 1.35F, 0.4F,  0.3F,  0.6F,  0.4F,  0.8F});
 //		put(ID.Ship.MidwayHime,         new float[] {350F, 22F, 45F, 0.8F, 0.25F, 30F, 1.5F,  0.5F,  0.34F, 0.6F,  0.4F,  0.8F});
@@ -80,7 +80,7 @@ public class Values
 //		put(ID.Ship.SouthernHime,       new float[] {170F, 35F, 34F, 1.0F, 0.3F,  20F, 1F,    0.73F, 0.29F, 0.63F, 0.6F,  0.7F});
 //		put(ID.Ship.SubmarineHime,      new float[] {75F,  45F, 18F, 0.9F, 0.3F,  10F, 0.65F, 0.85F, 0.2F,  0.6F,  0.6F,  0.4F});
 //		put(ID.Ship.LightCruiserHime,   new float[] {160F, 32F, 26F, 1.0F, 0.45F, 14F, 0.82F, 0.7F,  0.25F, 0.6F,  0.9F,  0.55F});
-//		put(ID.Ship.HeavyCruiserHime,   new float[] {180F, 35F, 28F, 1.0F, 0.45F, 15F, 0.85F, 0.75F, 0.25F, 0.6F,  0.9F,  0.6F});
+		put(ID.Ship.HeavyCruiserHime,   new float[] {180F, 35F, 32F, 1.0F, 0.45F, 14F, 0.85F, 0.77F, 0.29F, 0.65F, 0.9F,  0.6F});
 //		put(ID.Ship.SupplyDepotHime,    new float[] {320F, 16F, 38F, 0.8F, 0.18F, 26F, 1.4F,  0.42F, 0.32F, 0.6F,  0.4F,  0.8F});
 		//	
 		//water demon                                HP    ATK  DEF  SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
@@ -194,7 +194,7 @@ public class Values
 //		put(ID.Ship.HarbourWD,			new float[] {});
 //		put(ID.Ship.DestroyerWD,		new float[] {});
 //		put(ID.Ship.LightCruiserHime,	new float[] {});
-//		put(ID.Ship.HeavyCruiserHime,	new float[] {});
+		put(ID.Ship.HeavyCruiserHime,	new float[] {0.5F, 1.1F, 1.1F, 1.1F, 0.85F});
 //		put(ID.Ship.SubmarineHime,		new float[] {});
 //		put(ID.Ship.SupplyDepotHime,	new float[] {});
 		
@@ -331,6 +331,7 @@ public class Values
 		add((int)ID.Ship.CarrierHime);
 		add((int)ID.Ship.BattleshipRU);
 		add((int)ID.Ship.DestroyerHime);
+		add((int)ID.Ship.HeavyCruiserHime);
 	}});
 	
 	/**ENEMY LIST for guidebook

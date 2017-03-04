@@ -63,7 +63,7 @@ public class ParticleTextsCustom extends Particle
         	this.setPosition(posX, posY, posZ);
     	break;
         case 1:	//draw string with entity
-        	this.particleMaxAge = 31;
+        	this.particleMaxAge = 30;
         	this.textHeight = parms[0] - 1;
         	this.textWidth = parms[1] / 2;
         	this.text = text;
@@ -71,6 +71,11 @@ public class ParticleTextsCustom extends Particle
         	this.setPosition(this.host.posX + this.parms[0], this.host.posY + this.parms[1], this.host.posZ + this.parms[2]);
     	break;
         }
+        
+        //init position
+		this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
     }
 
     @Override

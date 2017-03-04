@@ -9,6 +9,7 @@ import com.lulan.shincolle.client.model.ModelBattleshipRe;
 import com.lulan.shincolle.client.model.ModelBattleshipRu;
 import com.lulan.shincolle.client.model.ModelBattleshipTa;
 import com.lulan.shincolle.client.model.ModelBattleshipYamato;
+import com.lulan.shincolle.client.model.ModelCAHime;
 import com.lulan.shincolle.client.model.ModelCarrierAkagi;
 import com.lulan.shincolle.client.model.ModelCarrierHime;
 import com.lulan.shincolle.client.model.ModelCarrierKaga;
@@ -96,6 +97,8 @@ public class RenderShipEntity extends RenderBasic
 	private static final ModelBase MD_Hime_Destroyer = new ModelDestroyerHime();
 	private static final ResourceLocation TEX_Hime_Carrier = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCarrierHime.png");
 	private static final ModelBase MD_Hime_Carrier = new ModelCarrierHime();
+	private static final ResourceLocation TEX_Hime_CA = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityCAHime.png");
+	private static final ModelBase MD_Hime_CA = new ModelCAHime();
 	private static final ResourceLocation TEX_Hime_Harbour = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHarbourHime.png");
 	private static final ModelBase MD_Hime_Harbour = new ModelHarbourHime();
 	private static final ResourceLocation TEX_Hime_Northern = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
@@ -200,6 +203,8 @@ public class RenderShipEntity extends RenderBasic
 			return TEX_Hime_Destroyer;
 		case ID.Ship.CarrierHime:
 			return TEX_Hime_Carrier;
+		case ID.Ship.HeavyCruiserHime:
+			return TEX_Hime_CA;
 		case ID.Ship.HarbourHime:
 			return TEX_Hime_Harbour;
 		case ID.Ship.NorthernHime:
@@ -312,6 +317,9 @@ public class RenderShipEntity extends RenderBasic
 		break;
 		case ID.Ship.CarrierHime:
 			this.mainModel = MD_Hime_Carrier;
+		break;
+		case ID.Ship.HeavyCruiserHime:
+			this.mainModel = MD_Hime_CA;
 		break;
 		case ID.Ship.HarbourHime:
 			this.mainModel = MD_Hime_Harbour;
