@@ -1031,7 +1031,7 @@ public class GuiFormation extends GuiContainer
         			}
         			else
         			{
-        				shipName[i] = I18n.format("entity.shincolle."+shipList[i].getClass().getSimpleName()+".name");
+        				shipName[i] = shipList[i].getName();
         			}
         			
         			//get MOV

@@ -15,6 +15,7 @@ import com.lulan.shincolle.reference.Values;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -114,8 +115,8 @@ public class EntityBattleshipRe extends BasicEntityShipCV
             	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.targetPush, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
 					    
 					    //play entity attack sound
+            	  		this.swingArm(EnumHand.MAIN_HAND);
             	  		this.playSound(getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-					    
 					    this.cancelPush();
             		}
             		else

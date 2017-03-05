@@ -141,7 +141,7 @@ public class GuiDesk extends GuiContainer
 			}
 			else 
 			{
-				name = I18n.format("entity.shincolle."+ship.getClass().getSimpleName()+".name");
+				name = ship.getName();
 			}
 		}
 	}

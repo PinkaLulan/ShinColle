@@ -2,6 +2,7 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.client.model.ModelRenderer;
@@ -713,6 +714,17 @@ public class ModelHeavyCruiserNe extends ShipModelBaseAdv
 		  	this.TailR06.rotateAngleY = 0F;
 		  	this.TailR06.rotateAngleZ = 0F;
 	    }
+	    
+	    //swing arm
+	  	float f6 = ent.getSwingTime(f2 - (int)f2);
+	  	if (f6 != 0F)
+	  	{
+	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt(f6) * (float)Math.PI);
+	        this.ArmRight01.rotateAngleX = -0.6F - f8 * 80.0F * Values.N.DIV_PI_180;
+	        this.ArmRight01.rotateAngleY = 0F - f7 * 20.0F * Values.N.DIV_PI_180 + 0.2F;
+	        this.ArmRight01.rotateAngleZ = 0.2F - -f8 * 20.0F * Values.N.DIV_PI_180;
+	  	}
 	    
 	    //鬢毛調整
 	    float headZ = this.Head.rotateAngleZ * -0.5F;

@@ -474,7 +474,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     public void playLivingSound()
     {
 		//30% play sound
-		if (this.rand.nextInt(10) > 3) return;
+		if (this.getStateFlag(ID.F.NoFuel) || this.rand.nextInt(10) > 3) return;
 		
 		//get sound event
 		SoundEvent sound = null;

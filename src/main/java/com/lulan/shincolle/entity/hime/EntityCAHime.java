@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -32,7 +33,7 @@ public class EntityCAHime extends BasicEntityShipSmall
 	public EntityCAHime(World world)
 	{
 		super(world);
-		this.setSize(0.7F, 1.4F);
+		this.setSize(0.7F, 1.2F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
@@ -124,7 +125,7 @@ public class EntityCAHime extends BasicEntityShipSmall
     	if(!this.world.isRemote)
     	{
     		//check every 128 ticks
-    		if (this.ticksExisted % 128 == 0)
+    		if ((this.ticksExisted & 127) == 0)
     		{
 	    		//apply potion effect in the night
 	        	if (!this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))
@@ -134,7 +135,7 @@ public class EntityCAHime extends BasicEntityShipSmall
         		}
 	        	
 	        	//push other people every 256 ticks
-	        	if (this.ticksExisted % 256 == 0)
+	        	if ((this.ticksExisted & 255) == 0)
 	        	{
 	        		if (this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
 	        			!this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed())
@@ -169,8 +170,8 @@ public class EntityCAHime extends BasicEntityShipSmall
             	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.targetPush, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
 					    
 					    //play entity attack sound
+            	  		this.swingArm(EnumHand.MAIN_HAND);
             	  		this.playSound(getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-					    
 					    this.cancelPush();
             		}
             		else

@@ -3,6 +3,7 @@ package com.lulan.shincolle.client.model;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.client.model.ModelRenderer;
@@ -38,16 +39,6 @@ public class ModelCAHime extends ShipModelBaseAdv
     public ModelRenderer HairMain;
     public ModelRenderer Ear01;
     public ModelRenderer Ear02;
-    public ModelRenderer Face0;
-    public ModelRenderer Face1;
-    public ModelRenderer Face2;
-    public ModelRenderer Face3;
-    public ModelRenderer Face4;
-    public ModelRenderer Mouth0;
-    public ModelRenderer Mouth1;
-    public ModelRenderer Mouth2;
-    public ModelRenderer Flush0;
-    public ModelRenderer Flush1;
     public ModelRenderer Horn01;
     public ModelRenderer Horn02;
     public ModelRenderer HatBase;
@@ -96,8 +87,8 @@ public class ModelCAHime extends ShipModelBaseAdv
     {
         this.textureWidth = 128;
         this.textureHeight = 128;
-        this.scale = 0.4F;
-        this.offsetY = 2.63F;
+        this.scale = 0.45F;
+        this.offsetY = 2.22F;
         this.offsetItem = new float[] {0.07F, 0.99F, -0.09F};
         this.offsetBlock = new float[] {0.07F, 0.99F, -0.09F};
         
@@ -164,7 +155,7 @@ public class ModelCAHime extends ShipModelBaseAdv
         this.setRotateAngle(Tail02_1, 0.3490658503988659F, 0.2617993877991494F, 0.0F);
         this.Hair02b = new ModelRenderer(this, 81, 116);
         this.Hair02b.setRotationPoint(-6.9F, 4.7F, 0.0F);
-        this.Hair02b.addBox(-1.5F, 0.0F, -3.5F, 3, 7, 5, 0.0F);
+        this.Hair02b.addBox(-1.5F, 0.0F, -3.3F, 3, 7, 5, 0.0F);
         this.setRotateAngle(Hair02b, 0.0F, 0.0F, 0.08726646259971647F);
         this.LegLeft01 = new ModelRenderer(this, 46, 92);
         this.LegLeft01.setRotationPoint(4.0F, 3.0F, 8.3F);
@@ -176,7 +167,7 @@ public class ModelCAHime extends ShipModelBaseAdv
         this.setRotateAngle(Band02, -0.08726646259971647F, 0.0F, 0.0F);
         this.Hair02a = new ModelRenderer(this, 81, 116);
         this.Hair02a.setRotationPoint(6.9F, 4.7F, 0.0F);
-        this.Hair02a.addBox(-1.5F, 0.0F, -3.5F, 3, 7, 5, 0.0F);
+        this.Hair02a.addBox(-1.5F, 0.0F, -3.3F, 3, 7, 5, 0.0F);
         this.setRotateAngle(Hair02a, 0.0F, 0.0F, -0.08726646259971647F);
         this.HairMain = new ModelRenderer(this, 0, 56);
         this.HairMain.setRotationPoint(0.0F, -11.5F, -3.0F);
@@ -238,7 +229,7 @@ public class ModelCAHime extends ShipModelBaseAdv
         this.Tail07_1.addBox(-4.0F, -3.5F, 0.0F, 8, 7, 8, 0.0F);
         this.setRotateAngle(Tail07_1, -0.3490658503988659F, 0.3490658503988659F, 0.0F);
         this.Horn02 = new ModelRenderer(this, 40, 39);
-        this.Horn02.setRotationPoint(3.3F, -5.9F, -6.0F);
+        this.Horn02.setRotationPoint(3.3F, -7.5F, -6.0F);
         this.Horn02.addBox(-1.5F, -1.5F, -6.0F, 3, 3, 6, 0.0F);
         this.setRotateAngle(Horn02, -0.8726646259971648F, -0.4363323129985824F, 0.2617993877991494F);
         this.BodyMain = new ModelRenderer(this, 0, 93);
@@ -327,7 +318,7 @@ public class ModelCAHime extends ShipModelBaseAdv
         this.TailC02.addBox(-1.0F, -1.0F, 0.0F, 2, 2, 8, 0.0F);
         this.setRotateAngle(TailC02, -0.13962634015954636F, -0.03490658503988659F, 0.0F);
         this.Horn01 = new ModelRenderer(this, 40, 39);
-        this.Horn01.setRotationPoint(-3.0F, -6.3F, -6.0F);
+        this.Horn01.setRotationPoint(-3.0F, -7.5F, -6.0F);
         this.Horn01.addBox(-1.5F, -1.5F, -6.0F, 3, 3, 6, 0.0F);
         this.setRotateAngle(Horn01, -0.8726646259971648F, 0.4363323129985824F, -0.5235987755982988F);
         this.HairMain.addChild(this.Hair01);
@@ -449,9 +440,6 @@ public class ModelCAHime extends ShipModelBaseAdv
     	if (f3 <= -180F) { f3 += 360F; }
     	else if (f3 >= 180F) { f3 -= 360F; }
     	
-    	this.scale = EventHandler.field1;
-    	this.offsetY = EventHandler.field2;
-    	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -477,6 +465,43 @@ public class ModelCAHime extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
+  		case ID.State.EQUIP00:
+  			this.HatBase.isHidden = false;
+  			this.Hair01.isHidden = true;
+  			this.Horn01.isHidden = true;
+  			this.Horn02.isHidden = true;
+  			this.Ear01.isHidden = true;
+  			this.Ear02.isHidden = true;
+  		break;
+  		case ID.State.EQUIP02:
+  			this.HatBase.isHidden = true;
+  			this.Hair01.isHidden = false;
+  			this.Horn01.isHidden = false;
+  			this.Horn02.isHidden = false;
+  			this.Ear01.isHidden = false;
+  			this.Ear02.isHidden = false;
+  		break;
+  		default:  //normal
+  			this.HatBase.isHidden = false;
+  			this.Hair01.isHidden = true;
+  			this.Horn01.isHidden = false;
+  			this.Horn02.isHidden = false;
+  			this.Ear01.isHidden = false;
+  			this.Ear02.isHidden = false;
+  		break;
+  		}
+  		
+  		switch (ent.getStateEmotion(ID.S.State2))
+  		{
+  		case ID.State.EQUIP02a:
+  			this.TailBase.isHidden = true;
+  		break;
+  		default:  //normal
+  			this.TailBase.isHidden = false;
+  		break;
+  		}
 	}
 
 	@Override
@@ -507,27 +532,87 @@ public class ModelCAHime extends ShipModelBaseAdv
 	  	this.Head.offsetY = 0F;
 	  	this.GlowHead.offsetY = 0F;
 	  	//arm
-	  	this.ArmLeft01.rotateAngleX = 0.1745F;
+	  	this.ArmLeft01.rotateAngleX = -0.4F;
 	  	this.ArmLeft01.rotateAngleZ = 0.4537F;
 	  	this.ArmLeft01.offsetZ = 0F;
 	  	this.ArmLeft02.rotateAngleZ = 0F;
-	  	this.ArmRight01.rotateAngleX = -0.1745F;
+	  	this.ArmRight01.rotateAngleX = -0.8F;
 	  	this.ArmRight01.rotateAngleZ = -0.05F;
 	  	this.ArmRight01.offsetZ = 0F;
 	  	this.ArmRight02.rotateAngleZ = 0F;
 		//leg
-	  	this.LegLeft01.rotateAngleX = -0.1745F;
+	  	this.LegLeft01.rotateAngleX = 0.5F;
 		this.LegLeft01.rotateAngleY = 0F;
 		this.LegLeft01.rotateAngleZ = 0.4537F;
 		this.LegLeft02.rotateAngleX = 0F;
 		this.LegLeft02.rotateAngleZ = 0F;
-		this.LegRight01.rotateAngleX = 0.1745F;
+		this.LegRight01.rotateAngleX = 0.8F;
 		this.LegRight01.rotateAngleY = 0F;
 		this.LegRight01.rotateAngleZ = -0.05F;
 		this.LegRight02.rotateAngleX = 0F;
 		this.LegRight02.rotateAngleZ = 0F;
-	  	//tail
-
+		//equip: hat position
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
+  		case ID.State.EQUIP00:
+  			this.HatBase.rotateAngleX = 1.37F;
+  			this.HatBase.offsetY = -0.45F;
+  			this.HatBase.offsetZ = -0.2F;
+  		break;
+  		case ID.State.EQUIP01:
+  			this.HatBase.rotateAngleX = -1.8F;
+  			this.HatBase.offsetY = 0.6F;
+  			this.HatBase.offsetZ = 0.07F;
+  		break;
+  		default:  //normal
+  			this.HatBase.rotateAngleX = 0F;
+  			this.HatBase.offsetY = 0F;
+  			this.HatBase.offsetZ = 0F;
+  		break;
+  		}
+		//tail head
+		this.TailHead01.rotateAngleX = -0.17F;
+		this.TailJaw01.rotateAngleX = 0.26F;
+		this.TailHead01_1.rotateAngleX = 0F;
+		this.TailJaw01_1.rotateAngleX = 0.2F;
+		//tail body
+		this.TailBase.isHidden = false;
+		this.Tail01.rotateAngleX = -1.4F;
+		this.Tail01.rotateAngleY = 1.57F;
+		this.Tail02.rotateAngleX = -0.3F;
+		this.Tail02.rotateAngleY = 0.2F;
+		this.Tail03.rotateAngleX = -0.3F;
+		this.Tail03.rotateAngleY = 0.3F;
+		this.Tail04.rotateAngleX = 0.2F;
+		this.Tail04.rotateAngleY = 0.4F;
+		this.Tail05.rotateAngleX = 0.1F;
+		this.Tail05.rotateAngleY = 0.5F;
+		this.Tail06.rotateAngleX = -0.1F;
+		this.Tail06.rotateAngleY = 0.4F;
+		this.Tail07.rotateAngleX = -0.1F;
+		this.Tail07.rotateAngleY = 0.3F;
+		this.Tail08.rotateAngleX = 0.1F;
+		this.Tail08.rotateAngleY = 0.2F;
+		this.Tail09.rotateAngleX = 0F;
+		this.Tail09.rotateAngleY = 0.1F;
+		this.Tail01_1.rotateAngleX = -1.4F;
+		this.Tail01_1.rotateAngleY = -1.7F;
+		this.Tail02_1.rotateAngleX = -0.2F;
+		this.Tail02_1.rotateAngleY = 0.2F;
+		this.Tail03_1.rotateAngleX = -0.1F;
+		this.Tail03_1.rotateAngleY = 0.3F;
+		this.Tail04_1.rotateAngleX = 0F;
+		this.Tail04_1.rotateAngleY = 0.4F;
+		this.Tail05_1.rotateAngleX = 0F;
+		this.Tail05_1.rotateAngleY = 0.5F;
+		this.Tail06_1.rotateAngleX = -0.1F;
+		this.Tail06_1.rotateAngleY = 0.4F;
+		this.Tail07_1.rotateAngleX = -0.1F;
+		this.Tail07_1.rotateAngleY = 0.3F;
+		this.Tail08_1.rotateAngleX = 0.2F;
+		this.Tail08_1.rotateAngleY = 0.2F;
+		this.Tail09_1.rotateAngleX = -0.2F;
+		this.Tail09_1.rotateAngleY = 0.3F;
 	}
 
 	@Override
@@ -548,8 +633,8 @@ public class ModelCAHime extends ShipModelBaseAdv
     	}
   		
     	//leg move
-  		addk1 = angleAdd1 * 0.5F - 0.14F;  //LegLeft01
-	  	addk2 = angleAdd2 * 0.5F + 0.14F;  //LegRight01
+  		addk1 = angleAdd1 * 0.35F - 0.14F;  //LegLeft01
+	  	addk2 = angleAdd2 * 0.35F + 0.14F;  //LegRight01
 	  	this.ArmRight01.rotateAngleX = addk1;
     	this.ArmLeft01.rotateAngleX = addk2;
 
@@ -557,16 +642,18 @@ public class ModelCAHime extends ShipModelBaseAdv
 	  	this.Head.rotateAngleX = f4 * 0.014F; 	//上下角度
 	  	this.Head.rotateAngleY = f3 * 0.01F;	//左右角度 角度轉成rad 即除以57.29578
 	  	//body
-	  	this.Ahoke.rotateAngleX = angleX * 0.2F - 0.2618F;
+	  	this.Ahoke.rotateAngleX = angleX * 0.05F - 0.2618F;
 	  	this.BodyMain.rotateAngleX = 0F;
 	  	this.BodyMain.rotateAngleY = 0F;
 	  	this.BodyMain.rotateAngleZ = 0F;
 	  	this.Head.offsetY = 0F;
 	  	this.GlowHead.offsetY = 0F;
 	  	//arm
+	  	this.ArmLeft01.rotateAngleY = 0F;
 	  	this.ArmLeft01.rotateAngleZ = 0.21F;
 	  	this.ArmLeft01.offsetZ = 0F;
 	  	this.ArmLeft02.rotateAngleZ = 0F;
+	  	this.ArmRight01.rotateAngleY = 0F;
 	  	this.ArmRight01.rotateAngleZ = -0.21F;
 	  	this.ArmRight01.offsetZ = 0F;
 	  	this.ArmRight02.rotateAngleZ = 0F;
@@ -579,44 +666,167 @@ public class ModelCAHime extends ShipModelBaseAdv
 		this.LegRight01.rotateAngleZ = -0.1745F;
 		this.LegRight02.rotateAngleX = 0F;
 		this.LegRight02.rotateAngleZ = 0F;
-//	  	//tail
-//		this.TailBase.rotateAngleX = 0.8F;
-//	  	this.TailL01.rotateAngleX = 0.2618F;
-//		this.TailL01.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.2F + 0.5F;
-//		this.TailL01.rotateAngleZ = this.TailL01.rotateAngleY * 0.25F;
-//		this.TailL02.rotateAngleX = 0.2618F;
-//		this.TailL02.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.25F;
-//		this.TailL02.rotateAngleZ = this.TailL02.rotateAngleY * 0.25F;
-//		this.TailL03.rotateAngleX = 0.2618F;
-//		this.TailL03.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.3F;
-//		this.TailL03.rotateAngleZ = this.TailL03.rotateAngleY * 0.25F;
-//		this.TailL04.rotateAngleX = 0.35F;
-//		this.TailL04.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.35F;
-//		this.TailL04.rotateAngleZ = this.TailL04.rotateAngleY * 0.25F;
-//		this.TailL05.rotateAngleX = 0.4F;
-//		this.TailL05.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.4F;
-//		this.TailL05.rotateAngleZ = this.TailL05.rotateAngleY * 0.25F;
-//		this.TailL06.rotateAngleX = 0.45F;
-//		this.TailL06.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.35F;
-//		this.TailL06.rotateAngleZ = this.TailL06.rotateAngleY * 0.25F;
-//		this.TailR01.rotateAngleX = 0.2618F;
-//		this.TailR01.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 0.7F) * 0.2F - 0.5F;
-//		this.TailR01.rotateAngleZ = this.TailR01.rotateAngleY * 0.25F;
-//		this.TailR02.rotateAngleX = 0.2618F;
-//		this.TailR02.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 1.4F) * 0.25F;
-//		this.TailR02.rotateAngleZ = this.TailR02.rotateAngleY * 0.25F;
-//		this.TailR03.rotateAngleX = 0.2618F;
-//		this.TailR03.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.1F) * 0.3F;
-//		this.TailR03.rotateAngleZ = this.TailR03.rotateAngleY * 0.25F;
-//		this.TailR04.rotateAngleX = 0.35F;
-//		this.TailR04.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 2.8F) * 0.35F;
-//		this.TailR04.rotateAngleZ = this.TailR04.rotateAngleY * 0.25F;
-//		this.TailR05.rotateAngleX = 0.4F;
-//		this.TailR05.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 3.5F) * 0.4F;
-//		this.TailR05.rotateAngleZ = this.TailR05.rotateAngleY * 0.25F;
-//		this.TailR06.rotateAngleX = 0.45F;
-//		this.TailR06.rotateAngleY = MathHelper.cos(-f2 * 0.1F + 4.2F) * 0.45F;
-//		this.TailR06.rotateAngleZ = this.TailR06.rotateAngleY * 0.25F;
+		//equip: hat position
+  		switch (ent.getStateEmotion(ID.S.State))
+  		{
+  		case ID.State.EQUIP00:
+  			this.HatBase.rotateAngleX = 1.37F;
+  			this.HatBase.offsetY = -0.45F;
+  			this.HatBase.offsetZ = -0.2F;
+  		break;
+  		case ID.State.EQUIP01:
+  			this.HatBase.rotateAngleX = -0.85F;
+  			this.HatBase.offsetY = 0.33F;
+  			this.HatBase.offsetZ = 0.07F;
+  		break;
+  		default:  //normal
+  			this.HatBase.rotateAngleX = 0F;
+  			this.HatBase.offsetY = 0F;
+  			this.HatBase.offsetZ = 0F;
+  		break;
+  		}
+  		
+  		//equip: tail position
+  		float[] cosf2 = new float[9];
+  		for (int i = 0; i < 9; i++)
+  		{
+  			cosf2[i] = MathHelper.cos(f2 * 0.1F + f * 0.25F + 0.8F * i);
+  		}
+  		
+		//tail head
+		this.TailHead01.rotateAngleX = -angleX * 0.075F - 0.1F;
+		this.TailJaw01.rotateAngleX = angleX * 0.1F + 0.18F;
+		this.TailHead01_1.rotateAngleX = -angleX2 * 0.12F - 0.1F;
+		this.TailJaw01_1.rotateAngleX = angleX2 * 0.15F + 0.26F;
+		this.TailC01.rotateAngleX = angleX1 * 0.3F - 0.2F;
+		this.TailC02.rotateAngleX = angleX2 * 0.3F - 0.2F;
+		this.TailC01_1.rotateAngleX = angleX1 * 0.3F - 0.2F;
+		this.TailC02_1.rotateAngleX = angleX2 * 0.3F - 0.2F;
+  		
+		//tail body
+  		switch (ent.getStateEmotion(ID.S.State2))
+  		{
+  		case ID.State.EQUIP00a:
+  			this.TailBase.offsetY = -0.15F;
+  			this.TailBase.offsetZ = 0F;
+  			this.Tail01.rotateAngleX = -0.17F + cosf2[0] * 0.03F;
+  			this.Tail01.rotateAngleY = 1.3F + cosf2[0] * 0.03F;
+  			this.Tail02.rotateAngleX = 0.26F + cosf2[1] * 0.03F;
+  			this.Tail02.rotateAngleY = -0.52F + cosf2[1] * 0.03F;
+  			this.Tail03.rotateAngleX = 0.35F + cosf2[2] * 0.03F;
+  			this.Tail03.rotateAngleY = -0.52F + cosf2[2] * 0.03F;
+  			this.Tail04.rotateAngleX = 0.52F + cosf2[3] * 0.03F;
+  			this.Tail04.rotateAngleY = -0.44F + cosf2[3] * 0.03F;
+  			this.Tail05.rotateAngleX = 0.52F + cosf2[4] * 0.04F;
+  			this.Tail05.rotateAngleY = -0.17F + cosf2[4] * 0.04F;
+  			this.Tail06.rotateAngleX = 0.35F + cosf2[5] * 0.05F;
+  			this.Tail06.rotateAngleY = 0.35F + cosf2[5] * 0.05F;
+  			this.Tail07.rotateAngleX = 0.44F + cosf2[6] * 0.06F;
+  			this.Tail07.rotateAngleY = 0.17F + cosf2[6] * 0.06F;
+  			this.Tail08.rotateAngleX = 0.52F + cosf2[7] * 0.08F;
+  			this.Tail08.rotateAngleY = 0.17F + cosf2[7] * 0.08F;
+  			this.Tail09.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
+  			this.Tail09.rotateAngleY = 0.17F + cosf2[8] * 0.15F;
+  			this.Tail01_1.rotateAngleX = -0.17F + cosf2[0] * 0.03F;
+  			this.Tail01_1.rotateAngleY = -1.3F + cosf2[0] * 0.03F;
+  			this.Tail02_1.rotateAngleX = 0.26F + cosf2[1] * 0.03F;
+  			this.Tail02_1.rotateAngleY = 0.52F + cosf2[1] * 0.03F;
+  			this.Tail03_1.rotateAngleX = 0.35F + cosf2[2] * 0.03F;
+  			this.Tail03_1.rotateAngleY = 0.52F + cosf2[2] * 0.03F;
+  			this.Tail04_1.rotateAngleX = 0.52F + cosf2[3] * 0.03F;
+  			this.Tail04_1.rotateAngleY = 0.44F + cosf2[3] * 0.03F;
+  			this.Tail05_1.rotateAngleX = 0.52F + cosf2[4] * 0.04F;
+  			this.Tail05_1.rotateAngleY = 0.17F + cosf2[4] * 0.04F;
+  			this.Tail06_1.rotateAngleX = 0.35F + cosf2[5] * 0.05F;
+  			this.Tail06_1.rotateAngleY = -0.35F + cosf2[5] * 0.05F;
+  			this.Tail07_1.rotateAngleX = 0.44F + cosf2[6] * 0.06F;
+  			this.Tail07_1.rotateAngleY = -0.17F + cosf2[6] * 0.06F;
+  			this.Tail08_1.rotateAngleX = 0.52F + cosf2[7] * 0.08F;
+  			this.Tail08_1.rotateAngleY = -0.17F + cosf2[7] * 0.08F;
+  			this.Tail09_1.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
+  			this.Tail09_1.rotateAngleY = -0.17F + cosf2[8] * 0.15F;
+  		break;
+  		case ID.State.EQUIP01a:
+  			this.TailBase.offsetY = -0.54F;
+  			this.TailBase.offsetZ = 0.86F;
+  			this.Tail01.rotateAngleX = -0.17F + cosf2[0] * 0.03F;
+  			this.Tail01.rotateAngleY = 1.3F + cosf2[0] * 0.03F;
+  			this.Tail02.rotateAngleX = 0.26F + cosf2[1] * 0.03F;
+  			this.Tail02.rotateAngleY = -0.52F + cosf2[1] * 0.03F;
+  			this.Tail03.rotateAngleX = 0.35F + cosf2[2] * 0.03F;
+  			this.Tail03.rotateAngleY = -0.52F + cosf2[2] * 0.03F;
+  			this.Tail04.rotateAngleX = 0.52F + cosf2[3] * 0.03F;
+  			this.Tail04.rotateAngleY = -0.44F + cosf2[3] * 0.03F;
+  			this.Tail05.rotateAngleX = 0.52F + cosf2[4] * 0.04F;
+  			this.Tail05.rotateAngleY = -0.17F + cosf2[4] * 0.04F;
+  			this.Tail06.rotateAngleX = 0.35F + cosf2[5] * 0.05F;
+  			this.Tail06.rotateAngleY = 0.35F + cosf2[5] * 0.05F;
+  			this.Tail07.rotateAngleX = 0.44F + cosf2[6] * 0.06F;
+  			this.Tail07.rotateAngleY = 0.17F + cosf2[6] * 0.06F;
+  			this.Tail08.rotateAngleX = 0.52F + cosf2[7] * 0.08F;
+  			this.Tail08.rotateAngleY = 0.17F + cosf2[7] * 0.08F;
+  			this.Tail09.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
+  			this.Tail09.rotateAngleY = 0.17F + cosf2[8] * 0.15F;
+  			this.Tail01_1.rotateAngleX = -0.17F + cosf2[0] * 0.03F;
+  			this.Tail01_1.rotateAngleY = -1.3F + cosf2[0] * 0.03F;
+  			this.Tail02_1.rotateAngleX = 0.26F + cosf2[1] * 0.03F;
+  			this.Tail02_1.rotateAngleY = 0.52F + cosf2[1] * 0.03F;
+  			this.Tail03_1.rotateAngleX = 0.35F + cosf2[2] * 0.03F;
+  			this.Tail03_1.rotateAngleY = 0.52F + cosf2[2] * 0.03F;
+  			this.Tail04_1.rotateAngleX = 0.52F + cosf2[3] * 0.03F;
+  			this.Tail04_1.rotateAngleY = 0.44F + cosf2[3] * 0.03F;
+  			this.Tail05_1.rotateAngleX = 0.52F + cosf2[4] * 0.04F;
+  			this.Tail05_1.rotateAngleY = 0.17F + cosf2[4] * 0.04F;
+  			this.Tail06_1.rotateAngleX = 0.35F + cosf2[5] * 0.05F;
+  			this.Tail06_1.rotateAngleY = -0.35F + cosf2[5] * 0.05F;
+  			this.Tail07_1.rotateAngleX = 0.44F + cosf2[6] * 0.06F;
+  			this.Tail07_1.rotateAngleY = -0.17F + cosf2[6] * 0.06F;
+  			this.Tail08_1.rotateAngleX = 0.52F + cosf2[7] * 0.08F;
+  			this.Tail08_1.rotateAngleY = -0.17F + cosf2[7] * 0.08F;
+  			this.Tail09_1.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
+  			this.Tail09_1.rotateAngleY = -0.17F + cosf2[8] * 0.15F;
+  		break;
+  		default:  //normal
+  			this.TailBase.offsetY = -0.15F;
+  			this.TailBase.offsetZ = 0F;
+  			this.Tail01.rotateAngleX = 0.26F;
+  			this.Tail01.rotateAngleY = 1.7F + cosf2[0] * 0.015F;
+  			this.Tail02.rotateAngleX = 0.61F;
+  			this.Tail02.rotateAngleY = -0.09F + cosf2[1] * 0.02F;
+  			this.Tail03.rotateAngleX = 0.61F;
+  			this.Tail03.rotateAngleY = -0.09F + cosf2[2] * 0.025F;
+  			this.Tail04.rotateAngleX = 0.52F;
+  			this.Tail04.rotateAngleY = 0F + cosf2[3] * 0.03F;
+  			this.Tail05.rotateAngleX = 0.52F;
+  			this.Tail05.rotateAngleY = 0F + cosf2[4] * 0.04F;
+  			this.Tail06.rotateAngleX = 0.35F;
+  			this.Tail06.rotateAngleY = 0F + cosf2[5] * 0.05F;
+  			this.Tail07.rotateAngleX = 0.17F;
+  			this.Tail07.rotateAngleY = 0.1F + cosf2[6] * 0.06F;
+  			this.Tail08.rotateAngleX = 0.09F;
+  			this.Tail08.rotateAngleY = 0.1F + cosf2[7] * 0.08F;
+  			this.Tail09.rotateAngleX = -0.09F;
+  			this.Tail09.rotateAngleY = 0.5F + cosf2[8] * 0.15F;
+  			this.Tail01_1.rotateAngleX = 0.7F;
+  			this.Tail01_1.rotateAngleY = -1.57F + cosf2[0] * 0.02F;
+  			this.Tail02_1.rotateAngleX = 0.35F;
+  			this.Tail02_1.rotateAngleY = 0.26F + cosf2[1] * 0.03F;
+  			this.Tail03_1.rotateAngleX = 0.44F;
+  			this.Tail03_1.rotateAngleY = 0.35F + cosf2[2] * 0.04F;
+  			this.Tail04_1.rotateAngleX = 0.35F;
+  			this.Tail04_1.rotateAngleY = 0.44F + cosf2[3] * 0.05F;
+  			this.Tail05_1.rotateAngleX = 0.52F;
+  			this.Tail05_1.rotateAngleY = 0.35F + cosf2[4] * 0.06F;
+  			this.Tail06_1.rotateAngleX = 0.09F;
+  			this.Tail06_1.rotateAngleY = 0.26F + cosf2[5] * 0.07F;
+  			this.Tail07_1.rotateAngleX = -0.35F;
+  			this.Tail07_1.rotateAngleY = 0.35F + cosf2[6] * 0.08F;
+  			this.Tail08_1.rotateAngleX = -0.52F;
+  			this.Tail08_1.rotateAngleY = 0.35F + cosf2[7] * 0.09F;
+  			this.Tail09_1.rotateAngleX = -0.09F;
+  			this.Tail09_1.rotateAngleY = 0.44F + cosf2[8] * 0.12F;
+  		break;
+  		}
 		
 		//ear
 		float modf2 = f2 % 128F;
@@ -660,6 +870,52 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    {
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
+	    		//equip: hat position
+	      		switch (ent.getStateEmotion(ID.S.State))
+	      		{
+	      		case ID.State.EQUIP00:
+	      			this.HatBase.rotateAngleX = 1.37F;
+	      			this.HatBase.offsetY = -0.45F;
+	      			this.HatBase.offsetZ = -0.2F;
+	      		break;
+	      		case ID.State.EQUIP01:
+	      			this.HatBase.rotateAngleX = -0.85F;
+	      			this.HatBase.offsetY = 0.1F;
+	      			this.HatBase.offsetZ = 0.07F;
+	      		break;
+	      		default:  //normal
+	      			this.HatBase.rotateAngleX = 0F;
+	      			this.HatBase.offsetY = 0F;
+	      			this.HatBase.offsetZ = 0F;
+	      		break;
+	      		}
+	      		
+	    		GlStateManager.translate(0F, 0.21F, 0F);
+		    	//body
+	    		this.Head.rotateAngleX -= 0.2F;
+	    		this.Head.rotateAngleZ -= 0.09F;
+	    		this.BodyMain.rotateAngleZ = 0.09F;
+		    	//arm
+		    	this.ArmLeft01.rotateAngleX = -1.31F;
+		    	this.ArmLeft01.rotateAngleY = 0.17F;
+		    	this.ArmLeft01.rotateAngleZ = 0F;
+		    	this.ArmLeft01.offsetZ = 0F;
+		    	this.ArmLeft02.rotateAngleZ = 0F;
+		    	this.ArmRight01.rotateAngleX = -1.22F;
+		    	this.ArmRight01.rotateAngleY = 1.05F;
+		    	this.ArmRight01.rotateAngleZ = 0F;
+		    	this.ArmRight01.offsetZ = 0F;
+		    	this.ArmRight02.rotateAngleZ = 0F;
+		    	//leg
+		    	addk1 = 1.31F;
+		    	addk2 = 1.22F;
+		    	this.LegLeft01.rotateAngleY = -0.7F;
+		    	this.LegLeft01.rotateAngleZ = 0F;
+		    	this.LegRight01.rotateAngleY = -0.87F;
+		    	this.LegRight01.rotateAngleZ = 0F;
+	    	}
+	    	else if (ent.getStateEmotion(ID.S.Emotion4) == ID.Emotion.BORED)
+	    	{
 	    		GlStateManager.translate(0F, 0.22F, 0F);
 		    	//head
 		    	this.Head.rotateAngleX = 1.5359F;
@@ -675,35 +931,29 @@ public class ModelCAHime extends ShipModelBaseAdv
 		    	this.ArmRight01.rotateAngleX = -1.5359F;
 		    	this.ArmRight01.rotateAngleZ = 0F;
 		    	this.ArmRight01.offsetZ = -0.18F;
-//		    	//tail
-//		    	this.TailBase.rotateAngleX = 0.0873F;
-//			  	this.TailL01.rotateAngleX = 0.02618F;
-//			  	this.TailL01.rotateAngleY *= 0.5F;
-//				this.TailL02.rotateAngleX = -0.02618F;
-//				this.TailL02.rotateAngleY *= 0.5F;
-//				this.TailL03.rotateAngleX = -0.02618F;
-//				this.TailL03.rotateAngleY *= 0.5F;
-//				this.TailL04.rotateAngleX = -0.035F;
-//				this.TailL04.rotateAngleY *= 0.5F;
-//				this.TailL05.rotateAngleX = -0.04F;
-//				this.TailL05.rotateAngleY *= 0.5F;
-//				this.TailL06.rotateAngleX = -0.045F;
-//				this.TailL06.rotateAngleY *= 0.5F;
-//				this.TailR01.rotateAngleX = -0.02618F;
-//				this.TailR01.rotateAngleY *= 0.5F;
-//				this.TailR02.rotateAngleX = -0.02618F;
-//				this.TailR02.rotateAngleY *= 0.5F;
-//				this.TailR03.rotateAngleX = -0.02618F;
-//				this.TailR03.rotateAngleY *= 0.5F;
-//				this.TailR04.rotateAngleX = -0.035F;
-//				this.TailR04.rotateAngleY *= 0.5F;
-//				this.TailR05.rotateAngleX = -0.04F;
-//				this.TailR05.rotateAngleY *= 0.5F;
-//				this.TailR06.rotateAngleX = -0.045F;
-//				this.TailR06.rotateAngleY *= 0.5F;
 	    	}
 	    	else
 	    	{
+	    		//equip: hat position
+	      		switch (ent.getStateEmotion(ID.S.State))
+	      		{
+	      		case ID.State.EQUIP00:
+	      			this.HatBase.rotateAngleX = 1.37F;
+	      			this.HatBase.offsetY = -0.45F;
+	      			this.HatBase.offsetZ = -0.2F;
+	      		break;
+	      		case ID.State.EQUIP01:
+	      			this.HatBase.rotateAngleX = -0.85F;
+	      			this.HatBase.offsetY = 0F;
+	      			this.HatBase.offsetZ = 0.07F;
+	      		break;
+	      		default:  //normal
+	      			this.HatBase.rotateAngleX = 0F;
+	      			this.HatBase.offsetY = 0F;
+	      			this.HatBase.offsetZ = 0F;
+	      		break;
+	      		}
+	      		
 	    		GlStateManager.translate(0F, 0.22F, 0F);
 		    	//head
 		    	this.Head.rotateAngleX -= 0.5F;
@@ -725,10 +975,86 @@ public class ModelCAHime extends ShipModelBaseAdv
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if (ent.getAttackTick() > 20)
+	    if (ent.getAttackTick() > 30)
 	    {
-
+			//tail head
+			this.TailHead01.rotateAngleX = -0.6F;
+			this.TailJaw01.rotateAngleX = 0.5F;
+			this.TailHead01_1.rotateAngleX = -0.6F;
+			this.TailJaw01_1.rotateAngleX = 0.5F;
+			this.TailC01.rotateAngleX = -0.1F;
+			this.TailC02.rotateAngleX = -0.1F;
+			this.TailC01_1.rotateAngleX = -0.1F;
+			this.TailC02_1.rotateAngleX = -0.1F;
+			//tail body
+  			this.Tail01.rotateAngleX = 0.2F;
+  			this.Tail01.rotateAngleY = 1.2F;
+  			this.Tail02.rotateAngleX = 0.4F;
+  			this.Tail02.rotateAngleY = -0.5F;
+  			this.Tail03.rotateAngleX = 0.4F;
+  			this.Tail03.rotateAngleY = -0.32F;
+  			this.Tail04.rotateAngleX = 0.4F;
+  			this.Tail04.rotateAngleY = 0.4F;
+  			this.Tail05.rotateAngleX = 0.2F;
+  			this.Tail05.rotateAngleY = 0.4F;
+  			this.Tail06.rotateAngleX = 0.3F;
+  			this.Tail06.rotateAngleY = 0.4F;
+  			this.Tail07.rotateAngleX = 0.2F;
+  			this.Tail07.rotateAngleY = 0.4F;
+  			this.Tail08.rotateAngleX = 0.1F;
+  			this.Tail08.rotateAngleY = 0.3F;
+  			this.Tail09.rotateAngleX = 0.1F;
+  			this.Tail09.rotateAngleY = 0.3F;
+  			this.Tail01_1.rotateAngleX = -0.17F;
+  			this.Tail01_1.rotateAngleY = -1.5F;
+  			this.Tail02_1.rotateAngleX = 0.26F;
+  			this.Tail02_1.rotateAngleY = 0.52F;
+  			this.Tail03_1.rotateAngleX = 0.35F;
+  			this.Tail03_1.rotateAngleY = 0.52F;
+  			this.Tail04_1.rotateAngleX = 0.52F;
+  			this.Tail04_1.rotateAngleY = 0.3F;
+  			this.Tail05_1.rotateAngleX = 0.52F;
+  			this.Tail05_1.rotateAngleY = 0.17F;
+  			this.Tail06_1.rotateAngleX = 0.35F;
+  			this.Tail06_1.rotateAngleY = -0.35F;
+  			this.Tail07_1.rotateAngleX = 0.2F;
+  			this.Tail07_1.rotateAngleY = -0.17F;
+  			this.Tail08_1.rotateAngleX = 0.3F;
+  			this.Tail08_1.rotateAngleY = -0.17F;
+  			this.Tail09_1.rotateAngleX = 0.5F;
+  			this.Tail09_1.rotateAngleY = -0.17F;
+  			
+  			float ptick = ent.getAttackTick() + (1 - f2 + (int)f2);
+			if (ent.getAttackTick() > 47)
+			{
+				this.TailHead01.rotateAngleX = (ptick - 50) * 0.3F - 0.1F;
+				this.TailJaw01.rotateAngleX = (50 - ptick) * 0.3F + 0.1F;
+			}
+			else if (ent.getAttackTick() > 39)
+			{
+				this.TailHead01.rotateAngleX = -0.7F + (47 - ptick) * 0.06F;
+				this.TailJaw01.rotateAngleX = 0.7F - (47 - ptick) * 0.06F;
+			}
+			else
+			{
+				this.TailHead01.rotateAngleX = -0.25F;
+				this.TailJaw01.rotateAngleX = 0.25F;
+			}
+			
+			this.TailHead01_1.rotateAngleX = this.TailHead01.rotateAngleX;
+			this.TailJaw01_1.rotateAngleX = this.TailJaw01.rotateAngleX;
 	    }
+	    
+	    //swing arm
+	  	float f6 = ent.getSwingTime(f2 - (int)f2);
+	  	if (f6 != 0F)
+	  	{
+	  		float f7 = MathHelper.sin(f6 * f6 * (float)Math.PI);
+	        float f8 = MathHelper.sin(MathHelper.sqrt(f6) * (float)Math.PI);
+	        this.ArmRight01.rotateAngleX = -0.6F - f8 * 80.0F * Values.N.DIV_PI_180;
+	        this.ArmRight01.rotateAngleY = 0F - f7 * 20.0F * Values.N.DIV_PI_180 + 0.2F;
+	        this.ArmRight01.rotateAngleZ = 0.2F - -f8 * 20.0F * Values.N.DIV_PI_180;
+	  	}
 	    
 	    //leg motion
 	    this.LegLeft01.rotateAngleX = addk1;

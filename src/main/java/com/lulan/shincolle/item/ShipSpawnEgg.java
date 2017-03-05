@@ -129,7 +129,6 @@ public class ShipSpawnEgg extends BasicItem
 		case ID.Ship.DestroyerRO+2:
 		case ID.Ship.DestroyerHA+2:
 		case ID.Ship.DestroyerNI+2:
-		case ID.Ship.DestroyerHime+2:
 		case ID.Ship.DestroyerAkatsuki+2:
 		case ID.Ship.DestroyerAkatsuki+2002:
 		case ID.Ship.DestroyerHibiki+2:
@@ -174,6 +173,7 @@ public class ShipSpawnEgg extends BasicItem
 		case ID.Ship.CarrierWD+2:				//DE, demon, water demon
 			return 8;
 		case ID.Ship.CarrierHime+2:				//PR
+		case ID.Ship.DestroyerHime+2:
 		case ID.Ship.HeavyCruiserHime+2:
 		case ID.Ship.AirfieldHime+2:
 		case ID.Ship.BattleshipHime+2:
