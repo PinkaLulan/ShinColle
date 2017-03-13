@@ -41,6 +41,7 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     
     public EntityAIShipOpenDoor(IShipNavigator host, boolean closeDoor)
     {
+    	this.setMutexBits(0);
         this.host = (Entity) host;
         this.host2 = host;
         this.closeDoor = closeDoor;

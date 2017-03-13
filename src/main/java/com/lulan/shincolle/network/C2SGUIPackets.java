@@ -351,6 +351,9 @@ public class C2SGUIPackets implements IMessage
 					capa.addShipEntity(0, (BasicEntityShip) entity, false);
 					//reset formation id
 					capa.setFormatIDCurrentTeam(0);
+					//sync team name
+					EntityHelper.updateNameTag((BasicEntityShip) entity);
+					((BasicEntityShip) entity).sendSyncPacketUnitName();
 				}
 				//其他entity or null, 則視為清空該team slot (表示entity可能抓錯或找不到)
 				else
@@ -669,7 +672,18 @@ public class C2SGUIPackets implements IMessage
 			if (capa != null)
 			{
 				capa.setUnitName(capa.getCurrentTeamID(), msg.valueStr);
-				capa.sendSyncPacket(8);		//sync name string to client
+				
+				//sync name string to client capa
+				capa.sendSyncPacket(8);
+				
+				//sync name string to each ship
+				BasicEntityShip[] ships = capa.getShipEntityAll(capa.getCurrentTeamID());
+				
+				for (BasicEntityShip s : ships)
+				{
+					EntityHelper.updateNameTag(s);
+					s.sendSyncRequest(1);
+				}
 			}
 		}
 		break;

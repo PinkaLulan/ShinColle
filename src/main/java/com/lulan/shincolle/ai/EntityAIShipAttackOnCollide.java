@@ -31,7 +31,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase
         this.moveSpeed = speed;
         this.delayMax = 20;
         this.delayAttack = 20;
-        this.setMutexBits(12);
+        this.setMutexBits(4);
     }
 
     @Override

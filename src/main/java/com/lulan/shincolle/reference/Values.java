@@ -206,10 +206,10 @@ public class Values
 		put(ID.Ship.DestroyerInazuma,	new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
 		put(ID.Ship.DestroyerShimakaze,	new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
 		//CL
-		put(ID.Ship.LightCruiserTenryuu,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
-		put(ID.Ship.LightCruiserTatsuta,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
-		put(ID.Ship.HeavyCruiserAtago,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
-		put(ID.Ship.HeavyCruiserTakao,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
+		put(ID.Ship.LightCruiserTenryuu,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
+		put(ID.Ship.LightCruiserTatsuta,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
+		put(ID.Ship.HeavyCruiserAtago,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.2F});
+		put(ID.Ship.HeavyCruiserTakao,new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.2F});
 		//BB
 		put(ID.Ship.BattleshipNagato,	new float[] {0.1F, 0.95F, 0.95F, 0.95F, 0.1F});
 		put(ID.Ship.BattleshipYamato,	new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.15F});

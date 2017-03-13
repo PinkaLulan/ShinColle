@@ -923,6 +923,22 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(laser);
 		}
 		break;
+		case 6:		//紫色可調粗細光束
+		{
+			//host check
+			if (host instanceof EntityLivingBase)
+			{
+				host2 = (EntityLivingBase) host;
+			}
+			else
+			{
+				return;
+			}
+			//																			   height, scale out, scale in, NO_USE, type
+			ParticleLaserNoTexture laser = new ParticleLaserNoTexture(world, host2, target, par1, par2, par3, 0F, 6);
+			Minecraft.getMinecraft().effectRenderer.addEffect(laser);
+		}
+		break;
 		default:
 		break;
 		}

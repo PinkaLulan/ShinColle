@@ -85,7 +85,7 @@ public class GuiDesk extends GuiContainer
 	private static final int LISTCLICK_TARGET = 2;
 	private static final int LISTCLICK_ALLY = 3;
 	private static final int LISTCLICK_BAN = 4;
-	private static String StrGUI, StrPos, StrHeight, StrTeamID, StrBreak, StrAlly, StrOK, StrUnban,
+	private static String StrPos, StrHeight, StrTeamID, StrBreak, StrAlly, StrOK, StrUnban,
 							StrBan, StrCancel, StrAllyList, StrBanList, StrRename, StrDisband, StrCreate,
 							StrNeutral, StrBelong, StrAllied, StrHostile, StrRemove;
 	
@@ -229,7 +229,6 @@ public class GuiDesk extends GuiContainer
         Keyboard.enableRepeatEvents(true);
         
         //string
-        StrGUI = I18n.format("gui.shincolle:radar.gui");
         StrPos = I18n.format("gui.shincolle:radar.position");
         StrHeight = I18n.format("gui.shincolle:radar.height");
         StrTeamID = I18n.format("gui.shincolle:team.teamid");	
@@ -696,15 +695,16 @@ public class GuiDesk extends GuiContainer
             	this.radar_zoomLv++;
             	if (this.radar_zoomLv > 2) this.radar_zoomLv = 0;
             break;
-            case 1: //ship slot 0~4
+            case 1: //ship slot 0~5
             case 2:
             case 3:
             case 4:
             case 5:
+            	int oldClick = this.listClicked[LISTCLICK_RADAR];
             	this.listClicked[LISTCLICK_RADAR] = radarBtn - 1;
-            break;
-            case 6: //open ship GUI
-            	this.openShipGUI();
+            	
+            	//if click same slot, open ship GUI
+            	if (oldClick == this.listClicked[LISTCLICK_RADAR]) this.openShipGUI();
             break;
             }//end switch
         break;  	//end radar
@@ -1232,10 +1232,6 @@ public class GuiDesk extends GuiContainer
 		ShipEntity s;
 		BasicEntityShip s2;
 		int texty = 27;
-		
-		//draw button text
-		int strlen = (int) (this.fontRendererObj.getStringWidth(StrGUI) * 0.5F);
-		fontRendererObj.drawStringWithShadow(StrGUI, 32-strlen, 174, Enums.EnumColors.YELLOW.getValue());
 		
 		//draw ship list in radar
 		for (int i = this.listNum[LISTCLICK_RADAR]; i < shipList.size() && i < this.listNum[LISTCLICK_RADAR] + 5; ++i) {

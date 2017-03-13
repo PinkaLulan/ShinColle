@@ -7,7 +7,6 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -218,6 +217,8 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
         applyParticleAtTarget(3, target, new float[4]);
         applyEmotesReaction(3);
         
+        applyAttackPostMotion(3, target, true, 0F);
+        
         return true;
 	}
 
@@ -273,6 +274,8 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     	applySoundAtTarget(4, target);
         applyParticleAtTarget(4, target, new float[4]);
         applyEmotesReaction(3);
+        
+        applyAttackPostMotion(4, target, true, 0F);
         
         return true;
 	}

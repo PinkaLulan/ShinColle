@@ -42,7 +42,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase
         {
             this.host = host;
             this.host2 = (EntityLiving) host;
-            this.setMutexBits(10);
+            this.setMutexBits(2);
             
             //init value
             this.launchDelay = 20;

@@ -41,7 +41,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase
         {
             this.host = host;
             this.host2 = (EntityLiving) host;
-            this.setMutexBits(9);
+            this.setMutexBits(1);
             
             //init value
             this.delayLight = 20;

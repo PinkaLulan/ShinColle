@@ -45,6 +45,7 @@ public class ConfigHandler
 	public static int kaitaiAmountSmall = 20;
 	public static int kaitaiAmountLarge = 20;
 	public static int baseCaressMorale = 15;
+	public static int nameTagDist = 16;
 	public static int spawnBossNum = 2;
 	public static int spawnMobNum = 4;
 	public static int shipNumPerPage = 5;
@@ -179,7 +180,10 @@ public class ConfigHandler
 		radarUpdate = config.getInt("Radar_Update", CATE_GENERAL, 128, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");
 		
 		//是否顯示custom name tag
-		showTag = config.getBoolean("AlwaysShow_NameTag", CATE_GENERAL, true, "Always show custom name tag");
+		showTag = config.getBoolean("NameTag_AlwaysShow", CATE_GENERAL, true, "Always show custom name tag");
+		
+		//name tag顯示距離
+		nameTagDist = config.getInt("NameTag_Distance", CATE_GENERAL, 16, 1, 64, "Show name tag if player get close to ship X blocks");
 		
 		//ship列表顯示數量
 		shipNumPerPage = config.getInt("Command_ShipNum", CATE_GENERAL, 5, 1, 5000, "#Ship per page for command: /ship list");

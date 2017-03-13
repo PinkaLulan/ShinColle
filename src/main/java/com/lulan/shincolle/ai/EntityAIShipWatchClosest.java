@@ -18,7 +18,7 @@ public class EntityAIShipWatchClosest extends EntityAIWatchClosest
     public EntityAIShipWatchClosest(EntityLiving entity, Class target, float range, float rate)
     {
         super(entity, target, range, rate);
-        this.setMutexBits(8);
+        this.setMutexBits(0);
         
         this.host = entity;
         this.host2 = (IShipEmotion) entity;

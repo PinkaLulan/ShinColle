@@ -302,12 +302,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public boolean hasCustomName()
     {
-		if (ConfigHandler.showTag)
-		{
-			return super.hasCustomName();
-		}
-		
-		return false;
+		return super.hasCustomName();
     }
 	
 	/** init values, called in the end of constructor */
@@ -567,23 +562,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected void setAIList()
 	{
 		//high priority
-		this.tasks.addTask(1, new EntityAIShipSit(this));				//0111
-		this.tasks.addTask(2, new EntityAIShipFlee(this));				//0111
-		this.tasks.addTask(3, new EntityAIShipGuarding(this));			//0111
-		this.tasks.addTask(4, new EntityAIShipFollowOwner(this));		//0111
-		this.tasks.addTask(5, new EntityAIShipOpenDoor(this, true));	//0000
+		this.tasks.addTask(1, new EntityAIShipSit(this));						//0111
+		this.tasks.addTask(2, new EntityAIShipFlee(this));						//0111
+		this.tasks.addTask(3, new EntityAIShipGuarding(this));					//0111
+		this.tasks.addTask(4, new EntityAIShipFollowOwner(this));				//0111
+		this.tasks.addTask(5, new EntityAIShipOpenDoor(this, true));			//0000
 		
-		//use melee attack
+		//use melee attack (mux bit: melee:0100, air:0010, ammo:0001)
 		if (this.getStateFlag(ID.F.UseMelee))
 		{
-			this.tasks.addTask(10, new EntityAIShipAttackOnCollide(this, 1D));//1100
+			this.tasks.addTask(15, new EntityAIShipAttackOnCollide(this, 1D));	//0100
 		}
 		
 		//idle AI
-		this.tasks.addTask(23, new EntityAIShipFloating(this));			//1000
-		this.tasks.addTask(24, new EntityAIShipWander(this, 10, 5, 0.8D));//0111
-		this.tasks.addTask(25, new EntityAIShipWatchClosest(this, EntityPlayer.class, 4F, 0.06F));//0010
-		this.tasks.addTask(26, new EntityAIShipLookIdle(this));			//0011
+		this.tasks.addTask(23, new EntityAIShipFloating(this));					//0111
+		this.tasks.addTask(24, new EntityAIShipWander(this, 10, 5, 0.8D));		//0111
+		this.tasks.addTask(25, new EntityAIShipWatchClosest(this,
+										EntityPlayer.class, 4F, 0.06F));		//0000
+		this.tasks.addTask(26, new EntityAIShipLookIdle(this));					//0000
 	}
 	
 	//setup target AI
@@ -2722,7 +2718,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
               	  	  		}
                 		}
             		}
-            		
+
             		//check every 32 ticks
                 	if ((ticksExisted & 31) == 0)
                 	{
@@ -2802,9 +2798,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	                    		
     	                    		//update morale value
     	                    		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
-    	                    		
-    	                    		//update name string
-    	                    		EntityHelper.updateNameTag(this);
                         		}
                         		
                         		//check every 256 ticks
@@ -2834,6 +2827,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                             		{
                             			this.setFoodSaturation(--f);
                             		}
+                            		
+                            		//update name string
+                            		EntityHelper.updateNameTag(this);
                             	}//end every 256 ticks
                         	}//end every 128 ticks
                 		}//end every 64 ticks
@@ -2857,7 +2853,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	updateClientTimer();
         	
         	//request sync packet
-        	if (this.ticksExisted == 20)
+        	if (this.ticksExisted == 40 || this.ticksExisted == 120)
         	{
         		this.sendSyncRequest(0);	//request emotion state sync
         		this.sendSyncRequest(1);	//request unit name sync
@@ -2868,13 +2864,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	{
         		//show unit name and uid on head
         		EntityHelper.showNameTag(this);
-        		
-            	//every 64 ticks
-            	if ((this.ticksExisted & 63) == 0)
-            	{
-            		//update name string
-            		EntityHelper.updateNameTag(this);
-            	}//end 128 ticks
         	}//end 32 ticks
         }//end client side
         
@@ -2946,6 +2935,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				flareTarget(target);
 			}
 	    }
+	    
+	    applyAttackPostMotion(0, target, isTargetHurt, atk);
 
 	    return isTargetHurt;
 	}
@@ -3051,6 +3042,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	        
 	        if (ConfigHandler.canFlare) flareTarget(target);
         }
+	    
+	    applyAttackPostMotion(1, target, isTargetHurt, atk);
 
 	    return isTargetHurt;
 	}
@@ -3140,7 +3133,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         
         if (ConfigHandler.canFlare) flareTarget(target);
         
+        applyAttackPostMotion(2, target, true, atk);
+        
         return true;
+	}
+	
+	/** apply motion after attack
+	 *  type: 0:melee, 1:light, 2:heavy, 3:light air, 4:heavy air
+	 */
+	protected void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
+	{
 	}
 	
 	@Override

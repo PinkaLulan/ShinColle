@@ -554,7 +554,14 @@ public class S2CGUIPackets implements IMessage
 			
 			for (int i = 0; i < 9; i++)
 			{
-				strlist.add(strarr[i]);
+				if (strarr[i] == null || strarr[i].length() < 1)
+				{
+					strlist.add(" ");
+				}
+				else
+				{
+					strlist.add(strarr[i]);
+				}
 			}
 			
 			PacketHelper.sendListString(buf, strlist);

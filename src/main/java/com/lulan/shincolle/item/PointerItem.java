@@ -685,15 +685,16 @@ public class PointerItem extends BasicItem
 			//not using
 			if (!inUse)
 			{
-				if (item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB"))
-				{
-					int orgCurrentItem = item.getTagCompound().getInteger("orgHB");
-					LogHelper.debug("DEBUG: change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
-					
-					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
-					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
-					item.getTagCompound().setBoolean("chgHB", false);
-				}
+				//TODO dep
+//				if (item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB"))
+//				{
+//					int orgCurrentItem = item.getTagCompound().getInteger("orgHB");
+//					LogHelper.debug("DEBUG: change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
+//					
+//					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
+//					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
+//					item.getTagCompound().setBoolean("chgHB", false);
+//				}
 			}
 			//if using
 			else

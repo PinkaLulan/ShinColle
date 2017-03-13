@@ -54,6 +54,8 @@ public class PacketHelper
 	
 	/** send string list data
 	 *  steam: 0:size 1~N:string
+	 *  
+	 *  NOTE: 不能發送null string, 否則會跳一堆NPE (只會貼log 不會crash)
 	 */
 	public static void sendListString(ByteBuf buf, List data)
 	{
@@ -67,7 +69,16 @@ public class PacketHelper
 			//send data
 			while (iter.hasNext())
 			{
-				ByteBufUtils.writeUTF8String(buf, (String) iter.next());
+				String str = (String) iter.next();
+				
+				if (str == null)
+				{
+					ByteBufUtils.writeUTF8String(buf, "");
+				}
+				else
+				{
+					ByteBufUtils.writeUTF8String(buf, str);
+				}
 			}
 		}
 		else

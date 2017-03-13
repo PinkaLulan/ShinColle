@@ -24,7 +24,7 @@ public class EntityAIShipLookIdle extends EntityAIBase
     {
         this.host = entity;
         this.host2 = (IShipEmotion) entity;
-        this.setMutexBits(3);
+        this.setMutexBits(0);
     }
 
     public boolean shouldExecute()

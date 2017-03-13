@@ -2037,9 +2037,9 @@ public class EntityHelper
 		if (ship == null || ship.unitNames == null) return;
 
 		//only show name tag if config enabled or player nearby or player press SPRINT key
-		if (ConfigHandler.alwaysShowTeamParticle ||
+		if (ConfigHandler.showTag ||
 			ClientProxy.getGameSetting().keyBindSprint.isKeyDown() ||
-			ship.getDistanceSqToEntity(ClientProxy.getClientPlayer()) < 144F)
+			ship.getDistanceSqToEntity(ClientProxy.getClientPlayer()) < (ConfigHandler.nameTagDist * ConfigHandler.nameTagDist))
 		{
 			String str;
 			
@@ -2089,23 +2089,12 @@ public class EntityHelper
 		}//end can show tag
 	}
   	
-  	/** update name tag data */
+  	/** update name tag data, SERVER SIDE ONLY */
   	public static void updateNameTag(BasicEntityShip ship)
   	{
   		if (ship == null) return;
   		
-  		CapaTeitoku capa = null;
-  		
-  		//for client side
-  		if (ship.world.isRemote)
-  		{
-  			capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
-  		}
-  		//for server side
-  		else
-  		{
-  			capa = CapaTeitoku.getTeitokuCapability(ship.getPlayerUID());
-  		}
+  		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(ship.getPlayerUID());
   		
   		if (capa != null)
   		{
@@ -2118,6 +2107,7 @@ public class EntityHelper
   			}
   			
   			ship.unitNames = tname;
+  			ship.sendSyncPacketUnitName();
   		}
   	}
   	

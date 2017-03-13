@@ -12,9 +12,14 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.TargetHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
@@ -173,6 +178,66 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		}
 	}
     
+    @Override
+	protected void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
+	{
+    	//if attack successfully, spread light beam to nearby target
+    	if (type == 1 && isTargetHurt)
+    	{
+    		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+    		//max number = LV * 0.05F = 0~7
+    		int num = (int) (this.getLevel() * 0.05F);
+    		
+            Entity hitEntity = null;
+            //range = 3.5D
+            AxisAlignedBB impactBox = target.getEntityBoundingBox().expand(3.5D, 3.5D, 3.5D); 
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, impactBox);
+            //atk = 20% main target atk
+            float atkTemp = atk * 0.2F;
+            
+            //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
+            if (hitList != null && !hitList.isEmpty())
+            {
+                for (int i = 0; num > 0 && i < hitList.size(); ++i)
+                {
+                	hitEntity = hitList.get(i);
+
+                	//目標不能是自己 or 主人
+                	if (!hitEntity.equals(this) && !hitEntity.equals(target) &&
+                		!TargetHelper.checkUnattackTargetList(hitEntity) &&
+                		hitEntity.canBeCollidedWith() && !TeamHelper.checkSameOwner(this, hitEntity))
+                	{
+                		//CRI
+                		if(this.rand.nextFloat() < EffectEquip[ID.EquipEffect.CRI])
+                        {
+                    		atkTemp *= 1.5F;
+                        }
+                		
+                		//若攻擊到玩家, 限制最大傷害
+                    	if (hitEntity instanceof EntityPlayer)
+                    	{
+                    		atkTemp *= 0.25F;
+                    		if (atkTemp > 59F) atkTemp = 59F;	//same with TNT
+                    	}
+                    	
+                    	//check friendly fire
+                		if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
+
+                		//attack
+                		num--;
+                	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp);
+                	    
+                	    //apply attack effect
+                	    CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target,
+                	    		hitEntity, target.height * 0.5D, 0.025D, 0.008D, 6, true), point);
+            	    	applySoundAtTarget(1, hitEntity);
+            	        applyParticleAtTarget(1, hitEntity, null);
+                	}//end can be damaged
+                }//end hit target list for loop
+            }//end hit target list != null
+    	}//end if successfully light attack
+	}
+    
     //change light cannon particle
     @Override
     public void applyParticleAtAttacker(int type, Entity target, float[] vec)
@@ -182,7 +247,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 14, posX, posY + 1.5D, posZ, target.posX, target.posY+target.height/2F, target.posZ, true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, target, this.isRiding() ? 1.45D : 1.7D, 0.08D, 0.02D, 6, true), point);
   		break;
   		case 2:  //heavy cannon
   		case 3:  //light aircraft

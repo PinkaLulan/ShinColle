@@ -5,15 +5,13 @@ package com.lulan.shincolle.tileentity;
  */
 public interface ITileLiquidFurnace extends ITileFurnace
 {
-
+	
+	
 	/** get fuel amount */
 	public int getFluidFuelAmount();
 	
 	/** consume fuel, return consume amount */
 	public int consumeFluidFuel(int amount);
-	
-	/** fuel mod by condig */
-	public float getFuelMagni();
 	
 	
 }

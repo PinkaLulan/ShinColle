@@ -7,6 +7,7 @@ import com.lulan.shincolle.entity.mounts.EntityMountCaH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -140,7 +141,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 	    //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
         		(float)target.posX, (float)target.posY + target.height * 0.2F, (float)target.posZ,
-        		1.3F, atk, 0F, true, -1F);
+        		(float)this.posY + 1.3F, atk, 0F, true, -1F);
         this.world.spawnEntity(missile);
 	    
 	    applyEmotesReaction(3);

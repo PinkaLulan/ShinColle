@@ -120,6 +120,20 @@ public class ParticleLaserNoTexture extends Particle
         	this.alphaOut = 0.6F;
         	this.alphaIn = 0.8F;
         break;
+        case 6:		//紫色可調粗細光束
+        	lookDeg = CalcHelper.getLookDegree(tarX-posX, (tarY+target.height*0.5D)-(posY+this.par1), tarZ-posZ, false);
+        	this.shotYaw = lookDeg[0];
+        	this.shotPitch = lookDeg[1];
+        	this.tarX = target.posX;
+    		this.tarY = target.posY + target.height * 0.5D;
+    		this.tarZ = target.posZ;
+        	this.particleMaxAge = 16;
+        	this.particleRed = 0.5F;
+        	this.particleGreen = 0F;
+        	this.particleBlue = 1F;
+        	this.scaleOut = (float) this.par2;
+        	this.scaleIn = (float) this.par3;
+        break;
         default:	//紅光束砲
         	lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
         	posOffset = CalcHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);
@@ -455,6 +469,35 @@ public class ParticleLaserNoTexture extends Particle
         			this.alphaOut = this.alphaIn * 0.5F;
         		}
     		break;
+    		case 6:		//紫色可調粗細光束
+	        	lookDeg = CalcHelper.getLookDegree(tarX-posX, (tarY+target.height*0.5D)-(posY+this.par1), tarZ-posZ, false);
+	        	this.shotYaw = lookDeg[0];
+	        	this.shotPitch = lookDeg[1];
+        		this.posX = host.posX;
+            	this.posY = host.posY + this.par1;
+            	this.posZ = host.posZ;
+	        	this.tarX = target.posX;
+	    		this.tarY = target.posY + target.height * 0.5D;
+	    		this.tarZ = target.posZ;
+	    		
+        		if (this.particleAge < 8)
+        		{
+                	this.scaleIn = (float)this.par3 * (1F + 0.6F * this.particleAge);
+        			this.alphaIn = 0.2F + particleAge * 0.1F;
+        			this.alphaOut = this.alphaIn * 0.25F;
+        		}
+        		else if (this.particleAge > 10)
+        		{
+        			this.scaleIn = this.scaleIn * 0.75F;
+        			this.alphaIn = 1F + (10 - particleAge) * 0.15F;
+        			this.alphaOut = this.alphaIn * 0.25F;
+        		}
+        		else
+        		{
+        			this.alphaIn = 1F;
+        			this.alphaOut = 0.25F;
+        		}
+        	break;
     		default:	//red laser
     			//force host look vector
     			this.host.renderYawOffset = shotYaw * Values.N.DIV_180_PI;
@@ -469,6 +512,7 @@ public class ParticleLaserNoTexture extends Particle
         		this.tarX = target.posX;
         		this.tarY = target.posY + target.height * 0.75D;
         		this.tarZ = target.posZ;
+        		
         		if (this.particleAge > 4)
         		{
         			this.alphaIn = 1.0F + (4 - particleAge) * 0.2F;

@@ -154,7 +154,17 @@ public class ContainerCrane extends Container
         		//set NORMAL MODE item
         		else
         		{
+        			ItemStack oldSlot = slot.getStack();
             		ItemStack itemstack2 = itemstack.copy();
+            		int size = itemstack.stackSize;
+            		
+            		//if same item, add stack size
+            		if (ItemStack.areItemsEqual(itemstack2, oldSlot))
+            		{
+            			size += oldSlot.stackSize;
+            		}
+            		
+            		itemstack2.stackSize = size;
             		slot.putStack(itemstack2);
             		tile.setItemMode(id, false);
         		}

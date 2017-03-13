@@ -1153,10 +1153,10 @@ public class EventHandler
 					{
 						getKey = i;
 						
-						//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT SIDE)
-						if (!pointer.hasTagCompound()) pointer.setTagCompound(new NBTTagCompound());
-						pointer.getTagCompound().setBoolean("chgHB", true);
-						pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
+//						//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT SIDE) TODO dep
+//						if (!pointer.hasTagCompound()) pointer.setTagCompound(new NBTTagCompound());
+//						pointer.getTagCompound().setBoolean("chgHB", true);
+//						pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
 						
 						break;
 					}
