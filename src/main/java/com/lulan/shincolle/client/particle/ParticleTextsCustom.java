@@ -136,11 +136,18 @@ public class ParticleTextsCustom extends Particle
         if (this.particleAge++ > this.particleMaxAge)
         {
             this.setExpired();
+            return;
         }
         
         switch (this.particleType)
         {
         case 1:
+        	if (this.host == null)
+        	{
+                this.setExpired();
+                return;
+        	}
+        	
         	this.setPosition(this.host.posX + this.parms[0], this.host.posY + this.parms[1], this.host.posZ + this.parms[2]);
     	break;
         }

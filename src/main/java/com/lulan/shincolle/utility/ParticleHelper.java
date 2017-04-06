@@ -962,6 +962,8 @@ public class ParticleHelper
 		case 1:		//show text on entity
 		{
 			Entity host = EntityHelper.getEntityByID(parms[2], 0, true);
+			if (host == null) return;
+			
 			ParticleTextsCustom ptx = new ParticleTextsCustom(host, w, posX, posY, posZ, 1F, 1, text, parms);
 			Minecraft.getMinecraft().effectRenderer.addEffect(ptx);
 		}
