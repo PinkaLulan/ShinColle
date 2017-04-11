@@ -240,10 +240,11 @@ public class S2CGUIPackets implements IMessage {
 				this.tile = world.getTileEntity(recvX, recvY, recvZ);
 				
 				if(this.tile1 != null) {
-					int[] data = new int[3];
+					int[] data = new int[4];
 					data[0] = buf.readInt();
 					data[1] = buf.readInt();
 					data[2] = buf.readInt();
+					data[3] = buf.readInt();
 					EntityHelper.setTileEntityByGUI(tile, ID.B.Desk_Sync, data);
 				}
 				else {
@@ -618,9 +619,10 @@ public class S2CGUIPackets implements IMessage {
 				
 				switch(this.type) {
 				case PID.TileDesk:
-					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-					buf.writeInt(((TileEntityDesk)tile).guiFunc);
-					buf.writeInt(((TileEntityDesk)tile).guiFunc);
+					buf.writeInt(((TileEntityDesk) tile).guiFunc);
+					buf.writeInt(((TileEntityDesk) tile).book_chap);
+					buf.writeInt(((TileEntityDesk) tile).book_page);
+					buf.writeInt(((TileEntityDesk) tile).radar_zoomLv);
 					break;
 				}
 			}

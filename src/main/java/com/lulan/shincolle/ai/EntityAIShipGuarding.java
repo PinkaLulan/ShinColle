@@ -3,13 +3,6 @@ package com.lulan.shincolle.ai;
 import java.util.Collections;
 import java.util.List;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -27,6 +20,12 @@ import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 /**SHIP GUARDING AI
  * CanFollow = false時可以執行
  * 持續固守某一點followMax格之內, 距離該點followMax格以上就會嘗試回去該點直到靠近followMin格內
@@ -55,8 +54,6 @@ public class EntityAIShipGuarding extends EntityAIBase {
     private ShipPathNavigate ShipNavigator;
     private final TargetHelper.Sorter targetSorter;
     private final TargetHelper.Selector targetSelector;
-    private static final double TP_DIST = 1600D;	//40 block for tp dist
-    private static final int TP_TIME = 400;			//20 sec for can't move time
     private int checkTP_T, checkTP_D;				//teleport cooldown count
     private int findCooldown;						//path navi cooldown
     private double maxDistSq, minDistSq;
@@ -248,21 +245,21 @@ public class EntityAIShipGuarding extends EntityAIBase {
             //check teleport conditions: same DIM and (dist > TP_DIST or time > TP_TIME)
         	if(this.host2.dimension == this.host.getGuardedPos(3)) {
         		//check dist
-        		if(this.distSq > TP_DIST) {
+        		if(this.distSq > ConfigHandler.shipTeleport[1]) {
         			this.checkTP_D++;
         			
-        			if(this.checkTP_D > TP_TIME) {
+        			if(this.checkTP_D > ConfigHandler.shipTeleport[0]) {
         				this.checkTP_D = 0;
         				
         				if(host2 != null && owner != null)
-        				LogHelper.info("DEBUG : guard AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
+        				LogHelper.info("DEBUG : guard AI: distSQ > "+ConfigHandler.shipTeleport[1]+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
             			this.applyTeleport();
             			return;
         			}
         		}
         		
         		//check moving time
-        		if(this.checkTP_T > TP_TIME) {
+        		if(this.checkTP_T > ConfigHandler.shipTeleport[0]) {//TODO DEBUG
         			this.checkTP_T = 0;
         			
         			if(host2 != null && owner != null)
@@ -280,53 +277,37 @@ public class EntityAIShipGuarding extends EntityAIBase {
     	}//end guard entity
     }
     
-    //do teleport
+    /**
+     * 注意:
+     * 傳送entity不能用setLocationAndAngles
+     * 此方法會莫名的移除mount或者rider
+     * 
+     * 必須使用setPosition
+     * 此方法不會動到lastTickPosXYZ, 所以不會影響entity在position update時將不合法移動的entity刪除
+     */
     private void applyTeleport() {
     	if(this.host2 instanceof BasicEntityMount) {
     		BasicEntityShip ship = (BasicEntityShip) ((BasicEntityMount) this.host2).getHostEntity();
     		
-    		if(this.distSq > 1024) {
-    			this.clearMountSeat2(this.host2);  //too far away, drop mount
-    			this.clearMountSeat2(ship);
-    		}
-    		
+			EntityHelper.clearMountSeat(this.host2);
+			EntityHelper.clearMountSeat(ship);
     		this.ShipNavigator.clearPathEntity();
-    		ship.setLocationAndAngles(pos[0], pos[1]+0.5D, pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
+    		ship.setPosition(pos[0], pos[1]+0.5D, pos[2]);
+    		this.host2.setPosition(pos[0], pos[1]+0.5D, pos[2]);
     		this.sendSyncPacket(ship);
     	}
     	else {
-    		if(this.distSq > 1024) {
-    			this.clearMountSeat2(this.host2);  //too far away, drop mount
-    		}
-        	
+    		EntityHelper.clearMountSeat(this.host2);  //too far away, drop mount
     		this.ShipNavigator.clearPathEntity();
-    		this.host2.setLocationAndAngles(pos[0], pos[1]+0.5D, pos[2], this.host2.rotationYaw, this.host2.rotationPitch);
-    		this.sendSyncPacket(this.host2);
+    		this.host2.setPosition(pos[0], pos[1]+0.5D, pos[2]);
+			this.sendSyncPacket(this.host2);
     	}
     }
 
-    //clear seat2
-	private void clearMountSeat2(EntityLiving entity) {
-		//若座位2有人, 要先把座位2的乘客踢掉
-  		if(entity.ridingEntity != null) {
-  			if(entity.ridingEntity instanceof BasicEntityMount) {
-	  			BasicEntityMount mount = (BasicEntityMount) entity.ridingEntity;
-	  			if(mount.seat2 != null) {
-	  				mount.seat2.setRiderNull();
-	  			}
-  			}
-  			entity.mountEntity(null);
-  		}
-  		
-  		//清空騎乘的人
-  		if(entity.riddenByEntity != null) {
-  			entity.riddenByEntity.mountEntity(null);
-  			entity.riddenByEntity = null;
-  		}
-	}
-	
 	//sync position
 	private void sendSyncPacket(Entity ent) {
+		if (ent  ==  null) return;
+		
 		//for other player, send ship state for display
 		TargetPoint point = new TargetPoint(ent.dimension, ent.posX, ent.posY, ent.posZ, 64D);
 		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(ent, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);

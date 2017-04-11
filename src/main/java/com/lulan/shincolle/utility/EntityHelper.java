@@ -1895,5 +1895,38 @@ public class EntityHelper {
 		return count;
 	}
 
+	/** clear both rider and mount */
+  	public static void clearMountSeat(EntityLiving host)
+  	{
+		//若座位2有人, 要先把座位2的乘客踢掉
+  		if (host.ridingEntity != null)
+  		{
+  			if (host.ridingEntity instanceof BasicEntityMount)
+  			{
+	  			BasicEntityMount mount = (BasicEntityMount) host.ridingEntity;
+	  			if (mount.seat2 != null)
+	  			{
+	  				mount.seat2.setRiderNull();
+	  			}
+  			}
+  			
+			host.ridingEntity.riddenByEntity = null;
+			host.ridingEntity = null;
+  		}
+  		
+  		//清空騎乘的人
+  		if (host.riddenByEntity != null)
+  		{
+  			//如果是其他船, 解除騎乘時需重設定位置
+  			if (host.riddenByEntity instanceof BasicEntityShip)
+  			{
+  				host.riddenByEntity.setPosition(host.posX, host.posY, host.posZ);
+  			}
+  			
+			host.riddenByEntity.ridingEntity = null;
+			host.riddenByEntity = null;
+  		}
+  	}
 	
+  	
 }

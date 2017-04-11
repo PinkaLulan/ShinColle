@@ -12,6 +12,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.mounts.EntityMountSeat;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -106,6 +107,9 @@ public class S2CEntitySync implements IMessage {
 	//接收packet方法 (CLIENT SIDE)
 	@Override
 	public void fromBytes(ByteBuf buf) {
+		try
+		{
+			
 		boolean getSyncTarget = false;
 		
 		//get type and entityID
@@ -545,15 +549,21 @@ public class S2CEntitySync implements IMessage {
 				break;
 			}
 		}
-		else {
-			buf.clear();
-			LogHelper.info("DEBUG : packet handler: S2CEntitySync: entity is null, type: "+type+" eid: "+entityID);
+
+		}
+		catch (Exception e)
+		{
+			LogHelper.info("EXCEPTION: S2C entity sync packet: fromByte: "+e);
+			if (ConfigHandler.debugMode) e.printStackTrace();
 		}
 	}
 
 	//發出packet方法
 	@Override
 	public void toBytes(ByteBuf buf) {
+		try
+		{
+		
 		switch(this.type) {
 		case PID.SyncShip_All:	//sync all data
 			{
@@ -862,6 +872,8 @@ public class S2CEntitySync implements IMessage {
 			break;
 		case PID.SyncEntity_PosRot:	//entity position sync
 			{
+				if (this.entity3 == null) return;
+				
 				buf.writeByte(type);
 				buf.writeInt(this.entity3.getEntityId());
 				buf.writeDouble(this.entity3.posX);
@@ -909,6 +921,13 @@ public class S2CEntitySync implements IMessage {
 				buf.writeFloat((float) this.entity3.motionZ);
 			}
 			break;
+		}
+		
+		}
+		catch (Exception e)
+		{
+			LogHelper.info("EXCEPTION: S2C entity sync packet: toByte: "+e);
+			if (ConfigHandler.debugMode) e.printStackTrace();
 		}
 	}
 	

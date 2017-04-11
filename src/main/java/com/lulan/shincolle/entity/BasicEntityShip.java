@@ -5,26 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
-
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
 import com.lulan.shincolle.ai.EntityAIShipFlee;
@@ -49,6 +29,7 @@ import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.item.IShipCombatRation;
 import com.lulan.shincolle.item.IShipFoodItem;
 import com.lulan.shincolle.item.OwnerPaper;
@@ -72,6 +53,27 @@ import com.lulan.shincolle.utility.TargetHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
@@ -1659,7 +1661,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		NBTTagCompound nbt = itemstack.getTagCompound();
 		boolean changeOwner = false;
 		
-		if(nbt != null) {
+		if(nbt != null && !player.worldObj.isRemote) {
 			int ida = nbt.getInteger(OwnerPaper.SignIDA);
 			int idb = nbt.getInteger(OwnerPaper.SignIDB);
 			int idtarget = -1;	//target player uid
@@ -5188,6 +5190,189 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             }
         }
     }
+	
+	@Override
+	public void readFromNBT(NBTTagCompound nbt)
+	{
+		super.readFromNBT(nbt);
+		
+        //change rider position on chunk loading to fix "Wrong Location!" bug
+        if (this.worldObj == null || (!this.worldObj.isRemote && this.ticksExisted <= 0))
+        {
+        	if (nbt.hasKey("Riding", 10))
+            {
+        		NBTTagCompound riderTag  = nbt.getCompoundTag("Riding");
+        		riderTag.setTag("Pos", this.newDoubleNBTList(new double[] {this.posX, this.posY, this.posZ}));
+            }
+        }
+	}
+	
+	/**
+	 * FIX: mounts and rider be pushed while saving and loading from disk
+	 */
+	@Override
+    public boolean writeToNBTOptional(NBTTagCompound nbt)
+    {
+		//is guarding and riding, check dist to guard pos
+        if (this.isRiding() && this.dimension == this.getGuardedPos(3) &&
+        	this.getGuardedPos(1) > 0)
+        {
+        	float dx = (float) (this.posX - this.getGuardedPos(0));
+        	float dy = (float) (this.posY - this.getGuardedPos(1));
+        	float dz = (float) (this.posZ - this.getGuardedPos(2));
+        	float dist = dx*dx+dy*dy+dz*dz;
+        	
+        	if (dist > 64F)
+        	{
+        		this.ridingEntity.setDead();
+        		this.mountEntity(null);
+        		this.setPosition(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.5D, this.getGuardedPos(2)+0.5D);
+        	
+        		if (!this.worldObj.isRemote) this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_PosRot, true);
+        	}
+        }
+        
+        //is riding player, dismount while saving/loading
+        if (this.ridingEntity instanceof EntityPlayer)
+        {
+        	this.mountEntity(null);
+        }
+
+        return super.writeToNBTOptional(nbt);
+    }
+	
+	protected void onDeathUpdate()
+	{
+        ++this.deathTime;
+        
+        if (this.deathTime == 20)
+        {
+            int i;
+            
+            //spawn ship egg
+        	if (!this.worldObj.isRemote && this.getStateFlag(ID.F.CanDrop))
+        	{
+        		//set flag to false to prevent multiple drop from unknown bug
+        		this.setStateFlag(ID.F.CanDrop, false);
+        		
+        		//drop ship item
+        		ItemStack item = new ItemStack(ModItems.ShipSpawnEgg, 1, this.getShipClass()+2);
+    	    	BasicEntityItem entityItem2 = new BasicEntityItem(this.worldObj, this.posX, this.posY+0.5D, this.posZ, item);
+    	    	NBTTagCompound nbt = new NBTTagCompound();
+    	    	ExtendShipProps extProps = this.getExtProps();
+    	    	
+    	    	//get inventory data
+    			NBTTagList list = new NBTTagList();
+    			for (int j = 0; j < extProps.slots.length; j++)
+    			{
+    				if (extProps.slots[j] != null)
+    				{
+    					NBTTagCompound item2 = new NBTTagCompound();
+    					item2.setByte("Slot", (byte) j);
+    					extProps.slots[j].writeToNBT(item2);
+    					list.appendTag(item2);
+    				}
+    			}
+    			
+				//get ship misc data
+		    	int[] attrs = new int[7];
+		    	
+		    	if (this.getLevel() > 1) attrs[0] = this.getLevel() - 1;	//decrease level 1
+		    	else attrs[0] = 1;
+		    	
+		    	attrs[1] = this.getBonusPoint(ID.HP);
+		    	attrs[2] = this.getBonusPoint(ID.ATK);
+		    	attrs[3] = this.getBonusPoint(ID.DEF);
+		    	attrs[4] = this.getBonusPoint(ID.SPD);
+		    	attrs[5] = this.getBonusPoint(ID.MOV);
+		    	attrs[6] = this.getBonusPoint(ID.HIT);
+		    	
+		    	//get ship misc data 2
+		    	int[] attrs2 = new int[6];
+		    	
+		    	attrs2[0] = this.getStateEmotion(ID.S.State);
+		    	attrs2[1] = this.getStateEmotion(ID.S.State2);
+		    	attrs2[2] = this.getStateMinor(ID.M.FollowMin);
+		    	attrs2[3] = this.getStateMinor(ID.M.FollowMax);
+		    	attrs2[4] = this.getStateMinor(ID.M.FleeHP);
+		    	attrs2[5] = this.getStateMinor(ID.M.WpStay);
+		    	
+		    	//get ship flag data
+		    	byte[] flags = new byte[14];
+		    	
+		    	flags[0] = this.getStateFlag(ID.F.IsMarried) ? (byte)1 : (byte)0;
+		    	flags[1] = this.getStateFlag(ID.F.UseMelee) ? (byte)1 : (byte)0;
+		    	flags[2] = this.getStateFlag(ID.F.UseAmmoLight) ? (byte)1 : (byte)0;
+		    	flags[3] = this.getStateFlag(ID.F.UseAmmoHeavy) ? (byte)1 : (byte)0;
+		    	flags[4] = this.getStateFlag(ID.F.UseAirLight) ? (byte)1 : (byte)0;
+		    	flags[5] = this.getStateFlag(ID.F.UseAirHeavy) ? (byte)1 : (byte)0;
+		    	flags[6] = this.getStateFlag(ID.F.UseRingEffect) ? (byte)1 : (byte)0;
+		    	flags[7] = this.getStateFlag(ID.F.OnSightChase) ? (byte)1 : (byte)0;
+		    	flags[8] = this.getStateFlag(ID.F.PVPFirst) ? (byte)1 : (byte)0;
+		    	flags[9] = this.getStateFlag(ID.F.AntiAir) ? (byte)1 : (byte)0;
+		    	flags[10] = this.getStateFlag(ID.F.AntiSS) ? (byte)1 : (byte)0;
+		    	flags[11] = this.getStateFlag(ID.F.PassiveAI) ? (byte)1 : (byte)0;
+		    	flags[12] = this.getStateFlag(ID.F.TimeKeeper) ? (byte)1 : (byte)0;
+		    	flags[13] = this.getStateFlag(ID.F.PickItem) ? (byte)1 : (byte)0;
+    	    	
+    	    	/** OWNER SETTING
+    	    	 *  1. check player UID first
+    	    	 *  2. if (1) fail, check player UUID string
+    	    	 */
+    	    	//save owner UUID
+    	    	String ownerUUID = EntityHelper.getPetPlayerUUID(this);
+    	    	nbt.setString("owner", ownerUUID);
+    	    	
+    	    	//save owner UID & name
+    	    	EntityPlayer owner = EntityHelper.getEntityPlayerByUID(this.getStateMinor(ID.M.PlayerUID));
+    	    	
+    	    	if (owner != null)
+    	    	{
+    	    		nbt.setString("ownername", owner.getDisplayName());
+    	    	}
+    	    	
+    	    	nbt.setTag("ShipInv", list);		//save inventory data to nbt
+		    	nbt.setIntArray("Attrs", attrs);	//misc data
+		    	nbt.setIntArray("Attrs2", attrs2);	//misc data2
+		    	nbt.setByteArray("Flags", flags);	//flag data
+    	    	nbt.setInteger("PlayerID", this.getStateMinor(ID.M.PlayerUID));
+    	    	nbt.setInteger("ShipID", this.getStateMinor(ID.M.ShipUID));
+    	    	nbt.setString("customname", this.getCustomNameTag());
+    	    	
+    	    	entityItem2.getEntityItem().setTagCompound(nbt);	//save nbt to entity item
+    	    	this.worldObj.spawnEntityInWorld(entityItem2);		//spawn entity item
+        	}
+
+        	//spawn xp orb
+            if (!this.worldObj.isRemote && (this.recentlyHit > 0 || this.isPlayer()) && this.func_146066_aG() && this.worldObj.getGameRules().getGameRuleBooleanValue("doMobLoot"))
+            {
+                i = this.getExperiencePoints(this.attackingPlayer);
+
+                while (i > 0)
+                {
+                    int j = EntityXPOrb.getXPSplit(i);
+                    i -= j;
+                    this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, j));
+                }
+            }
+
+            this.setDead();
+
+            //spawn smoke
+            for (i = 0; i < 20; ++i)
+            {
+                double d2 = this.rand.nextGaussian() * 0.02D;
+                double d0 = this.rand.nextGaussian() * 0.02D;
+                double d1 = this.rand.nextGaussian() * 0.02D;
+                this.worldObj.spawnParticle("explode", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d2, d0, d1);
+            }
+        }
+        //clear bug entity
+    	else if (this.deathTime > 20 && this.isEntityAlive())
+    	{
+    		this.setDead();
+    	}
+	}
 	
   	
 }

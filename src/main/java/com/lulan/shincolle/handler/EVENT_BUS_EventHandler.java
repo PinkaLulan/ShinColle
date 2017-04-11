@@ -50,116 +50,34 @@ public class EVENT_BUS_EventHandler {
 
 	//change vanilla mob drop (add grudge), this is SERVER event
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onDrop(LivingDropsEvent event) {
+	public void onDrop(LivingDropsEvent event)
+	{
 	    //mob drop grudge
-		if(event.entity instanceof EntityMob || event.entity instanceof EntitySlime) {
-	    	if(event.entity instanceof BasicEntityShipHostile) {
-	    		BasicEntityShipHostile entity = (BasicEntityShipHostile)event.entity;
-	    		
-	    		if(entity.canDrop) {
-	    			//set drop flag to false
-	    			entity.canDrop = false;
-	    			
-	    			ItemStack bossEgg = ((BasicEntityShipHostile)event.entity).getDropEgg();
-	    			
-	    			if(bossEgg != null) {
-	    				BasicEntityItem entityItem1 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, bossEgg);
-			    		LogHelper.info("DEBUG : ship mob drop "+entityItem1.posX+" "+entityItem1.posY+" "+entityItem1.posZ);
-			    		event.entity.worldObj.spawnEntityInWorld(entityItem1);
-	    			}
-	    		}	
-	    	}
-	    	
-	    	//drop grudge
-	    	if(!(event.entity instanceof EntityRensouhouBoss)) {
-	    		//if config has drop rate setting
-	    		int numGrudge = (int) ConfigHandler.dropGrudge;
-//	    		LogHelper.info("DEBUG : drop grudge "+numGrudge+" "+ConfigHandler.dropGrudge);
-	    		//若設定超過1, 則掉落多個 (ex: 5.5 = 5顆)
-	    		if(numGrudge > 0) {
-	    			ItemStack drop = new ItemStack(ModItems.Grudge, numGrudge);
-			        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
-	    		}
-	    		//值不到1, 機率掉落1個
-	    		else {
-	    			if(event.entity.worldObj.rand.nextFloat() <= ConfigHandler.dropGrudge) {
-	    				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
-				        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
-	    			}
-	    		}
-	    		
-	    		//剩餘不到1的值, 改為機率掉落
-	    		if(event.entity.worldObj.rand.nextFloat() < (ConfigHandler.dropGrudge - numGrudge)) {
+		if ((event.entity instanceof EntityMob || event.entity instanceof EntitySlime) &&
+			!(event.entity instanceof EntityRensouhouBoss) &&
+			event.entity.worldObj.getGameRules().getGameRuleBooleanValue("doMobLoot"))
+		{
+    		//if config has drop rate setting
+    		int numGrudge = (int) ConfigHandler.dropGrudge;
+    		
+    		//若設定超過1, 則掉落多個 (ex: 5.5 = 5顆)
+    		if(numGrudge > 0) {
+    			ItemStack drop = new ItemStack(ModItems.Grudge, numGrudge);
+		        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
+    		}
+    		//值不到1, 機率掉落1個
+    		else {
+    			if(event.entity.worldObj.rand.nextFloat() <= ConfigHandler.dropGrudge) {
     				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
 			        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
     			}
-	    	}
-	    }
-	    
-	    //ship drop egg, if canDrop is true, drop spawn egg and set canDrop to false
-	    if(event.entity instanceof BasicEntityShip) {
-	    	BasicEntityShip entity = (BasicEntityShip)event.entity;
-	    	
-	    	if(entity.getStateFlag(ID.F.CanDrop)) {
-	    		//set flag to false to prevent multiple drop from unknown bug
-	    		entity.setStateFlag(ID.F.CanDrop, false);
-	    		
-	    		//drop ship item
-	    		ItemStack item = new ItemStack(ModItems.ShipSpawnEgg, 1, entity.getShipClass()+2);
-		    	BasicEntityItem entityItem2 = new BasicEntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY+0.5D, event.entity.posZ, item);
-		    	NBTTagCompound nbt = new NBTTagCompound();
-		    	ExtendShipProps extProps = entity.getExtProps();
-		    	
-		    	//get inventory data
-				NBTTagList list = new NBTTagList();
-				for(int i = 0; i < extProps.slots.length; i++) {
-					if(extProps.slots[i] != null) {
-						NBTTagCompound item2 = new NBTTagCompound();
-						item2.setByte("Slot", (byte)i);
-						extProps.slots[i].writeToNBT(item2);
-						list.appendTag(item2);
-					}
-				}
-				
-				//get attributes data
-		    	int[] attrs = new int[8];
-		    	
-		    	if(entity.getLevel() > 1) attrs[0] = entity.getLevel() - 1;	//decrease level 1
-		    	else attrs[0] = 1;
-		    	
-		    	attrs[1] = entity.getBonusPoint(ID.HP);
-		    	attrs[2] = entity.getBonusPoint(ID.ATK);
-		    	attrs[3] = entity.getBonusPoint(ID.DEF);
-		    	attrs[4] = entity.getBonusPoint(ID.SPD);
-		    	attrs[5] = entity.getBonusPoint(ID.MOV);
-		    	attrs[6] = entity.getBonusPoint(ID.HIT);
-		    	attrs[7] = entity.getStateFlagI(ID.F.IsMarried);
-		    	
-		    	/** OWNER SETTING
-		    	 *  1. check player UID first
-		    	 *  2. if (1) fail, check player UUID string
-		    	 */
-		    	
-		    	//save owner UUID
-		    	String ownerUUID = EntityHelper.getPetPlayerUUID(entity);
-		    	nbt.setString("owner", ownerUUID);
-		    	
-		    	//save owner UID & name
-		    	EntityPlayer owner = EntityHelper.getEntityPlayerByUID(entity.getStateMinor(ID.M.PlayerUID));
-		    	
-		    	if(owner != null) {
-		    		nbt.setString("ownername", owner.getDisplayName());
-		    	}
-		    	
-		    	nbt.setTag("ShipInv", list);		//save inventory data to nbt
-		    	nbt.setIntArray("Attrs", attrs);	//save attributes data to nbt
-		    	nbt.setInteger("PlayerID", entity.getStateMinor(ID.M.PlayerUID));
-		    	nbt.setInteger("ShipID", entity.getStateMinor(ID.M.ShipUID));
-		    	nbt.setString("customname", entity.getCustomNameTag());
-		    	
-		    	entityItem2.getEntityItem().setTagCompound(nbt);	  //save nbt to entity item
-		    	event.entity.worldObj.spawnEntityInWorld(entityItem2);	//spawn entity item
-	    	}
+    		}
+    		
+    		//剩餘不到1的值, 改為機率掉落
+    		if(event.entity.worldObj.rand.nextFloat() < (ConfigHandler.dropGrudge - numGrudge)) {
+				ItemStack drop = new ItemStack(ModItems.Grudge, 1);
+		        event.drops.add(new EntityItem(event.entity.worldObj, event.entity.posX, event.entity.posY, event.entity.posZ, drop));
+			}
 	    }
 	}
 	

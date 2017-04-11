@@ -1,9 +1,5 @@
 package com.lulan.shincolle.entity.mounts;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -11,6 +7,9 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 public class EntityMountSeat extends Entity {
 

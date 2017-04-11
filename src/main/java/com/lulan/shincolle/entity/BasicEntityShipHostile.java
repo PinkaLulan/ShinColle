@@ -2,6 +2,7 @@ package com.lulan.shincolle.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -20,6 +21,7 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -28,6 +30,7 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
@@ -1261,6 +1264,52 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	public short getShipClass() {
 		return (short) getStateMinor(ID.M.ShipClass);
 	}
+  	
+  	protected void onDeathUpdate()
+  	{
+        ++this.deathTime;
+
+        if (this.deathTime == 20)
+        {
+            int i;
+            
+    		if (!this.worldObj.isRemote && this.canDrop && this.worldObj.getGameRules().getGameRuleBooleanValue("doMobLoot"))
+    		{
+    			//set drop flag to false
+    			this.canDrop = false;
+    			
+    			ItemStack bossEgg = this.getDropEgg();
+    			
+    			if(bossEgg != null) {
+    				BasicEntityItem entityItem1 = new BasicEntityItem(this.worldObj, this.posX, this.posY+0.5D, this.posZ, bossEgg);
+		    		LogHelper.info("DEBUG : ship mob drop "+entityItem1.posX+" "+entityItem1.posY+" "+entityItem1.posZ);
+		    		this.worldObj.spawnEntityInWorld(entityItem1);
+    			}
+    		}	
+
+            if (!this.worldObj.isRemote && (this.recentlyHit > 0 || this.isPlayer()) && this.func_146066_aG() && this.worldObj.getGameRules().getGameRuleBooleanValue("doMobLoot"))
+            {
+                i = this.getExperiencePoints(this.attackingPlayer);
+
+                while (i > 0)
+                {
+                    int j = EntityXPOrb.getXPSplit(i);
+                    i -= j;
+                    this.worldObj.spawnEntityInWorld(new EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, j));
+                }
+            }
+
+            this.setDead();
+
+            for (i = 0; i < 20; ++i)
+            {
+                double d2 = this.rand.nextGaussian() * 0.02D;
+                double d0 = this.rand.nextGaussian() * 0.02D;
+                double d1 = this.rand.nextGaussian() * 0.02D;
+                this.worldObj.spawnParticle("explode", this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d2, d0, d1);
+            }
+        }
+  	}
   	
 
 }

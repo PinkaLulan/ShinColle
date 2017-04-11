@@ -17,7 +17,8 @@ public class KaitaiHammer extends BasicItem {
 		this.setUnlocalizedName("KaitaiHammer");
 		this.maxStackSize = 1;
 		this.hasSubtypes = false;
-		this.setMaxDamage(12);
+		this.setMaxDamage(20);
+		this.setNoRepair();
 	}
 	
 	//此鎚子可用於合成其他道具, 且不為消耗品, 故ContainerItem為耐久度-1的自己本身

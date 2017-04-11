@@ -208,7 +208,8 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
                 	/**不會對自己主人觸發爆炸
             		 * isEntityEqual() is NOT working
             		 * use entity id to check entity  */
-                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity) && 
+                	if(hitEntity.canBeCollidedWith() && isNotHost(hitEntity) &&
+                	   EntityHelper.checkAttackable(hitEntity) && 
                 	   !EntityHelper.checkSameOwner(host2, hitEntity)) {
                 		break;	//get target entity
                 	}

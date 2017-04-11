@@ -48,7 +48,8 @@ public class ConfigHandler {
 	public static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
-						   propCustomSoundShip, propCustomSoundRate, propCustomSoundRate2;
+						   propCustomSoundShip, propCustomSoundRate, propCustomSoundRate2,
+						   propShipTeleport;
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
 	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
 	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE
@@ -73,6 +74,8 @@ public class ConfigHandler {
 	public static int[] expGain = new int[] {2,     4,    12,   8,    24,   1,      2};
 	//mob spawn                               Max, Prob, GroupNum, MinPS, MaxPS
 	public static int[] mobSpawn = new int[] {50,  10,   1,        1,     1};
+	//teleport AI                                 cooldown ticks, distance^2
+	public static int[] shipTeleport = new int[] {200,            256};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int dmgSummon = 100;	//summons damage modifier, 20 = dmg * 20%
@@ -187,6 +190,7 @@ public class ConfigHandler {
 		propMobSpawn = config.get("ship setting", "Mob_Spawn", mobSpawn, "Mob ship spawn: Max number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
 		propCustomSoundRate = config.get("ship setting", "Custom_Sound_Rate", customSoundRate, "Probability of custom sound, 0 = no custom sound, 100 = always custom sound. Format: ship id A, idle, attack, hurt, dead, marry, knockback, item get, feed, timekeep, ship id B, idle, ...(loop), the ship id is same with meta value of ship spawn egg.");
 		propCustomSoundRate2 = config.get("ship setting", "Custom_Sound_Rate2", customSoundRate2, "Custom sound by mod author, the priority is customSoundRate > customSoundRate2, you can set this sound rate to 0 (except ship id!!) or add your setting in 'customSoundRate' to disable this setting.");
+		propShipTeleport = config.get("ship setting", "ship_teleport", shipTeleport, "Ship teleport when following and guarding: cooldown (ticks), distance (blocks^2)");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("SVS_DmgTaken", "ship setting", 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -214,6 +218,7 @@ public class ConfigHandler {
 		fixedAttackDelay = getIntArrayFromConfig(fixedAttackDelay, propAtkDly);
 		expGain = getIntArrayFromConfig(expGain, propExp);
 		mobSpawn = getIntArrayFromConfig(mobSpawn, propMobSpawn);
+		shipTeleport = getIntArrayFromConfig(shipTeleport, propShipTeleport);
 		setCustomSoundValue();
 		
 		//若設定檔有更新過, 則儲存
