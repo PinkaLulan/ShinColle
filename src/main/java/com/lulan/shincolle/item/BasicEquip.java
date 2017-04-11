@@ -2,18 +2,24 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EnchantHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
@@ -117,6 +123,34 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
     {
     	if (stack != null && stack.getItem() != null)
     	{
+    		//check tooltip flags
+            if (stack.hasTagCompound())
+            {
+            	NBTTagCompound nbt = stack.getTagCompound();
+            	
+            	//has no flag, add new flag
+            	if (!nbt.hasKey("HideFlags", 99))
+            	{
+            		nbt.setInteger("HideFlags", 1);
+            	}
+            	
+            	//has flags, change flag by player key input
+            	int flag = nbt.getInteger("HideFlags");
+//            	GameSettings keySet = ClientProxy.getGameSetting();	//this is not working, dunno why
+            	
+            	if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ||
+            		Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))	//if press CTRL, show enchantments
+            	{
+            		flag = 0;
+            	}
+            	else											//hide enchantments by default
+            	{
+            		flag = 1;
+            	}
+            	
+            	nbt.setInteger("HideFlags", flag);
+            }
+    		
     		float[] itemRaw = Values.EquipMap.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));
     		
     		if (itemRaw != null)

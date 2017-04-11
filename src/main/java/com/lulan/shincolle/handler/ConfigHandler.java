@@ -65,7 +65,7 @@ public class ConfigHandler
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
 						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
 						   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
-						   propInfLiquid;
+						   propInfLiquid, propShipTeleport;
 	
 	//SHIP SETTING
 	//                                                    HP, ATK, DEF, SPD, MOV, HIT
@@ -102,6 +102,8 @@ public class ConfigHandler
 	public static int[] drumEU = new int[] {400, 100};
 	//can ship pump infinite liquid            min water depth, min lava depth
 	public static int[] infLiquid = new int[] {12,              8};
+	//ship teleport AI setting                    cooldown(ticks), distance(blocks^2)
+	public static int[] shipTeleport = new int[] {200,             256};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
@@ -234,6 +236,7 @@ public class ConfigHandler
 		propMobSpawn = config.get(CATE_SHIP, "Limit_MobSpawnNumber", mobSpawn, "Mob ship spawn MAX number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
 		propHeldItem = config.get(CATE_SHIP, "Held_Item", scaleHeldItem, "Ship held item scaling: scale, offset X, offset Y, offset Z");
 		propDrumLiquid = config.get(CATE_SHIP, "Drum_Liquid", drumLiquid, "liquid transport rate: base transfer rate (mB/t), additional rate per enchantment (mB/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate * #TotalPumps + EnchantRate * #TotalEnchantments)");
+		propShipTeleport = config.get("ship setting", "ship_teleport", shipTeleport, "Ship teleport when following and guarding: cooldown (ticks), distance (blocks^2)");
 		
 		propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", tileShipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
 		propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", tileShipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
@@ -275,6 +278,7 @@ public class ConfigHandler
 		scaleHeldItem = getDoubleArrayFromConfig(scaleHeldItem, propHeldItem);
 		drumLiquid = getIntArrayFromConfig(drumLiquid, propDrumLiquid);
 		drumEU = getIntArrayFromConfig(drumEU, propDrumEU);
+		shipTeleport = getIntArrayFromConfig(shipTeleport, propShipTeleport);
 		
 		checkChange(config);
 	}

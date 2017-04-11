@@ -6296,6 +6296,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	{
   		return EntityHelper.getHitAngleID(getHitAngle());
   	}
+  	
+  	/**
+  	 * FIX: bug that ship be deleted while teleport (dismount)
+  	 */
+  	@Override
+    public void dismountEntity(Entity mount)
+    {
+  		if (mount != null)
+  		{
+  			this.setPosition(mount.posX, mount.posY, mount.posZ);
+  		}
+    }
 	
 	
 }

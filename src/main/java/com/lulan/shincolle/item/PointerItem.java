@@ -861,7 +861,7 @@ public class PointerItem extends BasicItem
 	    			}
 	    			else
 	    			{
-	    				name = I18n.format("entity.shincolle."+ship.getClass().getSimpleName()+".name");
+	    				name = ship.getName();
 	    			}
 	    			
 	    			//add info string

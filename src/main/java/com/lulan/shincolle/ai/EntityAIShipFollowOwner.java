@@ -33,8 +33,6 @@ public class EntityAIShipFollowOwner extends EntityAIBase
     private EntityLiving host2;
     private EntityLivingBase owner;
     private EntityPlayer player;
-    private static final double TP_DIST = 1600D;	//40 block for tp dist
-    private static final int TP_TIME = 400;			//20 sec for can't move time
     private int checkTP_T, checkTP_D;				//teleport cooldown count
     private int findCooldown;						//path navi cooldown
     private ShipPathNavigate ShipNavigator;
@@ -193,22 +191,22 @@ public class EntityAIShipFollowOwner extends EntityAIBase
         	if (this.host2.dimension == this.owner.dimension)
         	{
         		//check dist
-        		if (this.distSq > TP_DIST)
+        		if (this.distSq > ConfigHandler.shipTeleport[1])
         		{
         			this.checkTP_D++;
         			
-        			if (this.checkTP_D > TP_TIME)
+        			if (this.checkTP_D > ConfigHandler.shipTeleport[0])
         			{
         				this.checkTP_D = 0;
         				
-        				LogHelper.debug("DEBUG: follow AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
+        				LogHelper.debug("DEBUG: follow AI: distSQ > "+ConfigHandler.shipTeleport[1]+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
         				applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.75D, this.owner.posZ));
                         return;
         			}
         		}
         		
         		//check moving time
-        		if (this.checkTP_T > TP_TIME)
+        		if (this.checkTP_T > ConfigHandler.shipTeleport[0])
         		{
         			this.checkTP_T = 0;
         			
@@ -309,13 +307,13 @@ public class EntityAIShipFollowOwner extends EntityAIBase
     		//teleport mounts
     		else
     		{
-    			((Entity)host).setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, hostHost.rotationYaw, hostHost.rotationPitch);
+    			((Entity)host).setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
         		sendSyncPacket(((Entity)host));
     		}
     		
     		//teleport rider
     		host.getShipNavigate().clearPathEntity();
-    		hostHost.setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, hostHost.rotationYaw, hostHost.rotationPitch);
+    		hostHost.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
     		sendSyncPacket(hostHost);
     	}
     	else if (host instanceof EntityLiving)
@@ -330,13 +328,13 @@ public class EntityAIShipFollowOwner extends EntityAIBase
     		//teleport mounts
     		else
     		{
-    			((Entity)host).setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, host2.rotationYaw, host2.rotationPitch);
+    			((Entity)host).setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
         		sendSyncPacket(((Entity)host));
     		}
         	
     		//teleport rider
     		host.getShipNavigate().clearPathEntity();
-    		host2.setLocationAndAngles(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord, host2.rotationYaw, host2.rotationPitch);
+    		host2.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
     		sendSyncPacket(host2);
     	}
     }

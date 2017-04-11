@@ -54,8 +54,6 @@ public class EntityAIShipGuarding extends EntityAIBase
     private ShipPathNavigate ShipNavigator;
     private final TargetHelper.Sorter targetSorter;
     private final TargetHelper.Selector targetSelector;
-    private static final double TP_DIST = 1600D;	//40 block for tp dist
-    private static final int TP_TIME = 400;			//20 sec for can't move time
     private int checkTP_T, checkTP_D;				//teleport cooldown count
     private int findCooldown;						//path navi cooldown
     private double maxDistSq, minDistSq;
@@ -272,16 +270,16 @@ public class EntityAIShipGuarding extends EntityAIBase
         	if (this.host2.dimension == this.host.getGuardedPos(3))
         	{
         		//check dist
-        		if (this.distSq > TP_DIST)
+        		if (this.distSq > ConfigHandler.shipTeleport[1])
         		{
         			this.checkTP_D++;
         			
-        			if (this.checkTP_D > TP_TIME)
+        			if (this.checkTP_D > ConfigHandler.shipTeleport[0])
         			{
         				this.checkTP_D = 0;
         				
         				if (host2 != null && owner != null)
-        				LogHelper.debug("DEBUG: guard AI: distSQ > "+TP_DIST+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
+        				LogHelper.debug("DEBUG: guard AI: distSQ > "+ConfigHandler.shipTeleport[1]+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
             			
         				EntityAIShipFollowOwner.applyTeleport(this.host, this.distSq, new Vec3d(pos[0], pos[1] + 0.75D, pos[2]));
             			return;
@@ -289,7 +287,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         		}
         		
         		//check moving time
-        		if (this.checkTP_T > TP_TIME)
+        		if (this.checkTP_T > ConfigHandler.shipTeleport[0])
         		{
         			this.checkTP_T = 0;
         			
