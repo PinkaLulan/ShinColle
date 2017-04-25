@@ -1,3 +1,6 @@
+
+
+
 # Creative Tab
 itemGroup.shincolle=ShinColle
 
@@ -6,11 +9,16 @@ tile.shincolle:BlockAbyssium.name=深海金属砖
 tile.shincolle:BlockDesk.name=深海提督的办公桌
 tile.shincolle:BlockGrudge.name=怨念团块
 tile.shincolle:BlockGrudgeHeavy.name=沉重的怨念团块
+tile.shincolle:BlockGrudgeHeavyDeco.name=沉重的怨念团块（饰品）
 tile.shincolle:BlockPolymetal.name=多金属砖
 tile.shincolle:BlockPolymetalGravel.name=多金属砾石
 tile.shincolle:BlockPolymetalOre.name=多金属矿
 tile.shincolle:BlockSmallShipyard.name=深海热泉 
-
+tile.shincolle:BlockFrame.name=深海框架
+tile.shincolle:BlockCrane.name=深海之冠
+tile.shincolle:BlockVolBlock.name=深海火山块
+tile.shincolle:BlockVolCore.name=深海火山核心
+tile.shincolle:BlockWaypoint.name=深海路径点
 # Container
 container.shincolle:BlockDesk=深海提督办公桌
 container.shincolle:SmallShipyard=深海热泉
@@ -19,6 +27,8 @@ container.shincolle:LargeShipyard=超深海热漩
 # Item
 item.shincolle:AbyssMetal.name=深海金属
 item.shincolle:AbyssMetal1.name=多金属结核
+item.shincolle:AbyssNugget.name=深海金属粒
+item.shincolle:AbyssNugget1.name=多金属粒
 item.shincolle:Ammo.name=怨念弹
 item.shincolle:Ammo1.name=怨念弹集装箱
 item.shincolle:Ammo2.name=重型怨念弹
@@ -36,6 +46,17 @@ item.shincolle:PointerItem.name=ヲ级的指挥权杖
 item.shincolle:RepairGoddess.name=深海女神的怨念
 item.shincolle:TargetWrench.name=目标设定扳手
 item.shincolle:ToyAirplane.name=零式21型舰战(1/48) 
+item.shincolle:CombatRation.name=饭团
+item.shincolle:CombatRation1.name=怨念味饭团
+item.shincolle:CombatRation2.name=大饭团
+item.shincolle:CombatRation3.name=怨念味大饭团
+item.shincolle:CombatRation4.name=冰激凌
+item.shincolle:CombatRation5.name=怨念味冰激凌
+item.shincolle:ShipTank.name=深海液体槽 (小)
+item.shincolle:ShipTank1.name深海液体槽 (中)
+item.shincolle:ShipTank2.name=深海液体槽 (大)
+item.shincolle:ShipTank3.name=深海液体槽 (更大)
+item.shincolle:TrainingBook.name=维护人员训练手册
 
 # Equip
 item.shincolle:EquipCannon.name=5寸单装炮
@@ -73,11 +94,14 @@ item.shincolle:EquipRadar8.name=深海火控系统+战情中心
 item.shincolle:EquipTurbine.name=深海引擎
 item.shincolle:EquipTurbine1.name=改良型深海涡轮
 item.shincolle:EquipTurbine2.name=强化型深海引擎
+item.shincolle:EquipTurbine3.name=深海引擎
+item.shincolle:EquipTurbine4.name=新型深海引擎
 item.shincolle:EquipTorpedo.name=21寸鱼雷前期型
 item.shincolle:EquipTorpedo1.name=21寸鱼雷后期型
 item.shincolle:EquipTorpedo2.name=22寸鱼雷后期型
 item.shincolle:EquipTorpedo3.name=深海乌贼鱼雷
 item.shincolle:EquipTorpedo4.name=高速深海鱼雷
+item.shincolle:EquipTorpedo5.name=高速深海鱼类改II
 item.shincolle:EquipAirplane.name=深海栖舰攻Mk.I
 item.shincolle:EquipAirplane1.name=深海栖舰攻Mk.II
 item.shincolle:EquipAirplane2.name=深海栖舰攻Mk.III
@@ -96,9 +120,23 @@ item.shincolle:EquipAirplane14.name=深海飞鱼侦察机
 item.shincolle:EquipAirplane15.name=深海复仇者舰攻改
 item.shincolle:EquipAirplane16.name=深海地狱猫舰战改
 item.shincolle:EquipAirplane17.name=深海地狱舰爆改
+item.shincolle:EquipAirplane18.name=深海地狱猫舰爆
+item.shincolle:EquipAirplane21.name=深海熊猫舰战
+item.shincolle:EquipAirplane19.name=深海陆基俯冲爆击机
+item.shincolle:EquipAirplane20.name=深海陆基俯冲爆击机（ACE）
 item.shincolle:EquipArmor.name=深海装甲
 item.shincolle:EquipArmor1.name=重型深海装甲
-
+item.shincolle:EquipArmor2.name=深海防雷鼓包 (S)
+item.shincolle:EquipArmor3.name=深海防雷鼓包 (M)
+item.shincolle:EquipArmor4.name=深海防雷鼓包 (L)
+item.shincolle:EquipArmor5.name=深海水线装甲防雷鼓包
+item.shincolle:EquipArmor6.name=深海水密隔舱
+item.shincolle:EquipDrum.name=深海液鼓
+item.shincolle:EquipDrum1.name=深海泵站
+item.shincolle:EquipDrum2.name=深海特高压变压器
+item.shincolle:EquipCompass.name=深海指南针
+item.shincolle:EquipFlare.name=深海信号弹
+item.shincolle:EquipSearchlight.name=深海探照灯
 # Spawn Egg
 item.shincolle:smallegg.name=深海栖舰蛋(初级)
 item.shincolle:largeegg.name=深海栖舰蛋(高级)
@@ -111,8 +149,14 @@ item.shincolle:shipegg12.name=重巡ネ级
 item.shincolle:shipegg14.name=空母ヲ级
 item.shincolle:shipegg16.name=战列舰タ级
 item.shincolle:shipegg17.name=航空战列舰レ级
+item.shincolle:shipegg18.name=运输舰 ワ级
+item.shincolle:shipegg19.name=潜舰 カ级
+item.shincolle:shipegg20.name=潜舰 ヨ级
+item.shincolle:shipegg21.name=潜舰 ソ级
+item.shincolle:shipegg22.name=空母姬
 item.shincolle:shipegg23.name=飞行场姬
 item.shincolle:shipegg28.name=战列舰栖姬
+item.shincolle:shipegg29.name=驱逐舰姬
 item.shincolle:shipegg30.name=港湾栖姬
 item.shincolle:shipegg33.name=北方栖姬
 item.shincolle:shipegg35.name=空母水鬼
@@ -129,7 +173,25 @@ item.shincolle:shipegg2048.name=战列舰大和 (Mob)
 item.shincolle:shipegg49.name=空母加贺
 item.shincolle:shipegg2049.name=空母加贺 (Mob)
 item.shincolle:shipegg50.name=空母赤城
+item.shincolle:shipegg51.name=重巡洋舰姬
 item.shincolle:shipegg2050.name=空母赤城 (Mob)
+item.shincolle:shipegg53.name=驱逐舰 暁
+item.shincolle:shipegg2053.name=驱逐舰 暁(Mob)
+item.shincolle:shipegg54.name=驱逐舰  響
+item.shincolle:shipegg2054.name=驱逐舰  響(Mob)
+item.shincolle:shipegg55.name=驱逐舰  雷
+item.shincolle:shipegg2055.name=驱逐舰  雷 (Mob)
+item.shincolle:shipegg56.name=驱逐舰  電
+item.shincolle:shipegg2056.name=驱逐舰  電 (Mob)
+item.shincolle:shipegg58.name=轻巡 天龍
+item.shincolle:shipegg2058.name=轻巡 天龍 (Mob)
+item.shincolle:shipegg59.name=轻巡 龍田
+item.shincolle:shipegg2059.name=轻巡 龍田 (Mob)
+item.shincolle:shipegg60.name=重巡 愛宕
+item.shincolle:shipegg2060.name=重巡 愛宕 (Mob)
+item.shincolle:shipegg61.name=重巡 高雄
+item.shincolle:shipegg2061.name=重巡 高雄 (Mob)
+
 
 # Entity
 entity.shincolle.EntityAirfieldHime.name=飞行场姬
@@ -220,7 +282,7 @@ gui.shincolle:book.chap1.title9=高速建造材料
 gui.shincolle:book.chap1.text9d0=<br><br><br><br><br><br><br><br><br>§d§n高速建造材料§r§0包含了可以发出比地心温度还高的焊接喷枪跟其他特殊材料，可以大幅强化深海船舰跟装备的建造速度。
 gui.shincolle:book.chap1.text9d1=放置§d§n高速建造材料§r§0于§9深海热泉§0或是§9超深海热漩§0中，可以瞬间增加建造进度。<br><br>§d§n高速建造材料§r§0只能以尚未使用的深海栖舰建造道具来制造。
 gui.shincolle:book.chap1.title10=深海女神的怨念
-gui.shincolle:book.chap1.text10d0=<br><br><br><br><br><br><br><br><br>只要献上钻石跟强烈的怨念，§d深海女神§0就会保护§c深海栖舰§0免于致命的伤害并给予其有如深渊般的复仇意志。
+gui.shincolle:book.chap1.text10d0=<br><br><br><br><br><br><br><br><br>只要献上钻石跟强烈的怨念，§d深海女神§0就会保护§c深海栖舰§0免于致命的伤害并给予其有如深海般的复仇意志。
 gui.shincolle:book.chap1.text10d1=放置§d§n深海女神的怨念§r§0于船舰的物品栏中，当该船舰受到致命伤害时将会自动消耗，使该船舰回复至全满耐久度且暂时无敌。
 gui.shincolle:book.chap1.title11=ヲ级的指挥权杖
 gui.shincolle:book.chap1.text11d0=<br><br><br><br><br><br><br><br><br>§d§nヲ级的指挥权杖§r§0是魔法少女ヲ级用于指挥舰载机的装备，不过深海提督无法变身为魔法少女控制舰载机，所以只能用来指挥所属的§c深海栖舰§0。<br><br>§d§nヲ级的指挥权杖§r§0有3种控制模式，最多可以储存9支编队，每队最多6艘船舰。
@@ -246,6 +308,7 @@ gui.shincolle:book.chap1.text17d1=使用指南<br><br>§9雷达§0:<br>显示附
 gui.shincolle:book.chap1.title18=目标设定扳手
 gui.shincolle:book.chap1.text18d0=<br><br><br><br><br><br><br><br><br>§9左键：§0<br>§c新增/移除§0目标到§d不可攻击清单§0。§4(仅限OP使用)§0<br><br>§9右键：§0显示§d不可攻击目标清单§0。
 gui.shincolle:book.chap1.text18d1=§d不可攻击目标§0不会被范围攻击伤害到，也不会被AI设为目标。你可以把绳子的头、物品框、木船、飞机跟栖舰的坐骑设为不可攻击目标。<br><br>野生的舰娘攻击时也会检查此清单，不过你不能把栖舰跟舰娘设为不可攻击目标。 
+gui.shincolle:book.chap1.title23=深海之冠
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
