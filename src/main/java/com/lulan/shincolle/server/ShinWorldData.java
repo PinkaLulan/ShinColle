@@ -91,7 +91,7 @@ public class ShinWorldData extends WorldSavedData
 	    if (map1 != null)
 	    {
 	    	NBTTagList tagList = new NBTTagList();
-			LogHelper.info("INFO: save world data: save unattackable target list: size: "+map1.size());
+			LogHelper.debug("DEBUG: save world data: save unattackable target list: size: "+map1.size());
 			
 			map1.forEach((key, str) ->
 			{
