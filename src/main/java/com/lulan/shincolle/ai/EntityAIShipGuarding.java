@@ -124,6 +124,7 @@ public class EntityAIShipGuarding extends EntityAIBase
     		//get guard target
     		return checkGuardTarget();
     	}
+    	
         return false;
     }
 
@@ -182,7 +183,8 @@ public class EntityAIShipGuarding extends EntityAIBase
     	 * 2. target AI = active attack
     	 * 3. guard type > 0
     	 */
-    	if (isMoving && ship != null && !ship.getStateFlag(ID.F.PassiveAI) && ship.getStateMinor(ID.M.GuardType) > 0) {
+    	if (isMoving && ship != null && !ship.getStateFlag(ID.F.PassiveAI) && ship.getStateMinor(ID.M.GuardType) > 0)
+    	{
     		//update parms
     		if (host2.ticksExisted % 64 == 0)
     		{
@@ -269,6 +271,9 @@ public class EntityAIShipGuarding extends EntityAIBase
             //check teleport conditions: same DIM and (dist > TP_DIST or time > TP_TIME)
         	if (this.host2.dimension == this.host.getGuardedPos(3))
         	{
+        		//check config
+        		if (!ConfigHandler.canTeleport) return;
+        		
         		//check dist
         		if (this.distSq > ConfigHandler.shipTeleport[1])
         		{
@@ -280,8 +285,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         				
         				if (host2 != null && owner != null)
         				LogHelper.debug("DEBUG: guard AI: distSQ > "+ConfigHandler.shipTeleport[1]+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
-            			
-        				EntityAIShipFollowOwner.applyTeleport(this.host, this.distSq, new Vec3d(pos[0], pos[1] + 0.75D, pos[2]));
+        				EntityHelper.applyTeleport(this.host, this.distSq, new Vec3d(pos[0], pos[1] + 0.75D, pos[2]));
             			return;
         			}
         		}
@@ -293,8 +297,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         			
         			if(host2 != null && owner != null)
         			LogHelper.debug("DEBUG: guard AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
-        			
-        			EntityAIShipFollowOwner.applyTeleport(this.host, this.distSq, new Vec3d(pos[0], pos[1] + 0.75D, pos[2]));
+        			EntityHelper.applyTeleport(this.host, this.distSq, new Vec3d(pos[0], pos[1] + 0.75D, pos[2]));
         			return;
         		}
         	}//end same dim

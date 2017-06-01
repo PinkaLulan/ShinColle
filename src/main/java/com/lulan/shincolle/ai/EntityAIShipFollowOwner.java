@@ -4,9 +4,7 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -14,14 +12,12 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 /**SHIP FOLLOW OWNER AI
  * 距離超過max dist時觸發移動, 直到走進min dist距離時停止
  * 距離超過TP_DIST會直接teleport到owner旁邊
@@ -88,6 +84,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
             	}
             }
     	}
+    	
         return false;
     }
 
@@ -190,6 +187,9 @@ public class EntityAIShipFollowOwner extends EntityAIBase
         	//check teleport conditions: same DIM and (dist > TP_DIST or time > TP_TIME)
         	if (this.host2.dimension == this.owner.dimension)
         	{
+        		//check config
+        		if (!ConfigHandler.canTeleport) return;
+        		
         		//check dist
         		if (this.distSq > ConfigHandler.shipTeleport[1])
         		{
@@ -200,7 +200,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
         				this.checkTP_D = 0;
         				
         				LogHelper.debug("DEBUG: follow AI: distSQ > "+ConfigHandler.shipTeleport[1]+" , teleport to target. dim: "+host2.dimension+" "+owner.dimension);
-        				applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.75D, this.owner.posZ));
+        				EntityHelper.applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.75D, this.owner.posZ));
                         return;
         			}
         		}
@@ -211,7 +211,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
         			this.checkTP_T = 0;
         			
         			LogHelper.debug("DEBUG: follow AI: teleport entity: dimension check: "+host2.dimension+" "+owner.dimension);
-        			applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.75D, this.owner.posZ));
+        			EntityHelper.applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.75D, this.owner.posZ));
                     return;
         		}
         	}//end same dim
@@ -286,66 +286,6 @@ public class EntityAIShipFollowOwner extends EntityAIBase
     	this.distSq = this.distX*this.distX + this.distY*this.distY + this.distZ*this.distZ;
     
   	}
-  	
-    /**
-     *  teleport host to Vec3d
-     *  if host = mount, teleport both mount and rider
-     *  if host = ship, teleport ship only (dismount)
-     */
-  	public static void applyTeleport(IShipNavigator host, double dist, Vec3d tpPos)
-    {
-    	if (host instanceof BasicEntityMount)
-    	{
-    		BasicEntityShip hostHost = (BasicEntityShip) ((BasicEntityMount) host).getHostEntity();
-    		
-    		//too far away, dismount
-    		if (dist > 1024D)
-    		{
-    			EntityHelper.clearMountSeat((BasicEntityMount) host);
-    			EntityHelper.clearMountSeat(hostHost);
-    		}
-    		//teleport mounts
-    		else
-    		{
-    			((Entity)host).setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
-        		sendSyncPacket(((Entity)host));
-    		}
-    		
-    		//teleport rider
-    		host.getShipNavigate().clearPathEntity();
-    		hostHost.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
-    		sendSyncPacket(hostHost);
-    	}
-    	else if (host instanceof EntityLiving)
-    	{
-    		EntityLiving host2 = (EntityLiving) host;
-    		
-    		//too far away, dismount
-    		if (dist > 1024D)
-    		{
-    			EntityHelper.clearMountSeat(host2);
-    		}
-    		//teleport mounts
-    		else
-    		{
-    			((Entity)host).setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
-        		sendSyncPacket(((Entity)host));
-    		}
-        	
-    		//teleport rider
-    		host.getShipNavigate().clearPathEntity();
-    		host2.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
-    		sendSyncPacket(host2);
-    	}
-    }
-	
-	//sync position
-	public static void sendSyncPacket(Entity ent)
-	{
-		//for other player, send ship state for display
-		TargetPoint point = new TargetPoint(ent.dimension, ent.posX, ent.posY, ent.posZ, 64D);
-		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(ent, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
-	}
 	
 	
 }

@@ -3,12 +3,14 @@ package com.lulan.shincolle.ai;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.util.math.Vec3d;
 
 /**FLEE AI
  * if ship's HP is below fleeHP, ship will stop attack and try to flee
@@ -18,9 +20,7 @@ public class EntityAIShipFlee extends EntityAIBase
 	
 	private BasicEntityShip host;
 	private EntityLivingBase owner;
-//	private PathNavigate PetPathfinder;
 	private ShipPathNavigate ShipPathfinder;
-	private static final double TP_DIST = 2048D;	//teleport condition ~ 45 blocks
 	private float distSq, distSqrt;
 	private float fleehp;		//flee HP (percent)
 	private int findCooldown;	//find path cooldown
@@ -91,15 +91,6 @@ public class EntityAIShipFlee extends EntityAIBase
     	//設定頭部轉向
         this.host.getLookHelper().setLookPositionWithEntity(this.owner, 10.0F, this.host.getVerticalFaceSpeed());
 
-    	//距離超過傳送距離, 直接傳送到目標上
-    	if (this.distSq > EntityAIShipFlee.TP_DIST)
-    	{
-    		this.host.posX = this.owner.posX;
-    		this.host.posY = this.owner.posY + 1D;
-    		this.host.posZ = this.owner.posZ;
-    		this.host.setPosition(this.host.posX, this.host.posY, this.host.posZ);
-    	}
-    	
     	//每cd到找一次路徑
     	if (this.findCooldown <= 0)
     	{
@@ -114,24 +105,21 @@ public class EntityAIShipFlee extends EntityAIBase
 			{
 				canMove = this.ShipPathfinder.tryMoveToEntityLiving(this.owner, 1.2D);
 			}
-				
+			
+			//move failed, teleport entity
 			if (!canMove)
 			{
-        		LogHelper.debug("DEBUG: flee AI: moving fail, teleport entity "+this.host);
-        		if (this.distSq > 200F)
+        		//check config
+        		if (!ConfigHandler.canTeleport) return;
+        		
+        		if (this.distSq > 100F)
         		{
+        			LogHelper.debug("DEBUG: flee AI: moving fail, teleport entity "+this.host);
+        			
         			//相同dim才傳送
         			if (this.host.dimension == this.owner.dimension)
         			{
-        				//clear mount
-            			if (this.distSq > 1024F)
-            			{	//32 blocks away, drop mount
-            				EntityHelper.clearMountSeat(this.host);
-            			}
-        				
-        				this.host.setLocationAndAngles(this.owner.posX, this.owner.posY + 0.5D, this.owner.posZ, this.host.rotationYaw, this.host.rotationPitch);
-                    	this.ShipPathfinder.clearPathEntity();
-                    	EntityAIShipFollowOwner.sendSyncPacket(this.host);
+        				EntityHelper.applyTeleport(this.host, this.distSq, new Vec3d(this.owner.posX, this.owner.posY + 0.5D, this.owner.posZ));
                         return;
         			}
                 }

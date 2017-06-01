@@ -113,6 +113,7 @@ public class ConfigHandler
 	public static boolean canFlare = true;
 	public static boolean canSearchlight = true;
 	public static boolean checkRing = true;
+	public static boolean canTeleport = false;
 	public static float volumeTimekeep = 1.0F;
 	public static float volumeShip = 1.0F;
 	public static float volumeFire = 0.7F;
@@ -211,6 +212,7 @@ public class ConfigHandler
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", CATE_SHIP, true, "Can ship spawn Flare lighting effect, CLIENT SIDE only");
 		canSearchlight = config.getBoolean("Can_Searchlight", CATE_SHIP, true, "Can ship spawn Searchlight lighting effect, CLIENT SIDE only");
+		canTeleport = config.getBoolean("Can_Teleport", CATE_SHIP, false, "Can ship teleport to owner/guarding position if too far away. NOTE: set false if ship usually disappear/despawn after teleport!");
 		checkRing = config.getBoolean("Check_Ring", CATE_SHIP, true, "Should check wedding ring when spawning NON-BOSS ship mob");
 		timeKeeping = config.getBoolean("Can_Timekeeping", CATE_SHIP, true, "Play timekeeping sound every 1000 ticks (1 minecraft hour)");
 		volumeTimekeep = config.getFloat("Volume_Timekeeping", CATE_SHIP, 1.0F, 0F, 10F, "Timekeeping sound volume");

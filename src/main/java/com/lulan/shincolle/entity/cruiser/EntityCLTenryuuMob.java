@@ -3,7 +3,6 @@ package com.lulan.shincolle.entity.cruiser;
 import java.util.ArrayList;
 
 import com.google.common.base.Predicate;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipSkillAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
@@ -388,7 +387,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		this.rotationYawHead = degree[0];
 		
 		//apply teleport
-		EntityAIShipFollowOwner.applyTeleport(this, dist, vecpos);
+		EntityHelper.applyTeleport(this, dist, vecpos);
 		
 		//update flag and sync
 		this.remainAttack--;
@@ -408,7 +407,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		this.skillMotion = new Vec3d(0D, Math.abs(vecpos.yCoord - target.posY) * -0.14D, 0D);
 		
 		//apply teleport
-		EntityAIShipFollowOwner.applyTeleport(this, dist, vecpos);
+		EntityHelper.applyTeleport(this, dist, vecpos);
 		
 		//update flag and sync
 		this.remainAttack--;

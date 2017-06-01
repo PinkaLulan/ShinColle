@@ -82,11 +82,11 @@ public class ShipPathNavigate
     {
     	if (host instanceof IShipAttackBase)
     	{
-    		return 64F;
+    		return 70F;
     	}
     	else
     	{
-    		return 32F;
+    		return 48F;
     	}
     }
     

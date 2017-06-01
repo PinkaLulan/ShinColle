@@ -28,6 +28,7 @@ import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -74,6 +75,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -513,7 +515,7 @@ public class EntityHelper
 	{
 		if (pet != null)
 		{
-			if(pet.getOwnerId() != null)
+			if (pet.getOwnerId() != null)
 			{
 			    return pet.getOwnerId().toString();
 			}
@@ -522,6 +524,7 @@ public class EntityHelper
 				return "00000000-0000-0000-0000-000000000000"; //dummy uuid on special condition
 			}
 		}
+		
 		return null;
 	}
 	
@@ -2116,6 +2119,84 @@ public class EntityHelper
   			ship.sendSyncPacketUnitName();
   		}
   	}
+  	
+    /**
+     *  teleport host entity
+     *  if host = mount, dismount and teleport host's host only
+     *  if host = ship, dismount and teleport host only
+     *  
+     *  dist: if > 1024D, dismount host
+     *  tpPos: teleport target
+     *  
+     *  return true if teleport successfully
+     */
+  	public static boolean applyTeleport(IShipNavigator host, double dist, Vec3d tpPos)
+    {
+  		//check chunk loaded
+  		try
+  		{
+  			Chunk c = ((Entity) host).world.getChunkProvider().getLoadedChunk(
+  						(MathHelper.floor(tpPos.xCoord) >> 4),
+  						(MathHelper.floor(tpPos.zCoord) >> 4));
+  			
+  			if (c == null) return false;  //chunk isn't loaded
+  		}
+  		catch (Exception e)
+  		{
+  			//teleport checking fail: entity null, world null or other ...
+  			return false;
+  		}
+  		
+  		//teleport mount entity
+    	if (host instanceof BasicEntityMount)
+    	{
+    		BasicEntityShip hostHost = (BasicEntityShip) ((BasicEntityMount) host).getHostEntity();
+    		
+    		//too far away, dismount
+    		if (dist > 1024D)
+    		{
+    			clearMountSeat((BasicEntityMount) host);
+    			clearMountSeat(hostHost);
+    		}
+    		
+    		//clear mount
+    		((BasicEntityMount) host).setDead();
+    		
+    		//teleport rider
+    		hostHost.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
+    		sendPositionSyncPacket(hostHost);
+    		
+    		return true;
+    	}
+    	//teleport normal entity
+    	else if (host instanceof EntityLiving)
+    	{
+    		EntityLiving host2 = (EntityLiving) host;
+    		
+    		//too far away, dismount
+    		if (dist > 1024D)
+    		{
+    			clearMountSeat(host2);
+    		}
+
+    		//teleport host
+    		host.getShipNavigate().clearPathEntity();
+    		host2.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
+    		sendPositionSyncPacket(host2);
+    		
+    		return true;
+    	}
+    	
+    	return false;
+    }
+  	
+	//sync position
+	public static void sendPositionSyncPacket(Entity ent)
+	{
+		//for other player, send ship state for display
+		TargetPoint point = new TargetPoint(ent.dimension, ent.posX, ent.posY, ent.posZ, 64D);
+		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(ent, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
+	}
   	
   	
 }
