@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -10,10 +8,10 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.server.Explosion;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,6 +24,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements IBossDisplayData {
 
@@ -176,10 +176,11 @@ public class EntityBattleshipNGTBoss extends BasicEntityShipHostile implements I
 	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
 	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
+		Explosion.ShipCannonExplosion(worldObj, this, target.posX, target.posY, target.posZ, atk, isTargetHurt, ConfigHandler.PowerLimit * 0.7f);
 
-	    //if attack success
-	    if(isTargetHurt) {
-        	//display hit particle on target
+		//if attack success
+		if (isTargetHurt) {
+			//display hit particle on target
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
 			//show emotes

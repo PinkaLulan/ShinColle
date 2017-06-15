@@ -1,19 +1,5 @@
 package com.lulan.shincolle.entity.other;
 
-import java.util.List;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipFlyable;
@@ -24,14 +10,23 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.server.Explosion;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.*;
+import net.minecraft.world.World;
+
+import java.util.List;
 
 /**ENTITY ABYSS MISSILE
  * @parm world, host entity, tarX, tarY, tarZ, damage, knockback value
@@ -435,8 +430,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttri
   
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
-        }//end if server side
+			Explosion.ShipCannonExplosion(world, this, posX, posY, posZ, atk, false, ConfigHandler.PowerLimit);
+			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);
+		}//end if server side
     }
 
 	//儲存entity的nbt

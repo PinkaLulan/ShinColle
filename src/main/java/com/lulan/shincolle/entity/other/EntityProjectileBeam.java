@@ -1,17 +1,5 @@
 package com.lulan.shincolle.entity.other;
 
-import java.util.List;
-
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttributes;
 import com.lulan.shincolle.entity.IShipOwner;
@@ -21,13 +9,22 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.server.Explosion;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
+
+import java.util.List;
 
 /** Beam entity
  *  fly to target, create beam particle between host and target
@@ -258,7 +255,6 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
             
             List hitList = this.worldObj.getEntitiesWithinAABB(Entity.class, impactBox);
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-            
             //對list中所有可攻擊entity做出傷害判定
             if(hitList != null && !hitList.isEmpty()) {
                 for(int i=0; i<hitList.size(); ++i) {
@@ -283,7 +279,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
                             		//spawn critical particle
                                 	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
                             	}
-                        		
+
                         		//若攻擊到玩家, 最大傷害固定為TNT傷害 (non-owner)
                             	if(hitEntity instanceof EntityPlayer) {
                             		beamAtk *= 0.25F;
@@ -302,13 +298,19 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
                     		//if attack success
                     	    if(hitEntity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk)) {
                     	        //send packet to client for display partical effect
+
+                                Explosion.ShipCannonExplosion(worldObj, this, hitEntity.posX, hitEntity.posY, hitEntity.posZ, atk, false, ConfigHandler.PowerLimit);
                                 CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(hitEntity, 9, false), point);
-                    	    }
-                    	}//end can be collided with
-              		}//end is attackable
+                            } else {
+
+                                Explosion.ShipCannonExplosion(worldObj, this, hitEntity.posX, hitEntity.posY, hitEntity.posZ, atk, true, ConfigHandler.PowerLimit);
+
+                            }
+                        }//end can be collided with
+                    }//end is attackable
                 }//end hit target list for loop
             }//end hit target list != null
-    	}//end if server side
+        }//end if server side
     }
     
 	//check entity is not host or launcher

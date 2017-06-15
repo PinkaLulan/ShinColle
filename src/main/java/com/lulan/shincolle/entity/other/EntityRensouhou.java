@@ -1,5 +1,21 @@
 package com.lulan.shincolle.entity.other;
 
+import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.ai.path.ShipMoveHelper;
+import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.entity.*;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.server.Explosion;
+import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -7,28 +23,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-
-import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.ai.path.ShipMoveHelper;
-import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipCannonAttack;
-import com.lulan.shincolle.entity.IShipSummonAttack;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CEntitySync;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	
@@ -450,8 +444,10 @@ public class EntityRensouhou extends EntityLiving implements IShipCannonAttack {
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
-	    
-	    //消耗彈藥計算
+
+		Explosion.ShipCannonExplosion(world, this, target.posX, target.posY, target.posZ, atk, isTargetHurt, ConfigHandler.PowerLimit * 0.7f);
+
+		//消耗彈藥計算
   		if(numAmmoLight > 0) {
   			numAmmoLight--;
   			

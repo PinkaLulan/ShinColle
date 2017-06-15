@@ -1,7 +1,18 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.List;
-
+import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.entity.BasicEntityShipSmall;
+import com.lulan.shincolle.entity.ExtendShipProps;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.server.Explosion;
+import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,19 +23,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
-import com.lulan.shincolle.entity.BasicEntityShipSmall;
-import com.lulan.shincolle.entity.ExtendShipProps;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import java.util.List;
 
 /**特殊heavy attack:
  * 用StateEmotion[ID.S.Phase]來儲存攻擊階段
@@ -247,10 +246,11 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
                 	//目標不能是自己 or 主人
                 	if(hitEntity != this && EntityHelper.checkAttackable(hitEntity) && hitEntity.canBeCollidedWith() && EntityHelper.checkNotSameEntityID(this, hitEntity)) {
                 		//calc miss and cri
-                		if(this.rand.nextFloat() < missChance) {	//MISS
-                        	atkTemp *= 0.5F;
-                        }
-                        else if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {	//CRI
+						boolean missed = false;
+						if (this.rand.nextFloat() < missChance) {    //MISS
+							atkTemp *= 0.5F;
+							missed = true;
+						} else if(this.rand.nextFloat() < EffectEquip[ID.EF_CRI]) {	//CRI
                     		atkTemp *= 1.5F;
                         }
                 		
@@ -275,9 +275,10 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall {
 
                 		//attack
                 	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp);
-                	}//end can be collided with
-                }//end hit target list for loop
-            }//end hit target list != null
+						Explosion.ShipCannonExplosion(worldObj, this, hitEntity.posX, hitEntity.posY, hitEntity.posZ, atkTemp, missed, ConfigHandler.PowerLimit * 0.5f);
+					}//end can be collided with
+				}//end hit target list for loop
+			}//end hit target list != null
         	
         	this.setStateEmotion(ID.S.Phase, 0, true);
         }
