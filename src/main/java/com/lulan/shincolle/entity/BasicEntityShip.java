@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -56,6 +57,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EffectHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -181,6 +183,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public String ownerName;
 	/** unit names */
 	public ArrayList<String> unitNames;
+	/** buffs map : BuffMap<potion id, potion level>*/
+	protected HashMap<Byte, Byte> BuffMap;
 	
 	//for model render
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
@@ -242,6 +246,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		this.ModelPos = new float[] {0F, 0F, 0F, 50F};
 		this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
+		this.BuffMap = new HashMap<Byte, Byte>();
 		
 		//for AI
 		this.ShipDepth = 0D;				//water block above ship (within ship position)
@@ -997,6 +1002,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return StateFinal[id];
 	}
 	
+	public float[] getStateFinal()
+	{
+		return StateFinal;
+	}
+	
 	public float getStateFinalBU(int id)
 	{
 		return StateFinalBU[id];
@@ -1012,6 +1022,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public float getEffectEquip(int id)
 	{
 		return EffectEquip[id];
+	}
+	
+	public float[] getEffectEquip()
+	{
+		return EffectEquip;
 	}
 	
 	public float getEffectEquipBU(int id)
@@ -1198,15 +1213,21 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[ID.HIT] = (getStat[ID.ShipAttr.BaseHIT] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.2F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
 		//ATK = (base + equip + ((point + 1) * level / 3) * 0.5 * typeModify) * config scale
 		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.ATK];
-
+		
 		//add equip
 		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_H] = (atk * 3F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		StateFinal[ID.ATK_AH] = (atk * 3F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
 		
-		//apply morale buff before backup
+		/**
+		 * apply buffs = morale * potion(food) * formation
+		 */
+		//apply morale buff
 		updateMoraleBuffs();
+		
+		//apply potion buff
+		EffectHelper.updateEffectBuffs(this);
 		
 		//backup value before buffs, for GUI display
 		this.StateFinalBU = this.StateFinal.clone();
@@ -1223,9 +1244,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateFinalBU = this.checkStateFinalLimit(this.StateFinalBU);
 		this.EffectEquip = this.checkEffectEquipLimit(EffectEquip);
 		this.EffectEquipBU = this.checkEffectEquipLimit(EffectEquipBU);
-		
-		//check chunk loader
-		updateChunkLoader();
 		
 		//set attribute by final value
 		/**
@@ -1363,6 +1381,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateFinal[id] = par1;
 	}
 	
+	public void setStateFinal(float[] array)
+	{
+		StateFinal = array;
+	}
+	
 	public void setStateFinalBU(int id, float par1)
 	{
 		StateFinalBU[id] = par1;
@@ -1405,6 +1428,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setEffectEquip(int id, float par1)
 	{
 		EffectEquip[id] = par1;
+	}
+	
+	public void setEffectEquip(float[] array)
+	{
+		EffectEquip = array;
 	}
 	
 	public void setEffectEquipBU(int id, float par1)
@@ -2757,6 +2785,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		//check every 128 ticks
                         	if ((ticksExisted & 127) == 0)
                         	{
+                        		//check chunk loader
+                        		updateChunkLoader();
+                        		
                         		//delayed init, waiting for player entity loaded
                         		if (!this.initWaitAI && ticksExisted >= 128)
                         		{
@@ -6308,6 +6339,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			this.setPosition(mount.posX, mount.posY, mount.posZ);
   		}
     }
+  	
+	@Override
+	public HashMap<Byte, Byte> getBuffMap()
+	{
+		if (this.BuffMap != null) return this.BuffMap;
+		return new HashMap<Byte, Byte>();
+	}
+
+	@Override
+	public void setBuffMap(HashMap<Byte, Byte> map)
+	{
+		if (map != null) this.BuffMap = map;
+	}
 	
 	
 }

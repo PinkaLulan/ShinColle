@@ -38,7 +38,7 @@ public class EntityAirplaneZeroMob extends EntityAirplaneZero
             this.atkSpeed = ship.getAttackSpeed() * 3F;
             this.atkRange = 6F;
             this.defValue = ship.getDefValue() * 0.5F;
-            this.movSpeed = ship.getMoveSpeed() * 0.2F + 0.3F;
+            this.movSpeed = ship.getMoveSpeed() * 0.2F + 0.3F + this.getScaleLevel() * 0.05F;
             
             //設定發射位置
             float launchPos = (float) ship.posY;

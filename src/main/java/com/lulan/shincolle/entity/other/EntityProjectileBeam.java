@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipEquipAttrs;
+import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
@@ -36,7 +36,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  *
  *	實際最大射程約為 lifeLength * acc (格)
  */
-public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEquipAttrs, IShipCustomTexture
+public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttrs, IShipCustomTexture
 {
 	
 	//host data
@@ -295,6 +295,27 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipEqu
 	{
 		return ID.ShipMisc.Invisible;
 	}
+	
+	@Override
+	public float[] getEffectEquip() { return null; }
+
+	@Override
+	public void setEffectEquip(int id, float value) {}
+
+	@Override
+	public void setEffectEquip(float[] array) {}
+
+	@Override
+	public float getStateFinal(int id) { return 0; }
+
+	@Override
+	public float[] getStateFinal() { return null; }
+
+	@Override
+	public void setStateFinal(int id, float value) {}
+
+	@Override
+	public void setStateFinal(float[] array) {}
 
     
 }

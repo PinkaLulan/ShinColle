@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity.battleship;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;

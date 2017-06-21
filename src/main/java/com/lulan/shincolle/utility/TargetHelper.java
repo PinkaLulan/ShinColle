@@ -517,7 +517,7 @@ public class TargetHelper
 		}
 		
 		//clear invisible target every 64 ticks
-		if (host.getTickExisted() % 64 == 0)
+		if ((host.getTickExisted() & 63) == 0)
 		{
 			if (host.getEntityTarget() != null && host.getEntityTarget().isInvisible() &&
 				host.getStateMinor(ID.M.LevelFlare) < 1 &&

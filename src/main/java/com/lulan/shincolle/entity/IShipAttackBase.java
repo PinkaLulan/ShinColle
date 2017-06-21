@@ -1,11 +1,13 @@
 package com.lulan.shincolle.entity;
 
+import java.util.HashMap;
+
 import net.minecraft.entity.Entity;
 
 /**SHIP ATTACK BASE
  * include attacker states getter/setter
  */
-public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipEquipAttrs
+public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipAttrs
 {
 	
 	/** get attack target */
@@ -42,6 +44,10 @@ public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwne
 	
 	/** skill attack method for skill attack AI */
 	public boolean updateSkillAttack(Entity target);
+	
+	/** buffs map, map<buff id, buff level> */
+	public HashMap<Byte, Byte> getBuffMap();
+	public void setBuffMap(HashMap<Byte, Byte> map);
 	
 
 }

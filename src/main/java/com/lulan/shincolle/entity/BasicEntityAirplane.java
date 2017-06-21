@@ -1,6 +1,7 @@
 package com.lulan.shincolle.entity;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.base.Predicate;

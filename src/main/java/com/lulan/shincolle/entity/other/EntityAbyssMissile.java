@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipEquipAttrs;
+import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipFlyable;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -55,7 +55,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *   
  * 
  */
-public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquipAttrs, IShipFlyable, IShipCustomTexture
+public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs, IShipFlyable, IShipCustomTexture
 {
 	
     private IShipAttackBase host;	//main host type
@@ -598,6 +598,27 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipEquip
 	{
 		return ID.ShipMisc.AbyssalMissile;
 	}
+
+	@Override
+	public float[] getEffectEquip() { return null; }
+
+	@Override
+	public void setEffectEquip(int id, float value) {}
+
+	@Override
+	public void setEffectEquip(float[] array) {}
+
+	@Override
+	public float getStateFinal(int id) { return 0; }
+
+	@Override
+	public float[] getStateFinal() { return null; }
+
+	@Override
+	public void setStateFinal(int id, float value) {}
+
+	@Override
+	public void setStateFinal(float[] array) {}
 
 	
 }

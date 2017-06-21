@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import javax.annotation.Nullable;
@@ -62,6 +63,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	
 	//attributes
 	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
+	/** states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
+	protected float[] RawState;
+	/** effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS
+	 *                6:dodge 7:xp gain 8:grudge gain 9:ammo gain 10:hp res delay
+	 */
+	protected float[] RawEffect;
+	
 	protected float atk;				//damage
 	protected float atkSpeed;			//attack speed
 	protected float atkRange;			//attack range
@@ -69,7 +77,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected float movSpeed;			//def value
     protected float kbValue;			//knockback value
     protected double ShipDepth;			//水深, 用於水中高度判定
-    
+	/** buffs map : BuffMap<potion id, potion level>*/
+	protected HashMap<Byte, Byte> BuffMap;
+	
     //model display
     /** emotion state: 0:State 1:Emotion 2:Emotion2 3:HPState 4:State2 5:AttackPhase 6:Emotion3 */
     protected byte[] stateEmotion;
@@ -109,6 +119,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         this.startEmotion2 = 0;
         this.headTilt = false;
         this.initScale = false;
+        this.BuffMap = new HashMap<Byte, Byte>();
+        this.RawState = new float[9];
+        this.RawEffect = new float[11];
         
 		//model display
         this.soundHurtDelay = 0;
@@ -290,6 +303,32 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		
 		//renew health
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
+		
+		//backup raw values
+		this.RawState = new float[9];
+		this.RawEffect = new float[11];
+		
+		this.RawState[ID.HP] = (float) this.getEntityAttribute(MAX_HP).getBaseValue();
+		this.RawState[ID.ATK] = this.atk;
+		this.RawState[ID.DEF] = this.defValue;
+		this.RawState[ID.SPD] = this.atkSpeed;
+		this.RawState[ID.MOV] = this.movSpeed;
+		this.RawState[ID.HIT] = this.atkRange;
+		this.RawState[ID.ATK_H] = this.atk;
+		this.RawState[ID.ATK_AL] = this.atk;
+		this.RawState[ID.ATK_AH] = this.atk;
+		
+		this.RawEffect[ID.EquipEffect.CRI] = 0.1F;
+		this.RawEffect[ID.EquipEffect.DHIT] = 0.1F;
+		this.RawEffect[ID.EquipEffect.THIT] = 0.1F;
+		this.RawEffect[ID.EquipEffect.MISS] = 0.2F;
+		this.RawEffect[ID.EquipEffect.AA] = 0F;
+		this.RawEffect[ID.EquipEffect.ASM] = 0F;
+		this.RawEffect[ID.EquipEffect.DODGE] = 0.1F;
+		this.RawEffect[ID.EquipEffect.XP] = 0F;
+		this.RawEffect[ID.EquipEffect.GRUDGE] = 0F;
+		this.RawEffect[ID.EquipEffect.AMMO] = 0F;
+		this.RawEffect[ID.EquipEffect.HPRES] = 0F;
 	}
 	
 	/** set size with scale level */
@@ -1803,6 +1842,61 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public void setStateTimer(int id, int value)
 	{
+	}
+	
+	@Override
+	public HashMap<Byte, Byte> getBuffMap()
+	{
+		if (this.BuffMap != null) return this.BuffMap;
+		return new HashMap<Byte, Byte>();
+	}
+
+	@Override
+	public void setBuffMap(HashMap<Byte, Byte> map)
+	{
+		if (map != null) this.BuffMap = map;
+	}
+	
+	@Override
+	public float[] getEffectEquip()
+	{
+		return this.RawEffect;
+	}
+
+	@Override
+	public void setEffectEquip(int id, float value)
+	{
+		this.RawEffect[id] = value;
+	}
+
+	@Override
+	public void setEffectEquip(float[] array)
+	{
+		if (array != null) this.RawEffect = array;
+	}
+
+	@Override
+	public float getStateFinal(int id)
+	{
+		return this.RawState[id];
+	}
+
+	@Override
+	public float[] getStateFinal()
+	{
+		return this.RawState;
+	}
+
+	@Override
+	public void setStateFinal(int id, float value)
+	{
+		this.RawState[id] = value;
+	}
+
+	@Override
+	public void setStateFinal(float[] array)
+	{
+		if (array != null) this.RawState = array;
 	}
 	
   	

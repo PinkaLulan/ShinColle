@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -479,6 +480,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     			{
     				setStateEmotion(ID.S.Emotion, 0, false);
     			}
+    			
+    			if ((this.ticksExisted & 127) == 0)
+        		{
+    				//sync exist tick with host ship (for model display)
+    				if (this.ticksExisted > 250 && this.host != null)
+    				{
+    					this.ticksExisted = this.host.ticksExisted;
+    				}
+        		}//end 128 ticks
     		}//end 32 ticks
     	}//end client side
     }
@@ -1886,6 +1896,33 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	{
 		if (this.host != null) this.host.setStateTimer(id, value);
 	}
+	
+	@Override
+	public HashMap<Byte, Byte> getBuffMap() { return new HashMap<Byte, Byte>(); }
+
+	@Override
+	public void setBuffMap(HashMap<Byte, Byte> map) {}
+	
+	@Override
+	public float[] getEffectEquip() { return null; }
+
+	@Override
+	public void setEffectEquip(int id, float value) {}
+
+	@Override
+	public void setEffectEquip(float[] array) {}
+
+	@Override
+	public float getStateFinal(int id) { return 0; }
+
+	@Override
+	public float[] getStateFinal() { return null; }
+
+	@Override
+	public void setStateFinal(int id, float value) {}
+
+	@Override
+	public void setStateFinal(float[] array) {}
 	
 	
 }

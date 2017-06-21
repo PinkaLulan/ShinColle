@@ -20,7 +20,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipEquipAttrs;
+import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipInvisible;
@@ -1208,7 +1208,7 @@ public class EntityHelper
 		}
 	}
 	
-	public static boolean canDodge(IShipEquipAttrs ent, float dist)
+	public static boolean canDodge(IShipAttrs ent, float dist)
 	{
 		if (ent != null && !((Entity)ent).world.isRemote)
 		{
@@ -2028,7 +2028,11 @@ public class EntityHelper
 				ship.deathTime = 0;
 				
 				//read entity nbt data
-				if (nbt != null) ship.readFromNBT(nbt);
+				if (nbt != null)
+				{
+					ship.readFromNBT(nbt);
+					if (ship.getHealth() < 1F) ship.setHealth(1F);
+				}
 				
                 //update ship cache
 				if (updateUID) ship.updateShipCacheDataWithoutNewID();

@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
@@ -905,6 +906,33 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	public void setStateTimer(int id, int value)
 	{
 	}
+	
+	@Override
+	public HashMap<Byte, Byte> getBuffMap() { return new HashMap<Byte, Byte>(); }
 
+	@Override
+	public void setBuffMap(HashMap<Byte, Byte> map) {}
 
+	@Override
+	public float[] getEffectEquip() { return null; }
+
+	@Override
+	public void setEffectEquip(int id, float value) {}
+
+	@Override
+	public void setEffectEquip(float[] array) {}
+
+	@Override
+	public float getStateFinal(int id) { return 0; }
+
+	@Override
+	public float[] getStateFinal() { return null; }
+
+	@Override
+	public void setStateFinal(int id, float value) {}
+
+	@Override
+	public void setStateFinal(float[] array) {}
+	
+	
 }
