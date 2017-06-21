@@ -1,16 +1,14 @@
 package com.lulan.shincolle.handler;
 
-import java.io.File;
-
+import com.lulan.shincolle.reference.Reference;
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
-import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class ConfigHandler {
@@ -100,8 +98,20 @@ public class ConfigHandler {
 	public static int polyGravelBaseRate = 4;
 	public static boolean[] polyGravelBaseBlock = new boolean[] {true, true, false, false};	//stone gravel sand dirt
 	public static Property propPolyGravel;
-	
-	
+
+	//舰娘炮弹爆炸设定
+	//是否开启
+	public static boolean ExplosionEnabled = true;
+	//炮弹爆炸威力和伤害的关系系数
+	public static double PowerCoeff = 0.03;
+	//炮弹在哪些维度禁止爆炸
+	public static Set<Integer> BlacklistedDims = new HashSet<>();
+	//炮弹的爆炸威力限制基准是多少（不同的船有加成或者减少）
+	public static float PowerLimit = 2.0f;
+	//野生舰娘的混乱模式是否启动
+	public static boolean ChaosMode = false;
+
+
 	//讀取設定檔參數
 	private static void loadConfiguration()
 	{
@@ -220,7 +230,20 @@ public class ConfigHandler {
 		mobSpawn = getIntArrayFromConfig(mobSpawn, propMobSpawn);
 		shipTeleport = getIntArrayFromConfig(shipTeleport, propShipTeleport);
 		setCustomSoundValue();
-		
+
+		//舰娘炮弹爆炸设定
+		//是否开启
+		ExplosionEnabled = config.get("Explosion", "ExplosionEnabled", true, "Whether we enable explosion on shot").getBoolean();
+		//炮弹爆炸威力和伤害的关系系数
+		PowerCoeff = config.get("Explosion", "PowerCoeff", 0.03, "The amplifier of explosion power").getDouble();
+		//炮弹在哪些维度禁止爆炸
+		int[] _BlacklistedDims = config.get("Explosion", "BlacklistedDims", new int[]{}, "Cannonballs will not explode in following dims").getIntList();
+		for (int i = 0; i < _BlacklistedDims.length; i++) {
+			BlacklistedDims.add(_BlacklistedDims[i]);
+		}
+		//炮弹的爆炸威力限制基准是多少（不同的船有加成或者减少）
+		PowerLimit = (float) config.get("Explosion", "PowerLimit", 2.0, "The base limit of power, may be different(with a multiplier on this value)").getDouble();
+		ChaosMode = config.get("Explosion", "ChaosMode", false).getBoolean();
 		//若設定檔有更新過, 則儲存
 		if (config.hasChanged())
 		{

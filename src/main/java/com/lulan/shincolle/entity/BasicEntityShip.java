@@ -1,23 +1,7 @@
 package com.lulan.shincolle.entity;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipGuarding;
-import com.lulan.shincolle.ai.EntityAIShipLookIdle;
-import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
-import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
-import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWander;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
+import com.lulan.shincolle.ai.*;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
@@ -29,11 +13,7 @@ import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.item.IShipCombatRation;
-import com.lulan.shincolle.item.IShipFoodItem;
-import com.lulan.shincolle.item.OwnerPaper;
-import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.item.*;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -43,14 +23,8 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.FormationHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-
+import com.lulan.shincolle.server.Explosion;
+import com.lulan.shincolle.utility.*;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraft.entity.Entity;
@@ -74,6 +48,11 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
@@ -2594,9 +2573,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    //並且回傳是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
-	    //if attack success
-	    if(isTargetHurt) {
-	    	applySoundAtTarget(1, target);
+		Explosion.ShipCannonExplosion(worldObj, this, target.posX, target.posY, target.posZ, atk, isTargetHurt, ConfigHandler.PowerLimit * 0.7f);
+
+		//if attack success
+		if (isTargetHurt) {
+			applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        applyEmotesReaction(3);
 	        

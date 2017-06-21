@@ -1,14 +1,5 @@
 package com.lulan.shincolle.entity.other;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
@@ -20,12 +11,20 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.server.Explosion;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack {
 	
@@ -420,8 +419,10 @@ public class EntityRensouhouBoss extends EntityMob implements IShipCannonAttack 
 	        TargetPoint point1 = new TargetPoint(this.dimension, target.posX, target.posY, target.posZ, 64D);
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point1);
         }
-	    
-	    //消耗彈藥計算
+
+		Explosion.ShipCannonExplosion(world, this, target.posX, target.posY, target.posZ, atk, true, ConfigHandler.PowerLimit * 1.2f);
+
+		//消耗彈藥計算
   		if(numAmmoLight > 0) {
   			numAmmoLight--;
   			

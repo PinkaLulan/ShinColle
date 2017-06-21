@@ -1,27 +1,22 @@
 package com.lulan.shincolle.utility;
 
-import java.util.Comparator;
-import java.util.List;
-
+import com.lulan.shincolle.entity.*;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.ID;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipHostile;
-import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipInvisible;
-import com.lulan.shincolle.entity.IShipOwner;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.reference.ID;
+import java.util.Comparator;
+import java.util.List;
 
 /** some targeting class/method
  */
@@ -287,7 +282,9 @@ public class TargetHelper {
     				}
     				
     				return true;
-    			}
+				} else if (target2 instanceof EntityAnimal) {
+					return ConfigHandler.ChaosMode;
+				}
 			}
     		
         	return false;

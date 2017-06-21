@@ -14,9 +14,9 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
     }
 }
-
 apply plugin: 'forge'
-
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 version = "1.7.10.rv26.2"
 group = "com.lulan.shincolle" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ShinColle"
@@ -41,6 +41,7 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    compile files('libs/*.jar')
 
 }
 
