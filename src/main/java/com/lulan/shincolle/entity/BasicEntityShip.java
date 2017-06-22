@@ -2752,6 +2752,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 	{
                 		if (this.isEntityAlive())
                 		{
+                			//apply potion effects
+                			EffectHelper.applyTicksBuff(this);
+                			
 	                		//use bucket automatically
 	                		if ((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F))
 	                		{
@@ -3232,9 +3235,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
             return false;
         }
-		//只對entity damage類有效
 		else if (source.getEntity() != null)
-		{	//不為null才算傷害, 可免疫毒/掉落/窒息等傷害
+		{
 			Entity attacker = source.getEntity();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
