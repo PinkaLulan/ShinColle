@@ -1,8 +1,12 @@
 package com.lulan.shincolle.ai.path;
 
+import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipNavigator;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.FormationHelper;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -90,7 +94,28 @@ public class ShipMoveHelper
             if (moveSq > 0.001D)
             {
                 float f = (float)(MathHelper.atan2(z1, x1) * Values.N.DIV_180_PI) - 90F;
-                float moveSpeed = (float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
+                float moveSpeed = (float) this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
+                
+                //check formation speed
+                if (this.entity instanceof BasicEntityShip)
+                {
+                	//if in formation
+                	if (((BasicEntityShip) this.entity).getStateMinor(ID.M.FormatType) > 0)
+                	{
+                		moveSpeed = FormationHelper.getFormationMOV((BasicEntityShip) this.entity);
+                	}
+                }
+                else if (this.entity instanceof BasicEntityMount)
+                {
+                	BasicEntityShip host = (BasicEntityShip) ((BasicEntityMount) this.entity).getHostEntity();
+                	
+                	if (host != null && host.getStateMinor(ID.M.FormatType) > 0)
+                	{
+                		moveSpeed = FormationHelper.getFormationMOV(host);
+                	}
+                }
+                
+                moveSpeed *= this.speed;
 
                 //設定每tick最多可以轉動的角度
                 this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f, this.rotateLimit);

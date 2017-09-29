@@ -94,7 +94,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase
         	//update attrs
             if (this.host != null)
             {
-            	this.delayMax = (int)(ConfigHandler.baseAttackSpeed[0] / this.host.getAttackSpeed()) + ConfigHandler.fixedAttackDelay[0];
+            	this.delayMax = (int)(ConfigHandler.baseAttackSpeed[0] / this.host.getAttrs().getAttackSpeed()) + ConfigHandler.fixedAttackDelay[0];
             	this.delayMax = (int)(this.delayMax + this.host2.getRNG().nextInt(this.delayMax) * 0.5F);
             }
             
@@ -122,4 +122,6 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase
             this.host2.attackEntityAsMob(target);
         }
     }
+    
+    
 }

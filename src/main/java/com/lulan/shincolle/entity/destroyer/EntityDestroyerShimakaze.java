@@ -12,13 +12,15 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -33,7 +35,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		super(world);
 		this.setSize(0.5F, 1.6F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
@@ -141,7 +143,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn rensouhou
-    	if (this.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
+    	if (this.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
     	{
     		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.world);
     		rensoho2.initAttrs(this, target, 0);
@@ -167,32 +169,22 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   	public boolean attackEntityWithHeavyAmmo(Entity target)
   	{	
 		//get attack value
-		float atk = StateFinal[ID.ATK_H] * 0.3F;
+		float atk = this.getAttackBaseDamage(2, target) * 0.3F;
 		float kbValue = 0.15F;
 		
 		//飛彈是否採用直射
 		boolean isDirect = false;
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
-		float tarZ = (float)target.posZ;
-		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)this.posY;
-		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        float launchPos = (float)posY + height * 0.7F;
-        
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if ((distX*distX+distY*distY+distZ*distZ) < 36F)
-        {
-        	isDirect = true;
-        }
-        if (this.getShipDepth() > 0D)
-        {
-        	isDirect = true;
-        	launchPos = (float)posY;
-        }
+		float launchPos = (float)posY + height * 0.7F;
 		
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+	    
+        //水中 or 近距離, 採用直射
+        if (distVec.distance < 6D || this.getShipDepth() > 0D)
+        {
+        	isDirect = true;
+        }
+        
 		//experience++
 		addShipExp(ConfigHandler.expGain[2]);
 		
@@ -211,36 +203,43 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
         //heavy ammo--
         if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
         
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-       
-        if (this.rand.nextFloat() < missChance)
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if too close, extend target position
+	    if (distVec.distance < 6D && isDirect)
+	    {
+	    	tarX += distVec.x * 6D;
+	    	tarY += (distVec.y + (target.height - this.height)) * 1D;
+	    	tarZ += distVec.z * 6D;
+	    }
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-        	//spawn miss particle
-        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        	
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
         //發射者煙霧特效 (不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-
+		
         //spawn missile
         EntityAbyssMissile missile1 = new EntityAbyssMissile(this.world, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile2 = new EntityAbyssMissile(this.world, this, 
-        		tarX+4F, tarY+target.height*0.2F, tarZ+4F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX+3.5F, tarY+target.height*0.2F, tarZ+3.5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile3 = new EntityAbyssMissile(this.world, this, 
-        		tarX+4F, tarY+target.height*0.2F, tarZ-4F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX+3.5F, tarY+target.height*0.2F, tarZ-3.5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile4 = new EntityAbyssMissile(this.world, this, 
-        		tarX-4F, tarY+target.height*0.2F, tarZ+4F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX-3.5F, tarY+target.height*0.2F, tarZ+3.5F, launchPos, atk, kbValue, isDirect, -1F);
         EntityAbyssMissile missile5 = new EntityAbyssMissile(this.world, this, 
-        		tarX-4F, tarY+target.height*0.2F, tarZ-4F, launchPos, atk, kbValue, isDirect, -1F);
+        		tarX-3.5F, tarY+target.height*0.2F, tarZ-3.5F, launchPos, atk, kbValue, isDirect, -1F);
         
         this.world.spawnEntity(missile1);
         this.world.spawnEntity(missile2);
@@ -295,14 +294,14 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;	
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -310,18 +309,18 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}
 	}
-
-
+	
+	
 }

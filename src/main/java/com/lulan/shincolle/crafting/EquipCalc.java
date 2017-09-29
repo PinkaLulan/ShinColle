@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEquip;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EnchantHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -21,9 +23,8 @@ import com.lulan.shincolle.utility.LogHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
-/**EQUIP ARRAY ID
- * 0:5SigC 1:6SigC 2:5TwnC 3:6TwnC 4:12.5TwnC 5:14TwnC 6:16TwnC 
- * 7:8TriC 8:16TriC
+/**
+ * equip calculation class
  */
 public class EquipCalc
 {
@@ -43,89 +44,143 @@ public class EquipCalc
 		 * modified material type: mat can increase build rate: -1:none 0:grudge 1:metal 2:ammo 3:poly
 		 */
 		//small build
-		EquipSmall.add(new int[] {ID.EquipType.ARMOR_LO,     80,   1});
-		EquipSmall.add(new int[] {ID.EquipType.FLARE_LO,     80,   2});
+		EquipSmall.add(new int[] {ID.EquipType.ARMOR_LO,      80,   1});
+		EquipSmall.add(new int[] {ID.EquipType.FLARE_LO,      80,   2});
 		EquipSmall.add(new int[] {ID.EquipType.SEARCHLIGHT_LO,80,  0});
-		EquipSmall.add(new int[] {ID.EquipType.COMPASS_LO,   90,   0});
-		EquipSmall.add(new int[] {ID.EquipType.GUN_LO,       100,  2});
-		EquipSmall.add(new int[] {ID.EquipType.DRUM_LO,      120,  1});
-		EquipSmall.add(new int[] {ID.EquipType.CANNON_SI,    128,  2});
-		EquipSmall.add(new int[] {ID.EquipType.TORPEDO_LO,   160,  2});
-		EquipSmall.add(new int[] {ID.EquipType.RADAR_LO,     200,  0});
-		EquipSmall.add(new int[] {ID.EquipType.AIR_R_LO,     256,  3});
-		EquipSmall.add(new int[] {ID.EquipType.CANNON_TW_LO, 320,  2});
+		EquipSmall.add(new int[] {ID.EquipType.COMPASS_LO,    90,   0});
+		EquipSmall.add(new int[] {ID.EquipType.GUN_LO,        100,  2});
+		EquipSmall.add(new int[] {ID.EquipType.DRUM_LO,       120,  1});
+		EquipSmall.add(new int[] {ID.EquipType.CANNON_SI,     128,  2});
+		EquipSmall.add(new int[] {ID.EquipType.TORPEDO_LO,    160,  2});
+		EquipSmall.add(new int[] {ID.EquipType.RADAR_LO,      200,  0});
+		EquipSmall.add(new int[] {ID.EquipType.AIR_R_LO,      256,  3});
+		EquipSmall.add(new int[] {ID.EquipType.CANNON_TW_LO,  320,  2});
 		
 		//large build
-		EquipLarge.add(new int[] {ID.EquipType.ARMOR_HI,     500,  1});
-		EquipLarge.add(new int[] {ID.EquipType.GUN_HI,       800,  2});
-		EquipLarge.add(new int[] {ID.EquipType.AIR_R_HI,     1000, 3});
-		EquipLarge.add(new int[] {ID.EquipType.TORPEDO_HI,   1200, 2});
-		EquipLarge.add(new int[] {ID.EquipType.TURBINE_LO,   1400, 0});
-		EquipLarge.add(new int[] {ID.EquipType.CANNON_TW_HI, 1600, 2});	
-		EquipLarge.add(new int[] {ID.EquipType.RADAR_HI,     2000, 0});
-		EquipLarge.add(new int[] {ID.EquipType.AIR_T_LO,     2400, 3});
-		EquipLarge.add(new int[] {ID.EquipType.AIR_F_LO,     2400, 3});
-		EquipLarge.add(new int[] {ID.EquipType.AIR_B_LO,     2400, 3});
-		EquipLarge.add(new int[] {ID.EquipType.CATAPULT_LO,  2800, 3});
-		EquipLarge.add(new int[] {ID.EquipType.TURBINE_HI,   3200, 0});
-		EquipLarge.add(new int[] {ID.EquipType.AIR_T_HI,     3800, 3});
-		EquipLarge.add(new int[] {ID.EquipType.AIR_F_HI,     3800, 3});
-		EquipLarge.add(new int[] {ID.EquipType.AIR_B_HI,     3800, 3});
-		EquipLarge.add(new int[] {ID.EquipType.CANNON_TR,    4400, 2});
-		EquipLarge.add(new int[] {ID.EquipType.CATAPULT_HI,  5000, 3});
+		EquipLarge.add(new int[] {ID.EquipType.ARMOR_HI,      500,  1});
+		EquipLarge.add(new int[] {ID.EquipType.GUN_HI,        800,  2});
+		EquipLarge.add(new int[] {ID.EquipType.AIR_R_HI,      1000, 3});
+		EquipLarge.add(new int[] {ID.EquipType.TORPEDO_HI,    1200, 2});
+		EquipLarge.add(new int[] {ID.EquipType.TURBINE_LO,    1400, 0});
+		EquipLarge.add(new int[] {ID.EquipType.CANNON_TW_HI,  1600, 2});	
+		EquipLarge.add(new int[] {ID.EquipType.RADAR_HI,      2000, 0});
+		EquipLarge.add(new int[] {ID.EquipType.AIR_T_LO,      2400, 3});
+		EquipLarge.add(new int[] {ID.EquipType.AIR_F_LO,      2400, 3});
+		EquipLarge.add(new int[] {ID.EquipType.AIR_B_LO,      2400, 3});
+		EquipLarge.add(new int[] {ID.EquipType.CATAPULT_LO,   2800, 3});
+		EquipLarge.add(new int[] {ID.EquipType.TURBINE_HI,    3200, 0});
+		EquipLarge.add(new int[] {ID.EquipType.AIR_T_HI,      3800, 3});
+		EquipLarge.add(new int[] {ID.EquipType.AIR_F_HI,      3800, 3});
+		EquipLarge.add(new int[] {ID.EquipType.AIR_B_HI,      3800, 3});
+		EquipLarge.add(new int[] {ID.EquipType.CANNON_TR,     4400, 2});
+		EquipLarge.add(new int[] {ID.EquipType.CATAPULT_HI,   5000, 3});
 	}
 	
 	
-	/** return array ref: ID.EquipFinal */
-	public static float[] getEquipStat(BasicEntityShip entity, ItemStack stack)
+	/** calc equip attrs */
+	public static void updateAttrsEquip(BasicEntityShip ship)
 	{
-		if (entity != null && stack != null && stack.getItem() instanceof BasicEquip)
+		Attrs attrs = ship.getAttrs();
+		
+		//reset equips attrs
+		attrs.resetAttrsEquip();
+		ship.setStateMinor(ID.M.DrumState, 0);
+		ship.setStateMinor(ID.M.LevelChunkLoader, 0);
+		ship.setStateMinor(ID.M.LevelFlare, 0);
+		ship.setStateMinor(ID.M.LevelSearchlight, 0);
+		
+		//get equips from equip slot
+		for (int i = 0; i < ContainerShipInventory.SLOTS_SHIPINV; i++)
 		{
-			float[] itemRawStat = Values.EquipMap.get(((BasicEquip) stack.getItem()).getEquipID(stack.getItemDamage()));
-			float[] itemEnch = EnchantHelper.calcEnchantEffect(stack);
-			
-			if (itemRawStat != null)
-			{
-				//cannot use this equip, return null
-				if (entity.getEquipType() != 2 && itemRawStat[ID.EquipData.EQUIP_TYPE] != 2)
-				{
-					if (entity.getEquipType() != itemRawStat[ID.EquipData.EQUIP_TYPE]) return null;
-				}
-				
-				//apply enchant effect
-				float[] itemNewStat = calcEquipStatWithEnchant(itemRawStat, itemEnch);
-				
-//				LogHelper.info("DEBUG : equip stat "+equipID+" "+getStat[0]+" "+getStat[1]+" "+getStat[2]+" "+getStat[3]+" "+getStat[4]+" "+getStat[5]+" "+getStat[6]+" "+getStat[7]+" "+getStat[8]);
-				return itemNewStat;
-			}	
+			calcEquipAttrs(ship, ship.getCapaShipInventory().getStackInSlot(i));
 		}
 		
-		return null;
+		//apply attrs scale
+		float[] equip = attrs.getAttrsEquip();
+		
+		equip[ID.Attrs.HP] *= ConfigHandler.scaleShip[ID.AttrsBase.HP];
+		equip[ID.Attrs.ATK_L] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.ATK_H] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.ATK_AL] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.ATK_AH] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.DEF] *= ConfigHandler.scaleShip[ID.AttrsBase.DEF];
+		equip[ID.Attrs.SPD] *= ConfigHandler.scaleShip[ID.AttrsBase.SPD];
+		equip[ID.Attrs.MOV] *= ConfigHandler.scaleShip[ID.AttrsBase.MOV];
+		equip[ID.Attrs.HIT] *= ConfigHandler.scaleShip[ID.AttrsBase.HIT];
 	}
 	
 	/**
-	 * get special equip stats
-	 * 
-	 * return 0:inv page, 1:chunk loader, 2:flare, 3:searchlight
+	 * add equip attrs to AttrsEquip
 	 */
-	public static float[] getEquipStatMisc(BasicEntityShip entity, ItemStack stack)
+	public static void calcEquipAttrs(BasicEntityShip ship, ItemStack equip)
+	{
+		Attrs attrs = ship.getAttrs();
+		
+		//reset equip value
+		float[] attrsEquip = attrs.getAttrsEquip();
+		//get main attrs from equip item
+		float[] getEquip = getEquipAttrsMain(ship, equip);
+		//get misc attrs from equip item
+		int[] getMisc = getEquipAttrsMisc(equip);
+		
+		//apply main attrs
+		for (int i = 0; i < Attrs.AttrsLength; i++)
+		{
+			attrsEquip[i] += getEquip[i];
+		}
+		
+		//apply misc attrs
+		if (getMisc != null)
+		{
+			ship.setStateMinor(ID.M.DrumState, ship.getStateMinor(ID.M.DrumState) + getMisc[0]);
+			ship.setStateMinor(ID.M.LevelChunkLoader, ship.getStateMinor(ID.M.LevelChunkLoader) + getMisc[1]);
+			ship.setStateMinor(ID.M.LevelFlare, ship.getStateMinor(ID.M.LevelFlare) + getMisc[2]);
+			ship.setStateMinor(ID.M.LevelSearchlight, ship.getStateMinor(ID.M.LevelSearchlight) + getMisc[3]);
+		}
+	}
+	
+	/** get equip attributes from {@link Values.EquipAttrsMain} */
+	public static float[] getEquipAttrsMain(BasicEntityShip entity, ItemStack stack)
 	{
 		if (entity != null && stack != null && stack.getItem() instanceof BasicEquip)
 		{
-			float[] itemStat = new float[] {0, 0, 0, 0};
+			float[] itemRaw = Values.EquipAttrsMain.get(((BasicEquip) stack.getItem()).getEquipID(stack.getItemDamage()));
+			int[] itemMisc = Values.EquipAttrsMisc.get(((BasicEquip) stack.getItem()).getEquipID(stack.getItemDamage()));
+			float[] itemEnch = EnchantHelper.calcEnchantEffect(stack);
+			
+			if (itemRaw != null && itemMisc != null)
+			{
+				//cannot use this equip, return zeros
+				if (entity.getEquipType() != 2 && itemMisc[ID.EquipMisc.EQUIP_TYPE] != 2)
+				{
+					if (entity.getEquipType() != itemMisc[ID.EquipMisc.EQUIP_TYPE]) return Attrs.getResetZeroValue();
+				}
+				
+				//apply enchant effect and return
+				return calcEquipStatWithEnchant(itemMisc[ID.EquipMisc.EQUIP_TYPE], itemRaw, itemEnch);
+			}	
+		}
+		
+		return Attrs.getResetZeroValue();
+	}
+	
+	/**
+	 * get special equip attributes
+	 * return int[]: 0:drum number, 1:chunk loader, 2:flare, 3:searchlight
+	 */
+	public static int[] getEquipAttrsMisc(ItemStack stack)
+	{
+		if (stack != null && stack.getItem() instanceof BasicEquip)
+		{
+			int[] itemStat = new int[] {0, 0, 0, 0};
 			EnumEquipEffectSP effect = ((BasicEquip) stack.getItem()).getSpecialEffect(stack);
 			
 			switch (effect)
 			{
 			case DRUM:			//drum inventory page
-				itemStat[0] = 1;
-			break;
 			case DRUM_LIQUID:	//drum liquid tank
-				//NO EFFECT
-			break;
 			case DRUM_EU:		//drum EU storage
-				//if no IC2, it become normal drum
-				if (!CommonProxy.activeIC2) itemStat[0] = 1;
+				itemStat[0] = 1;
 			break;
 			case COMPASS:		//compass
 				itemStat[1] = 1;
@@ -149,61 +204,90 @@ public class EquipCalc
 	/**
 	 * calc equip stats with enchantment effect
 	 * 
-	 * input:
-	 *   raw stats (21 floats, ref: ID.EquipData)
-	 *   enchant   (17 floats, ref: ID.EquipEnch)
-	 * 
-	 * output:
-	 *   new stats (20 floats = 16 main attrs + 4 special effects, ref: ID.EquipFinal)
+	 * IN: raw equip stats
+	 * OUT: enchanted equip stats
 	 */
-	public static float[] calcEquipStatWithEnchant(float[] raw, float[] enchant)
+	public static float[] calcEquipStatWithEnchant(int equipType, float[] raw, float[] enchant)
 	{
-		float[] newstat = new float[20];
+		float[] newstat = new float[Attrs.AttrsLength];
 		float modTemp = 1F;
 		
 		//hp
-		newstat[ID.EquipFinal.HP] = raw[ID.EquipData.HP] * (1F + enchant[ID.EquipEnch.HP]);
+		newstat[ID.Attrs.HP] = raw[ID.Attrs.HP] * (1F + enchant[ID.Attrs.HP]);
+		
 		//atk (weapon only)
-		modTemp = raw[ID.EquipData.ENCH_TYPE] == 1F ? 1F + enchant[ID.EquipEnch.ATK] : 1F;
-		newstat[ID.EquipFinal.ATK_L] = raw[ID.EquipData.ATK_L] * modTemp;
-		newstat[ID.EquipFinal.ATK_H] = raw[ID.EquipData.ATK_H] * modTemp;
-		newstat[ID.EquipFinal.ATK_AL] = raw[ID.EquipData.ATK_AL] * modTemp;
-		newstat[ID.EquipFinal.ATK_AH] = raw[ID.EquipData.ATK_AH] * modTemp;
+		modTemp = equipType == 1F ? 1F + enchant[ID.Attrs.ATK_L] : 1F;
+		newstat[ID.Attrs.ATK_L] = raw[ID.Attrs.ATK_L] * modTemp;
+		newstat[ID.Attrs.ATK_H] = raw[ID.Attrs.ATK_H] * modTemp;
+		newstat[ID.Attrs.ATK_AL] = raw[ID.Attrs.ATK_AL] * modTemp;
+		newstat[ID.Attrs.ATK_AH] = raw[ID.Attrs.ATK_AH] * modTemp;
+		
 		//def (armor only)
-		modTemp = raw[ID.EquipData.ENCH_TYPE] == 2F ? 1F + enchant[ID.EquipEnch.DEF] : 1F;
-		newstat[ID.EquipFinal.DEF] = raw[ID.EquipData.DEF] * modTemp;
+		modTemp = equipType == 2F ? 1F + enchant[ID.Attrs.DEF] : 1F;
+		newstat[ID.Attrs.DEF] = raw[ID.Attrs.DEF] * modTemp;
+		
 		//spd
-		newstat[ID.EquipFinal.SPD] = raw[ID.EquipData.SPD] * (1F + enchant[ID.EquipEnch.SPD]);
-		//mov: negative: reduce, positive: increase
-		if (enchant[ID.EquipEnch.MOV] > 1F) enchant[ID.EquipEnch.MOV] = 1F;
-		modTemp = raw[ID.EquipData.MOV] < 0F ? 1F - enchant[ID.EquipEnch.MOV] : 1F + enchant[ID.EquipEnch.MOV];
-		newstat[ID.EquipFinal.MOV] = raw[ID.EquipData.MOV] * modTemp;
+		newstat[ID.Attrs.SPD] = raw[ID.Attrs.SPD] * (1F + enchant[ID.Attrs.SPD]);
+		
+		//mov (negative: reduce, positive: increase)
+		if (raw[ID.Attrs.MOV] < 0F)
+		{
+			modTemp = 1F - enchant[ID.Attrs.MOV];
+			if (modTemp < 0F) modTemp = 0F;
+		}
+		else
+		{
+			modTemp = 1F + enchant[ID.Attrs.MOV];
+		}
+		newstat[ID.Attrs.MOV] = raw[ID.Attrs.MOV] * modTemp;
+		
 		//range
-		newstat[ID.EquipFinal.HIT] = raw[ID.EquipData.HIT] * (1F + enchant[ID.EquipEnch.HIT]);
+		newstat[ID.Attrs.HIT] = raw[ID.Attrs.HIT] * (1F + enchant[ID.Attrs.HIT]);
+		
 		//cri
-		newstat[ID.EquipFinal.CRI] = raw[ID.EquipData.CRI] * (1F + enchant[ID.EquipEnch.CRI]);
+		newstat[ID.Attrs.CRI] = raw[ID.Attrs.CRI] * (1F + enchant[ID.Attrs.CRI]);
+		
 		//dhit
-		newstat[ID.EquipFinal.DHIT] = raw[ID.EquipData.DHIT] * (1F + enchant[ID.EquipEnch.DHIT]);
+		newstat[ID.Attrs.DHIT] = raw[ID.Attrs.DHIT] * (1F + enchant[ID.Attrs.DHIT]);
+		
 		//thit
-		newstat[ID.EquipFinal.THIT] = raw[ID.EquipData.THIT] * (1F + enchant[ID.EquipEnch.THIT]);
+		newstat[ID.Attrs.THIT] = raw[ID.Attrs.THIT] * (1F + enchant[ID.Attrs.THIT]);
+		
 		//miss
-		newstat[ID.EquipFinal.MISS] = raw[ID.EquipData.MISS] * (1F + enchant[ID.EquipEnch.MISS]);
+		newstat[ID.Attrs.MISS] = raw[ID.Attrs.MISS] * (1F + enchant[ID.Attrs.MISS]);
+		
 		//aa
-		newstat[ID.EquipFinal.AA] = raw[ID.EquipData.AA] * (1F + enchant[ID.EquipEnch.AA]);
+		newstat[ID.Attrs.AA] = raw[ID.Attrs.AA] * (1F + enchant[ID.Attrs.AA]);
+		
 		//asm
-		newstat[ID.EquipFinal.ASM] = raw[ID.EquipData.ASM] * (1F + enchant[ID.EquipEnch.ASM]);
-		//dodge
-		if (enchant[ID.EquipEnch.DODGE] > 1F) enchant[ID.EquipEnch.DODGE] = 1F;
-		modTemp = raw[ID.EquipData.DODGE] < 0F ? 1F - enchant[ID.EquipEnch.DODGE] : 1F + enchant[ID.EquipEnch.DODGE];
-		newstat[ID.EquipFinal.DODGE] = raw[ID.EquipData.DODGE] * modTemp;
+		newstat[ID.Attrs.ASM] = raw[ID.Attrs.ASM] * (1F + enchant[ID.Attrs.ASM]);
+		
+		//dodge (negative: reduce, positive: increase)
+		if (raw[ID.Attrs.DODGE] < 0F)
+		{
+			modTemp = 1F - enchant[ID.Attrs.DODGE];
+			if (modTemp < 0F) modTemp = 0F;
+		}
+		else
+		{
+			modTemp = 1F + enchant[ID.Attrs.DODGE];
+		}
+		newstat[ID.Attrs.DODGE] = raw[ID.Attrs.DODGE] * modTemp;
+		
 		//xp gain (weapon only)
-		newstat[ID.EquipFinal.XP] = raw[ID.EquipData.ENCH_TYPE] == 1F ? enchant[ID.EquipEnch.XP] : 0F;
+		newstat[ID.Attrs.XP] = equipType == 1F ? raw[ID.Attrs.XP] + enchant[ID.Attrs.XP] : raw[ID.Attrs.XP];
+		
 		//grudge gain (non-weapon only)
-		newstat[ID.EquipFinal.GRUDGE] = raw[ID.EquipData.ENCH_TYPE] != 1F ? enchant[ID.EquipEnch.GRUDGE] : 0F;
+		newstat[ID.Attrs.GRUDGE] = equipType != 1F ? raw[ID.Attrs.GRUDGE] + enchant[ID.Attrs.GRUDGE] : raw[ID.Attrs.GRUDGE];
+		
 		//ammo gain (weapon only)
-		newstat[ID.EquipFinal.AMMO] = raw[ID.EquipData.ENCH_TYPE] == 1F ? enchant[ID.EquipEnch.AMMO] : 0F;
+		newstat[ID.Attrs.AMMO] = equipType == 1F ? raw[ID.Attrs.AMMO] + enchant[ID.Attrs.AMMO] : raw[ID.Attrs.AMMO];
+		
 		//hp restore (non-weapon only)
-		newstat[ID.EquipFinal.HPRES] = raw[ID.EquipData.ENCH_TYPE] != 1F ? enchant[ID.EquipEnch.HPRES] : 0F;
+		newstat[ID.Attrs.HPRES] = equipType != 1F ? raw[ID.Attrs.HPRES] + enchant[ID.Attrs.HPRES] : raw[ID.Attrs.HPRES];
+		
+		//knockback resist (non-weapon only)
+		newstat[ID.Attrs.KB] = equipType != 1F ? raw[ID.Attrs.KB] + enchant[ID.Attrs.KB] : raw[ID.Attrs.KB];
 		
 		return newstat;
 	}
@@ -326,14 +410,14 @@ public class EquipCalc
 		Map<Integer, Float> equipList = new HashMap<Integer, Float>();
 
 		//get equip list, compare the equip type = input type
-		Iterator iter = Values.EquipMap.entrySet().iterator();
+		Iterator iter = Values.EquipAttrsMisc.entrySet().iterator();
 		while (iter.hasNext())
 		{
 			Map.Entry entry = (Map.Entry)iter.next();
 			int eid = (Integer) entry.getKey();
 			float[] val = (float[]) entry.getValue();
 			
-			if (val[ID.EquipData.RARE_TYPE] == type)
+			if (val[ID.EquipMisc.RARE_TYPE] == type)
 			{
 				float prob = 0F;
 				int totalMat = 0;
@@ -348,14 +432,14 @@ public class EquipCalc
 				}
 				
 				//get mean distance
-				meanDist = MathHelper.abs(totalMat - (int)val[ID.EquipData.RARE_MEAN]);
+				meanDist = MathHelper.abs(totalMat - (int)val[ID.EquipMisc.RARE_MEAN]);
 				
 				//get prob by mean dist
 				prob = CalcHelper.getNormDist(meanDist);
 				
 				//put into map
 				equipList.put(eid, prob);
-				LogHelper.debug("DEBUG: calc equip: prob list: ID "+eid+" MEAN "+val[ID.EquipData.RARE_MEAN]+" MEAN(P) "+(val[ID.EquipData.RARE_MEAN]/te)+" MD "+meanDist+" PR "+prob);
+				LogHelper.debug("DEBUG: calc equip: prob list: ID "+eid+" MEAN "+val[ID.EquipMisc.RARE_MEAN]+" MEAN(P) "+(val[ID.EquipMisc.RARE_MEAN]/te)+" MD "+meanDist+" PR "+prob);
 			}
 		}		
 		
@@ -536,5 +620,6 @@ public class EquipCalc
 		LogHelper.debug("DEBUG: equip calc: get itemstack: "+itemType+" "+itemSubType+" "+item);
 		return item;
 	}
+	
 	
 }

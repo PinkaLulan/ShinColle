@@ -48,7 +48,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
 		super(world);
 		this.setSize(0.5F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerInazuma);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerInazuma);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
@@ -112,8 +112,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   				//add morale in raiden mode
   				if (this.riderType == 0 && this.isRaiden)
   				{
-  					int m = this.getStateMinor(ID.M.Morale);
-  					if (m < 7000) this.setStateMinor(ID.M.Morale, m + 100);
+  					if (this.getMorale() < (int)(ID.Morale.L_Excited * 1.5F)) this.addMorale(100);
   				}
   				
   				if (this.ticksExisted % 128 == 0)
@@ -139,7 +138,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (getStateEmotion(ID.S.State) > ID.State.NORMAL && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 4)
+  				if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 4)
   				{
   					double smokeY = posY + 1.4D;
   					
@@ -249,11 +248,11 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
 	{
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}

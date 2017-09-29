@@ -373,7 +373,7 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP00a)
+		if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP00a)
 		{
 			this.EquipHand01.isHidden = false;
 			this.EquipHand02.isHidden = false;
@@ -786,7 +786,7 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
 	    	if (ent.getAttackTick() > 25)
 	    	{
 		    	//jojo攻擊動作
-		    	if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP02a)
+		    	if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP02a)
 		    	{
 		    		GlStateManager.translate(0F, 0.15F, 0F);
 			    	//Body
@@ -813,7 +813,7 @@ public class ModelAirfieldHime extends ShipModelBaseAdv
 					this.Hair02.rotateAngleX += 0.43F;
 					this.Hair03.rotateAngleX += 0.49F;
 		    	}
-		    	else if (ent.getStateEmotion(ID.S.State2) == ID.State.EQUIP01a)
+		    	else if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a)
 		    	{
 		    		//Body
 			    	this.Head.rotateAngleY *= 0.8F;

@@ -6,17 +6,14 @@ import org.lwjgl.input.Keyboard;
 
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EnchantHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -151,55 +148,54 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
             	nbt.setInteger("HideFlags", flag);
             }
     		
-    		float[] itemRaw = Values.EquipMap.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));
+            float[] main = Values.EquipAttrsMain.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));
+            int[] misc = Values.EquipAttrsMisc.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));
     		
-    		if (itemRaw != null)
+    		if (main != null && misc != null)
         	{
     			//apply enchant effect
-    			float[] itemEnch = EnchantHelper.calcEnchantEffect(stack);
-    			float[] itemNewStat = EquipCalc.calcEquipStatWithEnchant(itemRaw, itemEnch);
+    			main = EquipCalc.calcEquipStatWithEnchant(misc[ID.EquipMisc.EQUIP_TYPE], main, EnchantHelper.calcEnchantEffect(stack));
     			
     			//draw stat value
-        		if (itemNewStat[ID.EquipFinal.HP] != 0F) list.add(TextFormatting.RED + String.format("%.1f" ,itemNewStat[ID.EquipFinal.HP] * (float)ConfigHandler.scaleShip[ID.HP])+ " " + I18n.format("gui.shincolle:hp"));
-        		if (itemNewStat[ID.EquipFinal.ATK_L] != 0F) list.add(TextFormatting.RED + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_L] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:firepower1"));
-        		if (itemNewStat[ID.EquipFinal.ATK_H] != 0F) list.add(TextFormatting.GREEN + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_H] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:torpedo"));
-        		if (itemNewStat[ID.EquipFinal.ATK_AL] != 0F) list.add(TextFormatting.RED + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_AL] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:airfirepower"));
-        		if (itemNewStat[ID.EquipFinal.ATK_AH] != 0F) list.add(TextFormatting.GREEN + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ATK_AH] * (float)ConfigHandler.scaleShip[ID.ATK])+ " " + I18n.format("gui.shincolle:airtorpedo"));
-        		if (itemNewStat[ID.EquipFinal.DEF] != 0F) list.add(TextFormatting.WHITE + String.format("%.1f" ,itemNewStat[ID.EquipFinal.DEF] * (float)ConfigHandler.scaleShip[ID.DEF])+ "% " + I18n.format("gui.shincolle:armor"));
-        		if (itemNewStat[ID.EquipFinal.SPD] != 0F) list.add(TextFormatting.WHITE + String.format("%.2f" ,itemNewStat[ID.EquipFinal.SPD] * (float)ConfigHandler.scaleShip[ID.SPD])+ " " + I18n.format("gui.shincolle:attackspeed"));
-        		if (itemNewStat[ID.EquipFinal.MOV] != 0F) list.add(TextFormatting.GRAY + String.format("%.2f" ,itemNewStat[ID.EquipFinal.MOV] * (float)ConfigHandler.scaleShip[ID.MOV])+ " " + I18n.format("gui.shincolle:movespeed"));
-        		if (itemNewStat[ID.EquipFinal.HIT] != 0F) list.add(TextFormatting.LIGHT_PURPLE + String.format("%.1f" ,itemNewStat[ID.EquipFinal.HIT] * (float)ConfigHandler.scaleShip[ID.HIT])+ " " + I18n.format("gui.shincolle:range"));
-        		if (itemNewStat[ID.EquipFinal.CRI] != 0F) list.add(TextFormatting.AQUA + String.format("%.0f" ,itemNewStat[ID.EquipFinal.CRI]*100F)+ "% " + I18n.format("gui.shincolle:critical"));
-        		if (itemNewStat[ID.EquipFinal.DHIT] != 0F) list.add(TextFormatting.YELLOW + String.format("%.0f" ,itemNewStat[ID.EquipFinal.DHIT]*100F)+ "% " + I18n.format("gui.shincolle:doublehit"));
-        		if (itemNewStat[ID.EquipFinal.THIT] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f" ,itemNewStat[ID.EquipFinal.THIT]*100F)+ "% " + I18n.format("gui.shincolle:triplehit"));
-        		if (itemNewStat[ID.EquipFinal.MISS] != 0F) list.add(TextFormatting.RED + String.format("%.0f" ,itemNewStat[ID.EquipFinal.MISS]*100F)+ "% " + I18n.format("gui.shincolle:missreduce"));
-        		if (itemNewStat[ID.EquipFinal.DODGE] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f" ,itemNewStat[ID.EquipFinal.DODGE])+ "% " + I18n.format("gui.shincolle:dodge"));
-        		if (itemNewStat[ID.EquipFinal.AA] != 0F) list.add(TextFormatting.YELLOW + String.format("%.1f" ,itemNewStat[ID.EquipFinal.AA])+ " " + I18n.format("gui.shincolle:antiair"));
-        		if (itemNewStat[ID.EquipFinal.ASM] != 0F) list.add(TextFormatting.AQUA + String.format("%.1f" ,itemNewStat[ID.EquipFinal.ASM])+ " " + I18n.format("gui.shincolle:antiss"));
-        		
-        		//draw special effect
-        		if (itemNewStat[ID.EquipFinal.XP] != 0F) list.add(TextFormatting.GREEN + I18n.format("gui.shincolle:equip.xp") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.XP]*100F) + "%");
-    			if (itemNewStat[ID.EquipFinal.GRUDGE] != 0F) list.add(TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.grudge") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.GRUDGE]*100F) + "%");
-				if (itemNewStat[ID.EquipFinal.AMMO] != 0F) list.add(TextFormatting.DARK_AQUA + I18n.format("gui.shincolle:equip.ammo") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.AMMO]*100F) + "%");
-				if (itemNewStat[ID.EquipFinal.HPRES] != 0F) list.add(TextFormatting.DARK_GREEN + I18n.format("gui.shincolle:equip.hpres") + " " + String.format("%.0f" ,itemNewStat[ID.EquipFinal.HPRES]*100F) + "%");
+        		if (main[ID.Attrs.HP] != 0F) list.add(TextFormatting.RED + String.format("%.1f", main[ID.Attrs.HP] * (float)ConfigHandler.scaleShip[ID.AttrsBase.HP])+ " " + I18n.format("gui.shincolle:hp"));
+        		if (main[ID.Attrs.ATK_L] != 0F) list.add(TextFormatting.RED + String.format("%.1f", main[ID.Attrs.ATK_L] * (float)ConfigHandler.scaleShip[ID.AttrsBase.ATK])+ " " + I18n.format("gui.shincolle:firepower1"));
+        		if (main[ID.Attrs.ATK_H] != 0F) list.add(TextFormatting.GREEN + String.format("%.1f", main[ID.Attrs.ATK_H] * (float)ConfigHandler.scaleShip[ID.AttrsBase.ATK])+ " " + I18n.format("gui.shincolle:torpedo"));
+        		if (main[ID.Attrs.ATK_AL] != 0F) list.add(TextFormatting.RED + String.format("%.1f", main[ID.Attrs.ATK_AL] * (float)ConfigHandler.scaleShip[ID.AttrsBase.ATK])+ " " + I18n.format("gui.shincolle:airfirepower"));
+        		if (main[ID.Attrs.ATK_AH] != 0F) list.add(TextFormatting.GREEN + String.format("%.1f", main[ID.Attrs.ATK_AH] * (float)ConfigHandler.scaleShip[ID.AttrsBase.ATK])+ " " + I18n.format("gui.shincolle:airtorpedo"));
+        		if (main[ID.Attrs.DEF] != 0F) list.add(TextFormatting.WHITE + String.format("%.1f", main[ID.Attrs.DEF] * 100F * (float)ConfigHandler.scaleShip[ID.AttrsBase.DEF])+ "% " + I18n.format("gui.shincolle:armor"));
+        		if (main[ID.Attrs.SPD] != 0F) list.add(TextFormatting.WHITE + String.format("%.2f", main[ID.Attrs.SPD] * (float)ConfigHandler.scaleShip[ID.AttrsBase.SPD])+ " " + I18n.format("gui.shincolle:attackspeed"));
+        		if (main[ID.Attrs.MOV] != 0F) list.add(TextFormatting.GRAY + String.format("%.2f", main[ID.Attrs.MOV] * (float)ConfigHandler.scaleShip[ID.AttrsBase.MOV])+ " " + I18n.format("gui.shincolle:movespeed"));
+        		if (main[ID.Attrs.HIT] != 0F) list.add(TextFormatting.LIGHT_PURPLE + String.format("%.1f", main[ID.Attrs.HIT] * (float)ConfigHandler.scaleShip[ID.AttrsBase.HIT])+ " " + I18n.format("gui.shincolle:range"));
+        		if (main[ID.Attrs.CRI] != 0F) list.add(TextFormatting.AQUA + String.format("%.0f", main[ID.Attrs.CRI] * 100F)+ "% " + I18n.format("gui.shincolle:critical"));
+        		if (main[ID.Attrs.DHIT] != 0F) list.add(TextFormatting.YELLOW + String.format("%.0f", main[ID.Attrs.DHIT] * 100F)+ "% " + I18n.format("gui.shincolle:doublehit"));
+        		if (main[ID.Attrs.THIT] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f", main[ID.Attrs.THIT] * 100F)+ "% " + I18n.format("gui.shincolle:triplehit"));
+        		if (main[ID.Attrs.MISS] != 0F) list.add(TextFormatting.RED + String.format("%.0f", main[ID.Attrs.MISS] * 100F)+ "% " + I18n.format("gui.shincolle:missreduce"));
+        		if (main[ID.Attrs.DODGE] != 0F) list.add(TextFormatting.GOLD + String.format("%.0f", main[ID.Attrs.DODGE] * 100F)+ "% " + I18n.format("gui.shincolle:dodge"));
+        		if (main[ID.Attrs.AA] != 0F) list.add(TextFormatting.YELLOW + String.format("%.1f", main[ID.Attrs.AA])+ " " + I18n.format("gui.shincolle:antiair"));
+        		if (main[ID.Attrs.ASM] != 0F) list.add(TextFormatting.AQUA + String.format("%.1f", main[ID.Attrs.ASM])+ " " + I18n.format("gui.shincolle:antiss"));
+        		if (main[ID.Attrs.XP] != 0F) list.add(TextFormatting.GREEN + I18n.format("gui.shincolle:equip.xp") + " " + String.format("%.0f", main[ID.Attrs.XP] * 100F) + "%");
+    			if (main[ID.Attrs.GRUDGE] != 0F) list.add(TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.grudge") + " " + String.format("%.0f", main[ID.Attrs.GRUDGE] * 100F) + "%");
+				if (main[ID.Attrs.AMMO] != 0F) list.add(TextFormatting.DARK_AQUA + I18n.format("gui.shincolle:equip.ammo") + " " + String.format("%.0f", main[ID.Attrs.AMMO] * 100F) + "%");
+				if (main[ID.Attrs.HPRES] != 0F) list.add(TextFormatting.DARK_GREEN + I18n.format("gui.shincolle:equip.hpres") + " " + String.format("%.0f", main[ID.Attrs.HPRES] * 100F) + "%");
+				if (main[ID.Attrs.KB] != 0F) list.add(TextFormatting.DARK_RED + I18n.format("gui.shincolle:equip.kb") + " " + String.format("%.0f", main[ID.Attrs.KB] * 100F) + "%");
         		
         		//draw equip and enchant type
 				String drawstr = I18n.format("gui.shincolle:equip.enchtype") + " ";
-				drawstr += itemRaw[ID.EquipData.ENCH_TYPE] == 1F ?
+				drawstr += misc[ID.EquipMisc.ENCH_TYPE] == 1F ?
 						TextFormatting.RED + I18n.format("gui.shincolle:equip.enchtype1") :
-						itemRaw[ID.EquipData.ENCH_TYPE] == 2F ?
+							misc[ID.EquipMisc.ENCH_TYPE] == 2F ?
 						TextFormatting.AQUA + I18n.format("gui.shincolle:equip.enchtype0") :
-						itemRaw[ID.EquipData.ENCH_TYPE] == 3F ?
+							misc[ID.EquipMisc.ENCH_TYPE] == 3F ?
 						TextFormatting.GRAY + I18n.format("gui.shincolle:equip.enchtype2") : "";
-				drawstr += itemRaw[ID.EquipData.EQUIP_TYPE] == 1F ?
+				drawstr += misc[ID.EquipMisc.EQUIP_TYPE] == 1F ?
 						"  " + TextFormatting.DARK_RED + I18n.format("gui.shincolle:notforcarrier") :
-						itemRaw[ID.EquipData.EQUIP_TYPE] == 3F ?
+							misc[ID.EquipMisc.EQUIP_TYPE] == 3F ?
 						"  " + TextFormatting.DARK_AQUA + I18n.format("gui.shincolle:carrieronly") : "";
 
 				list.add(drawstr);
         		
         		//draw construction info
-        		if (itemRaw[ID.EquipData.DEVELOP_NUM] > 400F)
+        		if (misc[ID.EquipMisc.DEVELOP_NUM] > 400)
         		{
         			list.add(TextFormatting.DARK_RED + I18n.format("tile.shincolle:BlockLargeShipyard.name"));
         		}
@@ -209,7 +205,7 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
         		}
         		
         		String matname = null;
-        		switch ((int)itemRaw[ID.EquipData.DEVELOP_MAT])
+        		switch (misc[ID.EquipMisc.DEVELOP_MAT])
         		{
         		case 1:
         			matname = I18n.format("item.shincolle:AbyssMetal.name");
@@ -227,14 +223,13 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
         		
         		drawstr = TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matstype") +
         				  TextFormatting.GRAY + " (" + matname + ") " +
-        				  String.format("%.0f", itemRaw[ID.EquipData.DEVELOP_NUM]) + "  " +
+        				  String.format("%.0f", (float)misc[ID.EquipMisc.DEVELOP_NUM]) + "  " +
         				  TextFormatting.DARK_PURPLE + I18n.format("gui.shincolle:equip.matsrarelevel") +
-        				  TextFormatting.GRAY + " " + String.format("%.0f", itemRaw[ID.EquipData.RARE_MEAN]);
+        				  TextFormatting.GRAY + " " + String.format("%.0f", (float)misc[ID.EquipMisc.RARE_MEAN]);
         		
         		list.add(drawstr);
         	}//end get item stat
     	}//end get item
-    	
     }
     
     

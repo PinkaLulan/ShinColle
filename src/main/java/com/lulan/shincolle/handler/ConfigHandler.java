@@ -21,6 +21,7 @@ public class ConfigHandler
 	public static final String CATE_SHIP = "ship setting";
 	public static final String CATE_WORLD = "world gen";
 	public static final String CATE_INTERMOD = "inter-mod";
+	public static final String CATE_BUFF = "buff";
 	
 	//config file
 	public static Configuration config;		//main config
@@ -36,6 +37,7 @@ public class ConfigHandler
 	public static boolean alwaysShowTeamParticle = false;
 	public static boolean polyAsMn = false;
 	public static boolean vortexDepth = false;
+	public static boolean mobAttackPlayer = true;
 	public static float dropGrudge = 1.0F;
 	public static int closeGUIDist = 64;
 	public static int bossCooldown = 4800;
@@ -50,17 +52,20 @@ public class ConfigHandler
 	public static int spawnMobNum = 4;
 	public static int shipNumPerPage = 5;
 	public static int chunkloaderMode = 2;
-	public static int deathTick = 400;
+	public static int deathMaxTick = 400;
 	
 	//INTER-MOD
 	public static boolean enableForestry = true;
 	public static boolean enableIC2 = true;
 	
+	//BUFF DEBUFF
+	public static int buffSaturation = 20;
+	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
 	
 	//array data
-	private static Property propShip, propShipLimitBasic, propShipLimitEffect, propMobSpawn,
+	private static Property propShip, propLimitShipAttrs, propMobSpawn,
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
 						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
@@ -68,17 +73,23 @@ public class ConfigHandler
 						   propInfLiquid, propShipTeleport;
 	
 	//SHIP SETTING
-	//                                                    HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] limitShipBasic = new double[] {-1D, -1D, 75D, 4D, 0.6D, 64D};
-	//                                                    CRI, DHIT, THIT, MISS, AA, ASM, DODGE, XP, GRUDGE, AMMO, HPRES
-	public static double[] limitShipEffect = new double[] {-1D, -1D, -1D, -1D, -1D, -1D, 75D, -1D, -1D, -1D, -1D};
+	//                                                    HP, ATK_L, ATK_H, ATK_AL, ATK_AH
+	public static double[] limitShipAttrs = new double[] {-1D, -1D, -1D, -1D, -1D,
+	//                                                    DEF, SPD, MOV, HIT, CRI
+														  0.8D, 4D, 0.6D, 64D, 0.9D,
+	//                                                    DHIT, THIT, MISS, AA, ASM
+														  0.9D, 0.9D, 0.9D, -1D, -1D,
+	//                                                    DODGE, XP, GRUDGE, AMMO, HPRES
+														  0.75D, -1D, -1D, -1D, -1D,
+	//                                                    KB
+														  1D};
 	public static double[] scaleShip = new double[] {1D, 1D, 1D, 1D, 1D, 1D};
-	//													  HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleBossSmall = new double[] {1600D, 120D, 50D, 1.6D, 0.38D, 18D};
-	public static double[] scaleBossLarge = new double[] {3200D, 240D, 75D, 2D, 0.35D, 22D};
-	//	  												HP, ATK, DEF, SPD, MOV, HIT
-	public static double[] scaleMobSmall = new double[] {250D, 25D, 15D, 0.7D, 0.45D, 12D};
-	public static double[] scaleMobLarge = new double[] {500D, 50D, 30D, 0.9D, 0.4D, 15D};
+	//													  HP,    ATK,  DEF,   SPD,  MOV,   HIT
+	public static double[] scaleBossSmall = new double[] {1600D, 120D, 0.5D,  1.6D, 0.38D, 18D};
+	public static double[] scaleBossLarge = new double[] {3200D, 240D, 0.75D, 2D,   0.35D, 22D};
+	//	  												  HP,    ATK,  DEF,   SPD,  MOV,   HIT
+	public static double[] scaleMobSmall = new double[] {250D,   25D,  0.15D, 0.7D, 0.45D, 12D};
+	public static double[] scaleMobLarge = new double[] {500D,   50D,  0.30D, 0.9D, 0.4D,  15D};
 	//item scaling                                       scale, offX, offY, offZ
 	public static double[] scaleHeldItem = new double[] {2.5D,    0D,   0D,   0D};
 	//ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
@@ -108,6 +119,7 @@ public class ConfigHandler
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
 	public static int modernLimit = 3;	//ship attrs upgrade level limit
+	public static int searchlightCD = 4;
 	
 	public static boolean timeKeeping = true;
 	public static boolean canFlare = true;
@@ -138,6 +150,7 @@ public class ConfigHandler
 		config.addCustomCategoryComment(CATE_SHIP, "ship setting");
 		config.addCustomCategoryComment(CATE_WORLD, "world generate setting");
 		config.addCustomCategoryComment(CATE_INTERMOD, "mod interaction setting");
+		config.addCustomCategoryComment(CATE_BUFF, "potion buff and debuff setting");
 		
 		//是否顯示custom name tag
 		alwaysShowTeamParticle = config.getBoolean("AlwaysShow_TeamCircle", CATE_GENERAL, false, "Always show team circle indicator particle");
@@ -152,7 +165,7 @@ public class ConfigHandler
 		chunkloaderMode = config.getInt("Mode_ChunkLoader", CATE_GENERAL, 2, 0, 2, "Chunk loader mode: 0: disable, 1: only 1 chunk each ship, 2: 3x3 chunks each ship");
 		
 		//ship death動畫時間長度
-		deathTick = config.getInt("Death_Time", CATE_GENERAL, 400, 0, 3600, "Ship death animation time");
+		deathMaxTick = config.getInt("Death_Time", CATE_GENERAL, 400, 0, 3600, "Ship death animation time");
 				
 		//是否開啟debug mode
 		debugMode = config.getBoolean("Mode_Debug", CATE_GENERAL, false, "Enable debug message (SPAM WARNING)");
@@ -175,7 +188,10 @@ public class ConfigHandler
 		//解體獲得材料量設定, mob drop類ship限定
 		kaitaiAmountSmall = config.getInt("Recycle_Small", CATE_GENERAL, 20, 0, 1000, "Recycle amount by Dismantle Hammer for copmmon ship, ex: Ro500.");
 		kaitaiAmountLarge = config.getInt("Recycle_Large", CATE_GENERAL, 20, 0, 1000, "Recycle amount by Dismantle Hammer for rare ship, ex: Yamato.");
-				
+		
+		//野生船艦是否主動攻擊玩家
+		mobAttackPlayer = config.getBoolean("Attack_Player", CATE_GENERAL, true, "true: ship mob will attack player automatically");
+		
 		//是否把多金屬當成錳礦
 		polyAsMn = config.getBoolean("Polymetal_as_Mn", CATE_GENERAL, false, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
 		
@@ -204,6 +220,9 @@ public class ConfigHandler
 		spawnBossNum = config.getInt("Spawn_Boss_Number", CATE_GENERAL, 2, 1, 10, "large hostile ship (boss) number per spawn");
 		spawnMobNum = config.getInt("Spawn_Mob_Number", CATE_GENERAL, 4, 1, 10, "small hostile ship number per spawn");
 		
+		//buff debuff TODO not configurable for now
+//		buffSaturation = config.getInt("Saturation", CATE_BUFF, 20, 0, 5000, "add X grudge value to ship every 32 ticks");
+		
 		//是否開啟林業支援
 		enableForestry = config.getBoolean("Mod_Forestry", CATE_INTERMOD, true, "Enable Forestry module if mod existed: add bees and comb.");
 		enableIC2 = config.getBoolean("Mod_IC2", CATE_INTERMOD, true, "Enable IC2 module if mod existed: add EU related function.");
@@ -220,11 +239,11 @@ public class ConfigHandler
 		volumeFire = config.getFloat("Volume_Attack", CATE_SHIP, 0.7F, 0F, 10F, "Attack sound volume");
 		baseCaressMorale = config.getInt("Caress_BaseMorale", CATE_SHIP, 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
 		modernLimit = config.getInt("Attrs_Limit_Modernization", CATE_SHIP, 3, 3, 100, "Max upgrade level by Modernization Toolkit");
+		searchlightCD = config.getInt("CD_SearchLight", CATE_SHIP, 4, 1, 256, "Cooldown for placing light block of searchlight");
 		
 		//array data
 		propShip = config.get(CATE_SHIP, "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
-		propShipLimitBasic = config.get(CATE_SHIP, "Attrs_Limit_Basic", limitShipBasic, "Ship basic attributes LIMIT (-1 = no limit): HP, firepower, armor%, attack speed, move speed, range(blocks)");
-		propShipLimitEffect = config.get(CATE_SHIP, "Attrs_Limit_Effect", limitShipEffect, "Ship effect attributes LIMIT (-1 = no limit, 12 = limit 12%): critical%, double hit%, triple hit%, miss reduction%, anti-air, anti-ss, dodge%, xp gain%, grudge gain%, ammo gain%, hp regen%");
+		propLimitShipAttrs = config.get(CATE_SHIP, "Attrs_Limit", limitShipAttrs, "Ship attributes max limit (-1 = no limit): HP, damage(light), damage(heavy), damage(air_light), damage(air_heavy), armor%, attack speed, move speed, range(blocks), critical, double hit, triple hit, miss reduction, anti-air, anti-ss, dodge, xp gain, grudge gain, ammo gain, hp regen, knockback resist");
 		propBossSmall = config.get(CATE_SHIP, "Attrs_Hostile_SmallBoss", scaleBossSmall, "Small boss base attribute values: HP, firepower, armor, attack speed, move speed, range");
 		propBossLarge = config.get(CATE_SHIP, "Attrs_Hostile_LargeBoss", scaleBossLarge, "Large boss base attribute values: HP, firepower, armor, attack speed, move speed, range");
 		propMobSmall = config.get(CATE_SHIP, "Attrs_Hostile_SmallMob", scaleMobSmall, "Small mob ship like DD and SS base attribute values: HP, firepower, armor, attack speed, move speed, range");
@@ -257,8 +276,7 @@ public class ConfigHandler
 		propPolyGravel = config.get(CATE_WORLD, "Polymetal_Gravel_Replace", polyGravelBaseBlock, "PolyGravel replaced block: stone, gravel, sand, dirt", true, 4);
 		
 		//設定新值
-		limitShipBasic = getDoubleArrayFromConfig(limitShipBasic, propShipLimitBasic);
-		limitShipEffect = getDoubleArrayFromConfig(limitShipEffect, propShipLimitEffect);
+		limitShipAttrs = getDoubleArrayFromConfig(limitShipAttrs, propLimitShipAttrs);
 		scaleShip = getDoubleArrayFromConfig(scaleShip, propShip);
 		scaleBossSmall = getDoubleArrayFromConfig(scaleBossSmall, propBossSmall);
 		scaleBossLarge = getDoubleArrayFromConfig(scaleBossLarge, propBossLarge);

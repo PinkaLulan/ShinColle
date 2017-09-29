@@ -12,6 +12,7 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPath;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
+import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
@@ -35,6 +36,8 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.server.CacheDataPlayer;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
@@ -113,7 +116,7 @@ public class EntityHelper
 	}
 	
 	/**check entity is air or underwater mob, return 0:default 1:air 2:water */
-	public static int checkEntityTypeForEquipEffect(Entity entity)
+	public static int checkEntityMovingType(Entity entity)
 	{
 		if (entity instanceof IShipAttackBase)
 		{
@@ -1003,8 +1006,11 @@ public class EntityHelper
 				}
   				else
   				{
-  					//go to the crane below
-  	  				entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1) - 2D, entity.getGuardedPos(2) + 0.5D, 1D);
+  					if (entity.getStateMinor(ID.M.NumGrudge) > 0)
+  					{
+  						//go to the crane below
+  	  	  				entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1) - 2D, entity.getGuardedPos(2) + 0.5D, 1D);
+  					}
   				}
   			}
   			else
@@ -1038,7 +1044,7 @@ public class EntityHelper
   	  					updatePos = applyNextWaypoint((TileEntityWaypoint) tile, entity, true, 16);
 	  	  				
 	  	  				//set follow dist
-	  	  				if (updatePos)
+	  	  				if (updatePos && entity.getStateMinor(ID.M.NumGrudge) > 0)
 	  	  				{
 	  	  					entity.setStateMinor(ID.M.FollowMin, 2);
 	  	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
@@ -1069,7 +1075,7 @@ public class EntityHelper
   	  			else
   	  			{
   	  				//move back to waypoint position every 128 ticks
-  	  				if ((entity.getTickExisted() & 127) == 0)
+  	  				if ((entity.getTickExisted() & 127) == 0 && entity.getStateMinor(ID.M.NumGrudge) > 0)
   	  				{
   	  					entity.getShipNavigate().tryMoveToXYZ(entity.getGuardedPos(0) + 0.5D, entity.getGuardedPos(1), entity.getGuardedPos(2) + 0.5D, 1D);
   	  				}
@@ -1087,7 +1093,7 @@ public class EntityHelper
 		if (capa == null) return;
 		
 		//get ship team id and flag ship
-		int[] teamslot = capa.checkIsInFormationTeam(ship.getShipUID());
+		int[] teamslot = capa.checkIsInFormation(ship.getShipUID());
 		if (teamslot == null || teamslot[0] < 0 || teamslot[1] != 0) return;
 		
 		//get all ship in team
@@ -1099,7 +1105,10 @@ public class EntityHelper
 	
 		for (BasicEntityShip s : ships)
 		{
-			if (s != null && s.isEntityAlive()) s.getShipNavigate().tryMoveToXYZ(s.getGuardedPos(0) + 0.5D, s.getGuardedPos(1), s.getGuardedPos(2) + 0.5D, 1D);
+			if (s != null && s.isEntityAlive() && s.getStateMinor(ID.M.NumGrudge) > 0)
+			{
+				s.getShipNavigate().tryMoveToXYZ(s.getGuardedPos(0) + 0.5D, s.getGuardedPos(1), s.getGuardedPos(2) + 0.5D, 1D);
+			}
 		}
 	}
 	
@@ -1206,43 +1215,6 @@ public class EntityHelper
 				((BasicEntityShip) rider).setGuardedPos(x, y, z, host.dimension, 1);
 			}
 		}
-	}
-	
-	public static boolean canDodge(IShipAttrs ent, float dist)
-	{
-		if (ent != null && !((Entity)ent).world.isRemote)
-		{
-			int dodge = (int) ent.getEffectEquip(ID.EquipEffect.DODGE);
-			Entity ent2 = (Entity) ent;
-			
-			if (ent instanceof IShipInvisible)
-			{
-				if (dist > 36F)
-				{
-					//dist > 6 blocks
-					dodge += (int) ((IShipInvisible)ent).getInvisibleLevel();
-					//check limit
-					if (dodge > (int) ConfigHandler.limitShipEffect[6]) dodge = (int) ConfigHandler.limitShipEffect[6];
-				}
-				
-				//submarine will increase dodge if dist > 16 blocks, without config limit
-				if (dist > 256F)
-				{
-					dodge += 50F;
-				}
-			}
-			
-			//roll dodge
-			if (rand.nextInt(101) <= dodge)
-			{
-				//spawn dodge particle
-				TargetPoint point = new TargetPoint(ent2.dimension, ent2.posX, ent2.posY, ent2.posZ, 32D);
-				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(ent2, 34, false), point);
-				return true;
-			}
-		}
-		
-		return false;
 	}
 	
 	/** count entity number in the world
@@ -1587,24 +1559,52 @@ public class EntityHelper
 		return true;
 	}
     
+    /**
+     * get distance vector from host A to target B (B-A)
+     * parms: host A, target B
+     * return: "normalized" distance vector [x, y, z, distance]
+     */
+    public static Dist4d getDistanceFromA2B(Entity host, Entity target)
+    {
+    	if (host != null && target != null)
+    	{
+    		double x = target.posX - host.posX;
+    		double y = target.posY - host.posY;
+    		double z = target.posZ - host.posZ;
+    		double dist = MathHelper.sqrt(x * x + y * y + z * z);
+    		
+    		//避免sqrt過小時, 算出的xyz過大
+    		if (dist > 1.0E-4D)
+            {
+                x = x / dist;
+                y = y / dist;
+                z = z / dist;
+            }
+    		
+    		return new Dist4d(x, y, z, dist);
+    	}
+    	
+    	return Dist4d.ONE;
+    }
+    
   	/** morale level
   	 *  0:excited, 1:happy, 2:normal, 3:tired, 4:exhausted
   	 */
   	public static int getMoraleLevel(int m)
   	{
-  		if (m > 5100)
+  		if (m > ID.Morale.L_Excited)
   		{  //excited
 			return ID.Morale.Excited;
 		}
-		else if (m > 3900)
+		else if (m > ID.Morale.L_Happy)
 		{
 			return ID.Morale.Happy;
 		}
-		else if (m > 2100)
+		else if (m > ID.Morale.L_Normal)
 		{
 			return ID.Morale.Normal;
 		}
-		else if (m > 900)
+		else if (m > ID.Morale.L_Tired)
 		{
 			return ID.Morale.Tired;
 		}
@@ -2194,12 +2194,87 @@ public class EntityHelper
     	return false;
     }
   	
-	//sync position
+	/** sync position and rotation to client */
 	public static void sendPositionSyncPacket(Entity ent)
 	{
 		//for other player, send ship state for display
 		TargetPoint point = new TargetPoint(ent.dimension, ent.posX, ent.posY, ent.posZ, 64D);
 		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(ent, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
+	}
+	
+	/** save ship data to nbt for spawn egg
+	 * 
+	 *  parms: punish: apply death punishment
+	 */
+	public static NBTTagCompound saveShipDataToNBT(BasicEntityShip ship, boolean punish)
+	{
+		//get ship data
+    	NBTTagCompound nbt = new NBTTagCompound();
+    	CapaShipInventory shipInv = ship.getCapaShipInventory();
+    	String ownerUUID = EntityHelper.getPetPlayerUUID(ship);
+    	String name = EntityHelper.getOwnerName(ship);
+    	Attrs attrs = ship.getAttrs();
+    	
+    	int[] save1 = new int[7];
+    	
+    	//apply death punishment
+    	if (punish)
+    	{
+    		//level - 1
+        	if (ship.getLevel() > 1) save1[0] = ship.getLevel() - 1;
+        	else save1[0] = 1;
+    	}
+    	
+    	save1[1] = attrs.getAttrsBonus(ID.AttrsBase.HP);
+    	save1[2] = attrs.getAttrsBonus(ID.AttrsBase.ATK);
+    	save1[3] = attrs.getAttrsBonus(ID.AttrsBase.DEF);
+    	save1[4] = attrs.getAttrsBonus(ID.AttrsBase.SPD);
+    	save1[5] = attrs.getAttrsBonus(ID.AttrsBase.MOV);
+    	save1[6] = attrs.getAttrsBonus(ID.AttrsBase.HIT);
+    	
+    	//get ship misc data 2
+    	int[] save2 = new int[7];
+    	
+    	save2[0] = ship.getStateEmotion(ID.S.State);
+    	save2[1] = ship.getStateEmotion(ID.S.State2);
+    	save2[2] = ship.getStateMinor(ID.M.FollowMin);
+    	save2[3] = ship.getStateMinor(ID.M.FollowMax);
+    	save2[4] = ship.getStateMinor(ID.M.FleeHP);
+    	save2[5] = ship.getStateMinor(ID.M.WpStay);
+    	save2[6] = ship.getStateMinor(ID.M.UseCombatRation);
+    	
+    	//get ship flag data
+    	byte[] save3 = new byte[16];
+    	
+    	save3[0] = ship.getStateFlag(ID.F.IsMarried) ? (byte)1 : (byte)0;
+    	save3[1] = ship.getStateFlag(ID.F.UseMelee) ? (byte)1 : (byte)0;
+    	save3[2] = ship.getStateFlag(ID.F.UseAmmoLight) ? (byte)1 : (byte)0;
+    	save3[3] = ship.getStateFlag(ID.F.UseAmmoHeavy) ? (byte)1 : (byte)0;
+    	save3[4] = ship.getStateFlag(ID.F.UseAirLight) ? (byte)1 : (byte)0;
+    	save3[5] = ship.getStateFlag(ID.F.UseAirHeavy) ? (byte)1 : (byte)0;
+    	save3[6] = ship.getStateFlag(ID.F.UseRingEffect) ? (byte)1 : (byte)0;
+    	save3[7] = ship.getStateFlag(ID.F.OnSightChase) ? (byte)1 : (byte)0;
+    	save3[8] = ship.getStateFlag(ID.F.PVPFirst) ? (byte)1 : (byte)0;
+    	save3[9] = ship.getStateFlag(ID.F.AntiAir) ? (byte)1 : (byte)0;
+    	save3[10] = ship.getStateFlag(ID.F.AntiSS) ? (byte)1 : (byte)0;
+    	save3[11] = ship.getStateFlag(ID.F.PassiveAI) ? (byte)1 : (byte)0;
+    	save3[12] = ship.getStateFlag(ID.F.TimeKeeper) ? (byte)1 : (byte)0;
+    	save3[13] = ship.getStateFlag(ID.F.PickItem) ? (byte)1 : (byte)0;
+    	save3[14] = ship.getStateFlag(ID.F.ShowHeldItem) ? (byte)1 : (byte)0;
+    	save3[15] = ship.getStateFlag(ID.F.AutoPump) ? (byte)1 : (byte)0;
+    	
+    	//save ship attributes
+    	nbt.setString("owner", ownerUUID);									//owner UUID
+    	nbt.setString("ownername", name);									//owner name
+    	nbt.setInteger("PlayerID", ship.getStateMinor(ID.M.PlayerUID));		//owner UID
+    	nbt.setTag(CapaInventory.InvName, shipInv.serializeNBT());			//inventory data
+    	nbt.setIntArray("Attrs", save1);									//misc data
+    	nbt.setIntArray("Attrs2", save2);									//misc data2
+    	nbt.setByteArray("Flags", save3);									//flag data
+    	nbt.setInteger("ShipID", ship.getStateMinor(ID.M.ShipUID));			//ship UID
+    	nbt.setString("customname", ship.getCustomNameTag());				//custom name
+    	
+    	return nbt;
 	}
   	
   	

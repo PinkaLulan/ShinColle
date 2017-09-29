@@ -352,10 +352,9 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
                 		}
                 		
                 		//restore Morale
-                		int m = s.getStateMinor(ID.M.Morale);
-                		if (m < 8100)
+                		if (s.getMorale() < (int) (ID.Morale.L_Excited * 1.8F))
                 		{
-                			s.setStateMinor(ID.M.Morale, m + 65);
+                			s.addMorale(80);
                 		}
                 	}//end ship OOC
                 }//end loop all ship

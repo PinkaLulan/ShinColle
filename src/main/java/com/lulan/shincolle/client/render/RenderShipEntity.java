@@ -32,6 +32,7 @@ import com.lulan.shincolle.client.model.ModelDestroyerShimakaze;
 import com.lulan.shincolle.client.model.ModelHarbourHime;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserNe;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
+import com.lulan.shincolle.client.model.ModelIsolatedHime;
 import com.lulan.shincolle.client.model.ModelNorthernHime;
 import com.lulan.shincolle.client.model.ModelSubmKa;
 import com.lulan.shincolle.client.model.ModelSubmRo500;
@@ -101,6 +102,8 @@ public class RenderShipEntity extends RenderBasic
 	private static final ModelBase MD_Hime_CA = new ModelCAHime();
 	private static final ResourceLocation TEX_Hime_Harbour = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityHarbourHime.png");
 	private static final ModelBase MD_Hime_Harbour = new ModelHarbourHime();
+	private static final ResourceLocation TEX_Hime_Isolated = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityIsolatedHime.png");
+	private static final ModelBase MD_Hime_Isolated = new ModelIsolatedHime();
 	private static final ResourceLocation TEX_Hime_Northern = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
 	private static final ModelBase MD_Hime_Northern = new ModelNorthernHime();
 	//SS
@@ -168,94 +171,96 @@ public class RenderShipEntity extends RenderBasic
 		switch (this.shipClass)
 		{
 		//AP
-		case ID.Ship.TransportWA:
+		case ID.ShipClass.TransportWA:
 			return TEX_AP_Wa;
 		//BB
-		case ID.Ship.BattleshipRU:
+		case ID.ShipClass.BattleshipRU:
 			return TEX_BB_Ru;
-		case ID.Ship.BattleshipTA:
+		case ID.ShipClass.BattleshipTA:
 			return TEX_BB_Ta;
-		case ID.Ship.BattleshipRE:
+		case ID.ShipClass.BattleshipRE:
 			return TEX_BB_Re;
 		//CL
-		case ID.Ship.HeavyCruiserRI:
+		case ID.ShipClass.HeavyCruiserRI:
 			return TEX_CA_Ri;
-		case ID.Ship.HeavyCruiserNE:
+		case ID.ShipClass.HeavyCruiserNE:
 			return TEX_CA_Ne;	
 		//CV
-		case ID.Ship.CarrierWO:
+		case ID.ShipClass.CarrierWO:
 			return TEX_CV_Wo;
 		//DD
-		case ID.Ship.DestroyerI:
+		case ID.ShipClass.DestroyerI:
 			return TEX_DD_I;
-		case ID.Ship.DestroyerRO:
+		case ID.ShipClass.DestroyerRO:
 			return TEX_DD_Ro;
-		case ID.Ship.DestroyerHA:
+		case ID.ShipClass.DestroyerHA:
 			return TEX_DD_Ha;
-		case ID.Ship.DestroyerNI:
+		case ID.ShipClass.DestroyerNI:
 			return TEX_DD_Ni;
 		//Hime
-		case ID.Ship.AirfieldHime:
+		case ID.ShipClass.AirfieldHime:
 			return TEX_Hime_Airfield;
-		case ID.Ship.BattleshipHime:
+		case ID.ShipClass.BattleshipHime:
 			return TEX_Hime_Battleship;
-		case ID.Ship.DestroyerHime:
+		case ID.ShipClass.DestroyerHime:
 			return TEX_Hime_Destroyer;
-		case ID.Ship.CarrierHime:
+		case ID.ShipClass.CarrierHime:
 			return TEX_Hime_Carrier;
-		case ID.Ship.HeavyCruiserHime:
+		case ID.ShipClass.HeavyCruiserHime:
 			return TEX_Hime_CA;
-		case ID.Ship.HarbourHime:
+		case ID.ShipClass.HarbourHime:
 			return TEX_Hime_Harbour;
-		case ID.Ship.NorthernHime:
+		case ID.ShipClass.IsolatedHime:
+			return TEX_Hime_Isolated;
+		case ID.ShipClass.NorthernHime:
 			return TEX_Hime_Northern;
 		//SS
-		case ID.Ship.SubmarineKA:
+		case ID.ShipClass.SubmarineKA:
 			return TEX_SS_Ka;
-		case ID.Ship.SubmarineSO:
+		case ID.ShipClass.SubmarineSO:
 			return TEX_SS_So;
-		case ID.Ship.SubmarineYO:
+		case ID.ShipClass.SubmarineYO:
 			return TEX_SS_Yo;
 		//WD
-		case ID.Ship.CarrierWD:
+		case ID.ShipClass.CarrierWD:
 			return TEX_WD_Carrier;
 			
 		//Hostile Ship
 		//BB
-		case ID.Ship.BattleshipNagato:
+		case ID.ShipClass.BattleshipNagato:
 			return TEX_BB_Nagato;
-		case ID.Ship.BattleshipYamato:
+		case ID.ShipClass.BattleshipYamato:
 			return TEX_BB_Yamato;
 		//CV
-		case ID.Ship.CarrierAkagi:
+		case ID.ShipClass.CarrierAkagi:
 			return TEX_CV_Akagi;
-		case ID.Ship.CarrierKaga:
+		case ID.ShipClass.CarrierKaga:
 			return TEX_CV_Kaga;
 		//CL
-		case ID.Ship.LightCruiserTenryuu:
+		case ID.ShipClass.LightCruiserTenryuu:
 			return TEX_CL_Tenryuu;
-		case ID.Ship.LightCruiserTatsuta:
+		case ID.ShipClass.LightCruiserTatsuta:
 			return TEX_CL_Tatsuta;
 		//CA
-		case ID.Ship.HeavyCruiserAtago:
+		case ID.ShipClass.HeavyCruiserAtago:
 			return TEX_CA_Atago;
-		case ID.Ship.HeavyCruiserTakao:
+		case ID.ShipClass.HeavyCruiserTakao:
 			return TEX_CA_Takao;
 		//DD
-		case ID.Ship.DestroyerAkatsuki:
+		case ID.ShipClass.DestroyerAkatsuki:
 			return TEX_DD_Akatsuki;
-		case ID.Ship.DestroyerHibiki:
+		case ID.ShipClass.DestroyerHibiki:
 			return TEX_DD_Hibiki;
-		case ID.Ship.DestroyerIkazuchi:
+		case ID.ShipClass.DestroyerIkazuchi:
 			return TEX_DD_Ikazuchi;
-		case ID.Ship.DestroyerInazuma:
+		case ID.ShipClass.DestroyerInazuma:
 			return TEX_DD_Inazuma;
-		case ID.Ship.DestroyerShimakaze:
+		case ID.ShipClass.DestroyerShimakaze:
 			return TEX_DD_Shimakaze;
 		//SS
-		case ID.Ship.SubmarineRo500:
+		case ID.ShipClass.SubmarineRo500:
 			return TEX_SS_Ro500;
-		case ID.Ship.SubmarineU511:
+		case ID.ShipClass.SubmarineU511:
 			return TEX_SS_U511;
 		default:	//default texture
 			return TEX_DD_I;
@@ -268,129 +273,132 @@ public class RenderShipEntity extends RenderBasic
 		switch (this.shipClass)
 		{
 		//AP
-		case ID.Ship.TransportWA:
+		case ID.ShipClass.TransportWA:
 			this.mainModel = MD_AP_Wa;
 		break;
 		//BB
-		case ID.Ship.BattleshipRU:
+		case ID.ShipClass.BattleshipRU:
 			this.mainModel = MD_BB_Ru;
 		break;
-		case ID.Ship.BattleshipTA:
+		case ID.ShipClass.BattleshipTA:
 			this.mainModel = MD_BB_Ta;
 		break;
-		case ID.Ship.BattleshipRE:
+		case ID.ShipClass.BattleshipRE:
 			this.mainModel = MD_BB_Re;
 		break;
 		//CL
-		case ID.Ship.HeavyCruiserRI:
+		case ID.ShipClass.HeavyCruiserRI:
 			this.mainModel = MD_CA_Ri;
 		break;
-		case ID.Ship.HeavyCruiserNE:
+		case ID.ShipClass.HeavyCruiserNE:
 			this.mainModel = MD_CA_Ne;
 		break;
 		//CV
-		case ID.Ship.CarrierWO:
+		case ID.ShipClass.CarrierWO:
 			this.mainModel = MD_CV_Wo;
 		break;
 		//DD
-		case ID.Ship.DestroyerI:
+		case ID.ShipClass.DestroyerI:
 			this.mainModel = MD_DD_I;
 		break;
-		case ID.Ship.DestroyerRO:
+		case ID.ShipClass.DestroyerRO:
 			this.mainModel = MD_DD_Ro;
 		break;
-		case ID.Ship.DestroyerHA:
+		case ID.ShipClass.DestroyerHA:
 			this.mainModel = MD_DD_Ha;
 		break;
-		case ID.Ship.DestroyerNI:
+		case ID.ShipClass.DestroyerNI:
 			this.mainModel = MD_DD_Ni;
 		break;
 		//Hime
-		case ID.Ship.AirfieldHime:
+		case ID.ShipClass.AirfieldHime:
 			this.mainModel = MD_Hime_Airfield;
 		break;
-		case ID.Ship.BattleshipHime:
+		case ID.ShipClass.BattleshipHime:
 			this.mainModel = MD_Hime_Battleship;
 		break;
-		case ID.Ship.DestroyerHime:
+		case ID.ShipClass.DestroyerHime:
 			this.mainModel = MD_Hime_Destroyer;
 		break;
-		case ID.Ship.CarrierHime:
+		case ID.ShipClass.CarrierHime:
 			this.mainModel = MD_Hime_Carrier;
 		break;
-		case ID.Ship.HeavyCruiserHime:
+		case ID.ShipClass.HeavyCruiserHime:
 			this.mainModel = MD_Hime_CA;
 		break;
-		case ID.Ship.HarbourHime:
+		case ID.ShipClass.HarbourHime:
 			this.mainModel = MD_Hime_Harbour;
 		break;
-		case ID.Ship.NorthernHime:
+		case ID.ShipClass.IsolatedHime:
+			this.mainModel = MD_Hime_Isolated;
+		break;
+		case ID.ShipClass.NorthernHime:
 			this.mainModel = MD_Hime_Northern;
 		break;
 		//SS
-		case ID.Ship.SubmarineKA:
+		case ID.ShipClass.SubmarineKA:
 			this.mainModel = MD_SS_Ka;
 		break;
-		case ID.Ship.SubmarineSO:
+		case ID.ShipClass.SubmarineSO:
 			this.mainModel = MD_SS_So;
 		break;
-		case ID.Ship.SubmarineYO:
+		case ID.ShipClass.SubmarineYO:
 			this.mainModel = MD_SS_Yo;
 		break;
 		//WD
-		case ID.Ship.CarrierWD:
+		case ID.ShipClass.CarrierWD:
 			this.mainModel = MD_WD_Carrier;
 		break;
 		//Hostile Ship
 		//BB
-		case ID.Ship.BattleshipNagato:
+		case ID.ShipClass.BattleshipNagato:
 			this.mainModel = MD_BB_Nagato;
 		break;
-		case ID.Ship.BattleshipYamato:
+		case ID.ShipClass.BattleshipYamato:
 			this.mainModel = MD_BB_Yamato;
 		break;
 		//CV
-		case ID.Ship.CarrierAkagi:
+		case ID.ShipClass.CarrierAkagi:
 			this.mainModel = MD_CV_Akagi;
 		break;
-		case ID.Ship.CarrierKaga:
+		case ID.ShipClass.CarrierKaga:
 			this.mainModel = MD_CV_Kaga;
 		break;
 		//CL
-		case ID.Ship.LightCruiserTenryuu:
+		case ID.ShipClass.LightCruiserTenryuu:
 			this.mainModel = MD_CL_Tenryuu;
 		break;
-		case ID.Ship.LightCruiserTatsuta:
+		case ID.ShipClass.LightCruiserTatsuta:
 			this.mainModel = MD_CL_Tatsuta;
 		break;
 		//CA
-		case ID.Ship.HeavyCruiserAtago:
+		case ID.ShipClass.HeavyCruiserAtago:
 			this.mainModel = MD_CA_Atago;
 		break;
-		case ID.Ship.HeavyCruiserTakao:
+		case ID.ShipClass.HeavyCruiserTakao:
 			this.mainModel = MD_CA_Takao;
 		break;
 		//DD
-		case ID.Ship.DestroyerAkatsuki:
+		case ID.ShipClass.DestroyerAkatsuki:
 			this.mainModel = MD_DD_Akatsuki;
 		break;
-		case ID.Ship.DestroyerHibiki:
+		case ID.ShipClass.DestroyerHibiki:
 			this.mainModel = MD_DD_Hibiki;
 		break;
-		case ID.Ship.DestroyerIkazuchi:
+		case ID.ShipClass.DestroyerIkazuchi:
 			this.mainModel = MD_DD_Ikazuchi;
 		break;
-		case ID.Ship.DestroyerInazuma:
+		case ID.ShipClass.DestroyerInazuma:
 			this.mainModel = MD_DD_Inazuma;
 		break;
-		case ID.Ship.DestroyerShimakaze:
+		case ID.ShipClass.DestroyerShimakaze:
 			this.mainModel = MD_DD_Shimakaze;
 		break;
 		//SS
-		case ID.Ship.SubmarineRo500:
+		case ID.ShipClass.SubmarineRo500:
 			this.mainModel = MD_SS_Ro500;
 		break;
-		case ID.Ship.SubmarineU511:
+		case ID.ShipClass.SubmarineU511:
 			this.mainModel = MD_SS_U511;
 		break;
 		default:	//default model
@@ -405,34 +413,34 @@ public class RenderShipEntity extends RenderBasic
     {
 		switch (this.shipClass)
 		{
-		case ID.Ship.NorthernHime:
-		case ID.Ship.SubmarineKA:
-		case ID.Ship.SubmarineSO:
-		case ID.Ship.SubmarineYO:
-		case ID.Ship.DestroyerAkatsuki:
-		case ID.Ship.DestroyerHibiki:
-		case ID.Ship.DestroyerIkazuchi:
-		case ID.Ship.DestroyerInazuma:
-		case ID.Ship.DestroyerShimakaze:
-		case ID.Ship.SubmarineRo500:
-		case ID.Ship.SubmarineU511:
+		case ID.ShipClass.NorthernHime:
+		case ID.ShipClass.SubmarineKA:
+		case ID.ShipClass.SubmarineSO:
+		case ID.ShipClass.SubmarineYO:
+		case ID.ShipClass.DestroyerAkatsuki:
+		case ID.ShipClass.DestroyerHibiki:
+		case ID.ShipClass.DestroyerIkazuchi:
+		case ID.ShipClass.DestroyerInazuma:
+		case ID.ShipClass.DestroyerShimakaze:
+		case ID.ShipClass.SubmarineRo500:
+		case ID.ShipClass.SubmarineU511:
 			this.shadowSize = 0.5F;
 		break;
-		case ID.Ship.LightCruiserTenryuu:
-		case ID.Ship.LightCruiserTatsuta:
-		case ID.Ship.DestroyerHime:
+		case ID.ShipClass.LightCruiserTenryuu:
+		case ID.ShipClass.LightCruiserTatsuta:
+		case ID.ShipClass.DestroyerHime:
 			this.shadowSize = 0.6F;
 		break;
-		case ID.Ship.HarbourHime:
+		case ID.ShipClass.HarbourHime:
 			this.shadowSize = 0.8F;
 		break;
-		case ID.Ship.DestroyerI:
-		case ID.Ship.DestroyerRO:
-		case ID.Ship.DestroyerHA:
-		case ID.Ship.DestroyerNI:
+		case ID.ShipClass.DestroyerI:
+		case ID.ShipClass.DestroyerRO:
+		case ID.ShipClass.DestroyerHA:
+		case ID.ShipClass.DestroyerNI:
 			this.shadowSize = 0.9F;
 		break;
-		case ID.Ship.CarrierWO:
+		case ID.ShipClass.CarrierWO:
 			this.shadowSize = 1F;
 		break;
 		default:	//default size
@@ -444,7 +452,7 @@ public class RenderShipEntity extends RenderBasic
 	//get leash height
 	protected float[] getLeashHeight()
 	{
-		float[] f = Values.ShipLeashHeight.get((short) this.shipClass);
+		float[] f = Values.ShipLeashHeight.get(this.shipClass);
 		
 		if (f == null)
 		{

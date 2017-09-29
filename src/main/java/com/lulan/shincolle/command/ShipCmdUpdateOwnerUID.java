@@ -191,7 +191,7 @@ public class ShipCmdUpdateOwnerUID extends CommandBase
 								EntityHelper.setPetPlayerUID(pid, ship);
 								ship.ownerName = name;
 								player.sendMessage(new TextComponentString("get ship: "+TextFormatting.GOLD+ship));
-								ship.sendSyncPacketAllValue();
+								ship.sendSyncPacketAll();
 							}
 						}
 					}//end check entity

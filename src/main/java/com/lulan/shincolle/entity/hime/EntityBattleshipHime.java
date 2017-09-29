@@ -9,10 +9,12 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -24,7 +26,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 2.05F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
@@ -57,14 +59,14 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 	
 	//change light cannon particle
 	@Override
-	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
 	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, vec[0], 1F, vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+0.3D, this.posZ, distVec.x, 1F, distVec.z, true), point);
   		break;
   		case 2:  //heavy cannon
   		case 3:  //light aircraft
@@ -79,18 +81,18 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 	@Override
 	public float getAttackBaseDamage(int type, Entity target)
 	{
-  		switch(type) 
+  		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
   		case 2:  //heavy cannon
-  			return StateFinal[ID.ATK_H] * 0.75F;
+  			return this.shipAttrs.getAttackDamageHeavy() * 0.75F;
   		case 3:  //light aircraft
-  			return StateFinal[ID.ATK_AL];
+  			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft
-  			return StateFinal[ID.ATK_AH];
+  			return this.shipAttrs.getAttackDamageAirHeavy();
 		default: //melee
-			return StateFinal[ID.ATK] * 3F;
+			return this.shipAttrs.getAttackDamage() * 3F;
   		}
   	}
 
@@ -102,16 +104,8 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		float atk = getAttackBaseDamage(2, target);
 		float launchPos = (float) posY + height * 0.75F;
 		
-		//計算目標距離
-		float[] distVec = new float[4];
-		float tarX = (float) target.posX;
-		float tarY = (float) target.posY;
-		float tarZ = (float) target.posZ;
-		
-		distVec[0] = tarX - (float) this.posX;
-        distVec[1] = tarY - (float) this.posY;
-        distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
         
 		//experience++
 		addShipExp(ConfigHandler.expGain[2]);
@@ -130,18 +124,18 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
         //heavy ammo--
         if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
         
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-       
-        if (this.rand.nextFloat() < missChance)
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	
-        	applyParticleSpecialEffect(0);  //miss particle
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
        
         //spawn missile
@@ -198,15 +192,15 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 	{
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
-		case ID.State.EQUIP00:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+		case ID.ModelState.EQUIP00:
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			this.setPositionAndUpdate(posX, posY + 2D, posZ);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}

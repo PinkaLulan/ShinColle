@@ -13,7 +13,10 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.BuffHelper;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -35,13 +38,8 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	
     //attributes
 	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
-	protected float atk;				//damage
-	protected float atkSpeed;			//attack speed
-	protected float atkRange;			//attack range
-	protected float defValue;			//def value
-	protected float movSpeed;			//def value
-    protected float kbValue;			//knockback value
-    
+	protected Attrs shipAttrs;
+	
     //AI
 	protected IShipAttackBase host;  	//host target
 	protected ShipPathNavigate shipNavigator;
@@ -75,6 +73,8 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
         this.headTilt = false;
         this.isImmuneToFire = true;
         this.initScale = false;
+        
+        this.shipAttrs = new Attrs();
         
         //model
         this.scaleLevel = 0;
@@ -226,12 +226,6 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 						setdead = true;
 					}	
 				}
-				
-				//防止溺死
-				if (this.isInWater() && this.ticksExisted % 128 == 0)
-				{
-					this.setAir(300);
-				}
 			}
 			
 			//is done
@@ -256,17 +250,26 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
 			}
 		}
+		
+		/* both side */
+		if ((this.ticksExisted & 127) == 0)
+		{
+			//防止溺死
+			this.setAir(300);
+		}
 	}
 	
 	@Override
     public void onLivingUpdate()
     {
+		//server side
     	if ((!world.isRemote))
     	{
         	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
         	EntityHelper.updateShipNavigator(this);
             super.onLivingUpdate();
     	}
+    	//client side
     	else
     	{
     		super.onLivingUpdate();
@@ -383,21 +386,9 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
     }
 
 	@Override
-	public float getAttackSpeed()
-	{
-		return this.atkSpeed;
-	}
-
-	@Override
-	public float getAttackRange()
-	{
-		return this.atkRange;
-	}
-	
-	@Override
 	public float getMoveSpeed()
 	{
-		return this.movSpeed;
+		return this.shipAttrs.getMoveSpeed();
 	}
 	
 	@Override
@@ -441,13 +432,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	{
 		this.numAmmoHeavy = num;
 	}
-
-	@Override
-	public float getAttackDamage()
-	{
-		return this.atk;
-	}
-
+	
 	@Override
 	public boolean getIsRiding()
 	{
@@ -523,19 +508,6 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 
 	@Override
 	public void setStateMinor(int state, int par1) {}
-	
-	@Override
-	public float getEffectEquip(int id)
-	{
-		if (this.host != null) return host.getEffectEquip(id);
-		return 0F;
-	}
-	
-	@Override
-	public float getDefValue()
-	{
-		return this.defValue;
-	}
 
 	@Override
 	public void setEntitySit(boolean sit) {}
@@ -715,17 +687,18 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 			
 			//進行dodge計算
 			float dist = (float) this.getDistanceSqToEntity(attacker);
-			if (EntityHelper.canDodge(this, dist))
+			
+			if (CombatHelper.canDodge(this, dist))
 			{
 				return false;
 			}
 			
+			//進行def計算
 			float reducedAtk = atk;
 			
-			//進行def計算
 			if (checkDEF)
 			{
-				reducedAtk = atk * (1F - (this.getDefValue() + rand.nextInt(50) - 25F) * 0.01F);
+				reducedAtk = CombatHelper.applyDamageReduceByDEF(this.rand, this.shipAttrs, reducedAtk);
 			}
 			
 			//ship vs ship, config傷害調整 (僅限友善船)
@@ -738,18 +711,13 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 				reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
 			}
 			
-			//ship vs ship, damage type傷害調整
-			if (attacker instanceof IShipAttackBase)
-			{
-				//get attack time for damage modifier setting (day, night or ...etc)
-				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reducedAtk = CalcHelper.calcDamageByType(reducedAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
-			}
+			//check night vision potion
+			reducedAtk = BuffHelper.applyBuffOnDamageByLight(this, source, reducedAtk);
 			
 			//tweak min damage
 	        if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
 	        else if (reducedAtk <= 0F) reducedAtk = 0F;
-
+	        
             return super.attackEntityFrom(source, reducedAtk);
         }//end is entity damage source
 		
@@ -781,14 +749,14 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
   		}//end switch
   	}
   	
-  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, vec[0], vec[1], vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distVec.x, distVec.y, distVec.z, true), point);
   		break;
   		case 2:  //heavy cannon
   		case 3:  //light aircraft
@@ -796,27 +764,6 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		default: //melee
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 		break;
-  		}
-  	}
-  	
-  	protected void applyParticleSpecialEffect(int type)
-  	{
-  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-  		
-  		switch (type)
-  		{
-  		case 1:  //critical
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-  			break;
-  		case 2:  //double hit
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
-  			break;
-  		case 3:  //triple hit
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
-  			break;
-		default: //miss
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-			break;
   		}
   	}
   	
@@ -837,7 +784,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
   		}
   	}
   	
-  	public void applyParticleAtTarget(int type, Entity target, float[] vec)
+  	public void applyParticleAtTarget(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
@@ -894,45 +841,69 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		this.deathTime = par1;
 	}
 	
-	//TODO no use for now
+	//no use for now
 	@Override
 	public int getStateTimer(int id)
 	{
 		return 0;
 	}
 
-	//TODO no use for now
+	//no use for now
 	@Override
 	public void setStateTimer(int id, int value)
 	{
 	}
 	
+	//get buff map from summons' host
 	@Override
-	public HashMap<Byte, Byte> getBuffMap() { return new HashMap<Byte, Byte>(); }
+	public HashMap<Integer, Integer> getBuffMap()
+	{
+		if (this.host != null) return this.host.getBuffMap();
+		return new HashMap<Integer, Integer>();
+	}
+	
+	//potion buff can not be applied to summons (host only)
+	@Override
+	public void setBuffMap(HashMap<Integer, Integer> map) {}
+	
+	//apply heal effect
+	@Override
+    public void heal(float healAmount)
+    {
+		//server side
+		if (!this.world.isRemote)
+		{
+			//apply heal particle, server side only
+  			TargetPoint tp = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, 0D, 0.1D, 0D), tp);
+		
+  			//potion modify heal value (splash and cloud potion only)
+  			healAmount = BuffHelper.applyBuffOnHeal(this, healAmount);
+		}
+		
+		super.heal(healAmount * this.shipAttrs.getAttrsBuffed(ID.Attrs.HPRES));
+    }
+	
+	@Override
+	public Attrs getAttrs()
+	{
+		return this.shipAttrs;
+	}
+	
+	@Override
+	public void setAttrs(Attrs data)
+	{
+		this.shipAttrs = data;
+	}
+	
+	@Override
+	public void setUpdateFlag(int id, boolean value) {}
 
 	@Override
-	public void setBuffMap(HashMap<Byte, Byte> map) {}
-
-	@Override
-	public float[] getEffectEquip() { return null; }
-
-	@Override
-	public void setEffectEquip(int id, float value) {}
-
-	@Override
-	public void setEffectEquip(float[] array) {}
-
-	@Override
-	public float getStateFinal(int id) { return 0; }
-
-	@Override
-	public float[] getStateFinal() { return null; }
-
-	@Override
-	public void setStateFinal(int id, float value) {}
-
-	@Override
-	public void setStateFinal(float[] array) {}
+	public boolean getUpdateFlag(int id)
+	{
+		return false;
+	}
 	
 	
 }

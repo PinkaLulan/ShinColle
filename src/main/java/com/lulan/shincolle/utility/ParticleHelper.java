@@ -24,7 +24,9 @@ import com.lulan.shincolle.client.particle.ParticleTexts;
 import com.lulan.shincolle.client.particle.ParticleTextsCustom;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Values;
 
 import net.minecraft.client.Minecraft;
@@ -32,18 +34,47 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-/**粒子特效處理class
- * 包含呼叫特效, 旋轉特效位置(NxNxN旋轉), 
+/**
+ * particle helper
  */
 public class ParticleHelper
 {
 	
 	private static Random rand = new Random();
 	
-	
+  	/** spawn attack text particle on entity, SERVER SIDE
+  	 *  type: 0:miss, 1:critical, 2:double hit, 3:triple hit
+  	 */
+  	public static void spawnAttackTextParticle(Entity host, int type)
+  	{
+  		//null check
+  		if (host == null) return;
+  		
+  		TargetPoint point = new TargetPoint(host.dimension, host.posX, host.posY, host.posZ, 64D);
+  		
+  		switch (type)
+  		{
+  		case 0:  //miss
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 10, false), point);
+			break;
+  		case 1:  //critical
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
+  			break;
+  		case 2:  //double hit
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 12, false), point);
+  			break;
+  		case 3:  //triple hit
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 13, false), point);
+  			break;
+		default:
+			break;
+  		}
+  	}
+  	
 	/**SPAWN ATTACK PARTICLE WITH CUSTOM POSITION
 	 * @parm posX, posY, posZ, lookX, lookY, lookZ, type
 	 */

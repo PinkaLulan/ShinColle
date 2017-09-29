@@ -307,7 +307,7 @@ public class ModelSubmU511 extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
 		{
 			this.EquipBase.isHidden = false;
 		}

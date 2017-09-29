@@ -201,13 +201,13 @@ public class EntityAIShipPickItem extends EntityAIBase
     //update parms
     private void updateShipParms()
     {
-    	float speed = this.hostShip.getAttackSpeed();
+    	float speed = this.hostShip.getAttrs().getAttackSpeed();
     	if(speed < 1F) speed = 1F;
     	
     	this.pickDelayMax = (int) (10F / speed);
     	
     	float tempran = this.pickRangeBase + this.hostShip.getStateMinor(ID.M.FollowMax);
-    	this.pickRange = this.pickRangeBase + this.hostShip.getAttackRange() * 0.5F;
+    	this.pickRange = this.pickRangeBase + this.hostShip.getAttrs().getAttackRange() * 0.5F;
     	this.pickRange = Math.min(tempran, this.pickRange);
     }
     

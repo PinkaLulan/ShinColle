@@ -25,7 +25,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		super(world);
 		this.setSize(0.7F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipTA);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
@@ -72,12 +72,12 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 
 	//Ta級額外增加屬性
 	@Override
-	public void calcShipAttributes()
+	public void calcShipAttributesAddRaw()
 	{
-		EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.1F;
-		EffectEquip[ID.EquipEffect.MISS] = EffectEquip[ID.EquipEffect.MISS] + 0.1F;
+		super.calcShipAttributesAddRaw();
 		
-		super.calcShipAttributes();	
+		this.getAttrs().setAttrsRaw(ID.Attrs.CRI, this.getAttrs().getAttrsRaw(ID.Attrs.CRI) + 0.1F);
+		this.getAttrs().setAttrsRaw(ID.Attrs.MISS, this.getAttrs().getAttrsRaw(ID.Attrs.MISS) + 0.1F);
 	}
 	
 	@Override
@@ -121,7 +121,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn airplane
-    	if (this.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
+    	if (this.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
     	{
     		EntityRensouhou rensoho1 = new EntityRensouhou(this.world);
     		rensoho1.initAttrs(this, target, 0);
@@ -181,14 +181,14 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		{
 			switch(getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;	
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -196,20 +196,20 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:	//都沒有
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:	//都沒有
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:	//只有披風
-				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			case ID.ModelState.EQUIP00:	//只有披風
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 			break;
-			case ID.State.EQUIP01:	//只有護肩
-				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+			case ID.ModelState.EQUIP01:	//只有護肩
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
 			break;
-			case ID.State.EQUIP02:	//披風+護肩
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP02:	//披風+護肩
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}

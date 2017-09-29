@@ -13,13 +13,15 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -31,7 +33,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.7F, 2.2F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.HarbourHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HarbourHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
@@ -129,15 +131,15 @@ public class EntityHarbourHime extends BasicEntityShipCV
   		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
   		case 2:  //heavy cannon
-  			return StateFinal[ID.ATK_H] * 0.75F;
+  			return this.shipAttrs.getAttackDamageHeavy() * 0.75F;
   		case 3:  //light aircraft
-  			return StateFinal[ID.ATK_AL];
+  			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft
-  			return StateFinal[ID.ATK_AH];
+  			return this.shipAttrs.getAttackDamageAirHeavy();
 		default: //melee
-			return StateFinal[ID.ATK];
+			return this.shipAttrs.getAttackDamage();
   		}
   	}
 
@@ -148,19 +150,11 @@ public class EntityHarbourHime extends BasicEntityShipCV
   	public boolean attackEntityWithHeavyAmmo(Entity target)
 	{
   		//get attack value
-  		float atk = StateFinal[ID.ATK_H] * 0.75F;
+  		float atk = this.getAttackBaseDamage(2, target);
   		float launchPos = (float)posY + 0.4F;
 		
-  		//計算目標距離
-  		float tarX = (float)target.posX;	//for miss chance calc
-  		float tarY = (float)target.posY;
-  		float tarZ = (float)target.posZ;
-  		float[] distVec = new float[4];
-  		
-  		distVec[0] = tarX - (float)this.posX;
-  		distVec[1] = tarY - (float)this.posY;
-  		distVec[2] = tarZ - (float)this.posZ;
-  		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
   		
   		if (this.getRidingEntity() instanceof BasicEntityMount)
   		{
@@ -183,21 +177,21 @@ public class EntityHarbourHime extends BasicEntityShipCV
           
   		//heavy ammo--
   		if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-
-  		//calc miss chance, miss: add random offset(0~6) to missile target 
-  		float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-  		missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
-  		if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
   		
-  		if (this.rand.nextFloat() < missChance)
-  		{
-          	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-          	tarY = tarY + this.rand.nextFloat() * 5F;
-          	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-
-          	applyParticleSpecialEffect(0);  //miss particle
-  		}
-          
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
+        {
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
+        	
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
+        }
+  		
   		//spawn missile
   		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
           		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, 0.15F, true, 0.3F);
@@ -254,20 +248,20 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
 			break;
-			case ID.State.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02a, true);
+			case ID.ModelState.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, true);
 			break;
-			case ID.State.EQUIP02a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP02a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -276,19 +270,19 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 				this.setPositionAndUpdate(posX, posY + 2D, posZ);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}
 	}
 	
-
+	
 }

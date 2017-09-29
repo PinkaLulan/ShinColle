@@ -2,7 +2,6 @@ package com.lulan.shincolle.entity.hime;
 
 import java.util.List;
 
-import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -10,10 +9,8 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.EntityHelper;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
@@ -35,7 +32,7 @@ public class EntityCAHime extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 1.2F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
@@ -69,16 +66,16 @@ public class EntityCAHime extends BasicEntityShipSmall
 	
 	//晚上時額外增加屬性
 	@Override
-	public void calcShipAttributes()
+	public void calcShipAttributesAddRaw()
 	{
+		super.calcShipAttributesAddRaw();
+		
 		if (!this.world.isDaytime())
 		{
-			EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.1F;
-			EffectEquip[ID.EquipEffect.DHIT] = EffectEquip[ID.EquipEffect.DHIT] + 0.1F;
-			EffectEquip[ID.EquipEffect.THIT] = EffectEquip[ID.EquipEffect.THIT] + 0.1F;
+			this.getAttrs().setAttrsRaw(ID.Attrs.CRI, this.getAttrs().getAttrsRaw(ID.Attrs.CRI) + 0.1F);
+			this.getAttrs().setAttrsRaw(ID.Attrs.THIT, this.getAttrs().getAttrsRaw(ID.Attrs.THIT) + 0.1F);
+			this.getAttrs().setAttrsRaw(ID.Attrs.THIT, this.getAttrs().getAttrsRaw(ID.Attrs.THIT) + 0.1F);
 		}
-		
-		super.calcShipAttributes();	
 	}
   	
   	@Override
@@ -107,13 +104,13 @@ public class EntityCAHime extends BasicEntityShipSmall
 		if (isSneaking)
 		{
 			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP02a) i = ID.State.NORMALa;
+			if (i > ID.ModelState.EQUIP02a) i = ID.ModelState.NORMALa;
 			setStateEmotion(ID.S.State2, i, true);
 		}
 		else
 		{
 			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.State.EQUIP02) i = ID.State.NORMAL;
+			if (i > ID.ModelState.EQUIP02) i = ID.ModelState.NORMAL;
 			setStateEmotion(ID.S.State, i, true);
 		}
 	}

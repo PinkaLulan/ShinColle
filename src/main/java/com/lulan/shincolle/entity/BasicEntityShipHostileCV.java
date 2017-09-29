@@ -2,15 +2,11 @@ package com.lulan.shincolle.entity;
 
 import com.lulan.shincolle.entity.other.EntityAirplaneTMob;
 import com.lulan.shincolle.entity.other.EntityAirplaneZeroMob;
-import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.BlockHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile implements IShipAircraftAttack
 {
@@ -61,7 +57,7 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
 	{
 		//play attack effect
         applySoundAtAttacker(3, target);
-	    applyParticleAtAttacker(3, target, new float[4]);
+	    applyParticleAtAttacker(3, target, Dist4d.ONE);
         
     	float summonHeight = (float)(posY + launchHeight);
     	
@@ -86,7 +82,7 @@ abstract public class BasicEntityShipHostileCV extends BasicEntityShipHostile im
 	{
 		//play attack effect
         applySoundAtAttacker(4, target);
-	    applyParticleAtAttacker(4, target, new float[4]);
+	    applyParticleAtAttacker(4, target, Dist4d.ONE);
 	    
     	float summonHeight = (float) (posY + launchHeight);
     	

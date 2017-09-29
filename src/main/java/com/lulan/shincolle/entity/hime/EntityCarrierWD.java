@@ -10,7 +10,8 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -24,7 +25,7 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWD);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
@@ -62,21 +63,21 @@ public class EntityCarrierWD extends BasicEntityShipCV
   		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK_AL], 0);
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
   		case 2:  //heavy cannon
-  			return StateFinal[ID.ATK_H];
+  			return this.shipAttrs.getAttackDamageHeavy();
   		case 3:  //light aircraft
-  			return StateFinal[ID.ATK_AL];
+  			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft
-  			return StateFinal[ID.ATK_AH];
+  			return this.shipAttrs.getAttackDamageAirHeavy();
 		default: //melee
-			return StateFinal[ID.ATK] * 0.125F;
+			return this.shipAttrs.getAttackDamage();
   		}
   	}
 	
 	//change light cannon particle
     @Override
-    public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+    public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
     {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
@@ -187,12 +188,12 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
-			case ID.State.NORMALa:
+			case ID.ModelState.NORMALa:
 			default:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
 			}
 		}
@@ -201,13 +202,13 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 				this.setPositionAndUpdate(posX, posY + 2D, posZ);
 			break;
-			case ID.State.NORMAL:
+			case ID.ModelState.NORMAL:
 			default:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
 			}
 		}

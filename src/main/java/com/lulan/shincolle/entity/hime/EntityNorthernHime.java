@@ -16,7 +16,9 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -28,7 +30,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -46,7 +47,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.6F, 1F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.NorthernHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
@@ -94,12 +95,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
         		//increase morale when riding
         		if (this.isRiding())
         		{
-        			int m = this.getStateMinor(ID.M.Morale);
-        			
-        			if (m < 7000)
-        			{
-        				this.setStateMinor(ID.M.Morale, m + 200);
-        			}
+        			if (this.getMorale() < (int)(ID.Morale.L_Excited * 1.5F)) this.addMorale(150);
         		}
         		
         		//1: 增強被動回血
@@ -210,7 +206,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
   			//drip water effect
   			if (this.ticksExisted % 8 == 0)
   			{
-  				if (getStateEmotion(ID.S.State2) == ID.State.EQUIP01a && !getStateFlag(ID.F.NoFuel))
+  				if (getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a && !getStateFlag(ID.F.NoFuel))
   				{
   					if (this.isSitting() || this.isRiding())
   					{
@@ -312,18 +308,10 @@ public class EntityNorthernHime extends BasicEntityShipCV
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target)
   	{
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
-		float tarZ = (float)target.posZ;
-		float[] distVec = new float[4];
-		float launchPos = (float)posY + height;
+        //calc dist to target
+  		float launchPos = (float)posY + height;
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
 		
-		distVec[0] = tarX - (float)this.posX;
-		distVec[1] = tarY - (float)this.posY;
-		distVec[2] = tarZ - (float)this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-
         if (getShipDepth() > 0D) launchPos += 0.2D;
 		
 		//experience++
@@ -392,14 +380,14 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
 			break;
-			case ID.State.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
 			}
 		}
@@ -407,31 +395,31 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 			break;
-			case ID.State.EQUIP01:
-				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+			case ID.ModelState.EQUIP01:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
 			break;
-			case ID.State.EQUIP02:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP02:
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
 			}
 		}
 	}
 	
 	@Override
-	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
 	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 31, this.posX, this.posY, this.posZ, vec[0], vec[1], vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 31, this.posX, this.posY, this.posZ, distVec.x, distVec.y, distVec.z, true), point);
   		break;
   		case 2:  //heavy cannon
   		case 3:  //light aircraft
@@ -443,7 +431,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
   	}
   	
 	@Override
-	public void applyParticleAtTarget(int type, Entity target, float[] vec)
+	public void applyParticleAtTarget(int type, Entity target, Dist4d distVec)
 	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
@@ -504,17 +492,17 @@ public class EntityNorthernHime extends BasicEntityShipCV
   		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
   		case 2:  //heavy cannon
-  			return StateFinal[ID.ATK_H] * 0.75F;
+  			return this.shipAttrs.getAttackDamageHeavy() * 0.75F;
   		case 3:  //light aircraft
-  			return StateFinal[ID.ATK_AL];
+  			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft
-  			return StateFinal[ID.ATK_AH];
+  			return this.shipAttrs.getAttackDamageAirHeavy();
 		default: //melee
-			return StateFinal[ID.ATK];
+			return this.shipAttrs.getAttackDamage();
   		}
   	}
-
-
+	
+	
 }

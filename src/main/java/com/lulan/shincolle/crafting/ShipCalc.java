@@ -42,30 +42,31 @@ public class ShipCalc
 		 * modified material type: mat can increase build rate: -1:none 0:grudge 1:metal 2:ammo 3:poly
 		 */
 		//small build
-		EquipSmall.add(new int[] {ID.Ship.DestroyerI,      80,   0});
-		EquipSmall.add(new int[] {ID.Ship.DestroyerRO,     90,   0});
-		EquipSmall.add(new int[] {ID.Ship.DestroyerHA,     100,  0});
-		EquipSmall.add(new int[] {ID.Ship.DestroyerNI,     110,  0});
-		EquipSmall.add(new int[] {ID.Ship.TransportWA,     120,  1});
-		EquipSmall.add(new int[] {ID.Ship.SubmarineKA,     140,  2});
-		EquipSmall.add(new int[] {ID.Ship.SubmarineYO,     160,  2});
-		EquipSmall.add(new int[] {ID.Ship.SubmarineSO,     180,  2});
-		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserRI,  200,  2});
-		EquipSmall.add(new int[] {ID.Ship.HeavyCruiserNE,  256,  2});
+		EquipSmall.add(new int[] {ID.ShipClass.DestroyerI,      80,   0});
+		EquipSmall.add(new int[] {ID.ShipClass.DestroyerRO,     90,   0});
+		EquipSmall.add(new int[] {ID.ShipClass.DestroyerHA,     100,  0});
+		EquipSmall.add(new int[] {ID.ShipClass.DestroyerNI,     110,  0});
+		EquipSmall.add(new int[] {ID.ShipClass.TransportWA,     120,  1});
+		EquipSmall.add(new int[] {ID.ShipClass.SubmarineKA,     140,  2});
+		EquipSmall.add(new int[] {ID.ShipClass.SubmarineYO,     160,  2});
+		EquipSmall.add(new int[] {ID.ShipClass.SubmarineSO,     180,  2});
+		EquipSmall.add(new int[] {ID.ShipClass.HeavyCruiserRI,  200,  2});
+		EquipSmall.add(new int[] {ID.ShipClass.HeavyCruiserNE,  256,  2});
 		
 		//large build
-		EquipLarge.add(new int[] {ID.Ship.DestroyerHime,   500,  0});
-		EquipLarge.add(new int[] {ID.Ship.CarrierWO,       650,  3});
-		EquipLarge.add(new int[] {ID.Ship.BattleshipTA,    800,  2});
-		EquipLarge.add(new int[] {ID.Ship.BattleshipRU,    800,  2});
-		EquipLarge.add(new int[] {ID.Ship.HeavyCruiserHime,2000, 2});
-		EquipLarge.add(new int[] {ID.Ship.NorthernHime,    2600, 1});
-		EquipLarge.add(new int[] {ID.Ship.HarbourHime,     2800, 1});
-		EquipLarge.add(new int[] {ID.Ship.AirfieldHime,    3000, 1});
-		EquipLarge.add(new int[] {ID.Ship.CarrierHime,     3000, 3});
-		EquipLarge.add(new int[] {ID.Ship.BattleshipRE,    3800, 2});	
-		EquipLarge.add(new int[] {ID.Ship.BattleshipHime,  4600, 2});
-		EquipLarge.add(new int[] {ID.Ship.CarrierWD,       5000, 3});
+		EquipLarge.add(new int[] {ID.ShipClass.DestroyerHime,   500,  0});
+		EquipLarge.add(new int[] {ID.ShipClass.CarrierWO,       650,  3});
+		EquipLarge.add(new int[] {ID.ShipClass.BattleshipTA,    800,  2});
+		EquipLarge.add(new int[] {ID.ShipClass.BattleshipRU,    800,  2});
+		EquipLarge.add(new int[] {ID.ShipClass.HeavyCruiserHime,2000, 2});
+		EquipLarge.add(new int[] {ID.ShipClass.NorthernHime,    2600, 1});
+		EquipLarge.add(new int[] {ID.ShipClass.IsolatedHime,    2700, 1});
+		EquipLarge.add(new int[] {ID.ShipClass.HarbourHime,     2800, 1});
+		EquipLarge.add(new int[] {ID.ShipClass.AirfieldHime,    3000, 1});
+		EquipLarge.add(new int[] {ID.ShipClass.CarrierHime,     3000, 3});
+		EquipLarge.add(new int[] {ID.ShipClass.BattleshipRE,    3800, 2});	
+		EquipLarge.add(new int[] {ID.ShipClass.BattleshipHime,  4600, 2});
+		EquipLarge.add(new int[] {ID.ShipClass.CarrierWD,       5000, 3});
 	}
 	
 
@@ -209,109 +210,111 @@ public class ShipCalc
   	{
   		switch(type)
   		{
-  		case ID.Ship.DestroyerI:
+  		case ID.ShipClass.DestroyerI:
   			return "shincolle.EntityDestroyerI";
-  		case ID.Ship.DestroyerRO:
+  		case ID.ShipClass.DestroyerRO:
   			return "shincolle.EntityDestroyerRo";
-  		case ID.Ship.DestroyerHA:
+  		case ID.ShipClass.DestroyerHA:
   			return "shincolle.EntityDestroyerHa";
-  		case ID.Ship.DestroyerNI:
+  		case ID.ShipClass.DestroyerNI:
   			return "shincolle.EntityDestroyerNi";
-  		case ID.Ship.HeavyCruiserRI:
+  		case ID.ShipClass.HeavyCruiserRI:
   			return "shincolle.EntityHeavyCruiserRi";
-  		case ID.Ship.HeavyCruiserNE:
+  		case ID.ShipClass.HeavyCruiserNE:
   			return "shincolle.EntityHeavyCruiserNe";
-  		case ID.Ship.CarrierWO:
+  		case ID.ShipClass.CarrierWO:
   			return "shincolle.EntityCarrierWo";
-  		case ID.Ship.BattleshipRU:
+  		case ID.ShipClass.BattleshipRU:
   			return "shincolle.EntityBattleshipRu";
-  		case ID.Ship.BattleshipTA:
+  		case ID.ShipClass.BattleshipTA:
   			return "shincolle.EntityBattleshipTa";
-  		case ID.Ship.BattleshipRE:
+  		case ID.ShipClass.BattleshipRE:
   			return "shincolle.EntityBattleshipRe";
-  		case ID.Ship.TransportWA:
+  		case ID.ShipClass.TransportWA:
   			return "shincolle.EntityTransportWa";
-  		case ID.Ship.SubmarineKA:
+  		case ID.ShipClass.SubmarineKA:
   			return "shincolle.EntitySubmKa";
-  		case ID.Ship.SubmarineYO:
+  		case ID.ShipClass.SubmarineYO:
   			return "shincolle.EntitySubmYo";
-  		case ID.Ship.SubmarineSO:
+  		case ID.ShipClass.SubmarineSO:
   			return "shincolle.EntitySubmSo";
-  		case ID.Ship.AirfieldHime:
+  		case ID.ShipClass.AirfieldHime:
   			return "shincolle.EntityAirfieldHime";
-  		case ID.Ship.CarrierHime:
+  		case ID.ShipClass.CarrierHime:
   			return "shincolle.EntityCarrierHime";
-  		case ID.Ship.BattleshipHime:
+  		case ID.ShipClass.BattleshipHime:
   			return "shincolle.EntityBattleshipHime";
-  		case ID.Ship.DestroyerHime:
+  		case ID.ShipClass.DestroyerHime:
   			return "shincolle.EntityDestroyerHime";	
-  		case ID.Ship.HarbourHime:
+  		case ID.ShipClass.HarbourHime:
   			return "shincolle.EntityHarbourHime";
-  		case ID.Ship.NorthernHime:
+  		case ID.ShipClass.IsolatedHime:
+  			return "shincolle.EntityIsolatedHime";
+  		case ID.ShipClass.NorthernHime:
   			return "shincolle.EntityNorthernHime";
-  		case ID.Ship.CarrierWD:
+  		case ID.ShipClass.CarrierWD:
   			return "shincolle.EntityCarrierWD";
-  		case ID.Ship.DestroyerShimakaze:
+  		case ID.ShipClass.DestroyerShimakaze:
   			return "shincolle.EntityDestroyerShimakaze";
-  		case ID.Ship.DestroyerShimakaze+2000:
+  		case ID.ShipClass.DestroyerShimakaze+2000:
   			return "shincolle.EntityDestroyerShimakazeMob";
-  		case ID.Ship.BattleshipNagato:
+  		case ID.ShipClass.BattleshipNagato:
   			return "shincolle.EntityBattleshipNGT";
-  		case ID.Ship.BattleshipNagato+2000:
+  		case ID.ShipClass.BattleshipNagato+2000:
   			return "shincolle.EntityBattleshipNGTMob";
-  		case ID.Ship.BattleshipYamato:
+  		case ID.ShipClass.BattleshipYamato:
   			return "shincolle.EntityBattleshipYMT";
-  		case ID.Ship.BattleshipYamato+2000:
+  		case ID.ShipClass.BattleshipYamato+2000:
   			return "shincolle.EntityBattleshipYMTMob";
-  		case ID.Ship.SubmarineU511:
+  		case ID.ShipClass.SubmarineU511:
   			return "shincolle.EntitySubmU511";
-  		case ID.Ship.SubmarineU511+2000:
+  		case ID.ShipClass.SubmarineU511+2000:
   			return "shincolle.EntitySubmU511Mob";
-  		case ID.Ship.SubmarineRo500:
+  		case ID.ShipClass.SubmarineRo500:
   			return "shincolle.EntitySubmRo500";
-  		case ID.Ship.SubmarineRo500+2000:
+  		case ID.ShipClass.SubmarineRo500+2000:
   			return "shincolle.EntitySubmRo500Mob";
-  		case ID.Ship.CarrierKaga:
+  		case ID.ShipClass.CarrierKaga:
   			return "shincolle.EntityCarrierKaga";
-  		case ID.Ship.CarrierKaga+2000:
+  		case ID.ShipClass.CarrierKaga+2000:
   			return "shincolle.EntityCarrierKagaMob";
-  		case ID.Ship.CarrierAkagi:
+  		case ID.ShipClass.CarrierAkagi:
   			return "shincolle.EntityCarrierAkagi";
-  		case ID.Ship.CarrierAkagi+2000:
+  		case ID.ShipClass.CarrierAkagi+2000:
   			return "shincolle.EntityCarrierAkagiMob";
-  		case ID.Ship.DestroyerAkatsuki:
+  		case ID.ShipClass.DestroyerAkatsuki:
   			return "shincolle.EntityDestroyerAkatsuki";
-  		case ID.Ship.DestroyerAkatsuki+2000:
+  		case ID.ShipClass.DestroyerAkatsuki+2000:
   			return "shincolle.EntityDestroyerAkatsukiMob";
-  		case ID.Ship.DestroyerHibiki:
+  		case ID.ShipClass.DestroyerHibiki:
   			return "shincolle.EntityDestroyerHibiki";
-  		case ID.Ship.DestroyerHibiki+2000:
+  		case ID.ShipClass.DestroyerHibiki+2000:
   			return "shincolle.EntityDestroyerHibikiMob";
-  		case ID.Ship.DestroyerIkazuchi:
+  		case ID.ShipClass.DestroyerIkazuchi:
   			return "shincolle.EntityDestroyerIkazuchi";
-  		case ID.Ship.DestroyerIkazuchi+2000:
+  		case ID.ShipClass.DestroyerIkazuchi+2000:
   			return "shincolle.EntityDestroyerIkazuchiMob";
-  		case ID.Ship.DestroyerInazuma:
+  		case ID.ShipClass.DestroyerInazuma:
   			return "shincolle.EntityDestroyerInazuma";
-  		case ID.Ship.DestroyerInazuma+2000:
+  		case ID.ShipClass.DestroyerInazuma+2000:
   			return "shincolle.EntityDestroyerInazumaMob";
-  		case ID.Ship.LightCruiserTenryuu:
+  		case ID.ShipClass.LightCruiserTenryuu:
   			return "shincolle.EntityCruiserTenryuu";
-  		case ID.Ship.LightCruiserTenryuu+2000:
+  		case ID.ShipClass.LightCruiserTenryuu+2000:
   			return "shincolle.EntityCruiserTenryuuMob";
-  		case ID.Ship.LightCruiserTatsuta:
+  		case ID.ShipClass.LightCruiserTatsuta:
   			return "shincolle.EntityCruiserTatsuta";
-  		case ID.Ship.LightCruiserTatsuta+2000:
+  		case ID.ShipClass.LightCruiserTatsuta+2000:
   			return "shincolle.EntityCruiserTatsutaMob";
-  		case ID.Ship.HeavyCruiserAtago:
+  		case ID.ShipClass.HeavyCruiserAtago:
   			return "shincolle.EntityCruiserAtago";
-  		case ID.Ship.HeavyCruiserAtago+2000:
+  		case ID.ShipClass.HeavyCruiserAtago+2000:
   			return "shincolle.EntityCruiserAtagoMob";
-  		case ID.Ship.HeavyCruiserTakao:
+  		case ID.ShipClass.HeavyCruiserTakao:
   			return "shincolle.EntityCruiserTakao";
-  		case ID.Ship.HeavyCruiserTakao+2000:
+  		case ID.ShipClass.HeavyCruiserTakao+2000:
   			return "shincolle.EntityCruiserTakaoMob";
-  		case ID.Ship.HeavyCruiserHime:
+  		case ID.ShipClass.HeavyCruiserHime:
   			return "shincolle.EntityCAHime";
   		default:
   			return "shincolle.EntityDestroyerI";
@@ -336,9 +339,9 @@ public class ShipCalc
   			switch (rand.nextInt(2))
   			{
   			case 1:
-  				return getEntityToSpawnName(ID.Ship.BattleshipYamato+2000);
+  				return getEntityToSpawnName(ID.ShipClass.BattleshipYamato+2000);
   			default:
-  				return getEntityToSpawnName(ID.Ship.BattleshipNagato+2000);
+  				return getEntityToSpawnName(ID.ShipClass.BattleshipNagato+2000);
   			}
   		}
   		//30% for rare level
@@ -347,17 +350,17 @@ public class ShipCalc
   			switch (rand.nextInt(6))
   			{
   			case 1:
-  				return getEntityToSpawnName(ID.Ship.CarrierKaga+2000);
+  				return getEntityToSpawnName(ID.ShipClass.CarrierKaga+2000);
   			case 2:
-  				return getEntityToSpawnName(ID.Ship.LightCruiserTenryuu+2000);
+  				return getEntityToSpawnName(ID.ShipClass.LightCruiserTenryuu+2000);
   			case 3:
-  				return getEntityToSpawnName(ID.Ship.LightCruiserTatsuta+2000);
+  				return getEntityToSpawnName(ID.ShipClass.LightCruiserTatsuta+2000);
   			case 4:
-  				return getEntityToSpawnName(ID.Ship.HeavyCruiserAtago+2000);
+  				return getEntityToSpawnName(ID.ShipClass.HeavyCruiserAtago+2000);
   			case 5:
-  				return getEntityToSpawnName(ID.Ship.HeavyCruiserTakao+2000);
+  				return getEntityToSpawnName(ID.ShipClass.HeavyCruiserTakao+2000);
   			default:
-  				return getEntityToSpawnName(ID.Ship.CarrierAkagi+2000);
+  				return getEntityToSpawnName(ID.ShipClass.CarrierAkagi+2000);
   			}
   		}
   		//45% for common level
@@ -366,19 +369,19 @@ public class ShipCalc
   			switch (rand.nextInt(7))
   			{
   			case 1:
-  				return getEntityToSpawnName(ID.Ship.DestroyerHibiki+2000);
+  				return getEntityToSpawnName(ID.ShipClass.DestroyerHibiki+2000);
   			case 2:
-  				return getEntityToSpawnName(ID.Ship.DestroyerIkazuchi+2000);
+  				return getEntityToSpawnName(ID.ShipClass.DestroyerIkazuchi+2000);
   			case 3:
-  				return getEntityToSpawnName(ID.Ship.DestroyerInazuma+2000);
+  				return getEntityToSpawnName(ID.ShipClass.DestroyerInazuma+2000);
   			case 4:
-  				return getEntityToSpawnName(ID.Ship.DestroyerShimakaze+2000);
+  				return getEntityToSpawnName(ID.ShipClass.DestroyerShimakaze+2000);
   			case 5:
-  				return getEntityToSpawnName(ID.Ship.SubmarineU511+2000);
+  				return getEntityToSpawnName(ID.ShipClass.SubmarineU511+2000);
   			case 6:
-  				return getEntityToSpawnName(ID.Ship.SubmarineRo500+2000);
+  				return getEntityToSpawnName(ID.ShipClass.SubmarineRo500+2000);
   			default:
-  				return getEntityToSpawnName(ID.Ship.DestroyerAkatsuki+2000);
+  				return getEntityToSpawnName(ID.ShipClass.DestroyerAkatsuki+2000);
   			}
   		}
   	}
@@ -390,55 +393,55 @@ public class ShipCalc
 
   		switch(shipID)
   		{
-  		case ID.Ship.DestroyerI:
-  		case ID.Ship.DestroyerRO:
-  		case ID.Ship.DestroyerHA:
-  		case ID.Ship.DestroyerNI:
-  		case ID.Ship.LightCruiserHO:
-  		case ID.Ship.LightCruiserHE:
-  		case ID.Ship.LightCruiserTO:
-  		case ID.Ship.LightCruiserTSU:
-  		case ID.Ship.TorpedoCruiserCHI:
-  		case ID.Ship.HeavyCruiserRI:
-  		case ID.Ship.HeavyCruiserNE:
-  		case ID.Ship.LightCarrierNU:
-  		case ID.Ship.TransportWA:
-  		case ID.Ship.SubmarineKA:
-  		case ID.Ship.SubmarineYO:
-  		case ID.Ship.SubmarineSO:
+  		case ID.ShipClass.DestroyerI:
+  		case ID.ShipClass.DestroyerRO:
+  		case ID.ShipClass.DestroyerHA:
+  		case ID.ShipClass.DestroyerNI:
+  		case ID.ShipClass.LightCruiserHO:
+  		case ID.ShipClass.LightCruiserHE:
+  		case ID.ShipClass.LightCruiserTO:
+  		case ID.ShipClass.LightCruiserTSU:
+  		case ID.ShipClass.TorpedoCruiserCHI:
+  		case ID.ShipClass.HeavyCruiserRI:
+  		case ID.ShipClass.HeavyCruiserNE:
+  		case ID.ShipClass.LightCarrierNU:
+  		case ID.ShipClass.TransportWA:
+  		case ID.ShipClass.SubmarineKA:
+  		case ID.ShipClass.SubmarineYO:
+  		case ID.ShipClass.SubmarineSO:
   			amount[0] = new ItemStack(ModItems.Grudge, 12 + rand.nextInt(8));
   			amount[1] = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 0);
   			amount[2] = new ItemStack(ModItems.Ammo, 12 + rand.nextInt(8), 0);
   			amount[3] = new ItemStack(ModItems.AbyssMetal, 12 + rand.nextInt(8), 1);
         	break;
-  		case ID.Ship.CarrierWO:
-  		case ID.Ship.BattleshipRU:
-  		case ID.Ship.BattleshipTA:
-  		case ID.Ship.BattleshipRE:
-  		case ID.Ship.CarrierHime:
-  		case ID.Ship.AirfieldHime:
-  		case ID.Ship.ArmoredCarrierHime:
-  		case ID.Ship.AnchorageHime:
-  		case ID.Ship.HarbourWD:
-  		case ID.Ship.AnchorageWD:
-  		case ID.Ship.BattleshipHime:
-  		case ID.Ship.DestroyerHime:
-  		case ID.Ship.HarbourHime:
-  		case ID.Ship.IsolatedDemon:
-  		case ID.Ship.MidwayHime:
-  		case ID.Ship.NorthernHime:
-  		case ID.Ship.SouthernHime:
-  		case ID.Ship.CarrierWD:
-  		case ID.Ship.LightCruiserDemon:
-  		case ID.Ship.BattleshipWD:
-  		case ID.Ship.SeaplaneHime:
-  		case ID.Ship.AirdefenseHime:
-  		case ID.Ship.PTImp:
-  		case ID.Ship.LightCruiserHime:
-  		case ID.Ship.SubmarineHime:
-  		case ID.Ship.DestroyerWD:
-  		case ID.Ship.HeavyCruiserHime:
-  		case ID.Ship.SupplyDepotHime:
+  		case ID.ShipClass.CarrierWO:
+  		case ID.ShipClass.BattleshipRU:
+  		case ID.ShipClass.BattleshipTA:
+  		case ID.ShipClass.BattleshipRE:
+  		case ID.ShipClass.CarrierHime:
+  		case ID.ShipClass.AirfieldHime:
+  		case ID.ShipClass.ArmoredCarrierHime:
+  		case ID.ShipClass.AnchorageHime:
+  		case ID.ShipClass.HarbourWD:
+  		case ID.ShipClass.AnchorageWD:
+  		case ID.ShipClass.BattleshipHime:
+  		case ID.ShipClass.DestroyerHime:
+  		case ID.ShipClass.HarbourHime:
+  		case ID.ShipClass.IsolatedHime:
+  		case ID.ShipClass.MidwayHime:
+  		case ID.ShipClass.NorthernHime:
+  		case ID.ShipClass.SouthernHime:
+  		case ID.ShipClass.CarrierWD:
+  		case ID.ShipClass.LightCruiserDemon:
+  		case ID.ShipClass.BattleshipWD:
+  		case ID.ShipClass.SeaplaneHime:
+  		case ID.ShipClass.AirdefenseHime:
+  		case ID.ShipClass.PTImp:
+  		case ID.ShipClass.LightCruiserHime:
+  		case ID.ShipClass.SubmarineHime:
+  		case ID.ShipClass.DestroyerWD:
+  		case ID.ShipClass.HeavyCruiserHime:
+  		case ID.ShipClass.SupplyDepotHime:
   			//easy mode: reduce amount to prevent resources dupe
   			if (ConfigHandler.easyMode)
   			{
@@ -455,32 +458,32 @@ public class ShipCalc
         		amount[3] = new ItemStack(ModBlocks.BlockPolymetal, 10 + rand.nextInt(3));
         	}
   			break;
-  		case ID.Ship.SubmarineU511:
-  		case ID.Ship.SubmarineRo500:
-  		case ID.Ship.DestroyerAkatsuki:
-  		case ID.Ship.DestroyerHibiki:
-  		case ID.Ship.DestroyerIkazuchi:
-  		case ID.Ship.DestroyerInazuma:
-  		case ID.Ship.DestroyerShimakaze:
-  		case ID.Ship.Raiden:
+  		case ID.ShipClass.SubmarineU511:
+  		case ID.ShipClass.SubmarineRo500:
+  		case ID.ShipClass.DestroyerAkatsuki:
+  		case ID.ShipClass.DestroyerHibiki:
+  		case ID.ShipClass.DestroyerIkazuchi:
+  		case ID.ShipClass.DestroyerInazuma:
+  		case ID.ShipClass.DestroyerShimakaze:
+  		case ID.ShipClass.Raiden:
   			amount[0] = new ItemStack(ModItems.Grudge, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1));
   			amount[1] = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
   			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 0);
   			amount[3] = new ItemStack(ModItems.AbyssMetal, ConfigHandler.kaitaiAmountSmall + rand.nextInt((int)(ConfigHandler.kaitaiAmountSmall * 0.25F) + 1), 1);
   			break;
-  		case ID.Ship.HeavyCruiserAtago:
-  		case ID.Ship.HeavyCruiserTakao:
-  		case ID.Ship.LightCruiserTenryuu:
-  		case ID.Ship.LightCruiserTatsuta:
+  		case ID.ShipClass.HeavyCruiserAtago:
+  		case ID.ShipClass.HeavyCruiserTakao:
+  		case ID.ShipClass.LightCruiserTenryuu:
+  		case ID.ShipClass.LightCruiserTatsuta:
   			amount[0] = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
   			amount[1] = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
   			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1), 1);
   			amount[3] = new ItemStack(ModBlocks.BlockPolymetal, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
   			break;
-  		case ID.Ship.BattleshipNagato:
-  		case ID.Ship.BattleshipYamato:
-  		case ID.Ship.CarrierKaga:
-  		case ID.Ship.CarrierAkagi:
+  		case ID.ShipClass.BattleshipNagato:
+  		case ID.ShipClass.BattleshipYamato:
+  		case ID.ShipClass.CarrierKaga:
+  		case ID.ShipClass.CarrierAkagi:
   			amount[0] = new ItemStack(ModBlocks.BlockGrudge, ConfigHandler.kaitaiAmountLarge + rand.nextInt(ConfigHandler.kaitaiAmountLarge + 1));
   			amount[1] = new ItemStack(ModBlocks.BlockAbyssium, ConfigHandler.kaitaiAmountLarge + rand.nextInt(ConfigHandler.kaitaiAmountLarge + 1));
   			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt(ConfigHandler.kaitaiAmountLarge + 1), 1);

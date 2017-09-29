@@ -24,7 +24,6 @@ import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
 import com.lulan.shincolle.capability.CapaTeitoku;
@@ -54,12 +53,15 @@ import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.Enums.BodyHeight;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EffectHelper;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
@@ -81,11 +83,15 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -95,7 +101,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
@@ -125,12 +130,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected double ShipPrevX;			//ship posX 5 sec ago
 	protected double ShipPrevY;			//ship posY 5 sec ago
 	protected double ShipPrevZ;			//ship posZ 5 sec ago
-	/** equip states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
-	protected float[] StateEquip;
-	/** final states: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
-	protected float[] StateFinal;
-	/** final states before buffs: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT 6:ATK_Heavy 7:ATK_AirLight 8:ATK_AirHeavy*/
-	protected float[] StateFinalBU;
+	/**
+	 * ship attributes: hp, def, atk, ...
+	 */
+	protected AttrsAdv shipAttrs;
 	/** minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
 	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:UseCombatRation
 	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
@@ -146,16 +149,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *               12:AttackTime 13:AttackTime2 14:AttackTime3
 	 */
 	protected int[] StateTimer;
-	/** equip effect: 0:critical 1:doubleHit 2:tripleHit 3:baseMiss 4:atk_AntiAir 5:atk_AntiSS
-	 *                6:dodge 7:xp gain 8:grudge gain 9:ammo gain 10:hp res delay
-	 */
-	protected float[] EffectEquip;
-	protected float[] EffectEquipBU;
-	/** formation effect: 0:ATK_L 1:ATK_H 2:ATK_AL 3:ATK_AH 4:DEF 5:MOV 6:MISS 7:DODGE 8:CRI
-	 *                    9:DHIT 10:THIT 11:AA 12:ASM */
-	protected float[] EffectFormation;
-	/** formation fixed effect: 0:MOV */
-	protected float[] EffectFormationFixed;
 	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase 6:Emotion3
 	 *               7:Emotion4 */
 	protected byte[] StateEmotion;
@@ -166,16 +159,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *  24:canPickItem 25:ShowHeldItem 26:AutoPump
 	 */
 	protected boolean[] StateFlag;
-	/** BonusPoint: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
-	protected byte[] BonusPoint;
 	/** BodyHeightRange: */
 	protected byte[] BodyHeightStand;
 	protected byte[] BodyHeightSit;
-	/** TypeModify: 0:HP 1:ATK 2:DEF 3:SPD 4:MOV 5:HIT */
-	protected float[] TypeModify;
 	/** ModelPos: posX, posY, posZ, scale (in ship inventory) */
 	protected float[] ModelPos;
-	/** Update Flag: 0:FormationBuff */
+	/** Update Flag, index by {@link ID.UpdateFlag} */
 	protected boolean[] UpdateFlag;
 	/** waypoints: 0:last wp */
 	protected BlockPos[] waypoints;
@@ -184,7 +173,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** unit names */
 	public ArrayList<String> unitNames;
 	/** buffs map : BuffMap<potion id, potion level>*/
-	protected HashMap<Byte, Byte> BuffMap;
+	protected HashMap<Integer, Integer> BuffMap;
 	
 	//for model render
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
@@ -213,9 +202,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//init value
 		this.itemHandler = new CapaShipInventory(CapaShipInventory.SlotMax, this);
 		this.isImmuneToFire = true;	//set ship immune to lava
-		this.StateEquip = new float[9];
-		this.StateFinal = new float[9];
-		this.StateFinalBU = this.StateFinal.clone();
 		this.StateMinor = new int[] {1,  0,  0,  40, 0,
 				                     0,  0,  0,  0,  3,
 				                     3,  12, 35, 1,  -1,
@@ -227,10 +213,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, -1, -1, 0,  0
 				                    };
 		this.StateTimer = new int[15];
-		this.EffectEquip = new float[11];
-		this.EffectEquipBU = new float[11];
-		this.EffectFormation = new float[13];
-		this.EffectFormationFixed = new float[1];
 		this.StateEmotion = new byte[8];
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
@@ -239,14 +221,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 								        false, false, true, true, false,
 								        true, false
 								       };
-		this.UpdateFlag = new boolean[] {false};
-		this.BonusPoint = new byte[6];
+		this.UpdateFlag = new boolean[8];
 		this.BodyHeightStand = new byte[] {92, 78, 73, 58, 47, 37};
 		this.BodyHeightSit = new byte[] {64, 49, 44, 29, 23, 12};
-		this.TypeModify = new float[] {1F, 1F, 1F, 1F, 1F, 1F};
 		this.ModelPos = new float[] {0F, 0F, 0F, 50F};
 		this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
-		this.BuffMap = new HashMap<Byte, Byte>();
+		this.BuffMap = new HashMap<Integer, Integer>();
 		
 		//for AI
 		this.ShipDepth = 0D;				//water block above ship (within ship position)
@@ -315,7 +295,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		this.shipNavigator = new ShipPathNavigate(this);
 		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
-		this.initTypeModify();
+		this.shipAttrs = new AttrsAdv(this.getShipClass());
 	}
 	
 	//check world time is 0~23 hour, -1 for fail
@@ -734,6 +714,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return getStateMinor(ID.M.ShipUID);
 	}
 	
+	public int getMorale()
+	{
+		return this.StateMinor[ID.M.Morale];
+	}
+	
 	//PlayerUID = player UNIQUE ID (not UUID)
 	@Override
 	public int getPlayerUID()
@@ -873,45 +858,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
-	public float getAttackDamage()
-	{	//NO USE for ship entity
-		return 0;
-	}
-	
-	@Override
-	public float getAttackSpeed()
-	{
-		return this.StateFinal[ID.SPD];
-	}
-	
-	@Override
-	public float getAttackRange()
-	{
-		return this.StateFinal[ID.HIT];
-	}
-	
-	@Override
 	public boolean getAttackType(int par1)
 	{
 		return this.getStateFlag(par1);
-	}
-	
-	@Override
-	public float getDefValue()
-	{
-		return this.StateFinal[ID.DEF];
-	}
-	
-	@Override
-	public float getMoveSpeed()
-	{
-		return this.StateFinal[ID.MOV];
-	}
-	
-	@Override
-	public float getJumpSpeed()
-	{
-		return 1F;
 	}
 	
 	@Override
@@ -919,6 +868,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
         return getMoveSpeed();
     }
+	
+	@Override
+	public float getMoveSpeed()
+	{
+		return this.shipAttrs.getMoveSpeed(false);
+	}
+	
+	@Override
+	public float getJumpSpeed()
+	{
+		return 1F;
+	}
 	
 	@Override
 	public boolean hasAmmoLight()
@@ -992,63 +953,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
-	public float getStateEquip(int id)
-	{
-		return StateEquip[id];
-	}
-	
-	public float getStateFinal(int id)
-	{
-		return StateFinal[id];
-	}
-	
-	public float[] getStateFinal()
-	{
-		return StateFinal;
-	}
-	
-	public float getStateFinalBU(int id)
-	{
-		return StateFinalBU[id];
-	}
-	
 	@Override
 	public int getStateMinor(int id)
 	{
 		return StateMinor[id];
 	}
-	
+
 	@Override
-	public float getEffectEquip(int id)
-	{
-		return EffectEquip[id];
-	}
-	
-	public float[] getEffectEquip()
-	{
-		return EffectEquip;
-	}
-	
-	public float getEffectEquipBU(int id)
-	{
-		return EffectEquipBU[id];
-	}
-	
 	public boolean getUpdateFlag(int id)
 	{
 		return UpdateFlag[id];
 	}
-	
-	public float getEffectFormation(int id)
-	{
-		return EffectFormation[id];
-	}
-	
-	public float getEffectFormationFixed(int id)
-	{
-		return EffectFormationFixed[id];
-	}
-	
+
 	@Override
 	public int getStateTimer(int id)
 	{
@@ -1059,16 +975,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public byte getStateEmotion(int id)
 	{
 		return StateEmotion[id];
-	}
-	
-	public byte getBonusPoint(int id)
-	{
-		return BonusPoint[id];
-	}
-	
-	public float getTypeModify(int id)
-	{
-		return TypeModify[id];
 	}
 	
 	/** get model position in GUI */
@@ -1103,164 +1009,109 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return this.itemHandler;
 	}
 	
-	/**calc equip, buff, debuff and all attrs
+	/**
+	 * calc ship attributes
 	 * 
-	 * step:
-	 * 1. reset all attrs to 0
-	 * 2. calc 6 equip slots
-	 * 3. calc special attrs (if @Override calcShipAttributes())
-	 * 4. calc HP,DEF...etc
-	 * 5. backup unbuff attrs
-	 * 6. calc buffs
-	 * 7. send sync packet
-	 * 
+	 * parms:
+	 *   type: bit flags: EDCBA, all = 31
+	 *         A(1):  recalc raw attrs
+	 *         B(2):  recalc equips
+	 *         C(4):  recalc morale buff
+	 *         D(8):  recalc potion buff
+	 *         E(16): recalc formation buff
+	 *         
+	 *   sync: send sync packet to client
 	 */
-	public void calcEquipAndUpdateState()
+	public void calcShipAttributes(int flag, boolean sync)
 	{
-		ItemStack itemstack = null;
-		float[] equipStat = null;
+		//null check
+		if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getShipClass());
 		
-		//init value
-		StateEquip[ID.HP] = 0F;
-		StateEquip[ID.DEF] = 0F;
-		StateEquip[ID.SPD] = 0F;
-		StateEquip[ID.MOV] = 0F;
-		StateEquip[ID.HIT] = 0F;
-		StateEquip[ID.ATK] = 0F;
-		StateEquip[ID.ATK_H] = 0F;
-		StateEquip[ID.ATK_AL] = 0F;
-		StateEquip[ID.ATK_AH] = 0F;
-		
-		EffectEquip[ID.EquipEffect.CRI] = 0F;
-		EffectEquip[ID.EquipEffect.DHIT] = 0F;
-		EffectEquip[ID.EquipEffect.THIT] = 0F;
-		EffectEquip[ID.EquipEffect.MISS] = 0F;
-		EffectEquip[ID.EquipEffect.AA] = 0F;
-		EffectEquip[ID.EquipEffect.ASM] = 0F;
-		EffectEquip[ID.EquipEffect.DODGE] = 0F;
-		EffectEquip[ID.EquipEffect.XP] = 1F;
-		EffectEquip[ID.EquipEffect.GRUDGE] = 1F;
-		EffectEquip[ID.EquipEffect.AMMO] = 1F;
-		EffectEquip[ID.EquipEffect.HPRES] = 1F;
-		
-		StateMinor[ID.M.DrumState] = 0;
-		StateMinor[ID.M.LevelChunkLoader] = 0;
-		StateMinor[ID.M.LevelFlare] = 0;
-		StateMinor[ID.M.LevelSearchlight] = 0;
-		
-		//calc equip attrs
-		for (int i = 0; i < ContainerShipInventory.SLOTS_SHIPINV; i++)
+		//server side
+		if (!this.world.isRemote)
 		{
-			//get normal stats
-			equipStat = EquipCalc.getEquipStat(this, this.itemHandler.getStackInSlot(i));
-			
-			if (equipStat != null)
+			//recalc raw attrs
+			if ((flag & 1) == 1)
 			{
-				StateEquip[ID.HP] += equipStat[ID.EquipFinal.HP];
-				StateEquip[ID.ATK] += equipStat[ID.EquipFinal.ATK_L];
-				StateEquip[ID.ATK_H] += equipStat[ID.EquipFinal.ATK_H];
-				StateEquip[ID.ATK_AL] += equipStat[ID.EquipFinal.ATK_AL];
-				StateEquip[ID.ATK_AH] += equipStat[ID.EquipFinal.ATK_AH];
-				StateEquip[ID.DEF] += equipStat[ID.EquipFinal.DEF];
-				StateEquip[ID.SPD] += equipStat[ID.EquipFinal.SPD];
-				StateEquip[ID.MOV] += equipStat[ID.EquipFinal.MOV];
-				StateEquip[ID.HIT] += equipStat[ID.EquipFinal.HIT];
+				BuffHelper.updateAttrsRaw(this.shipAttrs, this.getShipClass(), this.getLevel());
+				this.calcShipAttributesAddRaw();
+				this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
+			}
+			//recalc equips
+			if ((flag & 2) == 2)
+			{
+				EquipCalc.updateAttrsEquip(this);
+				this.calcShipAttributesAddEquip();
+				this.setUpdateFlag(ID.FlagUpdate.AttrsEquip, true);
 				
-				EffectEquip[ID.EquipEffect.CRI] += equipStat[ID.EquipFinal.CRI];
-				EffectEquip[ID.EquipEffect.DHIT] += equipStat[ID.EquipFinal.DHIT];
-				EffectEquip[ID.EquipEffect.THIT] += equipStat[ID.EquipFinal.THIT];
-				EffectEquip[ID.EquipEffect.MISS] += equipStat[ID.EquipFinal.MISS];
-				EffectEquip[ID.EquipEffect.AA] += equipStat[ID.EquipFinal.AA];
-				EffectEquip[ID.EquipEffect.ASM] += equipStat[ID.EquipFinal.ASM];
-				EffectEquip[ID.EquipEffect.DODGE] += equipStat[ID.EquipFinal.DODGE];
-				EffectEquip[ID.EquipEffect.XP] += equipStat[ID.EquipFinal.XP];
-				EffectEquip[ID.EquipEffect.GRUDGE] += equipStat[ID.EquipFinal.GRUDGE];
-				EffectEquip[ID.EquipEffect.AMMO] += equipStat[ID.EquipFinal.AMMO];
-				EffectEquip[ID.EquipEffect.HPRES] += equipStat[ID.EquipFinal.HPRES];
+				float[] aaa = this.shipAttrs.getAttrsEquip();
+			}
+			//recalc morale buff
+			if ((flag & 4) == 4)
+			{
+				BuffHelper.updateBuffMorale(this.shipAttrs, this.getMorale());
+				this.setUpdateFlag(ID.FlagUpdate.AttrsMorale, true);
+			}
+			//recalc potion buff
+			if ((flag & 8) == 8)
+			{
+				BuffHelper.updateBuffPotion(this);
+				this.setUpdateFlag(ID.FlagUpdate.AttrsPotion, true);
+			}
+			//recalc formation buff
+			if ((flag & 16) == 16)
+			{
+				BuffHelper.updateBuffFormation(this);
+				this.setUpdateFlag(ID.FlagUpdate.AttrsFormation, true);
 			}
 			
-			//get special stats
-			equipStat = EquipCalc.getEquipStatMisc(this, this.itemHandler.getStackInSlot(i));
+	  		//apply all buff to raw attrs
+			BuffHelper.applyBuffOnAttrs(this);
+			this.calcShipAttributesAdd();
+			this.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, true);
 			
-			if (equipStat != null)
+//        	float[] raw = this.shipAttrs.getAttrsRaw();  //TODO debug
+//        	float[] eq = this.shipAttrs.getAttrsEquip();
+//        	float[] mor = this.shipAttrs.getAttrsMorale();
+//        	float[] pot = this.shipAttrs.getAttrsPotion();
+//        	float[] form = this.shipAttrs.getAttrsFormation();
+//        	float[] buf = this.shipAttrs.getAttrsBuffed();
+//        	int idd = ID.Attrs.ATK_L;
+//        	LogHelper.debug("BBBBBB "+this.world.isRemote+" "+raw[idd]
+//        			+" "+eq[idd]+" "+mor[idd]+" "+pot[idd]
+//        			+" "+form[idd]+" "+buf[idd]);
+			
+			//send sync packets
+			if (sync)
 			{
-				StateMinor[ID.M.DrumState] += equipStat[0];
-				StateMinor[ID.M.LevelChunkLoader] += equipStat[1];
-				StateMinor[ID.M.LevelFlare] += equipStat[2];
-				StateMinor[ID.M.LevelSearchlight] += equipStat[3];
+				this.sendSyncPacketMinor();
+				this.sendSyncPacketAttrs();
 			}
 		}
+		//client side
+		else
+		{
+			//NO RECALC!!
+		}
 		
-		//calc attrs
-		calcShipAttributes();
-	}
-	
-	/** calc ship attrs */
-	public void calcShipAttributes()
-	{
-		//get attrs value
-		float[] getStat = Values.ShipAttrMap.get(this.getShipClass());
-
-		//HP = (base + equip + (point + 1) * level * typeModify) * config scale
-		StateFinal[ID.HP] = (getStat[ID.ShipAttr.BaseHP] + StateEquip[ID.HP] + (float)(BonusPoint[ID.HP]+1F) * (float)StateMinor[ID.M.ShipLevel] * TypeModify[ID.HP]) * (float)ConfigHandler.scaleShip[ID.HP]; 
-		//DEF = base + ((point + 1) * level / 3 * 0.4 + equip) * typeModify
-		StateFinal[ID.DEF] = (getStat[ID.ShipAttr.BaseDEF] + StateEquip[ID.DEF] + ((float)(BonusPoint[ID.DEF]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.DEF]) * (float)ConfigHandler.scaleShip[ID.DEF];
-		//SPD = base + ((point + 1) * level / 10 * 0.02 + equip) * typeModify
-		StateFinal[ID.SPD] = (getStat[ID.ShipAttr.BaseSPD] + StateEquip[ID.SPD] + ((float)(BonusPoint[ID.SPD]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.04F * TypeModify[ID.SPD]) * (float)ConfigHandler.scaleShip[ID.SPD];
-		//MOV = base + ((point + 1) * level / 10 * 0.01 + equip) * typeModify
-		StateFinal[ID.MOV] = (getStat[ID.ShipAttr.BaseMOV] + StateEquip[ID.MOV] + ((float)(BonusPoint[ID.MOV]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.02F * TypeModify[ID.MOV]) * (float)ConfigHandler.scaleShip[ID.MOV];
-		//HIT = base + ((point + 1) * level / 10 * 0.3 + equip) * typeModify
-		StateFinal[ID.HIT] = (getStat[ID.ShipAttr.BaseHIT] + StateEquip[ID.HIT] + ((float)(BonusPoint[ID.HIT]+1F) * ((float)StateMinor[ID.M.ShipLevel])/10F) * 0.2F * TypeModify[ID.HIT]) * (float)ConfigHandler.scaleShip[ID.HIT];
-		//ATK = (base + equip + ((point + 1) * level / 3) * 0.5 * typeModify) * config scale
-		float atk = getStat[ID.ShipAttr.BaseATK] + ((float)(BonusPoint[ID.ATK]+1F) * ((float)StateMinor[ID.M.ShipLevel])/3F) * 0.4F * TypeModify[ID.ATK];
-		
-		//add equip
-		StateFinal[ID.ATK] = (atk + StateEquip[ID.ATK]) * (float)ConfigHandler.scaleShip[ID.ATK];
-		StateFinal[ID.ATK_H] = (atk * 3F + StateEquip[ID.ATK_H]) * (float)ConfigHandler.scaleShip[ID.ATK];
-		StateFinal[ID.ATK_AL] = (atk + StateEquip[ID.ATK_AL]) * (float)ConfigHandler.scaleShip[ID.ATK];
-		StateFinal[ID.ATK_AH] = (atk * 3F + StateEquip[ID.ATK_AH]) * (float)ConfigHandler.scaleShip[ID.ATK];
-		
-		/**
-		 * apply buffs = morale * potion(food) * formation
-		 */
-		//apply morale buff
-		updateMoraleBuffs();
-		
-		//apply potion buff
-		EffectHelper.updateEffectBuffs(this);
-		
-		//backup value before buffs, for GUI display
-		this.StateFinalBU = this.StateFinal.clone();
-		this.EffectEquipBU = this.EffectEquip.clone();
-		
-		//update formation buff
-		updateFormationBuffs();
-		
-		//KB Resistance
-		float resisKB = (float)StateMinor[ID.M.ShipLevel] * 0.005F;
-
-		//check limit
-		this.StateFinal = this.checkStateFinalLimit(this.StateFinal);
-		this.StateFinalBU = this.checkStateFinalLimit(this.StateFinalBU);
-		this.EffectEquip = this.checkEffectEquipLimit(EffectEquip);
-		this.EffectEquipBU = this.checkEffectEquipLimit(EffectEquipBU);
-		
-		//set attribute by final value
+		//set attrs to entity
 		/**
 		 * DO NOT SET ATTACK DAMAGE to non-EntityMob!!!!!
 		 */
-		getEntityAttribute(MAX_HP).setBaseValue(StateFinal[ID.HP]);
-		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(StateFinal[ID.MOV]);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(40);
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(resisKB);
-		
-		//for server side, sync data to client
-		if (!world.isRemote)
-		{
-			sendSyncPacketAllValue();
-			sendSyncPacketUnbuffValue();
-		}
+		getEntityAttribute(MAX_HP).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.HP));
+		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.MOV));
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64);
+		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.KB));
 	}
+	
+	/** calc addition attributes
+	 *  calcShipAttributesAdd: attrs not add to this.shipAttrs, like #airplane
+	 *  calcShipAttributesAddRaw: attrs add to raw
+	 *  calcShipAttributesAddEquip: attrs add to equip
+	 */
+	public void calcShipAttributesAdd() {}
+	public void calcShipAttributesAddRaw() {}
+	public void calcShipAttributesAddEquip() {}
 	
 	@Override
     public IAttributeInstance getEntityAttribute(IAttribute attribute)
@@ -1296,10 +1147,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		int capLevel = getStateFlag(ID.F.IsMarried) ? 150 : 100;
 		
 		//apply equip effect
-		if (EffectEquip[ID.EquipEffect.XP] >= 0F)
-		{
-			exp = (int) (exp * EffectEquip[ID.EquipEffect.XP]);
-		}
+		exp = (int) (exp * this.shipAttrs.getAttrsBuffed(ID.Attrs.XP));
 		
 		//level is not cap level
 		if (StateMinor[ID.M.ShipLevel] != capLevel && StateMinor[ID.M.ShipLevel] < 150)
@@ -1342,8 +1190,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//update attributes
 		if (update)
 		{
-			LogHelper.debug("DEBUG: set ship level with update");
-			calcEquipAndUpdateState();
+			this.calcShipAttributes(31, true);
 			this.setHealth(this.getMaxHealth());
 		}
 	}
@@ -1364,6 +1211,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		StateMinor[ID.M.Kills]++;
 	}
 	
+	public void addMorale(int value)
+	{
+		this.StateMinor[ID.M.Morale] += value;
+		if (this.StateMinor[ID.M.Morale] < 0) this.StateMinor[ID.M.Morale] = 0;
+	}
+	
+	public void addAmmoLight(int value)
+	{
+		this.StateMinor[ID.M.NumAmmoLight] += value;
+		if (this.StateMinor[ID.M.NumAmmoLight] < 0) this.StateMinor[ID.M.NumAmmoLight] = 0;
+	}
+	
+	public void addAmmoHeavy(int value)
+	{
+		this.StateMinor[ID.M.NumAmmoHeavy] += value;
+		if (this.StateMinor[ID.M.NumAmmoHeavy] < 0) this.StateMinor[ID.M.NumAmmoHeavy] = 0;
+	}
+	
+	public void setMorale(int value)
+	{
+		if (value < 0) value = 0;
+		this.StateMinor[ID.M.Morale] = value;
+	}
+	
 	@Override
 	public void setAmmoLight(int num)
 	{
@@ -1376,21 +1247,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateMinor[ID.M.NumAmmoHeavy] = num;
 	}
 	
-	public void setStateFinal(int id, float par1)
-	{
-		StateFinal[id] = par1;
-	}
-	
-	public void setStateFinal(float[] array)
-	{
-		StateFinal = array;
-	}
-	
-	public void setStateFinalBU(int id, float par1)
-	{
-		StateFinalBU[id] = par1;
-	}
-	
 	@Override
 	public void setStateMinor(int id, int par1)
 	{
@@ -1399,7 +1255,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 		case ID.M.Morale:
 			if (par1 < 0) par1 = 0;
-			break;
+		break;
 		case ID.M.CraneState:
 			//if changed to 1 or 2, check delay
 			if (par1 > 0)
@@ -1413,51 +1269,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					setStateTimer(ID.T.CrandDelay, 20);
 				}
 			}
-			break;
+		break;
 		}
 		
 		//set value
 		StateMinor[id] = par1;
 	}
 	
+	@Override
 	public void setUpdateFlag(int id, boolean par1)
 	{
 		UpdateFlag[id] = par1;
-	}
-	
-	public void setEffectEquip(int id, float par1)
-	{
-		EffectEquip[id] = par1;
-	}
-	
-	public void setEffectEquip(float[] array)
-	{
-		EffectEquip = array;
-	}
-	
-	public void setEffectEquipBU(int id, float par1)
-	{
-		EffectEquipBU[id] = par1;
-	}
-	
-	public void setEffectFormation(int id, float par1)
-	{
-		EffectFormation[id] = par1;
-	}
-	
-	public void setEffectFormation(float[] par1)
-	{
-		EffectFormation = par1;
-	}
-	
-	public void setEffectFormationFixed(int id, float par1)
-	{
-		EffectFormationFixed[id] = par1;
-	}
-	
-	public void setBonusPoint(int id, byte par1)
-	{
-		BonusPoint[id] = par1;
 	}
 	
 	@Override
@@ -1554,20 +1376,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
-	//called when entity spawn, set the type modify
-	public void initTypeModify()
-	{
-		//get attrs value
-		float[] getStat = Values.ShipAttrMap.get(this.getShipClass());
-
-		TypeModify[ID.HP] = getStat[ID.ShipAttr.ModHP];
-		TypeModify[ID.ATK] = getStat[ID.ShipAttr.ModATK];
-		TypeModify[ID.DEF] = getStat[ID.ShipAttr.ModDEF];
-		TypeModify[ID.SPD] = getStat[ID.ShipAttr.ModSPD];
-		TypeModify[ID.MOV] = getStat[ID.ShipAttr.ModMOV];
-		TypeModify[ID.HIT] = getStat[ID.ShipAttr.ModHIT];
-	}
-
 	@Override
 	public void setStateTimer(int id, int value)
 	{
@@ -1677,13 +1485,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	
   	public void setGrudgeConsumption(int par1)
   	{
-  		if (par1 > 120) par1 = 120;
   		this.setStateMinor(ID.M.GrudgeCon, par1);
   	}
   	
   	public void setAmmoConsumption(int par1)
   	{
-  		if (par1 > 45) par1 = 45;
   		this.setStateMinor(ID.M.AmmoCon, par1);
   	}
   	
@@ -1698,17 +1504,39 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	/** send sync packet: sync all data */
-	public void sendSyncPacketAllValue()
+	public void sendSyncPacketAll()
 	{
-		sendSyncPacket(S2CEntitySync.PID.SyncShip_All, false);
+		//set update flag
+		this.setUpdateFlag(ID.FlagUpdate.AttrsBonus, true);
+		this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
+		this.setUpdateFlag(ID.FlagUpdate.AttrsEquip, true);
+		this.setUpdateFlag(ID.FlagUpdate.AttrsMorale, true);
+		this.setUpdateFlag(ID.FlagUpdate.AttrsPotion, true);
+		this.setUpdateFlag(ID.FlagUpdate.AttrsFormation, true);
+		this.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, true);
+		
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_AllMisc, false);
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Attrs, false);
 	}
 	
-	/** send sync packet: sync unbuff data */
-	public void sendSyncPacketUnbuffValue()
+	/** send sync packet: attrs */
+	public void sendSyncPacketAttrs()
 	{
-		sendSyncPacket(S2CEntitySync.PID.SyncShip_Unbuff, false);
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Attrs, false);
 	}
 	
+	/** send sync packet: attrs */
+	public void sendSyncPacketMinor()
+	{
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Minor, false);
+	}
+	
+	/** send sync packet: attrs */
+	public void sendSyncPacketAllMisc()
+	{
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_AllMisc, false);
+	}
+
 	/** send sync packet: sync formation data */
 	public void sendSyncPacketFormationValue()
 	{
@@ -1721,10 +1549,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_Riders, true);
 	}
 	
-	/** send sync packet: sync riders */
+	/** send sync packet: sync unit name */
 	public void sendSyncPacketUnitName()
 	{
 		sendSyncPacket(S2CEntitySync.PID.SyncShip_UnitName, true);
+	}
+	
+	/** send sync packet: sync buff map */
+	public void sendSyncPacketBuffMap()
+	{
+		sendSyncPacket(S2CEntitySync.PID.SyncShip_Buffmap, false);
 	}
 	
 	/** sync data for GUI display */
@@ -1800,8 +1634,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	/**
 	 * request server to send sync packet
-	 *   0: sync model display (StateEmotion)
-	 *   1: sync unit name
+	 *   0: model display (StateEmotion)
+	 *   1: unit name
+	 *   2: buff map
 	 */
 	public void sendSyncRequest(int type)
 	{
@@ -1814,6 +1649,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			break;
 			case 1:		//unit name display
 				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_UnitName, this.getEntityId(), this.world.provider.getDimension()));
+			break;
+			case 2:		//buff map
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_Buffmap, this.getEntityId(), this.world.provider.getDimension()));
 			break;
 			}
 		}
@@ -1986,7 +1824,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected boolean interactModernKit(EntityPlayer player, ItemStack stack)
 	{
 		//add 1 random bonus
-		if (addRandomBonusPoint())
+		if (this.shipAttrs.addAttrsBonusRandom(this.rand))
 		{
 			if (!player.capabilities.isCreativeMode)
 			{
@@ -2020,12 +1858,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (TeamHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel))
 		{
 			int t = this.ticksExisted - this.getMoraleTick();
-			int m = this.getStateMinor(ID.M.Morale);
 			
-			if (t > 3 && m < 6600)
+			if (t > 3 && this.getMorale() < ID.Morale.Excited * 1.3F)
 			{  //if caress > 3 ticks
 				this.setMoraleTick(this.ticksExisted);
-				this.setStateMinor(ID.M.Morale, m + ConfigHandler.baseCaressMorale);
+				this.addMorale(ConfigHandler.baseCaressMorale);
 			}
 
 			//show emotes
@@ -2109,7 +1946,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
 		
 		//add morale
-		this.StateMinor[ID.M.Morale] = 10000;
+		this.setMorale(10000);
 		
 		//set shy emotion
 		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
@@ -2117,11 +1954,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         //add 3 random bonus point
         for (int i = 0; i < 3; ++i)
         {
-        	this.addRandomBonusPoint();
+        	this.shipAttrs.addAttrsBonusRandom(this.rand);
         }
         
         //update attrs
-        this.calcEquipAndUpdateState();
+        this.calcShipAttributes(31, true);
         
         //物品用完時要設定為null清空該slot
         if (stack.stackSize <= 0)
@@ -2296,7 +2133,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		Item i = itemstack.getItem();
 		int meta = itemstack.getItemDamage();
 		int type = 0;
-		int mvalue = this.getStateMinor(ID.M.Morale);
 		int mfood = 1;
 		int addgrudge = 0;
 		int addammo = 0;
@@ -2304,8 +2140,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		int addsatur = 0;
 		
 		//max 4800 or max saturation, reject food
-		if ((i instanceof ItemFood || i instanceof IShipFoodItem) &&
-			getFoodSaturation() >= getFoodSaturationMax())
+		if (getFoodSaturation() >= getFoodSaturationMax())
 		{
 			if (this.getEmotesTick() <= 0)
 			{
@@ -2330,6 +2165,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return false;
 		}
 		
+		//is food
 		if (i instanceof ItemFood)
 		{
 			type = 1;
@@ -2340,6 +2176,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			mfood = (int)((fv + this.rand.nextInt((int)fv + 5)) * sv * 20F);
 			addgrudge = mfood;
 		}//end itemfood
+		//is ship food
 		else if (i instanceof IShipFoodItem)
 		{
 			type = 2;
@@ -2395,15 +2232,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//add morale to happy (3900 ~ 5100)
 				mfood = ((IShipCombatRation) i).getMoraleValue(meta);
 				
-				if (mvalue + mfood > 6000)
+				//if ice cream, clean debuffs
+				if (meta == 4 || meta == 5)
 				{
-					mfood = 0;
-					mvalue = 6000;
+					LogHelper.debug("AAAAAA "+this.getBuffMap().size());
+					BuffHelper.removeDebuffs(this);
+					LogHelper.debug("BBBBBB "+this.getBuffMap().size());
 				}
 				
 				break;
 			}
-		}//end ship food item
+		}//end ship food
+		//is potion
+		else if (i instanceof ItemPotion)
+		{
+			type = 3;
+			mfood = -10;
+			addgrudge = Values.N.BaseGrudge;
+		}//end potion
 		
 		//can feed
 		if (type > 0)
@@ -2414,9 +2260,47 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//play sound
 			if (this.StateTimer[ID.T.SoundTime] <= 0)
 	    	{
-	    		this.StateTimer[ID.T.SoundTime] = 20 + this.getRNG().nextInt(20);
-	    		this.playSound(this.getCustomSound(7, this), this.getSoundVolume(), this.getSoundPitch());
+				this.StateTimer[ID.T.SoundTime] = 20 + this.getRNG().nextInt(20);
+				this.playSound(this.getCustomSound(7, this), this.getSoundVolume(), this.getSoundPitch());
 	    	}
+			
+			//apply potion effect
+			List<PotionEffect> pbuffs = PotionUtils.getEffectsFromStack(itemstack);
+			
+			if (pbuffs.size() >0)
+			{
+				//apply buff/debuff potion
+	            for (PotionEffect pe : pbuffs)
+	            {
+	                this.addPotionEffect(new PotionEffect(pe));
+	            }
+	            
+	            //apply instant potion
+				float hp1p = this.getMaxHealth() * 0.01F;
+	            if (hp1p < 1F) hp1p = 1F;
+	            
+	            //apply heal
+	            int lvPotion = BuffHelper.checkPotionHeal(pbuffs);
+				if (lvPotion > 0) this.heal((hp1p * 2F + 2F) * lvPotion);
+				
+	            //apply damage
+				lvPotion = BuffHelper.checkPotionDamage(pbuffs);
+				if (lvPotion > 0) this.attackEntityFrom(DamageSource.magic, (hp1p * 2F + 2F) * lvPotion);
+	            
+				//update potion buff
+	    		this.calcShipAttributes(8, true);
+			}
+			
+			//morale++
+			this.addMorale(mfood);
+			
+			//saturation++
+			this.setFoodSaturation(this.getFoodSaturation() + 1 + addsatur);
+			
+			//misc++
+			this.addGrudge((int) (addgrudge * this.shipAttrs.getAttrsBuffed(ID.Attrs.GRUDGE)));
+			this.addAmmoLight((int) (addammo * this.shipAttrs.getAttrsBuffed(ID.Attrs.AMMO)));
+			this.addAmmoHeavy((int) (addammoh * this.shipAttrs.getAttrsBuffed(ID.Attrs.AMMO)));
 			
 			//item--
 			if (player != null)
@@ -2432,17 +2316,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		        }
 			}
 			
-			//morale++
-			this.setStateMinor(ID.M.Morale, mvalue + mfood);
-			
-			//saturation++
-			this.setFoodSaturation(this.getFoodSaturation() + 1 + addsatur);
-			
-			//misc++
-			StateMinor[ID.M.NumGrudge] += addgrudge * EffectEquip[ID.EquipEffect.GRUDGE];
-			StateMinor[ID.M.NumAmmoLight] += addammo * EffectEquip[ID.EquipEffect.AMMO];
-			StateMinor[ID.M.NumAmmoHeavy] += addammoh * EffectEquip[ID.EquipEffect.AMMO];
-
 			//show eat emotion
 			if (this.getEmotesTick() <= 0)
 			{
@@ -2468,32 +2341,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return false;
 	}
 	
-	//add random bonus point, NO SYNC, server only!
-	private boolean addRandomBonusPoint()
-	{
-		int bonusChoose = rand.nextInt(6);
-		
-		//bonus point +1 if bonus point < 3
-		if (BonusPoint[bonusChoose] < ConfigHandler.modernLimit)
-		{
-			BonusPoint[bonusChoose] = (byte) (BonusPoint[bonusChoose] + 1);
-			return true;
-		}
-		else
-		{	//select other bonus point
-			for (int i = 0; i < BonusPoint.length; ++i)
-			{
-				if (BonusPoint[i] < ConfigHandler.modernLimit)
-				{
-					BonusPoint[i] = (byte) (BonusPoint[i] + 1);
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-
 	/**修改移動方法, 使其water跟lava中移動時像是flying entity
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
@@ -2563,16 +2410,19 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			//faster body rotateYaw update (vanilla = 12~20 ticks?)
 			updateClientBodyRotate();
-		
-			//check every 8 ticks
-			if (this.ticksExisted % 8 == 0)
+			
+			//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
+			if (this.ticksExisted % ConfigHandler.searchlightCD == 0)
 			{
-        		//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
         		if (ConfigHandler.canSearchlight && this.isEntityAlive())
         		{
         			updateSearchlight();
         		}
-        		
+			}
+			
+			//check every 8 ticks
+			if (this.ticksExisted % 8 == 0)
+			{
         		//check every 16 ticks
 				if (this.ticksExisted % 16 == 0)
 				{
@@ -2702,7 +2552,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		}
         		
         		//update formation buff (fast update)
-        		if (this.getUpdateFlag(ID.FU.FormationBuff)) calcEquipAndUpdateState();
+        		if (this.getUpdateFlag(ID.FlagUpdate.FormationBuff))
+        		{
+        			this.calcShipAttributes(16, true);
+        		}
         		
         		//reset AI and sync once
         		if (!this.initAI && ticksExisted > 10)
@@ -2713,7 +2566,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		setAIList();
             		setAITargetList();
             		decrGrudgeNum(0);			//check grudge
-            		sendSyncPacketAllValue();	//sync packet to client
+            		sendSyncPacketAll();
             		updateChunkLoader();
             		
             		this.initAI = true;
@@ -2736,7 +2589,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		//cancel mounts
                 		if (this.canSummonMounts())
                 		{
-                			if (getStateEmotion(ID.S.State) < ID.State.EQUIP00)
+                			if (getStateEmotion(ID.S.State) < ID.ModelState.EQUIP00)
                 			{
               	  	  			//cancel riding
               	  	  			if (this.isRiding() && this.getRidingEntity() instanceof BasicEntityMount)
@@ -2745,6 +2598,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
               	  	  			}
               	  	  		}
                 		}
+                		
+                		//update potion buff
+                		BuffHelper.convertPotionToBuffMap(this);
             		}
 
             		//check every 32 ticks
@@ -2753,7 +2609,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		if (this.isEntityAlive())
                 		{
                 			//apply potion effects
-                			EffectHelper.applyTicksBuff(this);
+                			BuffHelper.applyBuffOnTicks(this);
                 			
 	                		//use bucket automatically
 	                		if ((getMaxHealth() - getHealth()) > (getMaxHealth() * 0.1F + 5F))
@@ -2788,14 +2644,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		//check every 128 ticks
                         	if ((ticksExisted & 127) == 0)
                         	{
+                        		//update state (slow update)
+                        		this.calcShipAttributes(31, true);
+                        		
                         		//check chunk loader
-                        		updateChunkLoader();
+                        		this.updateChunkLoader();
                         		
                         		//delayed init, waiting for player entity loaded
                         		if (!this.initWaitAI && ticksExisted >= 128)
                         		{
                         			//request formation buff update
-                        			setUpdateFlag(ID.FU.FormationBuff, true);
+                        			setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
                         			
                         			this.initWaitAI = true;
                         		}
@@ -2819,7 +2678,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		if (this.isEntityAlive())
                         		{
     	                    		//use combat ration automatically
-    	                    		if (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
+    	                    		if (EntityHelper.getMoraleLevel(this.getMorale()) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
     	                    		{
     	                    			useCombatRation();
     	                    		}
@@ -2837,9 +2696,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		//check every 256 ticks
                             	if ((this.ticksExisted & 255) == 0)
                             	{
-                            		//update buff (slow update)
-                            		calcEquipAndUpdateState();
-                            		
                             		if (this.isEntityAlive())
                             		{
     	                        		//show idle emotes
@@ -2898,10 +2754,37 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	{
         		//show unit name and uid on head
         		EntityHelper.showNameTag(this);
+        		
+            	//every 128 ticks
+            	if ((this.ticksExisted & 127) == 0)
+            	{
+            		//update potion buff (client side for GUI display)
+            		this.sendSyncRequest(2);	//request buff map sync
+            	}//end 128 ticks
         	}//end 32 ticks
         }//end client side
         
         /** both side */
+    	//every 32 ticks
+    	if ((this.ticksExisted & 31) == 0)
+    	{
+    		//TODO debug
+//        	float[] raw = this.shipAttrs.getAttrsRaw();
+//        	float[] eq = this.shipAttrs.getAttrsEquip();
+//        	float[] mor = this.shipAttrs.getAttrsMorale();
+//        	float[] pot = this.shipAttrs.getAttrsPotion();
+//        	float[] form = this.shipAttrs.getAttrsFormation();
+//        	float[] buf = this.shipAttrs.getAttrsBuffed();
+//        	int idd = ID.Attrs.ATK_L;
+//        	LogHelper.debug("AAAAAA "+this.world.isRemote+" "+raw[idd]
+//        			+" "+eq[idd]+" "+mor[idd]+" "+pot[idd]
+//        			+" "+form[idd]+" "+buf[idd]);
+    		
+        	if ((this.ticksExisted & 127) == 0)
+        	{
+        		this.setAir(300);
+        	}//end 128 ticks
+    	}//end 32 ticks
     }
 	
 	@Override
@@ -2949,10 +2832,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//morale--
 		decrMorale(0);
 		setCombatTick(this.ticksExisted);
+		
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
 				
 	    //entity attack effect
 	    applySoundAtAttacker(0, target);
-	    applyParticleAtAttacker(0, target, new float[4]);
+	    applyParticleAtAttacker(0, target, distVec);
 	    
 	    //是否成功傷害到目標
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
@@ -2961,7 +2847,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    if (isTargetHurt)
 	    {
 	    	applySoundAtTarget(0, target);
-	        applyParticleAtTarget(0, target, new float[4]);
+	        applyParticleAtTarget(0, target, distVec);
 			applyEmotesReaction(3);
 			
 			if (ConfigHandler.canFlare)
@@ -2996,77 +2882,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		float atk = getAttackBaseDamage(1, target);
   		
         //calc dist to target
-        float[] distVec = new float[4];  //x, y, z, dist
-        distVec[0] = (float) (target.posX - this.posX);
-        distVec[1] = (float) (target.posY - this.posY);
-        distVec[2] = (float) (target.posZ - this.posZ);
-        distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        
-        if (distVec[3] > 1.0E-4D)
-        {
-            distVec[0] = distVec[0] / distVec[3];
-            distVec[1] = distVec[1] / distVec[3];
-            distVec[2] = distVec[2] / distVec[3];
-        }
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
         
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
 	    applyParticleAtAttacker(1, target, distVec);
-
-        //calc miss chance, if not miss, calc cri/multi hit
-        float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        
-        missChance -= EffectEquip[ID.EquipEffect.MISS];		//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance
-        
-        //calc miss -> crit -> double -> tripple
-  		if (rand.nextFloat() < missChance)
-  		{
-          	atk = 0F;	//still attack, but no damage
-          	applyParticleSpecialEffect(0);
-  		}
-  		else
-  		{
-  			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-  			//calc critical
-          	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
-          	{
-          		atk *= 1.5F;
-          		applyParticleSpecialEffect(1);
-          	}
-          	else
-          	{
-          		//calc double hit
-              	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.DHIT))
-              	{
-              		atk *= 2F;
-              		applyParticleSpecialEffect(2);
-              	}
-              	else
-              	{
-              		//calc triple hit
-                  	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.THIT))
-                  	{
-                  		atk *= 3F;
-                  		applyParticleSpecialEffect(3);
-                  	}
-              	}
-          	}
-  		}
+	    
+	    //roll miss, cri, dhit, thit
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
   		
-  		//calc damage to player
-  		if (target instanceof EntityPlayer)
-  		{
-  			atk *= 0.25F;
-  			if (atk > 59F) atk = 59F;	//same with TNT
-  		}
+  		//damage limit on player target
+	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
   		
   		//check friendly fire
 		if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
 		
   		//確認攻擊是否成功
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
-
+	    
 	    //if attack success
 	    if (isTargetHurt)
 	    {
@@ -3107,26 +2940,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		boolean isDirect = false;
 		float launchPos = (float) posY + height * 0.75F;
 		
-		//計算目標距離
-		float[] distVec = new float[4];
-		float tarX = (float) target.posX;
-		float tarY = (float) target.posY;
-		float tarZ = (float) target.posZ;
-		
-		distVec[0] = tarX - (float) this.posX;
-        distVec[1] = tarY - (float) this.posY;
-        distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
         
-        if (distVec[3] > 1.0E-4D)
-        {
-            distVec[0] = distVec[0] / distVec[3];
-            distVec[1] = distVec[1] / distVec[3];
-            distVec[2] = distVec[2] / distVec[3];
-        }
-        
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec[3] < 5F)
+        //水中 or 近距離, 採用直射
+        if (distVec.distance < 5D)
         {
         	isDirect = true;
         }
@@ -3141,18 +2959,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         applySoundAtAttacker(2, target);
 	    applyParticleAtAttacker(2, target, distVec);
 		
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-       
-        if (this.rand.nextFloat() < missChance)
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	
-        	applyParticleSpecialEffect(0);  //miss particle
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
         //spawn missile
@@ -3175,7 +2993,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** apply motion after attack
 	 *  type: 0:melee, 1:light, 2:heavy, 3:light air, 4:heavy air
 	 */
-	protected void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
+	public void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
 	{
 	}
 	
@@ -3191,10 +3009,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (this.world.isRemote) return false;
 		
 		boolean checkDEF = true;
-		
-		//set hurt face
-    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-    	
+
     	//change sensitive body
   		if (this.rand.nextInt(10) == 0) randomSensitiveBody();
   		
@@ -3207,7 +3022,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//damage ignore def value
 		else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
 		{
-			checkDEF = false;
+			//ignore atk < 1% max hp
+			if (atk < this.getMaxHealth() * 0.01F) return false;
+			
+			//set hurt face
+	    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+	    	
+			return super.attackEntityFrom(source, atk);
 		}
 		//out of world
 		else if (source == DamageSource.outOfWorld)
@@ -3221,15 +3042,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	this.motionZ = 0D;
         	return false;
 		}
+		
+		//check attacker is potion
+		float patk = BuffHelper.getPotionDamage(this, source, atk);
+		
+		if (patk > 0F)
+		{
+			atk = patk;
+			checkDEF = false;
+		}
         
     	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
 		if (source.getEntity() instanceof EntityPlayer &&
 			TeamHelper.checkSameOwner(source.getEntity(), this))
 		{
 			this.setSitting(false);
+			
+			//set hurt face
+	    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+	    	
 			return super.attackEntityFrom(source, atk);
 		}
-        
+		
         //無敵的entity傷害無效
 		if (this.isEntityInvulnerable(source))
 		{
@@ -3259,7 +3093,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			//進行dodge計算
 			float dist = (float) this.getDistanceSqToEntity(attacker);
-			if (EntityHelper.canDodge(this, dist))
+			
+			if (CombatHelper.canDodge(this, dist))
 			{
 				return false;
 			}
@@ -3269,25 +3104,23 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			
 			if (checkDEF)
 			{
-				reducedAtk = atk * (1F - (StateFinal[ID.DEF] + rand.nextInt(50) - 25F) * 0.01F);    
-				
-				//ship vs ship, config傷害調整 (僅限友善船)
-				if (attacker instanceof IShipOwner && ((IShipOwner)attacker).getPlayerUID() > 0 &&
-					(attacker instanceof BasicEntityShip ||
-					 attacker instanceof BasicEntitySummon || 
-					 attacker instanceof BasicEntityMount))
-				{
-					reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
-				}
+				reducedAtk = CombatHelper.applyDamageReduceByDEF(this.rand, this.shipAttrs, reducedAtk);
 			}
 			
-			//ship vs ship, damage type傷害調整
-			if (attacker instanceof IShipAttackBase)
+			//ship vs ship, config傷害調整 (僅限友善船)
+			if (attacker instanceof IShipOwner && ((IShipOwner)attacker).getPlayerUID() > 0 &&
+				(attacker instanceof BasicEntityShip ||
+				 attacker instanceof BasicEntitySummon || 
+				 attacker instanceof BasicEntityMount))
 			{
-				//get attack time for damage modifier setting (day, night or ...etc)
-				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reducedAtk = CalcHelper.calcDamageByType(reducedAtk, ((IShipAttackBase) attacker).getDamageType(), this.getDamageType(), modSet);
+				reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
 			}
+			
+			//check resist potion
+			reducedAtk = BuffHelper.applyBuffOnDamageByResist(this, source, reducedAtk);
+
+			//check night vision potion
+			reducedAtk = BuffHelper.applyBuffOnDamageByLight(this, source, reducedAtk);
 			
 			//tweak min damage
 	        if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
@@ -3330,9 +3163,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//apply emotes
 				applyEmotesReaction(2);
 	  		}
-   
-            //執行父class的被攻擊判定, 包括重置love時間, 計算火毒抗性, 計算鐵砧/掉落傷害, 
-            //hurtResistantTime(0.5sec無敵時間)計算, 
+	  		
+	  		//set hurt face
+	    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
+	    	
             return super.attackEntityFrom(source, reducedAtk);
         }
 		
@@ -3345,32 +3179,33 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		switch (type)
 		{
 		case 0:  //melee
-			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 2);
+			this.addMorale(-2);
 		break;
 		case 1:  //light
-			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 4);
+			this.addMorale(-4);
 		break;
 		case 2:  //heavy
-			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
+			this.addMorale(-6);
 		break;
 		case 3:  //light air
-			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 6);
+			this.addMorale(-6);
 		break;
 		case 4:  //light heavy
-			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 8);
+			this.addMorale(-8);
 		break;
 		case 5:  //damaged
-			setStateMinor(ID.M.Morale, getStateMinor(ID.M.Morale) - 5);
+			this.addMorale(-5);
 		break;
 		}
 	}
 	
 	/** decr ammo, type: 0:light, 1:heavy */
-	protected boolean decrAmmoNum(int type, int amount)
+	public boolean decrAmmoNum(int type, int amount)
 	{
 		int ammoType = ID.M.NumAmmoLight;
 		boolean useItem = !hasAmmoLight();
 		boolean showEmo = false;
+		float modAmmo = this.shipAttrs.getAttrsBuffed(ID.Attrs.AMMO);
 		
 		switch (type)
 		{
@@ -3390,12 +3225,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{
 				if (decrSupplies(0))
 				{  //use ammo item
-					addAmmo = (int) (Values.N.BaseLightAmmo * EffectEquip[ID.EquipEffect.AMMO]);
+					addAmmo = (int) (Values.N.BaseLightAmmo * modAmmo);
 					showEmo = true;
 				}
 				else if (decrSupplies(2))
 				{  //use ammo container item
-					addAmmo = (int) (Values.N.BaseLightAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO]);
+					addAmmo = (int) (Values.N.BaseLightAmmo * 9 * modAmmo);
 					showEmo = true;
 				}
 			}
@@ -3404,12 +3239,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			{
 				if (decrSupplies(1))
 				{  //use ammo item
-					addAmmo = (int) (Values.N.BaseHeavyAmmo * EffectEquip[ID.EquipEffect.AMMO]);
+					addAmmo = (int) (Values.N.BaseHeavyAmmo * modAmmo);
 					showEmo = true;
 				}
 				else if (decrSupplies(3))
 				{  //use ammo container item
-					addAmmo = (int) (Values.N.BaseHeavyAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO]);
+					addAmmo = (int) (Values.N.BaseHeavyAmmo * 9 * modAmmo);
 					showEmo = true;
 				}
 			}
@@ -3482,51 +3317,70 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
-	//eat grudge and change movement speed
-	protected void decrGrudgeNum(int par1)
+	public int getGrudge()
 	{
-		//limit max cost per checking
-		if (par1 > 500)
+		return this.StateMinor[ID.M.NumGrudge];
+	}
+	
+	//change grudge value (without buff)
+	public void addGrudge(int value)
+	{
+		this.StateMinor[ID.M.NumGrudge] += value;
+		if (this.StateMinor[ID.M.NumGrudge] <= 0) this.StateMinor[ID.M.NumGrudge] = 0;
+	}
+	
+	//consume grudge with buff and item calculation
+	public void decrGrudgeNum(int value)
+	{
+		//get grudge magnification
+		float modGrudge = this.shipAttrs.getAttrsBuffed(ID.Attrs.GRUDGE);
+		
+		//if grudge--, check buff: hunger
+		if (value > 0)
 		{
-			par1 = 500;
+			int level = BuffHelper.getPotionLevel(this, 17);
+			value *= 1 + level;
+		}
+		//if grudge++, check buff: grudge mod
+		else if (value < 0)
+		{
+			value *= modGrudge;
 		}
 		
 		//check fuel flag
 		if (!getStateFlag(ID.F.NoFuel))
-		{  //has fuel
-			StateMinor[ID.M.NumGrudge] -= par1;
-		}
-
-		//eat one grudge if fuel <= 0
-		if (StateMinor[ID.M.NumGrudge] <= 0)
 		{
-			//try to find grudge
+			this.addGrudge(-value);
+		}
+		
+		//eat "ONE" grudge item
+		if (this.getGrudge() <= 0)
+		{
+			//try to find grudge item
 			if (decrSupplies(4))
-			{		//find grudge
+			{
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10 * EffectEquip[ID.EquipEffect.GRUDGE];
+					this.addGrudge((int)(Values.N.BaseGrudge * 10F * modGrudge));
 				}
 				else
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * EffectEquip[ID.EquipEffect.GRUDGE];
+					this.addGrudge((int)(Values.N.BaseGrudge * modGrudge));
 				}
 			}
-			else
+			//try to find grudge block
+			else if (decrSupplies(5))
 			{
-				if (decrSupplies(5))  //find grudge block
+				if (ConfigHandler.easyMode)
 				{
-					if (ConfigHandler.easyMode)
-					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90 * EffectEquip[ID.EquipEffect.GRUDGE];
-					}
-					else
-					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9 * EffectEquip[ID.EquipEffect.GRUDGE];
-					}
+					this.addGrudge((int)(Values.N.BaseGrudge * 90F * modGrudge));
+				}
+				else
+				{
+					this.addGrudge((int)(Values.N.BaseGrudge * 9F * modGrudge));
 				}
 			}
-			//避免吃掉含有儲存資訊的方塊, 因此停用heavy grudge block作為補充道具
+			//避免吃掉含有儲存資訊的方塊, 因此不使用heavy grudge block作為補充道具
 		}
 		
 		//check fuel again and set fuel flag
@@ -3557,8 +3411,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
-	//decrese ammo/grudge/repair item, return true or false(not enough item)
-	protected boolean decrSupplies(int type)
+	/**
+	 * decrese ammo/grudge/repair item number
+	 * return:
+	 *   true = get item and item number -1
+	 *   false = not enough item
+	 */
+	public boolean decrSupplies(int type)
 	{
 		int itemNum = 1;
 		boolean noMeta = false;
@@ -3600,7 +3459,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		int i = findItemInSlot(itemType, noMeta);
 		
 		if (i == -1)
-		{		//item not found
+		{	//item not found
 			return false;
 		}
 		
@@ -3633,10 +3492,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		if (nofuel)
 		{
-			setStateMinor(ID.M.Morale, 0);
+			this.setMorale(0);
 			clearAITasks();
 			clearAITargetTasks();
-			sendSyncPacketAllValue();
+			sendSyncPacketAllMisc();
 			
 			//設定mount的AI
 			if (this.getRidingEntity() instanceof BasicEntityMount)
@@ -3680,7 +3539,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			clearAITargetTasks();
 			setAIList();
 			setAITargetList();
-			sendSyncPacketAllValue();
+			sendSyncPacketAllMisc();
 			
 			//設定mount的AI
 			if (this.getRidingEntity() instanceof BasicEntityMount)
@@ -3874,7 +3733,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//update success
 			if (getPlayerUID() > 0 && getShipUID() > 0)
 			{
-				this.sendSyncPacketAllValue();
+				this.sendSyncPacketAll();
 				this.isUpdated = true;
 			}
 			
@@ -3919,89 +3778,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
-  	//check state final limit
-  	protected float[] checkStateFinalLimit(float[] par1)
-  	{
-  		//max cap
-  		for (int i = 0; i < 6; i++)
-  		{
-  			if (ConfigHandler.limitShipBasic[i] >= 0D && par1[i] > ConfigHandler.limitShipBasic[i])
-  			{
-  				par1[i] = (float) ConfigHandler.limitShipBasic[i];
-  			}
-  		}
-		
-		if (ConfigHandler.limitShipBasic[ID.ATK] >= 0D && par1[ID.ATK_H] > ConfigHandler.limitShipBasic[ID.ATK])
-		{
-			par1[ID.ATK_H] = (float) ConfigHandler.limitShipBasic[ID.ATK];
-		}
-		if (ConfigHandler.limitShipBasic[ID.ATK] >= 0D && par1[ID.ATK_AL] > ConfigHandler.limitShipBasic[ID.ATK])
-		{
-			par1[ID.ATK_AL] = (float) ConfigHandler.limitShipBasic[ID.ATK];
-		}
-		if (ConfigHandler.limitShipBasic[ID.ATK] >= 0D && par1[ID.ATK_AH] > ConfigHandler.limitShipBasic[ID.ATK])
-		{
-			par1[ID.ATK_AH] = (float) ConfigHandler.limitShipBasic[ID.ATK];
-		}
-
-		//min cap
-		if (par1[ID.HP] < 1F)
-		{
-			par1[ID.HP] = 1F;
-		}
-		
-		if (par1[ID.HIT] < 1F)
-		{
-			par1[ID.HIT] = 1F;
-		}
-		
-		if (par1[ID.SPD] < 0.1F)
-		{
-			par1[ID.SPD] = 0.1F;
-		}
-		
-		if (par1[ID.MOV] < 0F)
-		{
-			par1[ID.MOV] = 0F;
-		}
-		
-		return par1;
-  	}
-  	
-	//check equip effect limit
-  	protected float[] checkEffectEquipLimit(float[] par1)
-  	{
-  		//max cap
-  		for (int i = 0; i < par1.length; i++)
-  		{
-  			if (i != ID.EquipEffect.AA && i != ID.EquipEffect.ASM && i != ID.EquipEffect.DODGE)
-  			{
-  				if (ConfigHandler.limitShipEffect[i] >= 0D && par1[i] > ConfigHandler.limitShipEffect[i] * 0.01F)
-  				{
-  	  				par1[i] = (float) ConfigHandler.limitShipEffect[i] * 0.01F;
-  	  			}
-  			}
-  			else
-  			{
-  				if (ConfigHandler.limitShipEffect[i] >= 0D && par1[i] > ConfigHandler.limitShipEffect[i])
-  				{
-  	  				par1[i] = (float) ConfigHandler.limitShipEffect[i];
-  	  			}
-  			}
-  		}
-  		
-  		//min cap
-  		for (int i = 0; i < par1.length; i++)
-  		{
-			if (par1[i] < 0F)
-			{
-  				par1[i] = 0F;
-  			}
-  		}
-		
-		return par1;
-  	}
-
   	//update emotion, SERVER SIDE ONLY!
   	protected void updateEmotionState()
   	{
@@ -4087,7 +3863,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	if (this.canSummonMounts())
     	{
     		//summon mount if emotion state >= equip00
-  	  		if (getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+  	  		if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
   	  		{
   	  			if (!this.isRiding())
   	  			{
@@ -4115,12 +3891,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	//update consume item
   	protected void updateConsumeItem()
   	{
-  		//set air value
-		if (this.getAir() < 300)
-		{
-        	setAir(300);
-        }
-		
 		//get ammo if no ammo
 		if (!this.hasAmmoLight()) { this.decrAmmoNum(0, 0); }
 		if (!this.hasAmmoHeavy()) { this.decrAmmoNum(1, 0); }
@@ -4138,7 +3908,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	int m = (int)((float)valueConsume * 0.5F);
     	if(m < 5) m = 5;
     	if(m > 50) m = 50;
-    	this.setStateMinor(ID.M.Morale, this.getStateMinor(ID.M.Morale) - m);
+    	this.addMorale(-m);
     	
     	//moving grudge cost per block
     	valueConsume *= ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move];
@@ -4163,131 +3933,48 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		ShipPrevZ = posZ;
   	}
   	
-  	//update formation buffs, SERVER SIDE ONLY
-  	protected void updateFormationBuffs()
-  	{
-  		//check update flag
-  		if (!world.isRemote)
-  		{
-  			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(this.getPlayerUID());
-  			
-  			if(capa != null)
-  			{
-  				//check ship is in formation team
-  				int[] teamslot = capa.checkIsInFormationTeam(getShipUID());
-  				
-  				//if in team and can apply buff, set formation data
-  				if (teamslot[0] >= 0 && teamslot[1] >= 0 && capa.getFormatID(teamslot[0]) > 0)
-  				{
-  					//set formation type and pos
-  					setStateMinor(ID.M.FormatType, capa.getFormatID(teamslot[0]));
-  					
-  					//if diamond formation with 5 ships
-  					if (this.getStateMinor(ID.M.FormatType) == 3 &&
-  						capa.getNumberOfShip(teamslot[0]) == 5)
-  					{
-  						//diamond with 5 ship: formation position != team position
-  						int slotID = capa.getFormationPos(teamslot[0], getShipUID());
-  						
-  						if (slotID >= 0)
-  						{
-  							setStateMinor(ID.M.FormatPos, slotID);
-  						}
-  					}
-  					//other formation
-  					else
-  					{
-  						setStateMinor(ID.M.FormatPos, teamslot[1]);
-  					}
-  					
-  					//set buff value
-  					setEffectFormation(FormationHelper.getFormationBuffValue(getStateMinor(ID.M.FormatType), getStateMinor(ID.M.FormatPos)));
-  					setEffectFormationFixed(ID.FormationFixed.MOV, FormationHelper.getFormationMOV(capa, teamslot[0]));
-  				}
-  				//not in team, clear buff
-  				else
-  				{
-  					//set formation type and pos
-  					setStateMinor(ID.M.FormatType, 0);
-  					setStateMinor(ID.M.FormatPos, -1);
-  					
-  					//reset buff value
-  					setEffectFormation(Values.zeros13);
-  					setEffectFormationFixed(ID.FormationFixed.MOV, 0F);
-  				}
-  			}
-
-  			//set done flag
-  			this.setUpdateFlag(ID.FU.FormationBuff, false);
-  		}
-  		
-  		//apply formation buff
-		if (this.getStateMinor(ID.M.FormatType) > 0)
-		{
-			//mul buff
-			StateFinal[ID.ATK] = (EffectFormation[ID.Formation.ATK_L] * 0.01F + 1F) * StateFinal[ID.ATK];
-			StateFinal[ID.ATK_H] = (EffectFormation[ID.Formation.ATK_H] * 0.01F + 1F) * StateFinal[ID.ATK_H];
-			StateFinal[ID.ATK_AL] = (EffectFormation[ID.Formation.ATK_AL] * 0.01F + 1F) * StateFinal[ID.ATK_AL];
-			StateFinal[ID.ATK_AH] = (EffectFormation[ID.Formation.ATK_AH] * 0.01F + 1F) * StateFinal[ID.ATK_AH];
-			StateFinal[ID.DEF] = (EffectFormation[ID.Formation.DEF] * 0.01F + 1F) * StateFinal[ID.DEF];
-			
-			EffectEquip[ID.EquipEffect.CRI] = (EffectFormation[ID.Formation.CRI] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.CRI];
-			EffectEquip[ID.EquipEffect.DHIT] = (EffectFormation[ID.Formation.DHIT] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.DHIT];
-			EffectEquip[ID.EquipEffect.THIT] = (EffectFormation[ID.Formation.THIT] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.THIT];
-			EffectEquip[ID.EquipEffect.MISS] = (EffectFormation[ID.Formation.MISS] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.MISS];
-			EffectEquip[ID.EquipEffect.AA] = (EffectFormation[ID.Formation.AA] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.AA];
-			EffectEquip[ID.EquipEffect.ASM] = (EffectFormation[ID.Formation.ASM] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.ASM];
-			EffectEquip[ID.EquipEffect.DODGE] = (EffectFormation[ID.Formation.DODGE] * 0.01F + 1F) * EffectEquip[ID.EquipEffect.DODGE];
-			
-			//fixed buff
-			StateFinal[ID.MOV] = getEffectFormationFixed(ID.FormationFixed.MOV);
-		}
-  	}
-  	
   	/** morale value
-  	 *  5101 - 8000  Exciting:  dodge/mov/spd++
-  	 *  3901 - 5100  Happy:     cri/dhit/thit++
-  	 *  2101 - 3900  Normal:    -
-  	 *  901  - 2100  Tired:     dodge-- (no effect if dodge = 0)
-  	 *  0    - 900   Exhausted: mov/spd--
+  	 *  5101 - X     Exciting
+  	 *  3901 - 5100  Happy
+  	 *  2101 - 3900  Normal
+  	 *  901  - 2100  Tired
+  	 *  0    - 900   Exhausted
   	 *  
   	 *  action:
   	 *  
   	 *  caress head:
-  	 *    max 8000
-  	 *    +10 / 3 ticks (4 ticks if mouse delay 200ms)
+  	 *    +X per 3 ticks
   	 *    
   	 *  feed:
-  	 *    max 4800
-  	 *    base +100 / +N / per heal amount and saturation
+  	 *    +X per item
   	 *    
   	 *  idle:
-  	 *    > 3900: -10 per 128 ticks (6000 -> 3900 in 22 min)
-  	 *    < 2000: +10 per 128 ticks
+  	 *    -X if > happy
+  	 *    +X if < normal * 150%
   	 *    
   	 *  attack:
-  	 *    -1 per hit
-  	 *    +1 per kill
+  	 *    -X per hit
+  	 *    +X per kill
   	 *    
   	 *  damaged:
-  	 *    -2 per hit
+  	 *    -X per hit
   	 *    
   	 *  move:
-  	 *    -1 per 10 blocks, min -1  
+  	 *    -X per Y blocks
   	 *  
   	 */
   	protected void updateMorale()
   	{
-  		int m = this.getStateMinor(ID.M.Morale);
+  		int m = this.getMorale();
   		
   		//out of combat
   		if (EntityHelper.checkShipOutOfCombat(this))
   		{
-  			if (m < 3000)
+  			if (m < (int)(ID.Morale.L_Normal * 1.5F))
   			{	//take 9~11 min from 0 to 3000
   	  			this.setStateMinor(ID.M.Morale, m + 15);
   	  		}
-  	  		else if (m > 3900)
+  	  		else if (m > ID.Morale.L_Happy)
   	  		{
   	  			this.setStateMinor(ID.M.Morale, m - 10);
   	  		}
@@ -4295,113 +3982,36 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//in combat
   		else
   		{
-  	  		if (m < 900)
+  	  		if (m < ID.Morale.L_Tired)
   	  		{
-  	  			this.setStateMinor(ID.M.Morale, m - 8);
+  	  			this.setStateMinor(ID.M.Morale, m - 11);
   	  		}
-  	  		else if (m < 1800)
+  	  		else if (m < ID.Morale.L_Normal)
   	  		{
-  	  			this.setStateMinor(ID.M.Morale, m - 6);
+  	  			this.setStateMinor(ID.M.Morale, m - 7);
   	  		}
-  	  		else if (m < 2700)
+  	  		else if (m < ID.Morale.L_Happy)
   	  		{
   	  			this.setStateMinor(ID.M.Morale, m - 5);
   	  		}
-  	  		else if (m > 3900)
+  	  		else if (m >= ID.Morale.L_Happy)
   	  		{
-  	  			this.setStateMinor(ID.M.Morale, m - 10);
+  	  			this.setStateMinor(ID.M.Morale, m - 11);
   	  		}
   		}
   		
   	}
   	
-  	/** apply morale buffs
-  	 * 
-  	 *  morale   > 5100   > 3900   < 2101   < 901
-  	 *    atk      121%     110%     90%      81%
-  	 *    spd      +0.5     +0.5              -0.5    
-  	 *    mov      +0.1     +0.1              -0.1
-  	 *    hit      +4       +2       -2       -4
-  	 *    dodge    +25      +10      -10      -25
-  	 *    cri      +10%     +10%
-  	 *    dhit     +10%     +10%
-  	 *    thit     +10%     +10%
-  	 */
-  	protected void updateMoraleBuffs()
-  	{
-  		int m = this.getStateMinor(ID.M.Morale);
-  		
-  		if (m > 3900)
-  		{
-  			StateFinal[ID.ATK] *= 1.1F;
-  			StateFinal[ID.ATK_H] *= 1.1F;
-  			StateFinal[ID.ATK_AL] *= 1.1F;
-  			StateFinal[ID.ATK_AH] *= 1.1F;
-  			StateFinal[ID.HIT] += 2F;
-  			EffectEquip[ID.EquipEffect.CRI] += 0.1F;
-  			EffectEquip[ID.EquipEffect.DHIT] += 0.1F;
-  			EffectEquip[ID.EquipEffect.THIT] += 0.1F;
-  			EffectEquip[ID.EquipEffect.DODGE] += 10F;
-  			EffectEquip[ID.EquipEffect.XP] += 0.25F;
-  			EffectEquip[ID.EquipEffect.GRUDGE] += 0.25F;
-  			EffectEquip[ID.EquipEffect.AMMO] += 0.15F;
-  			
-  	  		if (m > 5100)
-  	  		{
-  	  			StateFinal[ID.ATK] *= 1.1F;
-  	  			StateFinal[ID.ATK_H] *= 1.1F;
-  	  			StateFinal[ID.ATK_AL] *= 1.1F;
-  	  			StateFinal[ID.ATK_AH] *= 1.1F;
-  	  			StateFinal[ID.SPD] += 0.5F;
-  	  			StateFinal[ID.MOV] += 0.1F;
-  	  			StateFinal[ID.HIT] += 2F;
-  	  			EffectEquip[ID.EquipEffect.DODGE] += 15F;
-  	  			EffectEquip[ID.EquipEffect.XP] += 0.25F;
-  	  			EffectEquip[ID.EquipEffect.GRUDGE] += 0.25F;
-  	  			EffectEquip[ID.EquipEffect.AMMO] += 0.15F;
-  	  		}
-  		}
-  		
-  		if (m < 2101)
-  		{
-  			StateFinal[ID.ATK] *= 0.9F;
-  			StateFinal[ID.ATK_H] *= 0.9F;
-  			StateFinal[ID.ATK_AL] *= 0.9F;
-  			StateFinal[ID.ATK_AH] *= 0.9F;
-  			StateFinal[ID.HIT] -= 2F;
-  			EffectEquip[ID.EquipEffect.DODGE] -= 10F;
-  			EffectEquip[ID.EquipEffect.XP] -= 0.15F;
-  			EffectEquip[ID.EquipEffect.GRUDGE] -= 0.15F;
-  			EffectEquip[ID.EquipEffect.AMMO] -= 0.1F;
-  			
-  	  		if (m < 901)
-  	  		{
-  	  			StateFinal[ID.ATK] *= 0.9F;
-  	  			StateFinal[ID.ATK_H] *= 0.9F;
-  	  			StateFinal[ID.ATK_AL] *= 0.9F;
-  	  			StateFinal[ID.ATK_AH] *= 0.9F;
-  	  			StateFinal[ID.SPD] -= 0.5F;
-  	  			StateFinal[ID.MOV] -= 0.1F;
-  	  			StateFinal[ID.HIT] -= 2F;
-  	  			EffectEquip[ID.EquipEffect.DODGE] -= 15F;
-  	  			EffectEquip[ID.EquipEffect.XP] -= 0.15F;
-  	  			EffectEquip[ID.EquipEffect.GRUDGE] -= 0.15F;
-  	  			EffectEquip[ID.EquipEffect.AMMO] -= 0.1F;
-  	  		}
-  		}
-  		
-  	}
-  	
-  	/** update flare effect */
+  	/** update searchlight effect */
   	protected void updateSearchlight()
   	{
   		if (this.getStateMinor(ID.M.LevelSearchlight) > 0)
   		{
   			BlockPos pos = new BlockPos(this);
-			float light = this.world.getLightFor(EnumSkyBlock.BLOCK, pos);
+			int light = this.world.getLight(pos, true);
 
 			//place new light block
-  			if (light < 12F)
+  			if (light < 11)
   			{
 				BlockHelper.placeLightBlock(this.world, pos);
   			}
@@ -4546,13 +4156,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionNormal()
   	{
   		Random ran = new Random();
-  		int m = getStateMinor(ID.M.Morale);
+  		int m = this.getMorale();
   		int body = EntityHelper.getHitBodyID(this);
   		int baseMorale = (int) ((float)ConfigHandler.baseCaressMorale * 2.5F);
   		LogHelper.debug("DEBUG: hit ship: Morale: "+m+" BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
   		
   		//show emotes by morale level
-		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
+		switch (EntityHelper.getMoraleLevel(m))
 		{
 		case 0:   //excited
 			//check sensitive body
@@ -4570,9 +4180,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  				applyParticleEmotion(10);  //dizzy
 	  			}
 	  			
-	  			if (getStateMinor(ID.M.Morale) < 8100)
+	  			if (m < (int)(ID.Morale.L_Excited * 1.5F))
 	  			{
-	  				this.setStateMinor(ID.M.Morale, m + baseMorale * 3 + this.rand.nextInt(baseMorale + 1));
+	  				this.addMorale(baseMorale * 3 + this.rand.nextInt(baseMorale + 1));
 	  			}
 	  		}
 	  		//other reaction
@@ -4632,7 +4242,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					applyParticleEmotion(10);  //dizzy
 				}
 	  			
-	  			setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
+	  			this.addMorale(baseMorale + this.rand.nextInt(baseMorale + 1));
 	  		}
 	  		//other reaction
 	  		else
@@ -4681,7 +4291,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					applyParticleEmotion(18);  //sigh
 				}
 	  			
-	  			setStateMinor(ID.M.Morale, m + baseMorale + this.rand.nextInt(baseMorale + 1));
+	  			this.addMorale(baseMorale + this.rand.nextInt(baseMorale + 1));
 	  			
 	  			//push target
 	  			if (ran.nextInt(6) == 0)
@@ -4746,7 +4356,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
 		  		
 	  			applyParticleEmotion(32);  //hmm
-	  			setStateMinor(ID.M.Morale, m + this.rand.nextInt(baseMorale + 1));
+	  			this.addMorale(this.rand.nextInt(baseMorale + 1));
 	  			
 	  			//push target
 	  			if (ran.nextInt(2) == 0)
@@ -4816,7 +4426,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		  		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
 		  		
 	  			applyParticleEmotion(6);  //angry
-	  			setStateMinor(ID.M.Morale, m - baseMorale * 10 - this.rand.nextInt(baseMorale * 5 + 1));
+	  			this.addMorale((baseMorale * 10 + this.rand.nextInt(baseMorale * 5 + 1)) * -1);
 	  			
 	  			//push target
   				this.pushAITarget();
@@ -5023,7 +4633,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionAttack()
   	{
   		//show emotes by morale level
-		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
+		switch (EntityHelper.getMoraleLevel(this.getMorale()))
 		{
 		case 0:   //excited
 	  		//apply emotion
@@ -5083,7 +4693,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		int body = EntityHelper.getHitBodyID(this);
   		
   		//show emotes by morale level
-		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
+		switch (EntityHelper.getMoraleLevel(this.getMorale()))
 		{
 		case 0:   //excited
 		case 1:   //happy
@@ -5177,7 +4787,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionIdle()
   	{
   		//show emotes by morale level
-		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
+		switch (EntityHelper.getMoraleLevel(this.getMorale()))
 		{
 		case 0:   //excited
 		case 1:   //happy
@@ -5302,7 +4912,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	protected void reactionCommand()
   	{
   		//show emotes by morale level
-		switch (EntityHelper.getMoraleLevel(this.getStateMinor(ID.M.Morale)))
+		switch (EntityHelper.getMoraleLevel(this.getMorale()))
 		{
 		case 0:   //excited
 		case 1:   //happy
@@ -5437,31 +5047,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-  	/** special particle at entity
-  	 * 
-  	 *  type: 0:miss, 1:critical, 2:double hit, 3:triple hit
-  	 */
-  	protected void applyParticleSpecialEffect(int type)
-  	{
-  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-  		
-  		switch (type)
-  		{
-  		case 1:  //critical
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-  			break;
-  		case 2:  //double hit
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
-  			break;
-  		case 3:  //triple hit
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
-  			break;
-		default: //miss
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-			break;
-  		}
-  	}
-  	
   	/** spawn emotion particle */
   	public void applyParticleEmotion(int type)
   	{
@@ -5483,16 +5068,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** attack particle at attacker
   	 * 
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-  	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
   	 */
-  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	public void applyParticleAtAttacker(int type, Entity target, Dist4d distance)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, vec[0], vec[1], vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distance.x, distance.y, distance.z, true), point);
   		break;
   		case 2:  //heavy cannon
   		case 3:  //light aircraft
@@ -5506,9 +5090,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** attack particle at target
   	 * 
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-  	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
   	 */
-  	public void applyParticleAtTarget(int type, Entity target, float[] vec)
+  	public void applyParticleAtTarget(int type, Entity target, Dist4d distance)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
@@ -5604,15 +5187,15 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
   		case 2:  //heavy cannon
-  			return StateFinal[ID.ATK_H];
+  			return this.shipAttrs.getAttackDamageHeavy();
   		case 3:  //light aircraft
-  			return StateFinal[ID.ATK_AL];
+  			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft
-  			return StateFinal[ID.ATK_AH];
+  			return this.shipAttrs.getAttackDamageAirHeavy();
 		default: //melee
-			return StateFinal[ID.ATK] * 0.125F;
+			return this.shipAttrs.getAttackDamage() * 0.125F;
   		}
   	}
   	
@@ -5930,7 +5513,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		case 20:
 			return this.getStateFlagI(ID.F.TimeKeeper);
 		case 21:
-			return this.StateMinor[ID.M.Morale];
+			return this.getMorale();
 		case 22:
 			return this.StateMinor[ID.M.DrumState];
 		case 23:
@@ -6128,15 +5711,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public void heal(float healAmount)
     {
-		//apply heal particle, server side only
+		//server side
 		if (!this.world.isRemote)
 		{
-  			//apply particle
+			//apply heal particle, server side only
   			TargetPoint tp = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, 0D, 0.1D, 0D), tp);
+		
+  			//potion modify heal value (splash and cloud potion only)
+  			healAmount = BuffHelper.applyBuffOnHeal(this, healAmount);
 		}
 		
-		super.heal(healAmount * this.EffectEquip[ID.EquipEffect.HPRES]);
+		super.heal(healAmount * this.shipAttrs.getAttrsBuffed(ID.Attrs.HPRES));
     }
 	
 	//death animation
@@ -6157,7 +5743,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}
     	}
     	
-        if (this.deathTime == ConfigHandler.deathTick)
+        if (this.deathTime == ConfigHandler.deathMaxTick)
         {
         	//spawn ship egg
 	    	if (!this.world.isRemote && this.getStateFlag(ID.F.CanDrop))
@@ -6167,69 +5753,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    		
 	    		//save ship attributes to ship spawn egg
 	    		ItemStack egg = new ItemStack(ModItems.ShipSpawnEgg, 1, this.getShipClass()+2);
-		    	BasicEntityItem entityItem2 = new BasicEntityItem(this.world, this.posX, this.posY+0.5D, this.posZ, egg);
-		    	NBTTagCompound nbt = new NBTTagCompound();
-		    	CapaShipInventory shipInv = this.getCapaShipInventory();
-		    	String ownerUUID = EntityHelper.getPetPlayerUUID(this);
-		    	String name = EntityHelper.getOwnerName(this);
-		    	
-				//get ship misc data
-		    	int[] attrs = new int[7];
-		    	
-		    	if (this.getLevel() > 1) attrs[0] = this.getLevel() - 1;	//decrease level 1
-		    	else attrs[0] = 1;
-		    	
-		    	attrs[1] = this.getBonusPoint(ID.HP);
-		    	attrs[2] = this.getBonusPoint(ID.ATK);
-		    	attrs[3] = this.getBonusPoint(ID.DEF);
-		    	attrs[4] = this.getBonusPoint(ID.SPD);
-		    	attrs[5] = this.getBonusPoint(ID.MOV);
-		    	attrs[6] = this.getBonusPoint(ID.HIT);
-		    	
-		    	//get ship misc data 2
-		    	int[] attrs2 = new int[7];
-		    	
-		    	attrs2[0] = this.getStateEmotion(ID.S.State);
-		    	attrs2[1] = this.getStateEmotion(ID.S.State2);
-		    	attrs2[2] = this.getStateMinor(ID.M.FollowMin);
-		    	attrs2[3] = this.getStateMinor(ID.M.FollowMax);
-		    	attrs2[4] = this.getStateMinor(ID.M.FleeHP);
-		    	attrs2[5] = this.getStateMinor(ID.M.WpStay);
-		    	attrs2[6] = this.getStateMinor(ID.M.UseCombatRation);
-		    	
-		    	//get ship flag data
-		    	byte[] flags = new byte[16];
-		    	
-		    	flags[0] = this.getStateFlag(ID.F.IsMarried) ? (byte)1 : (byte)0;
-		    	flags[1] = this.getStateFlag(ID.F.UseMelee) ? (byte)1 : (byte)0;
-		    	flags[2] = this.getStateFlag(ID.F.UseAmmoLight) ? (byte)1 : (byte)0;
-		    	flags[3] = this.getStateFlag(ID.F.UseAmmoHeavy) ? (byte)1 : (byte)0;
-		    	flags[4] = this.getStateFlag(ID.F.UseAirLight) ? (byte)1 : (byte)0;
-		    	flags[5] = this.getStateFlag(ID.F.UseAirHeavy) ? (byte)1 : (byte)0;
-		    	flags[6] = this.getStateFlag(ID.F.UseRingEffect) ? (byte)1 : (byte)0;
-		    	flags[7] = this.getStateFlag(ID.F.OnSightChase) ? (byte)1 : (byte)0;
-		    	flags[8] = this.getStateFlag(ID.F.PVPFirst) ? (byte)1 : (byte)0;
-		    	flags[9] = this.getStateFlag(ID.F.AntiAir) ? (byte)1 : (byte)0;
-		    	flags[10] = this.getStateFlag(ID.F.AntiSS) ? (byte)1 : (byte)0;
-		    	flags[11] = this.getStateFlag(ID.F.PassiveAI) ? (byte)1 : (byte)0;
-		    	flags[12] = this.getStateFlag(ID.F.TimeKeeper) ? (byte)1 : (byte)0;
-		    	flags[13] = this.getStateFlag(ID.F.PickItem) ? (byte)1 : (byte)0;
-		    	flags[14] = this.getStateFlag(ID.F.ShowHeldItem) ? (byte)1 : (byte)0;
-		    	flags[15] = this.getStateFlag(ID.F.AutoPump) ? (byte)1 : (byte)0;
-		    	
-		    	//save ship attributes
-		    	nbt.setString("owner", ownerUUID);									//owner UUID
-		    	nbt.setString("ownername", name);									//owner name
-		    	nbt.setInteger("PlayerID", this.getStateMinor(ID.M.PlayerUID));	//owner UID
-		    	nbt.setTag(CapaInventory.InvName, shipInv.serializeNBT());			//inventory data
-		    	nbt.setIntArray("Attrs", attrs);									//misc data
-		    	nbt.setIntArray("Attrs2", attrs2);									//misc data2
-		    	nbt.setByteArray("Flags", flags);									//flag data
-		    	nbt.setInteger("ShipID", this.getStateMinor(ID.M.ShipUID));		//ship UID
-		    	nbt.setString("customname", this.getCustomNameTag());				//custom name
-		    	
-		    	entityItem2.getEntityItem().setTagCompound(nbt);	  				//save nbt to entity item
-		    	this.world.spawnEntity(entityItem2);								//spawn entity item
+		    	egg.setTagCompound(EntityHelper.saveShipDataToNBT(this, true));
+	    		
+		    	//spawn entity item
+	    		BasicEntityItem entityItem2 = new BasicEntityItem(this.world, this.posX, this.posY+0.5D, this.posZ, egg);
+		    	this.world.spawnEntity(entityItem2);
 	    	}
         	
         	//spawn XP orb
@@ -6258,7 +5786,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             }
         }
         //clear bug entity
-        else if (this.deathTime > ConfigHandler.deathTick && !this.isDead)
+        else if (this.deathTime > ConfigHandler.deathMaxTick && !this.isDead)
         {
         	this.setDead();
         }
@@ -6338,21 +5866,37 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
   		if (mount != null)
   		{
-  			this.setPosition(mount.posX, mount.posY, mount.posZ);
+  			this.setPositionAndUpdate(mount.posX, mount.posY + 1D, mount.posZ);
+  		}
+  		else
+  		{
+  			super.dismountEntity(mount);
   		}
     }
   	
 	@Override
-	public HashMap<Byte, Byte> getBuffMap()
+	public HashMap<Integer, Integer> getBuffMap()
 	{
 		if (this.BuffMap != null) return this.BuffMap;
-		return new HashMap<Byte, Byte>();
+		return new HashMap<Integer, Integer>();
 	}
 
 	@Override
-	public void setBuffMap(HashMap<Byte, Byte> map)
+	public void setBuffMap(HashMap<Integer, Integer> map)
 	{
 		if (map != null) this.BuffMap = map;
+	}
+	
+	@Override
+	public Attrs getAttrs()
+	{
+		return this.shipAttrs;
+	}
+	
+	@Override
+	public void setAttrs(Attrs data)
+	{
+		if (data instanceof AttrsAdv) this.shipAttrs = (AttrsAdv) data;
 	}
 	
 	

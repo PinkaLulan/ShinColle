@@ -13,14 +13,14 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
@@ -96,13 +96,6 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 		this.accZ = az * acc;
 		this.atk = atk;
 		this.kbValue = kb;
-	}
-
-	@Override
-	public float getEffectEquip(int id)
-	{
-		if (host != null) return host.getEffectEquip(id);
-		return 0;
 	}
 
 	@Override
@@ -253,7 +246,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
   		if (!TargetHelper.checkUnattackTargetList(target))
   		{
   			//calc equip special dmg: AA, ASM
-        	beamAtk = CalcHelper.calcDamageBySpecialEffect(this, target, beamAtk, 1);
+        	beamAtk = CombatHelper.modDamageByAdditionAttrs(this.host, target, beamAtk, 1);
         	
     		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
     		if (TeamHelper.checkSameOwner(host2, target))
@@ -262,23 +255,14 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
         	}
     		else
     		{
-    			//calc critical
-        		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.CRI)))
-        		{
-        			beamAtk *= 3F;
-            		//spawn critical particle
-                	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
-            	}
-        		
-          		//calc damage to player
-          		if (target instanceof EntityPlayer)
-          		{
-          			beamAtk *= 0.25F;
-          			if (beamAtk > 59F) beamAtk = 59F;	//same with TNT
-          		}
-          		
-          		//check friendly fire
-        		if (!TeamHelper.doFriendlyFire(this.host, target)) beamAtk = 0F;
+    			//roll miss, cri, dhit, thit
+    			beamAtk = CombatHelper.applyCombatRateToDamage(this.host, target, false, 1F, beamAtk);
+    	  		
+    	  		//damage limit on player target
+    			beamAtk = CombatHelper.applyDamageReduceOnPlayer(target, beamAtk);
+    	  		
+    	  		//check friendly fire
+    			if (!TeamHelper.doFriendlyFire(this.host, target)) beamAtk = 0F;
     		}
     		
     		//if attack success
@@ -295,27 +279,15 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 	{
 		return ID.ShipMisc.Invisible;
 	}
+
+	@Override
+	public Attrs getAttrs()
+	{
+		return this.host.getAttrs();
+	}
+
+	@Override
+	public void setAttrs(Attrs data) {}
 	
-	@Override
-	public float[] getEffectEquip() { return null; }
-
-	@Override
-	public void setEffectEquip(int id, float value) {}
-
-	@Override
-	public void setEffectEquip(float[] array) {}
-
-	@Override
-	public float getStateFinal(int id) { return 0; }
-
-	@Override
-	public float[] getStateFinal() { return null; }
-
-	@Override
-	public void setStateFinal(int id, float value) {}
-
-	@Override
-	public void setStateFinal(float[] array) {}
-
-    
+	
 }

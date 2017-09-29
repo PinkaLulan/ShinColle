@@ -24,7 +24,7 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerHibiki);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerHibiki);
         this.ridingState = 0;
         this.smokeX = 0F;
         this.smokeY = 0F;
@@ -83,21 +83,8 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
   	{
 		return ID.ShipDmgType.DESTROYER;
 	}
-  	
-  	@Override
-	public float getEffectEquip(int id)
-  	{
-		switch (id)
-		{
-		case ID.EquipEffect.AA:  //DD vs AA,ASM effect
-		case ID.EquipEffect.ASM:
-			return this.atk * 0.5F;
-		default:
-			return 0F;
-		}
-	}
-  	
-  //check entity state every tick
+
+	//check entity state every tick
   	@Override
   	public void onLivingUpdate()
   	{
@@ -108,7 +95,7 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (this.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+  				if (this.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
   				{
   					//計算煙霧位置, 生成裝備冒煙特效
   	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
@@ -139,5 +126,5 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
 		this.ridingState = state;
 	}
   	
-
+	
 }

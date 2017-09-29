@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.ShipTank;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
@@ -29,9 +30,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-/** CLIENT TO SERVER: INPUT PACKETS (NO-GUI)
- *  將client端的按鍵發送到server
- *  或是發送client端command類型封包
+/** CLIENT TO SERVER: INPUT/REQUEST PACKETS
+ *  client key input/command/request packets
  */
 public class C2SInputPackets implements IMessage
 {
@@ -56,6 +56,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte Request_PlaceFluid = 8;
 		public static final byte Request_ChestSet = 9;
 		public static final byte Request_UnitName = 10;
+		public static final byte Request_Buffmap = 11;
 	}
 	
 	
@@ -97,6 +98,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_ChestSet:	//chest and crane pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 		case PID.Request_UnitName:	//ship unit name
+		case PID.Request_Buffmap:	//buff map
 			try
 			{
 				this.value = buf.readInt();  //int array length
@@ -136,6 +138,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_ChestSet:	//chest and crane pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 		case PID.Request_UnitName:	//ship unit name
+		case PID.Request_Buffmap:	//buff map
 			//send int array
 			if (this.value3 != null)
 			{
@@ -221,7 +224,7 @@ public class C2SInputPackets implements IMessage
 					((BasicEntityShip) entity).ownerName = player.getName();
 					//sync
 					LogHelper.debug("DEBUG : C2S input packet: command: change owner "+player+" "+entity);
-					((BasicEntityShip) entity).sendSyncPacketAllValue();
+					((BasicEntityShip) entity).sendSyncPacketAll();
 				}
 			break;
 			case PID.CmdShipAttr:   //command: set ship attrs
@@ -240,12 +243,13 @@ public class C2SInputPackets implements IMessage
 					
 					if (msg.value3.length == 9)
 					{
-						ship.setBonusPoint(0, (byte)msg.value3[3]);
-						ship.setBonusPoint(1, (byte)msg.value3[4]);
-						ship.setBonusPoint(2, (byte)msg.value3[5]);
-						ship.setBonusPoint(3, (byte)msg.value3[6]);
-						ship.setBonusPoint(4, (byte)msg.value3[7]);
-						ship.setBonusPoint(5, (byte)msg.value3[8]);
+						Attrs shipattrs = ship.getAttrs();
+						shipattrs.setAttrsBonus(ID.AttrsBase.HP, msg.value3[3]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.ATK, msg.value3[4]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.DEF, msg.value3[5]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.SPD, msg.value3[6]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.MOV, msg.value3[7]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.HIT, msg.value3[8]);
 						ship.setShipLevel(msg.value3[2], true);
 					}
 					else if (msg.value3.length == 3)
@@ -357,6 +361,16 @@ public class C2SInputPackets implements IMessage
 				if (entity instanceof BasicEntityShip)
 				{
 					((BasicEntityShip) entity).sendSyncPacketUnitName();
+				}
+			}
+			break;
+			case PID.Request_Buffmap:	//buff map
+			{
+				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
+				
+				if (entity instanceof BasicEntityShip)
+				{
+					((BasicEntityShip) entity).sendSyncPacketBuffMap();
 				}
 			}
 			break;

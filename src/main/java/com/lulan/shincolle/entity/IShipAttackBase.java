@@ -19,19 +19,12 @@ public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwne
 	public void setEntityRevengeTarget(Entity target);
 	public int getEntityRevengeTime();
 	public void setEntityRevengeTime();
-
-	/** get attack attributes */
-	public float getAttackDamage();			//attack damage
-	public float getAttackSpeed();			//attack speed
-	public float getAttackRange();			//attack range
 	
-	/** damage type, ref: ID.ShipDmgType */
+	/** damage type, index: {@link ID.ShipDmgType} */
 	public int getDamageType();
 	
 	/** available attack method: light, heavy, air light, air heavy */
 	public boolean getAttackType(int par1);
-	
-	public float getDefValue();				//defence value (%)
 	
 	public int getAmmoLight();				//get ammo info
 	public int getAmmoHeavy();	
@@ -46,8 +39,8 @@ public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwne
 	public boolean updateSkillAttack(Entity target);
 	
 	/** buffs map, map<buff id, buff level> */
-	public HashMap<Byte, Byte> getBuffMap();
-	public void setBuffMap(HashMap<Byte, Byte> map);
+	public HashMap<Integer ,Integer> getBuffMap();
+	public void setBuffMap(HashMap<Integer, Integer> map);
 	
 
 }

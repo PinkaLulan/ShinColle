@@ -215,7 +215,7 @@ public class ShipCmdGetShip extends CommandBase
 								ship.setStateFlag(ID.F.CanFollow, false);
 								//update ship cache
 								ship.updateShipCacheDataWithoutNewID();
-								ship.sendSyncPacketAllValue();
+								ship.sendSyncPacketAll();
 								
 								//send text
 								sender.sendMessage

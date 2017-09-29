@@ -1688,7 +1688,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
     	if (needSync) this.sendSyncPacket();
 	}
 	
-	//set ship data like drum level
+	//set ship data: drum level
 	protected void setShipData(BasicEntityShip ship)
 	{
 		this.ship = ship;

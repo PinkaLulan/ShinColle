@@ -16,15 +16,13 @@ import net.minecraft.world.World;
 public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 {
 	
-	private static float ilevel = 25F;
-	
 
 	public EntitySubmSo(World world)
 	{
 		super(world);
 		this.setSize(0.6F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineSO);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineSO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
@@ -114,14 +112,11 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 	@Override
 	public float getInvisibleLevel()
 	{
-		return this.ilevel;
+		return 0.25F;
 	}
 	
 	@Override
-	public void setInvisibleLevel(float level)
-	{
-		this.ilevel = level;
-	}
+	public void setInvisibleLevel(float level) {}
 
 	@Override
 	public void setShipOutfit(boolean isSneaking)
@@ -130,17 +125,17 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
 			break;
-			case ID.State.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02a, true);
+			case ID.ModelState.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -148,14 +143,14 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}

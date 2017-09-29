@@ -6,6 +6,7 @@ import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.BlockHelper;
 
 import net.minecraft.entity.Entity;
@@ -108,23 +109,24 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 			delayAircraft--;
 			if (this.delayAircraft <= 0)
 			{
-				delayAircraft = (int)(1000 / (this.getStateFinal(ID.SPD)));	
+				//SPD delay
+				delayAircraft = (int)(1000 / (this.getAttrs().getAttackSpeed()));	
 				if (delayAircraft > 1000) delayAircraft = 1000;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
 				
+				//base delay
 				delayAircraft += 200;
 				
 				this.setNumAircraftLight(this.getNumAircraftLight()+1);
 				this.setNumAircraftHeavy(this.getNumAircraftHeavy()+1);
 			}
-//			LogHelper.info("DEBUG : air num "+getNumAircraftLight()+" "+getNumAircraftHeavy());
 		}
 	}
 	
 	//增加艦載機數量計算
 	@Override
-	public void calcShipAttributes()
+	public void calcShipAttributesAdd()
 	{
-		super.calcShipAttributes();
+		super.calcShipAttributesAdd();
 		
 		//calc basic airplane
 		this.maxAircraftLight = 8 + StateMinor[ID.M.ShipLevel] / 5;
@@ -192,7 +194,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
         
   		//play attacker effect
         applySoundAtAttacker(3, target);
-	    applyParticleAtAttacker(3, target, new float[4]);
+	    applyParticleAtAttacker(3, target, Dist4d.ONE);
         
     	float summonHeight = (float)(posY + launchHeight);
     	
@@ -214,7 +216,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     	
     	//play target effect
     	applySoundAtTarget(3, target);
-        applyParticleAtTarget(3, target, new float[4]);
+        applyParticleAtTarget(3, target, Dist4d.ONE);
         applyEmotesReaction(3);
         
         applyAttackPostMotion(3, target, true, 0F);
@@ -250,7 +252,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
         
         //play attacker effect
         applySoundAtAttacker(4, target);
-	    applyParticleAtAttacker(4, target, new float[4]);
+	    applyParticleAtAttacker(4, target, Dist4d.ONE);
         
     	float summonHeight = (float)(posY + launchHeight);
     	
@@ -272,7 +274,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
     	
     	//play target effect
     	applySoundAtTarget(4, target);
-        applyParticleAtTarget(4, target, new float[4]);
+        applyParticleAtTarget(4, target, Dist4d.ONE);
         applyEmotesReaction(3);
         
         applyAttackPostMotion(4, target, true, 0F);

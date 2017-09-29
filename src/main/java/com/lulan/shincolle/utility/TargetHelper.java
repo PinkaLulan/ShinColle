@@ -13,6 +13,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 
@@ -105,7 +106,7 @@ public class TargetHelper
     		//check invisible
     		if (target2.isInvisible())
     		{
-    			//for ship
+    			//if host is ship
     			if (host instanceof BasicEntityShip)
     			{
     				//if ship have no flare or searchlight, return false
@@ -115,13 +116,14 @@ public class TargetHelper
 						return false;
 					}
     			}
-    			//for airplane
+    			//if host is summons
     			else if (host instanceof IShipOwner &&
     					 ((IShipOwner)host).getHostEntity() instanceof BasicEntityShip)
     			{
+    				//get host's host
     				BasicEntityShip host2 = (BasicEntityShip) ((IShipOwner)host).getHostEntity();
     			
-    				//if ship have no flare or searchlight, return false
+    				//if host's host have no flare or searchlight, return false
     				if (host2.getStateMinor(ID.M.LevelFlare) < 1 &&
     					host2.getStateMinor(ID.M.LevelSearchlight) < 1)
 					{
@@ -235,7 +237,7 @@ public class TargetHelper
     		//check invisible
     		if (target2.isInvisible())
     		{
-    			//for ship
+    			//if host is ship
     			if (host instanceof BasicEntityShip)
     			{
     				//if ship have no flare or searchlight, return false
@@ -245,13 +247,14 @@ public class TargetHelper
 						return false;
 					}
     			}
-    			//for airplane
+    			//if host is summons
     			else if (host instanceof IShipOwner &&
     					 ((IShipOwner)host).getHostEntity() instanceof BasicEntityShip)
     			{
+    				//get host's host
     				BasicEntityShip host2 = (BasicEntityShip) ((IShipOwner)host).getHostEntity();
     			
-    				//if ship have no flare or searchlight, return false
+    				//if host's host have no flare or searchlight, return false
     				if (host2.getStateMinor(ID.M.LevelFlare) < 1 &&
     					host2.getStateMinor(ID.M.LevelSearchlight) < 1)
 					{
@@ -260,9 +263,8 @@ public class TargetHelper
     			}
     		}
     		
-			//check ship target
-			if (target2 instanceof BasicEntityShip || target2 instanceof BasicEntityAirplane ||
-				target2 instanceof BasicEntityMount || target2 instanceof EntityAbyssMissile)
+			//target is ship or summons, check ally state
+			if (target2 instanceof IShipOwner)
 			{
 				//do not attack ally
 				if (TeamHelper.checkIsAlly(host, target2))
@@ -273,18 +275,12 @@ public class TargetHelper
 				return true;
 			}
 			
-			//check mob target
-        	if (target2 instanceof EntityMob || target2 instanceof EntitySlime)
-        	{
-        		return true;
-        	}
-
         	//check faction
     		if (!TeamHelper.checkSameOwner(host, target2))
     		{
 				return true;
 			}
-        	
+
         	return false;
         }
     }
@@ -310,10 +306,13 @@ public class TargetHelper
 				return false;
 			}
 			
-            //若target是玩家, 則不打無敵目標, ex: OP/觀察者
-            if (target2 instanceof EntityPlayer && ((EntityPlayer) target2).capabilities.disableDamage)
+            //if target player
+            if (target2 instanceof EntityPlayer)
             {
-                return false;
+            	//dont attack OP/OB
+            	if (((EntityPlayer) target2).capabilities.disableDamage) return false;
+            	else if (ConfigHandler.mobAttackPlayer) return true;
+            	else return false;
             }
     		
     		//check unattackable list
@@ -333,8 +332,8 @@ public class TargetHelper
 	    			return true;
 	        	}
 				
-				//check aircraft
-    			if (target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile)
+				//if target is ship or summons, check owner
+    			if (target2 instanceof IShipOwner || target2 instanceof EntityAbyssMissile)
     			{
     				//do not attack ally
     				if (TeamHelper.checkSameOwner(host, target2))
@@ -372,10 +371,12 @@ public class TargetHelper
 				return false;
 			}
 			
-            //若target是玩家, 則不打無敵目標, ex: OP/觀察者
-            if (target2 instanceof EntityPlayer && ((EntityPlayer) target2).capabilities.disableDamage)
+            //if target player
+            if (target2 instanceof EntityPlayer)
             {
-                return false;
+            	//dont attack OP/OB
+            	if (((EntityPlayer) target2).capabilities.disableDamage) return false;
+            	return true;
             }
     		
     		//check unattackable list
@@ -390,13 +391,13 @@ public class TargetHelper
         		}
         		
         		//attack ship
-				if (target2 instanceof BasicEntityShip || target2 instanceof BasicEntityMount)
+				if (target2 instanceof BasicEntityShip)
 				{
 	    			return true;
 	        	}
 				
-				//check aircraft
-    			if (target2 instanceof BasicEntityAirplane || target2 instanceof EntityAbyssMissile)
+				//if target is summons, check owner
+    			if (target2 instanceof IShipOwner || target2 instanceof EntityAbyssMissile)
     			{
     				//do not attack ally
     				if (TeamHelper.checkSameOwner(host, target2))

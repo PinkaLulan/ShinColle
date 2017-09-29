@@ -574,43 +574,43 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.Hat01.isHidden = false;
   			this.BeltBase.isHidden = true;
   			this.ArmLeft02a.isHidden = true;
   			this.ArmRight02a.isHidden = true;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.Hat01.isHidden = true;
   			this.BeltBase.isHidden = false;
   			this.ArmLeft02a.isHidden = true;
   			this.ArmRight02a.isHidden = true;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.Hat01.isHidden = true;
   			this.BeltBase.isHidden = true;
   			this.ArmLeft02a.isHidden = false;
   			this.ArmRight02a.isHidden = false;
   		break;
-  		case ID.State.EQUIP03:
+  		case ID.ModelState.EQUIP03:
   			this.Hat01.isHidden = false;
   			this.BeltBase.isHidden = false;
   			this.ArmLeft02a.isHidden = true;
   			this.ArmRight02a.isHidden = true;
   		break;
-  		case ID.State.EQUIP04:
+  		case ID.ModelState.EQUIP04:
   			this.Hat01.isHidden = false;
   			this.BeltBase.isHidden = true;
   			this.ArmLeft02a.isHidden = false;
   			this.ArmRight02a.isHidden = false;
   		break;
-  		case ID.State.EQUIP05:
+  		case ID.ModelState.EQUIP05:
   			this.Hat01.isHidden = true;
   			this.BeltBase.isHidden = false;
   			this.ArmLeft02a.isHidden = false;
   			this.ArmRight02a.isHidden = false;
   		break;
-  		case ID.State.EQUIP06:
+  		case ID.ModelState.EQUIP06:
   			this.Hat01.isHidden = false;
   			this.BeltBase.isHidden = false;
   			this.ArmLeft02a.isHidden = false;
@@ -626,7 +626,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.LegLeft01.isHidden = true;
   			this.LegRight01.isHidden = true;
   			this.EquipLegL.isHidden = false;
@@ -635,7 +635,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   			this.EquipBaseR.isHidden = false;
   			this.Cannon01.isHidden = true;
   		break;
-  		case ID.State.EQUIP01a:
+  		case ID.ModelState.EQUIP01a:
   			this.LegLeft01.isHidden = true;
   			this.LegRight01.isHidden = true;
   			this.EquipLegL.isHidden = false;
@@ -644,7 +644,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   			this.EquipBaseR.isHidden = true;
   			this.Cannon01.isHidden = false;
   		break;
-  		case ID.State.EQUIP02a:
+  		case ID.ModelState.EQUIP02a:
   			this.LegLeft01.isHidden = true;
   			this.LegRight01.isHidden = true;
   			this.EquipLegL.isHidden = false;
@@ -653,7 +653,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   			this.EquipBaseR.isHidden = false;
   			this.Cannon01.isHidden = false;
   		break;
-  		case ID.State.EQUIP03a:
+  		case ID.ModelState.EQUIP03a:
   			this.LegLeft01.isHidden = false;
   			this.LegRight01.isHidden = false;
   			this.EquipLegL.isHidden = true;
@@ -662,7 +662,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   			this.EquipBaseR.isHidden = true;
   			this.Cannon01.isHidden = true;
   		break;
-  		case ID.State.EQUIP04a:
+  		case ID.ModelState.EQUIP04a:
   			this.LegLeft01.isHidden = false;
   			this.LegRight01.isHidden = false;
   			this.EquipLegL.isHidden = false;
@@ -671,7 +671,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   			this.EquipBaseR.isHidden = false;
   			this.Cannon01.isHidden = true;
   		break;
-  		case ID.State.EQUIP05a:
+  		case ID.ModelState.EQUIP05a:
   			this.LegLeft01.isHidden = false;
   			this.LegRight01.isHidden = false;
   			this.EquipLegL.isHidden = true;
@@ -680,7 +680,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   			this.EquipBaseR.isHidden = true;
   			this.Cannon01.isHidden = false;
   		break;
-  		case ID.State.EQUIP06a:
+  		case ID.ModelState.EQUIP06a:
   			this.LegLeft01.isHidden = false;
   			this.LegRight01.isHidden = false;
   			this.EquipLegL.isHidden = false;
@@ -805,7 +805,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   		boolean spStand = false;
   		
   		//水上漂浮
-  		if (ent.getStateEmotion(ID.S.State2) < ID.State.EQUIP03a && !ent.getIsSitting())
+  		if (ent.getStateEmotion(ID.S.State2) < ID.ModelState.EQUIP03a && !ent.getIsSitting())
   		{
   			GlStateManager.translate(0F, angleX * 0.015F + 0.025F, 0F);
   		}
@@ -937,7 +937,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 			this.LegRight02.offsetZ = 0F;
 	    	
 			//equip on
-			if (ent.getStateEmotion(ID.S.State2) < ID.State.EQUIP03a)
+			if (ent.getStateEmotion(ID.S.State2) < ID.ModelState.EQUIP03a)
 			{
 				addk1 = angleAdd1 * 0.05F;
 				addk2 = angleAdd2 * 0.05F;

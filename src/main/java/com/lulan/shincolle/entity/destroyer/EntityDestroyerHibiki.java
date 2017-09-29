@@ -36,7 +36,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 		super(world);
 		this.setSize(0.5F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerHibiki);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerHibiki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
@@ -114,7 +114,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (getStateEmotion(ID.S.State) > ID.State.NORMAL && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 2)
+  				if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 2)
   				{
   					double smokeY = posY + 1.4D;
   					
@@ -185,11 +185,11 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   	
   	//增加閃避30%
   	@Override
-  	public void calcShipAttributes()
+  	public void calcShipAttributesAddRaw()
   	{
-  		EffectEquip[ID.EquipEffect.DODGE] += 30F;
+  		super.calcShipAttributesAddRaw();
   		
-  		super.calcShipAttributes();	
+  		this.getAttrs().setAttrsRaw(ID.Attrs.DODGE, this.getAttrs().getAttrsRaw(ID.Attrs.DODGE) + 0.3F);
   	}
   	
   	@Override
@@ -219,17 +219,17 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 				break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
 				break;
-			case ID.State.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02a, true);
+			case ID.ModelState.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, true);
 				break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 				break;
 			}
 		}
@@ -237,11 +237,11 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 				break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 				break;
 			}
 		}

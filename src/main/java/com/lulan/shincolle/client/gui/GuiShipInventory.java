@@ -17,7 +17,9 @@ import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.GuiHelper;
 
@@ -43,17 +45,17 @@ public class GuiShipInventory extends GuiContainer
 	public BasicEntityShip entity;
 	public InventoryPlayer player;
 	private BasicEntityShip[] shipRiding = new BasicEntityShip[3];	//0:host, 1:rider, 2:mount
-	
+	private AttrsAdv attrs;
 	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipInventory.png");
 	private static final ResourceLocation TEXTURE_ICON = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
-	private static String lvMark, hpMark, strAttrAtk1, strAttrAtk2, strAttrDEF, strAttrSPD, strAttrMOV,
+	private static String lvMark, hpMark, strAttrATK, strAttrAIR, strAttrDEF, strAttrSPD, strAttrMOV,
 	  strAttrHIT, strAttrCri, strAttrDHIT, strAttrTHIT, strAttrAA, strAttrASM, strAttrMiss,
-	  strAttrMissA, strAttrMissR, strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding,
+	  strAttrMissR, strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding,
 	  strAttrWedTrue, strAttrWedFalse, strMiKills, strMiExp, strMiAirL, strMiAirH, strMiAmmoL,
 	  strMiAmmoH, strMiGrudge, canMelee, canLATK, canHATK, canALATK, canAHATK, auraEffect,
 	  followMin, followMax, fleeHP, tarAI, strOnSight, strPVP, strAA, strASM, strTimeKeep,
 	  strPick, strWpStay, strAttrModern, strAttrXP, strAttrGrudge, strAttrAmmo, strAttrHPRES,
-	  strShowHeld, strAutoCR, strAutoPump;
+	  strShowHeld, strAutoCR, strAutoPump, strAttrKB, strAttrHP;
 	private static String[] strMorale;
 	private static int widthHoveringText1, widthHoveringText2, widthHoveringText3;
 	
@@ -101,6 +103,7 @@ public class GuiShipInventory extends GuiContainer
 		
 		if (this.entity != null)
 		{
+			this.attrs = (AttrsAdv) this.entity.getAttrs();
 			this.shipType = this.entity.getShipType();
 			this.shipClass = this.entity.getShipClass();
 			this.shipRiding[0] = this.entity;
@@ -113,7 +116,7 @@ public class GuiShipInventory extends GuiContainer
 				if (this.entity.getRidingState() > 1)
 				{
 					this.shipType = ID.ShipType.HEAVY_CRUISER;
-					this.shipClass = ID.Ship.Raiden;
+					this.shipClass = ID.ShipClass.Raiden;
 					
 					//get rider or mount
 					if (this.entity.getRidingEntity() instanceof EntityDestroyerInazuma)
@@ -132,7 +135,11 @@ public class GuiShipInventory extends GuiContainer
 			
 			this.iconXY = new int[2][3];
 			this.iconXY[0] = Values.ShipTypeIconMap.get((byte)this.shipType);
-			this.iconXY[1] = Values.ShipNameIconMap.get((short)this.shipClass);
+			this.iconXY[1] = Values.ShipNameIconMap.get(this.shipClass);
+		}
+		else
+		{
+			this.attrs = new AttrsAdv();
 		}
 		
 		//general string
@@ -146,8 +153,9 @@ public class GuiShipInventory extends GuiContainer
 		strMorale[4] = I18n.format("gui.shincolle:morale4");
 		
 		//attrs string
-		strAttrAtk1 = I18n.format("gui.shincolle:firepower1");
-		strAttrAtk2 = I18n.format("gui.shincolle:firepower2");
+		strAttrHP = I18n.format("gui.shincolle:hp");
+		strAttrATK = I18n.format("gui.shincolle:firepower1");
+		strAttrAIR = I18n.format("gui.shincolle:firepower2");
 		strAttrDEF = I18n.format("gui.shincolle:armor");
 		strAttrSPD = I18n.format("gui.shincolle:attackspeed");
 		strAttrMOV = I18n.format("gui.shincolle:movespeed");
@@ -158,7 +166,6 @@ public class GuiShipInventory extends GuiContainer
 		strAttrAA = I18n.format("gui.shincolle:antiair");
 		strAttrASM = I18n.format("gui.shincolle:antiss");
 		strAttrMiss = I18n.format("gui.shincolle:missrate");
-		strAttrMissA = I18n.format("gui.shincolle:missrateair");
 		strAttrMissR = I18n.format("gui.shincolle:missreduce");
 		strAttrDodge = I18n.format("gui.shincolle:dodge");
 		strAttrFPos = I18n.format("gui.shincolle:formation.position");
@@ -171,6 +178,7 @@ public class GuiShipInventory extends GuiContainer
 		strAttrGrudge = I18n.format("gui.shincolle:equip.grudge");
 		strAttrAmmo = I18n.format("gui.shincolle:equip.ammo");
 		strAttrHPRES = I18n.format("gui.shincolle:equip.hpres");
+		strAttrKB = I18n.format("gui.shincolle:equip.kb");
 		
 		//minor string
 		strMiKills = I18n.format("gui.shincolle:kills");
@@ -204,9 +212,9 @@ public class GuiShipInventory extends GuiContainer
 		strAutoPump = I18n.format("gui.shincolle:autopump");
 		
 		//get max string width for hovering text drawing
-		int temp = this.fontRendererObj.getStringWidth(strAttrAtk1);
+		int temp = this.fontRendererObj.getStringWidth(strAttrATK);
 		this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAtk2);
+		temp = this.fontRendererObj.getStringWidth(strAttrAIR);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrCri);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
@@ -228,21 +236,20 @@ public class GuiShipInventory extends GuiContainer
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrHPRES);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		
 		temp = this.fontRendererObj.getStringWidth(strAttrMiss);
-		this.widthHoveringText2 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrMissA);
-		if (temp > this.widthHoveringText2) this.widthHoveringText2 = temp;
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrDodge);
-		if (temp > this.widthHoveringText2) this.widthHoveringText2 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrModern);
-		if (temp > this.widthHoveringText2) this.widthHoveringText2 = temp;
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrKB);
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
+		temp = this.fontRendererObj.getStringWidth(strAttrHP);
+		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		
 		temp = this.fontRendererObj.getStringWidth(strAttrFPos);
 		this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAtk1);
+		temp = this.fontRendererObj.getStringWidth(strAttrATK);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAtk2);
+		temp = this.fontRendererObj.getStringWidth(strAttrAIR);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
 		temp = this.fontRendererObj.getStringWidth(strAttrDEF);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
@@ -608,7 +615,7 @@ public class GuiShipInventory extends GuiContainer
 	//draw ship morale
 	private void drawIconMorale()
 	{
-		int ix = EntityHelper.getMoraleLevel(this.entity.getStateMinor(ID.M.Morale)) * 11;
+		int ix = EntityHelper.getMoraleLevel(this.entity.getMorale()) * 11;
         drawTexturedModalRect(guiLeft+239, guiTop+18, ix, 240, 11, 11);
         
 	}
@@ -625,13 +632,84 @@ public class GuiShipInventory extends GuiContainer
 		//Morale tooltip
 		if (xMouse >= 238+guiLeft && xMouse < 251+guiLeft && yMouse >= 17+guiTop && yMouse < 30+guiTop)
 		{
-			mouseoverList.add(this.strMorale[EntityHelper.getMoraleLevel(this.entity.getStateMinor(ID.M.Morale))]);
-			this.drawHoveringText(mouseoverList, 200, 45, this.fontRendererObj);
+			mouseoverList.add(this.strMorale[EntityHelper.getMoraleLevel(this.entity.getMorale())]);
+			this.drawHoveringText(mouseoverList, 120, 30, this.fontRendererObj);
+			
+			//draw value
+			mouseoverList.clear();
+			
+			mouseoverList.add(TextFormatting.RED + strAttrATK);
+			mouseoverList.add(TextFormatting.RED + strAttrAIR);
+			mouseoverList.add(TextFormatting.WHITE + strAttrSPD);
+			mouseoverList.add(TextFormatting.LIGHT_PURPLE + strAttrHIT);
+			mouseoverList.add(TextFormatting.AQUA + strAttrCri);
+			mouseoverList.add(TextFormatting.YELLOW + strAttrDHIT);
+			mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
+			mouseoverList.add(TextFormatting.RED + strAttrMissR);
+			mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
+			mouseoverList.add(TextFormatting.AQUA + strAttrASM);
+			mouseoverList.add(TextFormatting.WHITE + strAttrDEF);
+			mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
+			mouseoverList.add(TextFormatting.GREEN + strAttrXP);
+			mouseoverList.add(TextFormatting.DARK_PURPLE + strAttrGrudge);
+			mouseoverList.add(TextFormatting.DARK_AQUA + strAttrAmmo);
+			mouseoverList.add(TextFormatting.DARK_GREEN + strAttrHPRES);
+			mouseoverList.add(TextFormatting.DARK_RED + strAttrKB);
+			mouseoverList.add(TextFormatting.GRAY + strAttrMOV);
+			this.drawHoveringText(mouseoverList, 120, 46, this.fontRendererObj);
+			
+			//draw value
+			mouseoverList.clear();
+			
+			str = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_L) * 100F) + " %";
+			str2 = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_H) * 100F) + " %";
+			overText = "x " + str + " / " + str2;
+			mouseoverList.add(overText);
+			
+			str = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_AL) * 100F) + " %";
+			str2 = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_AH) * 100F) + " %";
+			overText = "x " + str + " / " + str2;
+			mouseoverList.add(overText);
+			
+			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.SPD) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.1f", attrs.getAttrsFormation(ID.Attrs.HIT));
+			mouseoverList.add(overText);
+			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.CRI) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DHIT) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.THIT) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.MISS) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.AA) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ASM) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DEF) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DODGE) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.XP) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.GRUDGE) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.AMMO) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.HPRES) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.KB) * 100F) + " %";
+			mouseoverList.add(overText);
+			overText = "+ " + String.format("%.2f", attrs.getAttrsFormation(ID.Attrs.MOV));
+			mouseoverList.add(overText);
+			
+			this.drawHoveringText(mouseoverList, 126 + this.widthHoveringText3, 46, this.fontRendererObj);
 		}
 		//HP tooltip
 		else if (xMouse >= 145+guiLeft && xMouse < 202+guiLeft && yMouse >= 4+guiTop && yMouse < 15+guiTop)
 		{
-			mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.HP));
+			mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.HP));
 			this.drawHoveringText(mouseoverList, 145, 32, this.fontRendererObj);
 		}
 		//Attrs tooltip
@@ -644,113 +722,95 @@ public class GuiShipInventory extends GuiContainer
 				{
 					//draw attack text
 					mouseoverList.add(strAttrModern);
-					mouseoverList.add(TextFormatting.RED + strAttrAtk1);
-					mouseoverList.add(TextFormatting.RED + strAttrAtk2);
+					mouseoverList.add(TextFormatting.RED + strAttrATK);
+					mouseoverList.add(TextFormatting.RED + strAttrAIR);
 					mouseoverList.add(TextFormatting.AQUA + strAttrCri);
 					mouseoverList.add(TextFormatting.YELLOW + strAttrDHIT);
 					mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
 					mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
 					mouseoverList.add(TextFormatting.AQUA + strAttrASM);
+					mouseoverList.add(TextFormatting.RED + strAttrMiss);
+					mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
 					mouseoverList.add(TextFormatting.GREEN + strAttrXP);
 					mouseoverList.add(TextFormatting.DARK_PURPLE + strAttrGrudge);
 					mouseoverList.add(TextFormatting.DARK_AQUA + strAttrAmmo);
 					mouseoverList.add(TextFormatting.DARK_GREEN + strAttrHPRES);
+					mouseoverList.add(TextFormatting.DARK_RED + strAttrKB);
 					this.drawHoveringText(mouseoverList, 55, 57, this.fontRendererObj);
 					
 					//draw attack value
 					mouseoverList.clear();
-					mouseoverList.add(String.valueOf(entity.getBonusPoint(ID.ATK)));
+					mouseoverList.add(String.valueOf(attrs.getAttrsBonus(ID.AttrsBase.ATK)));
 					mouseoverList.add(strATK);
 					mouseoverList.add(strAATK);
-					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.CRI) * 100F)) + " %";
+					overText = String.valueOf((int)(attrs.getAttrsBuffed(ID.Attrs.CRI) * 100F)) + " %";
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.DHIT) * 100F)) + " %";
+					overText = String.valueOf((int)(attrs.getAttrsBuffed(ID.Attrs.DHIT) * 100F)) + " %";
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.THIT) * 100F)) + " %";
+					overText = String.valueOf((int)(attrs.getAttrsBuffed(ID.Attrs.THIT) * 100F)) + " %";
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.AA)));
+					overText = String.valueOf((int)(attrs.getAttrsBuffed(ID.Attrs.AA)));
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)(this.entity.getEffectEquip(ID.EquipEffect.ASM)));
+					overText = String.valueOf((int)(attrs.getAttrsBuffed(ID.Attrs.ASM)));
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.XP) - 1F) * 100F)) + " %";
+					
+					//calc miss
+					temp = (int) (CombatHelper.calcMissRate(this.entity, 0F) * 100F);
+					str = String.valueOf(temp);
+					temp = (int) (CombatHelper.calcMissRate(this.entity, attrs.getAttackRange()) * 100F);
+					str2 = String.valueOf(temp);
+					overText = str + " ~ " + str2 + " %";
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.GRUDGE) - 1F) * 100F)) + " %";
+					
+					//calc dodge for submarine
+					if (this.entity instanceof IShipInvisible)
+					{
+						float temp2 = attrs.getAttrsBuffed(ID.Attrs.DODGE) + ((IShipInvisible)this.entity).getInvisibleLevel();
+						if (temp2 > ConfigHandler.limitShipAttrs[ID.Attrs.DODGE]) temp2 = (int) ConfigHandler.limitShipAttrs[ID.Attrs.DODGE];
+						overText = String.format("%.0f", temp2 * 100F) + " %";
+					}
+					//calc dodge for normal ship
+					else
+					{
+						overText = String.format("%.0f", attrs.getAttrsBuffed(ID.Attrs.DODGE) * 100F) + " %";
+					}
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.AMMO) - 1F) * 100F)) + " %";
+					
+					overText = String.valueOf((int)((attrs.getAttrsBuffed(ID.Attrs.XP) - 1F) * 100F)) + " %";
 					mouseoverList.add(overText);
-					overText = String.valueOf((int)((this.entity.getEffectEquip(ID.EquipEffect.HPRES) - 1F) * 100F)) + " %";
+					overText = String.valueOf((int)((attrs.getAttrsBuffed(ID.Attrs.GRUDGE) - 1F) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)((attrs.getAttrsBuffed(ID.Attrs.AMMO) - 1F) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)((attrs.getAttrsBuffed(ID.Attrs.HPRES) - 1F) * 100F)) + " %";
+					mouseoverList.add(overText);
+					overText = String.valueOf((int)(attrs.getAttrsBuffed(ID.Attrs.KB) * 100F)) + " %";
 					mouseoverList.add(overText);
 					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText1, 57, this.fontRendererObj);
 				}
 				//DEF tooltip
 				else if (yMouse >= 41+guiTop && yMouse < 62+guiTop)
 				{
-					mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.DEF));
+					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.DEF));
 					this.drawHoveringText(mouseoverList, 55, 78, this.fontRendererObj);
 				}
 				//SPD tooltip
 				else if (yMouse >= 62+guiTop && yMouse < 83+guiTop)
 				{
-					mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.SPD));
+					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.SPD));
 					this.drawHoveringText(mouseoverList, 55, 99, this.fontRendererObj);
 				}
 				//MOV tooltip
 				else if (yMouse >= 83+guiTop && yMouse < 104+guiTop)
 				{
-					mouseoverList.add(strAttrModern+" "+entity.getBonusPoint(ID.MOV));
+					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.MOV));
 					this.drawHoveringText(mouseoverList, 55, 120, this.fontRendererObj);
 				}
 				//RANGE tooltip
 				else if (yMouse >= 104+guiTop && yMouse < 126+guiTop)
 				{
-					//draw text
-					mouseoverList.add(strAttrModern);
-					mouseoverList.add(TextFormatting.RED + strAttrMiss);
-					mouseoverList.add(TextFormatting.AQUA + strAttrMissA);
-					mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
+					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.HIT));
 					this.drawHoveringText(mouseoverList, 55, 142, this.fontRendererObj);
-					
-					//draw value
-					mouseoverList.clear();
-					mouseoverList.add(String.valueOf(entity.getBonusPoint(ID.HIT)));
-					
-					//calc miss
-					temp = (int) ((0.2F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-					if (temp < 0) temp = 0;
-					if (temp > 35) temp = 35;
-					str = String.valueOf(temp);
-					
-					temp = (int) ((0.35F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-					if (temp < 0) temp = 0;
-					if (temp > 35) temp = 35;
-					str2 = String.valueOf(temp);
-					
-					overText = str + " ~ " + str2 + " %";
-					mouseoverList.add(overText);
-					
-					//calc air miss
-					temp = (int) ((0.25F - this.entity.getEffectEquip(ID.EquipEffect.MISS) - 0.001F * this.entity.getStateMinor(ID.M.ShipLevel)) * 100F);
-					if (temp < 0) temp = 0;
-					if (temp > 35) temp = 35;
-					
-					overText = String.valueOf(temp) + " %";
-					mouseoverList.add(overText);
-					
-					//calc dodge
-					if (this.entity instanceof IShipInvisible)
-					{
-						temp = (int) (this.entity.getEffectEquip(ID.EquipEffect.DODGE) +
-										((IShipInvisible)this.entity).getInvisibleLevel());
-						if (temp > ConfigHandler.limitShipEffect[6]) temp = (int) ConfigHandler.limitShipEffect[6];
-						overText = String.valueOf(temp) + " %";
-					}
-					else
-					{
-						overText = String.valueOf((int)this.entity.getEffectEquip(ID.EquipEffect.DODGE)) + " %";
-					}
-					
-					mouseoverList.add(overText);
-					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText2, 142, this.fontRendererObj);
 				}
 			}//end page 2
 			else if (showPage == 3)
@@ -759,18 +819,23 @@ public class GuiShipInventory extends GuiContainer
 				if (yMouse >= 40+guiTop && yMouse < 62+guiTop && this.entity.getStateMinor(ID.M.FormatType) >= 1)
 				{
 					mouseoverList.add(TextFormatting.LIGHT_PURPLE + strAttrFPos);
-					mouseoverList.add(TextFormatting.RED + strAttrAtk1);
-					mouseoverList.add(TextFormatting.RED + strAttrAtk2);
-					mouseoverList.add(TextFormatting.WHITE + strAttrDEF);
-					mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
-					mouseoverList.add(TextFormatting.RED + strAttrMissR);
+					mouseoverList.add(TextFormatting.RED + strAttrATK);
+					mouseoverList.add(TextFormatting.RED + strAttrAIR);
+					mouseoverList.add(TextFormatting.WHITE + strAttrSPD);
+					mouseoverList.add(TextFormatting.LIGHT_PURPLE + strAttrHIT);
 					mouseoverList.add(TextFormatting.AQUA + strAttrCri);
 					mouseoverList.add(TextFormatting.YELLOW + strAttrDHIT);
 					mouseoverList.add(TextFormatting.GOLD + strAttrTHIT);
+					mouseoverList.add(TextFormatting.RED + strAttrMissR);
 					mouseoverList.add(TextFormatting.YELLOW + strAttrAA);
 					mouseoverList.add(TextFormatting.AQUA + strAttrASM);
+					mouseoverList.add(TextFormatting.WHITE + strAttrDEF);
+					mouseoverList.add(TextFormatting.GOLD + strAttrDodge);
+					mouseoverList.add(TextFormatting.DARK_PURPLE + strAttrGrudge);
+					mouseoverList.add(TextFormatting.DARK_GREEN + strAttrHPRES);
+					mouseoverList.add(TextFormatting.DARK_RED + strAttrKB);
 					mouseoverList.add(TextFormatting.GRAY + strAttrMOV);
-					this.drawHoveringText(mouseoverList, 55, 78, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 128, 35, this.fontRendererObj);
 					
 					//draw value
 					mouseoverList.clear();
@@ -778,44 +843,46 @@ public class GuiShipInventory extends GuiContainer
 					overText = String.valueOf(this.entity.getStateMinor(ID.M.FormatPos) + 1);
 					mouseoverList.add(overText);
 					
-					str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_L) + 100);
-					str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_H) + 100);
-					overText = str + " / " + str2 + " %";
+					str = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_L) * 100F) + " %";
+					str2 = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_H) * 100F) + " %";
+					overText = "x " + str + " / " + str2;
 					mouseoverList.add(overText);
 					
-					str = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AL) + 100);
-					str2 = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ATK_AH) + 100);
-					overText = str + " / " + str2 + " %";
+					str = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_AL) * 100F) + " %";
+					str2 = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_AH) * 100F) + " %";
+					overText = "x " + str + " / " + str2;
 					mouseoverList.add(overText);
 					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DEF) + 100) + " %";
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.SPD) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "+ " + String.format("%.1f", attrs.getAttrsFormation(ID.Attrs.HIT));
+					mouseoverList.add(overText);
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.CRI) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DHIT) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.THIT) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.MISS) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.AA) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ASM) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DEF) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DODGE) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.GRUDGE) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.HPRES) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.KB) * 100F) + " %";
+					mouseoverList.add(overText);
+					overText = "+ " + String.format("%.2f", attrs.getAttrsFormation(ID.Attrs.MOV));
 					mouseoverList.add(overText);
 					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DODGE) + 100) + " %";
-					mouseoverList.add(overText);
-					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.MISS) + 100) + " %";
-					mouseoverList.add(overText);
-					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.CRI) + 100) + " %";
-					mouseoverList.add(overText);
-					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.DHIT) + 100) + " %";
-					mouseoverList.add(overText);
-					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.THIT) + 100) + " %";
-					mouseoverList.add(overText);
-					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.AA) + 100) + " %";
-					mouseoverList.add(overText);
-					
-					overText = String.valueOf((int)this.entity.getEffectFormation(ID.Formation.ASM) + 100) + " %";
-					mouseoverList.add(overText);
-					
-					overText = String.format("%.2f", this.entity.getEffectFormation(ID.Formation.MOV));
-					mouseoverList.add(overText);
-					
-					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText3, 78, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 134 + this.widthHoveringText3, 35, this.fontRendererObj);
 				}//end formation
 			}//end page 3
 		}
@@ -891,7 +958,7 @@ public class GuiShipInventory extends GuiContainer
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[1].getShipClass() == ID.Ship.DestroyerIkazuchi)
+			if (entity[1].getShipClass() == ID.ShipClass.DestroyerIkazuchi)
 			{
 				if (entity[0].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -915,7 +982,7 @@ public class GuiShipInventory extends GuiContainer
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[2].getShipClass() == ID.Ship.DestroyerInazuma)
+			if (entity[2].getShipClass() == ID.ShipClass.DestroyerInazuma)
 			{
 				if (entity[2].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -978,7 +1045,7 @@ public class GuiShipInventory extends GuiContainer
 		this.fontRendererObj.drawStringWithShadow(shiplevel, xSize-6-this.fontRendererObj.getStringWidth(shiplevel), 6, color);
 
 		//draw maxhp
-		color = GuiHelper.getBonusPointColor(entity.getBonusPoint(ID.HP));
+		color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.HP));
 		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		
 		//draw current hp, if currHP < maxHP, use darker color
@@ -990,28 +1057,28 @@ public class GuiShipInventory extends GuiContainer
 		{
 		case 2:
 		{	//page 2: attribute page
-			strLATK = String.format("%.1f", this.entity.getStateFinal(ID.ATK));
-			strHATK = String.format("%.1f", this.entity.getStateFinal(ID.ATK_H));
-			strATK = strLATK + "/" + strHATK;
-			strALATK = String.format("%.1f", this.entity.getStateFinal(ID.ATK_AL));
-			strAHATK = String.format("%.1f", this.entity.getStateFinal(ID.ATK_AH));
-			strAATK = strALATK + "/" + strAHATK;
-			strDEF = String.format("%.2f", this.entity.getStateFinal(ID.DEF))+"%";
-			strSPD = String.format("%.2f", this.entity.getStateFinal(ID.SPD));
-			strMOV = String.format("%.2f", this.entity.getStateFinal(ID.MOV));
-			strHIT = String.format("%.2f", this.entity.getStateFinal(ID.HIT));
+			strLATK = String.format("%.1f", attrs.getAttrsBuffed(ID.Attrs.ATK_L));
+			strHATK = String.format("%.1f", attrs.getAttrsBuffed(ID.Attrs.ATK_H));
+			strATK = strLATK + " / " + strHATK;
+			strALATK = String.format("%.1f", attrs.getAttrsBuffed(ID.Attrs.ATK_AL));
+			strAHATK = String.format("%.1f", attrs.getAttrsBuffed(ID.Attrs.ATK_AH));
+			strAATK = strALATK + " / " + strAHATK;
+			strDEF = String.format("%.1f", attrs.getAttrsBuffed(ID.Attrs.DEF) * 100F)+"%";
+			strSPD = String.format("%.2f", attrs.getAttrsBuffed(ID.Attrs.SPD));
+			strMOV = String.format("%.2f", attrs.getAttrsBuffed(ID.Attrs.MOV));
+			strHIT = String.format("%.1f", attrs.getAttrsBuffed(ID.Attrs.HIT));
 			
 			//draw ATK, DEF, SPD, MOV, HIT
 			if (this.showAttack == 1)
 			{	//show cannon attack
-				this.fontRendererObj.drawString(strAttrAtk1, 75, 20, 0);
-				color = GuiHelper.getBonusPointColor(entity.getBonusPoint(ID.ATK));
+				this.fontRendererObj.drawString(strAttrATK, 75, 20, 0);
+				color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.ATK));
 				this.fontRendererObj.drawStringWithShadow(strATK, 133-this.fontRendererObj.getStringWidth(strATK), 30, color);
 			}
 			else
 			{	//show aircraft attack
-				this.fontRendererObj.drawString(strAttrAtk2, 75, 20, 0);
-				color = GuiHelper.getBonusPointColor(entity.getBonusPoint(ID.ATK));
+				this.fontRendererObj.drawString(strAttrAIR, 75, 20, 0);
+				color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.ATK));
 				this.fontRendererObj.drawStringWithShadow(strAATK, 133-this.fontRendererObj.getStringWidth(strAATK), 30, color);
 			}
 			
@@ -1021,19 +1088,19 @@ public class GuiShipInventory extends GuiContainer
 			this.fontRendererObj.drawString(strAttrHIT, 75, 104, 0);
 			
 			//draw armor
-			color = GuiHelper.getBonusPointColor(entity.getBonusPoint(ID.DEF));
+			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.DEF));
 			this.fontRendererObj.drawStringWithShadow(strDEF, 133-this.fontRendererObj.getStringWidth(strDEF), 51, color);
 			
 			//draw attack speed
-			color = GuiHelper.getBonusPointColor(entity.getBonusPoint(ID.SPD));
+			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.SPD));
 			this.fontRendererObj.drawStringWithShadow(strSPD, 133-this.fontRendererObj.getStringWidth(strSPD), 72, color);
 			
 			//draw movement speed
-			color = GuiHelper.getBonusPointColor(entity.getBonusPoint(ID.MOV));
+			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.MOV));
 			this.fontRendererObj.drawStringWithShadow(strMOV, 133-this.fontRendererObj.getStringWidth(strMOV), 93, color);
 					
 			//draw range
-			color = GuiHelper.getBonusPointColor(entity.getBonusPoint(ID.HIT));
+			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.HIT));
 			this.fontRendererObj.drawStringWithShadow(strHIT, 133-this.fontRendererObj.getStringWidth(strHIT), 114, color);
 			break;
 		}
@@ -1512,6 +1579,6 @@ public class GuiShipInventory extends GuiContainer
             this.mc.player.closeScreen();
         }
 	}
-
-
+	
+	
 }

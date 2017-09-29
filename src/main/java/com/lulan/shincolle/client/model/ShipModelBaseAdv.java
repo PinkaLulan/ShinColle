@@ -126,7 +126,7 @@ abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotio
 		this.showEquip(ent);
 		
 		//apply flush
-		if (ent.getStateMinor(ID.M.Morale) > 3900)
+		if (ent.getStateMinor(ID.M.Morale) > ID.Morale.L_Happy)
 		{
 			this.setFlush(true);
 		}

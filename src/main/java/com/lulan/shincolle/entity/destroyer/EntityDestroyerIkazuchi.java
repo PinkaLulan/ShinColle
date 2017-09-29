@@ -39,7 +39,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 		super(world);
 		this.setSize(0.5F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerIkazuchi);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerIkazuchi);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
@@ -103,8 +103,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   				//add morale in raiden mode
   				if (this.riderType == 0 && this.isRaiden)
   				{
-  					int m = this.getStateMinor(ID.M.Morale);
-  					if (m < 7000) this.setStateMinor(ID.M.Morale, m + 100);
+  					if (this.getMorale() < (int)(ID.Morale.L_Excited * 1.5F)) this.addMorale(100);
   				}
   				
   				if (this.ticksExisted % 128 == 0)
@@ -130,7 +129,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
+  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
   				{
   					double smokeY = posY + 1.4D;
   					
@@ -210,17 +209,17 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 	{
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
-		case ID.State.EQUIP00:
-			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+		case ID.ModelState.EQUIP00:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 		break;
-		case ID.State.EQUIP01:
-			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+		case ID.ModelState.EQUIP01:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}

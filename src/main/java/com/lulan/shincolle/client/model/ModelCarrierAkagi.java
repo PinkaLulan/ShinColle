@@ -577,7 +577,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.EquipC01.isHidden = true;  //水袋
   			this.EquipB01.isHidden = false;  //胸甲
   			this.EquipS01.isHidden = false;  //裙甲
@@ -585,7 +585,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   			this.Ear02.isHidden = true;
   			this.Tail01.isHidden = true;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.EquipC01.isHidden = false;  //水袋
   			this.EquipB01.isHidden = true;  //胸甲
   			this.EquipS01.isHidden = true;  //裙甲
@@ -593,7 +593,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   			this.Ear02.isHidden = true;
   			this.Tail01.isHidden = true;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.EquipC01.isHidden = false;  //水袋
   			this.EquipB01.isHidden = false;  //胸甲
   			this.EquipS01.isHidden = false;  //裙甲
@@ -601,7 +601,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   			this.Ear02.isHidden = true;
   			this.Tail01.isHidden = true;
   		break;
-  		case ID.State.EQUIP03:
+  		case ID.ModelState.EQUIP03:
   			this.EquipC01.isHidden = true;  //水袋
   			this.EquipB01.isHidden = true;  //胸甲
   			this.EquipS01.isHidden = true;  //裙甲
@@ -609,7 +609,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   			this.Ear02.isHidden = false;
   			this.Tail01.isHidden = false;
   		break;
-  		case ID.State.EQUIP04:
+  		case ID.ModelState.EQUIP04:
   			this.EquipC01.isHidden = true;  //水袋
   			this.EquipB01.isHidden = false;  //胸甲
   			this.EquipS01.isHidden = false;  //裙甲
@@ -617,7 +617,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   			this.Ear02.isHidden = false;
   			this.Tail01.isHidden = false;
   		break;
-  		case ID.State.EQUIP05:
+  		case ID.ModelState.EQUIP05:
   			this.EquipC01.isHidden = false;  //水袋
   			this.EquipB01.isHidden = true;  //胸甲
   			this.EquipS01.isHidden = true;  //裙甲
@@ -625,7 +625,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   			this.Ear02.isHidden = false;
   			this.Tail01.isHidden = false;
   		break;
-  		case ID.State.EQUIP06:
+  		case ID.ModelState.EQUIP06:
   			this.EquipC01.isHidden = false;  //水袋
   			this.EquipB01.isHidden = false;  //胸甲
   			this.EquipS01.isHidden = false;  //裙甲
@@ -645,25 +645,25 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.EquipABase.isHidden = true;//箭袋
   			this.EquipD01.isHidden = true;  //甲板
   			this.EquipE01.isHidden = false;  //弓
   			this.EquipGlove.isHidden = false;//手套
   		break;
-  		case ID.State.EQUIP01a:
+  		case ID.ModelState.EQUIP01a:
   			this.EquipABase.isHidden = false;//箭袋
   			this.EquipD01.isHidden = false;  //甲板
   			this.EquipE01.isHidden = true;  //弓
   			this.EquipGlove.isHidden = true;//手套
   		break;
-  		case ID.State.EQUIP02a:
+  		case ID.ModelState.EQUIP02a:
   			this.EquipABase.isHidden = false;//箭袋
   			this.EquipD01.isHidden = true;  //甲板
   			this.EquipE01.isHidden = false;  //弓
   			this.EquipGlove.isHidden = false;//手套
   		break;
-  		case ID.State.EQUIP03a:
+  		case ID.ModelState.EQUIP03a:
   			this.EquipABase.isHidden = false;//箭袋
   			this.EquipD01.isHidden = false;  //甲板
   			this.EquipE01.isHidden = false;  //弓
@@ -712,12 +712,12 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 	    //arm 
 		this.ArmRight02.offsetX = 0F;
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
 	    {
 	    	this.ArmRight01.rotateAngleZ += 0.15F;
 	    }
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP02)
+	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP02)
 	    {
 	    	this.ArmLeft01.rotateAngleZ -= 0.15F;
 	    	
@@ -875,12 +875,12 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
 	    {
 	    	this.ArmRight01.rotateAngleZ += 0.15F;
 	    }
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP02)
+	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP02)
 	    {
 	    	this.ArmLeft01.rotateAngleZ -= 0.15F;
 	    	

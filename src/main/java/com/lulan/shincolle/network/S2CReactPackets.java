@@ -186,10 +186,10 @@ public class S2CReactPackets implements IMessage
 		case PID.FlareEffect:
 		{
   			BlockPos pos = new BlockPos(msg.valueInt[0], msg.valueInt[1], msg.valueInt[2]);
-			float light = ClientProxy.getClientWorld().getLightFor(EnumSkyBlock.BLOCK, pos);
+			float light = ClientProxy.getClientWorld().getLight(pos, true);
   			
 			//place new light block
-  			if(light < 12F)
+  			if(light < 11F)
   			{
 				BlockHelper.placeLightBlock(ClientProxy.getClientWorld(), pos);
   			}

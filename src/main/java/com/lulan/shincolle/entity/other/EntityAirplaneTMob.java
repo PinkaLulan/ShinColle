@@ -4,6 +4,8 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import net.minecraft.entity.Entity;
@@ -33,13 +35,6 @@ public class EntityAirplaneTMob extends EntityAirplaneT
         	this.targetSelector = new TargetHelper.SelectorForHostile(ship);
     		this.targetSorter = new TargetHelper.Sorter(ship);
     		
-            //basic attr
-    		this.atk = ship.getAttackDamage() * 3F;
-            this.atkSpeed = ship.getAttackSpeed() * 2.5F;
-            this.atkRange = 6F;
-            this.defValue = ship.getDefValue() * 0.5F;
-            this.movSpeed = ship.getMoveSpeed() * 0.1F + 0.23F + this.getScaleLevel() * 0.05F;
-            
             //設定發射位置
             float launchPos = (float) ship.posY;
         	if (par2 != null) launchPos = par2[0];
@@ -52,15 +47,26 @@ public class EntityAirplaneTMob extends EntityAirplaneT
         	this.prevPosZ = this.posZ;
             this.setPosition(this.posX, this.posY, this.posZ);
             
-            //設定基本屬性
-            double mhp = ship.getMaxHealth() * 0.09F;
-            
-    	    getEntityAttribute(MAX_HP).setBaseValue(mhp);
-    		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
+            //calc attrs
+            this.shipAttrs = Attrs.copyAttrs(ship.getAttrs());
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HP, ship.getMaxHealth() * 0.09F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_L, ship.getAttackBaseDamage(3, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_H, ship.getAttackBaseDamage(4, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_AL, ship.getAttackBaseDamage(3, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_AH, ship.getAttackBaseDamage(4, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.DEF, ship.getAttrs().getDefense() * 0.5F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.SPD, ship.getAttrs().getAttackSpeed() * 2.5F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.MOV, ship.getAttrs().getMoveSpeed() * 0.1F + 0.23F + this.getScaleLevel() * 0.05F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HIT, 7F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.DODGE, this.shipAttrs.getAttrsBuffed(ID.Attrs.DODGE) + 0.2F);
+    		
+    		//apply attrs to entity
+    	    getEntityAttribute(MAX_HP).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.HP));
+    		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.MOV));
     		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);
     		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1D);
     		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-        
+            
     		//AI flag
             this.numAmmoLight = 0;
             this.numAmmoHeavy = 3;

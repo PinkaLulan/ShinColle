@@ -21,7 +21,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.6F, 1.875F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierAkagi);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierAkagi);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
@@ -46,9 +46,9 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 
 	//增加艦載機數量計算
   	@Override
-  	public void calcShipAttributes()
+  	public void calcShipAttributesAdd()
   	{
-  		super.calcShipAttributes();
+  		super.calcShipAttributesAdd();
   		
   		this.maxAircraftLight += this.getLevel() * 0.28F;
   		this.maxAircraftHeavy += this.getLevel() * 0.18F;
@@ -109,13 +109,13 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		if (isSneaking)
 		{
 			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP03a) i = ID.State.NORMALa;
+			if (i > ID.ModelState.EQUIP03a) i = ID.ModelState.NORMALa;
 			setStateEmotion(ID.S.State2, i, true);
 		}
 		else
 		{
 			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.State.EQUIP06) i = ID.State.NORMAL;
+			if (i > ID.ModelState.EQUIP06) i = ID.ModelState.NORMAL;
 			setStateEmotion(ID.S.State, i, true);
 		}
 	}

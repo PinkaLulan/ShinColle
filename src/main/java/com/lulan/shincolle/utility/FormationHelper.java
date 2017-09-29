@@ -6,15 +6,18 @@ import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.MathHelper;
+import scala.actors.threadpool.Arrays;
 
 /** FORMATION HELPER
  * 
@@ -57,7 +60,8 @@ public class FormationHelper
 			int num = capa.getNumberOfShip(teamID);
 			
 			if (num > 4 && formatID > 0)
-			{	//can apply formation
+			{
+				//apply formation
 				setFormationForShip(capa, teamID, formatID);
 				capa.setFormatID(teamID, formatID);
 				
@@ -78,7 +82,6 @@ public class FormationHelper
 			}
 			else
 			{
-				LogHelper.debug("DEBUG: reset formation ID");
 				setFormationForShip(capa, teamID, 0);
 				capa.setFormatID(teamID, 0);
 			}
@@ -88,41 +91,25 @@ public class FormationHelper
 		}
 	}
 	
-	/** set formation id and pos to ship */
+	/** set formation id and position to ship */
 	public static void setFormationForShip(CapaTeitoku capa, int teamID, int formatID)
 	{
 		BasicEntityShip ship = null;
-		float buffMOV = getFormationBuffValue(formatID, 0)[ID.Formation.MOV];
-		float minMOV = 1000F;
 		float temp = 0F;
 		
-		//set buff value to ship
-		for (int i = 0; i < 6; i++)
-		{
-			ship = capa.getShipEntity(teamID, i);
-			
-			if (ship != null)
-			{
-				ship.setUpdateFlag(ID.FU.FormationBuff, true);  //set update
-				
-				temp = ship.getStateFinalBU(ID.MOV);			//get MIN moving speed in team
-				if (temp < minMOV) minMOV = temp;
-			}
-		}
-		
-		//apply same moving speed to all ships in team
-		minMOV += buffMOV;  //moving speed for formation
-		
+		//set formation id to all ship in team
 		for (int j = 0; j < 6; j++)
 		{
 			ship = capa.getShipEntity(teamID, j);
 			
 			if (ship != null)
 			{
-				ship.setEffectFormationFixed(ID.FormationFixed.MOV, minMOV);		//set moving speed
-				int sid = ship.getShipUID();
+				//set update flag
+				if (ship != null) ship.setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
 				
 				//check if same ship in other team, cancel the buff in other team
+				int sid = ship.getShipUID();
+				
 				for (int k = 0; k < 9; k++)
 				{
 					//check different team
@@ -130,21 +117,17 @@ public class FormationHelper
 					{
 						int[] temp2 = capa.checkIsInTeam(sid, k);
 
-						//get ship in other team with formation
+						//if get ship in other team with formation
 						if (temp2[1] > 0)
 						{
-							//clear formation buff
+							//reset formation id
 							capa.setFormatID(k, 0);
-//							LogHelper.info("DEBUG : check format "+k+" "+temp2[0]+" "+temp2[1]+" "+ship);
-							//set ship update flag
+							
+							//set ship update flag in the team
 							for (int m = 0; m < 6; m++)
 							{
 								ship = capa.getShipEntity(k, m);
-								
-								if (ship != null)
-								{
-									ship.setUpdateFlag(ID.FU.FormationBuff, true);  //set update
-								}
+								if (ship != null) ship.setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
 							}//end for set ship flag
 						}//end if ship in other team
 					}//end if different team
@@ -153,31 +136,46 @@ public class FormationHelper
 		}//end for check all ship in team
 	}
 	
-	/** get formation moving speed, SERVER SIDE ONLY */
-	public static float getFormationMOV(CapaTeitoku capa, int teamID)
+	/** get moving speed in formation team
+	 *  speed = min speed in team + formation MOV buff
+	 */
+	public static float getFormationMOV(BasicEntityShip ship)
 	{
-		float val = 0F;
+		float mov = 0F;
 		
-		if (capa != null && teamID >= 0 && teamID < 9)
-		{
-			val = capa.getMinMOVInTeam(teamID) +
-				  getFormationBuffValue(capa.getFormatID(teamID), 0)[ID.Formation.MOV];
-		}
-		
-		return val;
+		//check formation speed
+        if (ship != null)
+        {
+        	//ship is in formation
+        	if (ship.getStateMinor(ID.M.FormatType) > 0)
+        	{
+        		AttrsAdv attrs = (AttrsAdv) ship.getAttrs();
+        		
+        		if (attrs != null)
+        		{
+        			mov = attrs.getMinMOV() + attrs.getAttrsFormation(ID.Attrs.MOV) * (float)ConfigHandler.scaleShip[ID.AttrsBase.MOV];
+        		}
+        	}
+        }
+        
+        //check limit
+        if (mov > ConfigHandler.limitShipAttrs[ID.Attrs.MOV]) mov = (float) ConfigHandler.limitShipAttrs[ID.Attrs.MOV];
+        else if (mov < 0F) mov = 0F;
+        
+        return mov;
 	}
 	
 	/** get buff value by formation/slot id */
 	public static float[] getFormationBuffValue(int formationID, int slotID)
 	{
-		float[] fvalue = Values.FormationBuffsMap.get(formationID * 10 + slotID);
+		float[] fvalue = Values.FormationAttrs.get(formationID * 10 + slotID);
 		
 		if (fvalue != null)
 		{
-			return fvalue;
+			return Arrays.copyOf(fvalue, fvalue.length);
 		}
 		
-		return Values.zeros13;
+		return AttrsAdv.getResetFormationValue();
 	}
 	
 	/** calc formation guard position
@@ -199,16 +197,16 @@ public class FormationHelper
 	 *  
 	 *  2. 陣型位置: 1 or 2為旗艦
 	 *  
-	 *     a. 單縱陣         1      b. 複縱陣                                c. 輪型陣(6船)       (5船, 船位以搜尋到順序為準)
-	 *                2               3  4              2             2
-	 *                3               1  2          3   6   4     3       4
-	 *                4               5  6              1             1
-	 *                5                                 5             5
+	 *     a. 單縱陣           1      b. 複縱陣                                c. 輪型陣(6船)   (5船, 船位以搜尋到順序為準)
+	 *                2                              2               2
+	 *                3            3  4          3   6   4       3       4
+	 *                4            1  2              1               1
+	 *                5            5  6              5               5
 	 *                6
 	 *                
-	 *     d. 梯形陣               1    e. 單橫陣
+	 *     d. 梯形陣                  1    e. 單橫陣
  	 *                 2
- 	 *               3            5 3 1 2 4 6
+ 	 *               3           5 3 1 2 4 6
  	 *             4 
  	 *           5
 	 *         6

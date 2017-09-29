@@ -10,16 +10,17 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
@@ -36,12 +37,12 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipNagato);
         this.smokeX = 0F;
         this.smokeY = 0F;
         
 		//model display
-		this.setStateEmotion(ID.S.State, ID.State.EQUIP02, false);
+		this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, false);
 	}
 	
 	@Override
@@ -100,7 +101,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   			if (this.ticksExisted % 4 == 0)
   			{
   				//生成裝備冒煙特效
-  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
   				{
   	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*1D, 0D, 0D, (byte)43);
@@ -123,23 +124,11 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   	public boolean attackEntityWithHeavyAmmo(Entity target)
   	{	
   		//get attack value
-		float atk1 = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk * 3F, 2);
-		float atk2 = this.atk * 2F; //AE dmg without modifier
+		float atk1 = CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamageHeavy(), 2);
+		float atk2 = atk1 * 0.5F;
 		
 		boolean isTargetHurt = false;
-
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
-		float tarZ = (float)target.posZ;
-		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)this.posY;
-		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        float dX = distX / distSqrt;
-        float dY = distY / distSqrt;
-        float dZ = distZ / distSqrt;
-	
+		
 		//play cannon fire sound at attacker
 		int atkPhase = getStateEmotion(ID.S.Phase);
 		
@@ -163,53 +152,41 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
         }
         
         //phase++
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         atkPhase++;
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
       
         if (atkPhase > 3)
         {	//攻擊準備完成, 計算攻擊傷害
+            //calc dist to target
+            Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+            
         	//display hit particle on target
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
-        	//calc miss chance, miss: atk1 = 0, atk2 = 50%
-            if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
-            {	//MISS
-            	atk1 = 0F;
-            	atk2 *= 0.5F;
-            	//spawn miss particle
-            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-            }
-            else if (this.rand.nextFloat() < 0.15F)
-            {	//CRI
-        		atk1 *= 1.5F;
-        		atk2 *= 1.5F;
-        		//spawn critical particle
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-            }
-            
-       		//若攻擊到玩家, 限制最大傷害
-        	if (target instanceof EntityPlayer)
-        	{
-        		atk1 *= 0.25F;
-        		atk2 *= 0.5F;
-        		if (atk1 > 59F) atk1 = 59F;	//same with TNT
-        		if (atk2 > 59F) atk2 = 59F;	//same with TNT
-        	}
-        	
-        	//check friendly fire
-    		if (!TeamHelper.doFriendlyFire(this, target)) atk1 = 0F;
-    		
+		    //roll miss, cri, dhit, thit
+		    atk1 = CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk1);
+	  		
+	  		//damage limit on player target
+		    atk1 = CombatHelper.applyDamageReduceOnPlayer(target, atk1);
+	  		
+	  		//check friendly fire
+			if (!TeamHelper.doFriendlyFire(this, target)) atk1 = 0F;
+			
+			//aoe damage
+			atk2 = atk1 * 0.5F;
+	        
       		//對本體造成atk1傷害
       		isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk1);
       		
-      		this.motionX = 0D;
+      		//move host to target
+  			this.motionX = 0D;
   			this.motionY = 0D;
   			this.motionZ = 0D;
-  			this.posX = tarX+dX*2F;
-  			this.posY = tarY;
-  			this.posZ = tarZ+dZ*2F;
+  			this.posX = target.posX + distVec.x * 2F;
+  			this.posY = target.posY;
+  			this.posZ = target.posZ + distVec.z * 2F;
   			this.setPosition(posX, posY, posZ);
-      		
+  			
       		//對範圍造成atk2傷害
   			Entity hitEntity = null;
             double range = 3.5D + this.scaleLevel * 0.5D;
@@ -234,26 +211,15 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
                 			atkTemp = 0F;
                     	}
                 		
-                		//calc miss and cri
-                		if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
-                		{	//MISS
-                        	atkTemp *= 0.5F;
-                        }
-                        else if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
-                        {	//CRI
-                    		atkTemp *= 1.5F;
-                        }
+            		    //roll miss, cri, dhit, thit
+                		atkTemp = CombatHelper.applyCombatRateToDamage(this, hitEntity, false, (float)distVec.distance, atkTemp);
+            	  		
+            	  		//damage limit on player target
+                		atkTemp = CombatHelper.applyDamageReduceOnPlayer(hitEntity, atkTemp);
+            	  		
+            	  		//check friendly fire
+            			if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
                 		
-                		//若攻擊到玩家, 限制最大傷害
-                    	if (hitEntity instanceof EntityPlayer)
-                    	{
-                    		atkTemp *= 0.25F;
-                    		if (atkTemp > 59F) atkTemp = 59F;	//same with TNT
-                    	}
-                    	
-                    	//check friendly fire
-                		if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
-
                 		//attack
                 	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp);
                 	}//end can be collided with
@@ -283,7 +249,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 	}
   	
 	@Override
-	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
 	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         

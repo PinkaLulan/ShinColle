@@ -6,12 +6,17 @@ import java.util.List;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
+import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.GuiHelper;
@@ -39,13 +44,18 @@ public class GuiFormation extends GuiContainer
 				tickGUI, tickTooltip, tickWaitSync,
 				listClicked, teamClicked, formatClicked,
 				strLen, unitNameState;
-	private static String attrAmmoL, attrAmmoH, attrAirL, attrAirH, attrDEF, attrMOV, attrMISS,
-						attrDODGE, attrCRI, attrDHIT, attrTHIT, attrAA, attrASM, attrTotalFP,
-						strPos, strErr01, strRadar, strNoSig;
-	private String strMOV, strMOVBuff, totalFPL, totalFPH, totalFPAL, totalFPAH, totalFPAA,
-					totalFPASM, strUnitName;
+	private static int[] barRows = new int[] {54, 69, 84, 99, 114, 129};
+	private static int[] barCols = new int[] {9, 52, 95};
+	private static int barLength = 20;
+	private static String attrHP, attrATKL, attrATKH, attrAIRL, attrAIRH, attrDEF, attrMOV,
+						attrSPD, attrHIT, attrMISS, attrDODGE, attrCRI, attrDHIT, attrTHIT,
+						attrAA, attrASM, attrXP, attrGRUDGE, attrAMMO, attrHPRES, attrKB,
+						attrTotalFP, strPos, strErr01, strRadar, strNoSig;
+	private String totalFPL, totalFPH, totalFPAL, totalFPAH, totalFPAA, totalFPASM, strUnitName;
 	private List mouseoverList;
 	private GuiTextField textField;
+	private AttrsAdv attrs;
+	private float[] unbuffedAttrs;
 
 	//player data
 	EntityPlayer player;
@@ -83,10 +93,12 @@ public class GuiFormation extends GuiContainer
 		//formation spot init
 		this.spotPos = new int[2][6];
 		this.spotPosFinal = new int[2][6];
-		this.buffBar = new float[13];
-		this.buffBarFinal = new float[13];
+		this.buffBar = new float[Attrs.AttrsLength];
+		this.buffBarFinal = new float[Attrs.AttrsLength];
 		this.shipName = new String[6];
 		this.shipList = new BasicEntityShip[6];
+		this.attrs = null;
+		this.unbuffedAttrs = null;
 		
 		for (int i = 0; i < 6; i++)
 		{
@@ -129,12 +141,15 @@ public class GuiFormation extends GuiContainer
         this.unitNameState = -1;
 		
 		//string
-		attrAmmoL = TextFormatting.RED+I18n.format("gui.shincolle:firepower1");
-		attrAmmoH = TextFormatting.GREEN+I18n.format("gui.shincolle:torpedo");
-		attrAirL = TextFormatting.RED+I18n.format("gui.shincolle:airfirepower");
-		attrAirH = TextFormatting.GREEN+I18n.format("gui.shincolle:airtorpedo");
+        attrHP = TextFormatting.YELLOW+I18n.format("gui.shincolle:hp");
+		attrATKL = TextFormatting.RED+I18n.format("gui.shincolle:firepower1");
+		attrATKH = TextFormatting.GREEN+I18n.format("gui.shincolle:torpedo");
+		attrAIRL = TextFormatting.RED+I18n.format("gui.shincolle:airfirepower");
+		attrAIRH = TextFormatting.GREEN+I18n.format("gui.shincolle:airtorpedo");
 		attrDEF = TextFormatting.WHITE+I18n.format("gui.shincolle:armor");
+		attrSPD = TextFormatting.WHITE+I18n.format("gui.shincolle:attackspeed");
 		attrMOV = TextFormatting.GRAY+I18n.format("gui.shincolle:movespeed");
+		attrHIT = TextFormatting.LIGHT_PURPLE+I18n.format("gui.shincolle:range");
 		attrMISS = TextFormatting.RED+I18n.format("gui.shincolle:missreduce");
 		attrDODGE = TextFormatting.GOLD+I18n.format("gui.shincolle:dodge");
 		attrCRI = TextFormatting.AQUA+I18n.format("gui.shincolle:critical");
@@ -142,6 +157,11 @@ public class GuiFormation extends GuiContainer
 		attrTHIT = TextFormatting.GOLD+I18n.format("gui.shincolle:triplehit");
 		attrAA = TextFormatting.YELLOW+I18n.format("gui.shincolle:antiair");
 		attrASM = TextFormatting.AQUA+I18n.format("gui.shincolle:antiss");
+		attrXP = TextFormatting.GREEN+I18n.format("gui.shincolle:equip.xp");
+		attrGRUDGE = TextFormatting.DARK_PURPLE+I18n.format("gui.shincolle:equip.grudge");
+		attrAMMO = TextFormatting.DARK_AQUA+I18n.format("gui.shincolle:equip.ammo");
+		attrHPRES = TextFormatting.DARK_GREEN+I18n.format("gui.shincolle:equip.hpres");
+		attrKB = TextFormatting.YELLOW+I18n.format("gui.shincolle:equip.kb");
 		attrTotalFP = TextFormatting.LIGHT_PURPLE+I18n.format("gui.shincolle:formation.totalfirepower");
 		strPos = I18n.format("gui.shincolle:formation.position");
 		strErr01 = I18n.format("gui.shincolle:formation.notenough");
@@ -149,18 +169,18 @@ public class GuiFormation extends GuiContainer
 		strNoSig = TextFormatting.DARK_RED+""+TextFormatting.OBFUSCATED+I18n.format("gui.shincolle:formation.nosignal");
 		
 		//get max string length
-		strLen = fontRendererObj.getStringWidth(attrAmmoL);
-		int temp = fontRendererObj.getStringWidth(attrAmmoH);
+		strLen = fontRendererObj.getStringWidth(attrTotalFP);
+		int temp = fontRendererObj.getStringWidth(attrATKL);
 		if(temp > strLen) strLen = temp;
-		temp = fontRendererObj.getStringWidth(attrAirL);
+		temp = fontRendererObj.getStringWidth(attrATKH);
 		if(temp > strLen) strLen = temp;
-		temp = fontRendererObj.getStringWidth(attrAirH);
+		temp = fontRendererObj.getStringWidth(attrAIRL);
+		if(temp > strLen) strLen = temp;
+		temp = fontRendererObj.getStringWidth(attrAIRH);
 		if(temp > strLen) strLen = temp;
 		temp = fontRendererObj.getStringWidth(attrAA);
 		if(temp > strLen) strLen = temp;
 		temp = fontRendererObj.getStringWidth(attrASM);
-		if(temp > strLen) strLen = temp;
-		temp = fontRendererObj.getStringWidth(attrTotalFP);
 		if(temp > strLen) strLen = temp;
 		
 		//update string value
@@ -215,46 +235,102 @@ public class GuiFormation extends GuiContainer
 		}
 	}
 	
-	private String getAttributeString(byte formatID, byte stateID)
+	private String getAttributeString(byte attrid)
 	{
-		String str = shipList[listClicked].getEffectFormation(formatID) + "% : " + TextFormatting.GRAY;
+		String str = "";
 		String valueOrg = "";
 		String valueBuff = "";
 		
-		//add "%"
-		switch (formatID)
+		//null check
+		if (this.attrs == null) return str;
+		
+		/*  multiplication (add "%")
+		 *    ATK, DEF, SPD, CRI, DHIT, THIT, MISS, AA, ASM 
+		 *  addition (without "%")
+		 *    HP, MOV, HIT, DODGE, XP, GRUDGE, AMMO, HPRES
+		 */
+		switch (attrid)
 		{
-		case ID.Formation.DEF:
-		case ID.Formation.DODGE:
-			valueOrg = String.format("%.1f",shipList[listClicked].getStateFinalBU(stateID)) + "%";
-			valueBuff = String.format("%.1f",shipList[listClicked].getStateFinal(stateID)) + "%";
+		case ID.Attrs.ATK_L:
+		case ID.Attrs.ATK_H:
+		case ID.Attrs.ATK_AL:
+		case ID.Attrs.ATK_AH:
+		case ID.Attrs.SPD:
+		case ID.Attrs.AA:
+		case ID.Attrs.ASM:
+			str = String.format("%.0f", (this.attrs.getAttrsFormation(attrid) - 1F) * 100F) + "% : " + TextFormatting.GRAY;
+			valueOrg = String.format("%.1f", this.unbuffedAttrs[attrid]);
+			valueBuff = String.format("%.1f", this.attrs.getAttrsBuffed(attrid));
+			if (attrs.getAttrsFormation(attrid) > 1F) str = "+"+str;
 		break;
-		case ID.Formation.CRI:
-		case ID.Formation.DHIT:
-		case ID.Formation.THIT:
-			valueOrg = String.format("%.1f",shipList[listClicked].getEffectEquipBU(stateID) * 100F) + "%";
-			valueBuff = String.format("%.1f",shipList[listClicked].getEffectEquip(stateID) * 100F) + "%";
+		case ID.Attrs.DEF:
+		case ID.Attrs.CRI:
+		case ID.Attrs.DHIT:
+		case ID.Attrs.THIT:
+		case ID.Attrs.MISS:
+			str = String.format("%.0f", (this.attrs.getAttrsFormation(attrid) - 1F) * 100F) + "% : " + TextFormatting.GRAY;
+			valueOrg = String.format("%.1f", this.unbuffedAttrs[attrid] * 100F) + "%";
+			valueBuff = String.format("%.1f", this.attrs.getAttrsBuffed(attrid) * 100F) + "%";
+			if (attrs.getAttrsFormation(attrid) > 1F) str = "+"+str;
+		break;
+		case ID.Attrs.HIT:
+			str = String.format("%.2f", this.attrs.getAttrsFormation(attrid)) + " : " + TextFormatting.GRAY;
+			valueOrg = String.format("%.2f", this.unbuffedAttrs[attrid]);
+			valueBuff = String.format("%.2f", this.attrs.getAttrsBuffed(attrid));
+			if (attrs.getAttrsFormation(attrid) > 0F) str = "+"+str;
+		break;
+		case ID.Attrs.MOV:
+			float mov = this.attrs.getMinMOV() + this.attrs.getAttrsFormation(attrid) * (float)ConfigHandler.scaleShip[ID.AttrsBase.MOV];
+			if (mov > (float)ConfigHandler.limitShipAttrs[ID.Attrs.MOV]) mov = (float)ConfigHandler.limitShipAttrs[ID.Attrs.MOV];
+			else if (mov < 0F) mov = 0F;
+			
+			str = String.format("%.2f", this.attrs.getAttrsFormation(attrid)) + " : " + TextFormatting.GRAY;
+			valueOrg = String.format("%.2f", this.unbuffedAttrs[attrid]);
+			valueBuff = String.format("%.2f", mov);
+			if (attrs.getAttrsFormation(attrid) > 0F) str = "+"+str;
+		break;
+		case ID.Attrs.DODGE:
+			str = String.format("%.0f", this.attrs.getAttrsFormation(attrid) * 100F) + "% : " + TextFormatting.GRAY;
+			valueOrg = String.format("%.1f", this.unbuffedAttrs[attrid] * 100F) + "%";
+			valueBuff = String.format("%.1f", this.attrs.getAttrsBuffed(attrid) * 100F) + "%";
+			if (attrs.getAttrsFormation(attrid) > 0F) str = "+"+str;
+		break;
+		case ID.Attrs.GRUDGE:
+		case ID.Attrs.HPRES:
+			str = String.format("%.0f", this.attrs.getAttrsFormation(attrid) * 100F) + "% : " + TextFormatting.GRAY;
+			valueOrg = String.format("%.0f", (this.unbuffedAttrs[attrid] - 1F) * 100F) + "%";
+			valueBuff = String.format("%.0f", (this.attrs.getAttrsBuffed(attrid) - 1F) * 100F) + "%";
+			if (attrs.getAttrsFormation(attrid) > 0F) str = "+"+str;
 		break;
 		default:
-			valueOrg = String.format("%.1f",shipList[listClicked].getStateFinalBU(stateID));
-			valueBuff = String.format("%.1f",shipList[listClicked].getStateFinal(stateID));
+			str = String.format("%.0f", this.attrs.getAttrsFormation(attrid) * 100F) + "% : " + TextFormatting.GRAY;
+			valueOrg = String.format("%.0f", this.unbuffedAttrs[attrid] * 100F) + "%";
+			valueBuff = String.format("%.0f", this.attrs.getAttrsBuffed(attrid) * 100F) + "%";
+			if (attrs.getAttrsFormation(attrid) > 0F) str = "+"+str;
 		break;
 		}
 		
 		//combine string
 		str = str + valueOrg + TextFormatting.WHITE + " -> " + TextFormatting.YELLOW + valueBuff;
 		
-		//if value is positive, add "+"
-		if (shipList[listClicked].getEffectFormation(formatID) > 0F)
-		{
-			str = "+"+str;
-		}
-		
 		return str;
 	}
 	
 	private void updateString()
 	{
+		//update formation attrs
+		if (shipList[listClicked] != null)
+		{
+			this.attrs = (AttrsAdv) shipList[listClicked].getAttrs();
+			//calc attrs before formation buff
+			this.unbuffedAttrs = BuffHelper.calcAttrsWithoutBuff(this.attrs, 4);
+		}
+		else
+		{
+			this.attrs = null;
+			this.unbuffedAttrs = Attrs.getResetZeroValue();
+		}
+				
 		float floatFPL = 0F;
 		float floatFPH = 0F;
 		float floatFPAL = 0F;
@@ -262,17 +338,17 @@ public class GuiFormation extends GuiContainer
 		float floatFPAA = 0F;
 		float floatFPASM = 0F;
 		
-		//calc float firepower
+		//update attrs
 		for (int i = 0; i < 6; i++)
 		{
 			if (this.shipList[i] != null)
 			{
-				floatFPL += this.shipList[i].getStateFinal(ID.ATK);
-				floatFPH += this.shipList[i].getStateFinal(ID.ATK_H);
-				floatFPAL += this.shipList[i].getStateFinal(ID.ATK_AL);
-				floatFPAH += this.shipList[i].getStateFinal(ID.ATK_AH);
-				floatFPAA += this.shipList[i].getEffectEquip(ID.EquipEffect.AA);
-				floatFPASM += this.shipList[i].getEffectEquip(ID.EquipEffect.ASM);
+				floatFPL += this.shipList[i].getAttrs().getAttrsBuffed(ID.Attrs.ATK_L);
+				floatFPH += this.shipList[i].getAttrs().getAttrsBuffed(ID.Attrs.ATK_H);
+				floatFPAL += this.shipList[i].getAttrs().getAttrsBuffed(ID.Attrs.ATK_AL);
+				floatFPAH += this.shipList[i].getAttrs().getAttrsBuffed(ID.Attrs.ATK_AH);
+				floatFPAA += this.shipList[i].getAttrs().getAttrsBuffed(ID.Attrs.AA);
+				floatFPASM += this.shipList[i].getAttrs().getAttrsBuffed(ID.Attrs.ASM);
 			}
 		}
 		
@@ -283,6 +359,7 @@ public class GuiFormation extends GuiContainer
 		this.totalFPAA = TextFormatting.YELLOW + String.format("%.1f",floatFPAA);
 		this.totalFPASM = TextFormatting.AQUA + String.format("%.1f",floatFPASM);
 		
+		//update unit name
 		this.strUnitName = "\"" + this.capa.getUnitName(this.teamClicked) + "\"";
 	}
 	
@@ -292,6 +369,7 @@ public class GuiFormation extends GuiContainer
 		int mx = xMouse - guiLeft;
 		int my = yMouse - guiTop;
 		int len = 0;
+		int range = 5;
 		String str = null;
 		
 		//reset text
@@ -301,71 +379,105 @@ public class GuiFormation extends GuiContainer
 		if (shipList[listClicked] != null && shipList[listClicked].getStateMinor(ID.M.FormatType) > 0 &&
 		   mx > 3 && mx < 138 && my > 43 && my < 145)
 		{
-			//right half
-			if (mx < 73)
+			//column 1
+			if (mx < 51)
 			{
-				if (my < 59)
+				if (my < this.barRows[0] + range)
 				{
-					str = getAttributeString(ID.Formation.ATK_L, ID.ATK);
+					str = getAttributeString(ID.Attrs.ATK_L);
 					mouseoverList.add(str);
 				}
-				else if (my < 74)
+				else if (my < this.barRows[1] + range)
 				{
-					str = getAttributeString(ID.Formation.ATK_AL, ID.ATK_AL);
+					str = getAttributeString(ID.Attrs.ATK_H);
 					mouseoverList.add(str);
 				}
-				else if (my < 89)
+				else if (my < this.barRows[2] + range)
 				{
-					str = getAttributeString(ID.Formation.DEF, ID.DEF);
+					str = getAttributeString(ID.Attrs.ATK_AL);
 					mouseoverList.add(str);
 				}
-				else if (my < 104)
+				else if (my < this.barRows[3] + range)
 				{
-					str = getAttributeString(ID.Formation.CRI, ID.EquipEffect.CRI);
+					str = getAttributeString(ID.Attrs.ATK_AH);
 					mouseoverList.add(str);
 				}
-				else if (my < 119)
+				else if (my < this.barRows[4] + range)
 				{
-					str = getAttributeString(ID.Formation.DHIT, ID.EquipEffect.DHIT);
+					str = getAttributeString(ID.Attrs.SPD);
 					mouseoverList.add(str);
 				}
-				else if (my < 134)
+				else if (my < this.barRows[5] + range)
 				{
-					str = getAttributeString(ID.Formation.AA, ID.EquipEffect.AA);
+					str = getAttributeString(ID.Attrs.HIT);
 					mouseoverList.add(str);
 				}
 			}
-			//left half
+			//column 2
+			else if (mx < 94)
+			{
+				if (my < this.barRows[0] + range)
+				{
+					str = getAttributeString(ID.Attrs.CRI);
+					mouseoverList.add(str);
+				}
+				else if (my < this.barRows[1] + range)
+				{
+					str = getAttributeString(ID.Attrs.DHIT);
+					mouseoverList.add(str);
+				}
+				else if (my < this.barRows[2] + range)
+				{
+					str = getAttributeString(ID.Attrs.THIT);
+					mouseoverList.add(str);
+				}
+				else if (my < this.barRows[3] + range)
+				{
+					str = getAttributeString(ID.Attrs.MISS);
+					mouseoverList.add(str);
+				}
+				else if (my < this.barRows[4] + range)
+				{
+					str = getAttributeString(ID.Attrs.AA);
+					mouseoverList.add(str);
+				}
+				else if (my < this.barRows[5] + range)
+				{
+					str = getAttributeString(ID.Attrs.ASM);
+					mouseoverList.add(str);
+				}
+			}
+			//column 3
 			else
 			{
-				if (my < 59)
+				if (my < this.barRows[0] + range)
 				{
-					str = getAttributeString(ID.Formation.ATK_H, ID.ATK_H);
+					str = getAttributeString(ID.Attrs.DEF);
 					mouseoverList.add(str);
 				}
-				else if (my < 74)
+				else if (my < this.barRows[1] + range)
 				{
-					str = getAttributeString(ID.Formation.ATK_AH, ID.ATK_AH);
+					str = getAttributeString(ID.Attrs.DODGE);
 					mouseoverList.add(str);
 				}
-				else if (my < 89)
+				else if (my < this.barRows[2] + range)
 				{
-					str = getAttributeString(ID.Formation.MISS, ID.EquipEffect.MISS);
+					str = getAttributeString(ID.Attrs.GRUDGE);
 					mouseoverList.add(str);
 				}
-				else if (my < 104)
+				else if (my < this.barRows[3] + range)
 				{
-					str = getAttributeString(ID.Formation.DODGE, ID.EquipEffect.DODGE);
+					str = getAttributeString(ID.Attrs.HPRES);
 					mouseoverList.add(str);
 				}
-				else if (my < 119)
+				else if (my < this.barRows[4] + range)
 				{
-					str = getAttributeString(ID.Formation.THIT, ID.EquipEffect.THIT);
+					str = getAttributeString(ID.Attrs.KB);
 					mouseoverList.add(str);
 				}
-				else if (my < 134)
+				else if (my < this.barRows[5] + range)
 				{
-					str = getAttributeString(ID.Formation.ASM, ID.EquipEffect.ASM);
+					str = getAttributeString(ID.Attrs.MOV);
 					mouseoverList.add(str);
 				}
 			}
@@ -378,10 +490,10 @@ public class GuiFormation extends GuiContainer
 		{
 			mouseoverList.clear();
 			mouseoverList.add(attrTotalFP);
-			mouseoverList.add(attrAmmoL);
-			mouseoverList.add(attrAmmoH);
-			mouseoverList.add(attrAirL);
-			mouseoverList.add(attrAirH);
+			mouseoverList.add(attrATKL);
+			mouseoverList.add(attrATKH);
+			mouseoverList.add(attrAIRL);
+			mouseoverList.add(attrAIRH);
 			mouseoverList.add(attrAA);
 			mouseoverList.add(attrASM);
 			
@@ -475,7 +587,7 @@ public class GuiFormation extends GuiContainer
     			{
     				int ix = 44;
     				
-    				switch (EntityHelper.getMoraleLevel(shipList[i].getStateMinor(ID.M.Morale)))
+    				switch (EntityHelper.getMoraleLevel(shipList[i].getMorale()))
     				{
     				case ID.Morale.Excited:
     					ix = 0;
@@ -678,89 +790,81 @@ public class GuiFormation extends GuiContainer
 	private void drawFormationBuffBar()
 	{
 		//draw basic bar
-		drawTexturedModalRect(guiLeft+9, guiTop+54, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+73, guiTop+54, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+9, guiTop+69, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+73, guiTop+69, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+9, guiTop+84, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+73, guiTop+84, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+9, guiTop+99, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+73, guiTop+99, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+9, guiTop+114, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+73, guiTop+114, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+9, guiTop+129, 0, 220, 25, 4);
-		drawTexturedModalRect(guiLeft+73, guiTop+129, 0, 220, 25, 4);
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 6; j++)
+			{
+				drawTexturedModalRect(guiLeft+barCols[i], guiTop+barRows[j], 0, 220, barLength, 4);
+			}
+		}
 		
-		//animate bar length++
+		//bar animation
 		int len = 0;
 		int bx = 0;		//bar pos x
 		int by = 0;		//bar pos y
 		int icony = 0;	//bar icon y
+		int cols1 = barCols[0] + barLength;
+		int cols2 = barCols[1] + barLength;
+		int cols3 = barCols[2] + barLength;
 		
-		for (int i = 0; i < 13; i++)
+		for (int i = 0; i < Attrs.AttrsLength; i++)
 		{
 			//bar length--
 			if ((int)this.buffBar[i] > (int)this.buffBarFinal[i])
 			{
-				this.buffBar[i] = this.buffBar[i] - 0.3F;
+				this.buffBar[i] -= 0.3F;
 			}
 			//bar length++
 			else if ((int)this.buffBar[i] < (int)this.buffBarFinal[i])
 			{
-				this.buffBar[i] = this.buffBar[i] + 0.3F;
+				this.buffBar[i] += 0.3F;
 			}
 			
 			//get draw position
 			switch (i)
 			{
-			case 0:   //ATK_L
-				bx = 34;
-				by = 54;
-				break;
-			case 1:   //ATK_H
-				bx = 98;
-				by = 54;
-				break;
-			case 2:   //ATK_AL
-				bx = 34;
-				by = 69;
-				break;
-			case 3:   //ATK_AH
-				bx = 98;
-				by = 69;
-				break;
-			case 4:   //DEF
-				bx = 34;
-				by = 84;
-				break;
-			case 6:   //MISS
-				bx = 98;
-				by = 84;
-				break;
-			case 7:   //DODGE
-				bx = 98;
-				by = 99;
-				break;
-			case 8:   //CRI
-				bx = 34;
-				by = 99;
-				break;
-			case 9:   //DHIT
-				bx = 34;
-				by = 114;
-				break;
-			case 10:  //THIT
-				bx = 98;
-				by = 114;
-				break;
-			case 11:  //AA
-				bx = 34;
-				by = 129;
-				break;
-			case 12:  //ASM
-				bx = 98;
-				by = 129;
-				break;
+			case ID.Attrs.HP:
+			case ID.Attrs.XP:
+			case ID.Attrs.AMMO:  //ignore case
+				continue;
+			case ID.Attrs.ATK_L: bx = cols1; by = barRows[0];
+			break;
+			case ID.Attrs.ATK_H: bx = cols1; by = barRows[1];
+			break;
+			case ID.Attrs.ATK_AL: bx = cols1; by = barRows[2];
+			break;
+			case ID.Attrs.ATK_AH: bx = cols1; by = barRows[3];
+			break;
+			case ID.Attrs.SPD: bx = cols1; by = barRows[4];
+			break;
+			case ID.Attrs.HIT: bx = cols1; by = barRows[5];
+			break;
+			
+			case ID.Attrs.CRI: bx = cols2; by = barRows[0];
+			break;
+			case ID.Attrs.DHIT: bx = cols2; by = barRows[1];
+			break;
+			case ID.Attrs.THIT: bx = cols2; by = barRows[2];
+			break;
+			case ID.Attrs.MISS: bx = cols2; by = barRows[3];
+			break;
+			case ID.Attrs.AA: bx = cols2; by = barRows[4];
+			break;
+			case ID.Attrs.ASM: bx = cols2; by = barRows[5];
+			break;
+			
+			case ID.Attrs.DEF: bx = cols3; by = barRows[0];
+			break;
+			case ID.Attrs.DODGE: bx = cols3; by = barRows[1];
+			break;
+			case ID.Attrs.GRUDGE: bx = cols3; by = barRows[2];
+			break;
+			case ID.Attrs.HPRES: bx = cols3; by = barRows[3];
+			break;
+			case ID.Attrs.KB: bx = cols3; by = barRows[4];
+			break;
+			case ID.Attrs.MOV: bx = cols3; by = barRows[5];
+			break;
 			}
 			
 			//draw red bar
@@ -785,8 +889,6 @@ public class GuiFormation extends GuiContainer
 	{
 		String str = null;
 		int len = 0;
-		float mov = 0F;
-		float movBuff = 0F;
 		
 		//draw button text
 		len = (int) (this.fontRendererObj.getStringWidth(strRadar) * 0.5F);
@@ -819,8 +921,6 @@ public class GuiFormation extends GuiContainer
         					  (int)shipList[i].getMaxHealth();
         				fontRendererObj.drawString(str, 195, texty, 0);
         				texty += 22;
-        				//get mov speed
-        				mov = shipList[i].getStateFinal(ID.MOV);
         			}
         			else
         			{
@@ -841,23 +941,24 @@ public class GuiFormation extends GuiContainer
     		fontRendererObj.drawString(str, 115-len, 30, Enums.EnumColors.WHITE.getValue());
     		
     		//draw attribute text
-    		fontRendererObj.drawStringWithShadow(attrAmmoL, 12, 60, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrAmmoH, 98, 60, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrAirL, 12, 80, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrAirH, 98, 80, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrDEF, 12, 100, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrMISS, 98, 100, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrCRI, 12, 120, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrDODGE, 98, 120, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrDHIT, 12, 140, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrTHIT, 98, 140, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrAA, 12, 160, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrASM, 98, 160, Enums.EnumColors.WHITE.getValue());
-    		fontRendererObj.drawStringWithShadow(attrMOV, 12, 180, Enums.EnumColors.WHITE.getValue());
-    		
-    		//draw attribute value text
-    		str = this.strMOVBuff + TextFormatting.WHITE + " (" + this.strMOV + ")";
-    		fontRendererObj.drawStringWithShadow(str, 97, 180, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrATKL, 12, 60, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrATKH, 12, 80, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrAIRL, 12, 100, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrAIRH, 12, 120, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrSPD, 12, 140, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrHIT, 12, 160, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrCRI, 69, 60, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrDHIT, 69, 80, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrTHIT, 69, 100, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrMISS, 69, 120, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrAA, 69, 140, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrASM, 69, 160, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrDEF, 126, 60, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrDODGE, 126, 80, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrGRUDGE, 126, 100, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrHPRES, 126, 120, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrKB, 126, 140, Enums.EnumColors.WHITE.getValue());
+    		fontRendererObj.drawStringWithShadow(attrMOV, 126, 160, Enums.EnumColors.WHITE.getValue());
     		
     		GlStateManager.popMatrix();
 		}//draw ship name
@@ -954,32 +1055,32 @@ public class GuiFormation extends GuiContainer
     	}//end switch formation spot
 	}
 	
+	//set buff bar length
 	private void setFormationBuffBar(int fid, int pos)
 	{
 		//get buff value
 		float[] value = FormationHelper.getFormationBuffValue(fid, pos);
+		float lenModify = 20F;
 		
-		if (value[ID.Formation.MOV] >= 0)
-		{
-			this.strMOVBuff = TextFormatting.RED+String.format("%.2f", value[ID.Formation.MOV]);
-		}
-		else
-		{
-			this.strMOVBuff = TextFormatting.AQUA+String.format("%.2f", value[ID.Formation.MOV]);
-		}
-		
-		//calc bar length
-		for (int i = 0; i < 13; i++)
-		{
-			//calc buff bar
-			this.buffBarFinal[i] = getValueBarLength(value[i]);
-		}
-	}
-	
-	//formation buff value to bar length, 100% = 25 pixels
-	private float getValueBarLength(float value)
-	{
-		return value * 0.25F;
+		//calc bar length, discard HP, XP, AMMO
+		this.buffBarFinal[ID.Attrs.ATK_L] = (value[ID.Attrs.ATK_L] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.ATK_H] = (value[ID.Attrs.ATK_H] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.ATK_AL] = (value[ID.Attrs.ATK_AL] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.ATK_AH] = (value[ID.Attrs.ATK_AH] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.DEF] = (value[ID.Attrs.DEF] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.SPD] = (value[ID.Attrs.SPD] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.MOV] = value[ID.Attrs.MOV] / 0.5F * lenModify;
+		this.buffBarFinal[ID.Attrs.HIT] = value[ID.Attrs.HIT] / 10F * lenModify;
+		this.buffBarFinal[ID.Attrs.CRI] = (value[ID.Attrs.CRI] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.DHIT] = (value[ID.Attrs.DHIT] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.THIT] = (value[ID.Attrs.THIT] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.MISS] = (value[ID.Attrs.MISS] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.AA] = (value[ID.Attrs.AA] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.ASM] = (value[ID.Attrs.ASM] - 1F) * lenModify;
+		this.buffBarFinal[ID.Attrs.DODGE] = value[ID.Attrs.DODGE] * lenModify;
+		this.buffBarFinal[ID.Attrs.GRUDGE] = value[ID.Attrs.GRUDGE] * lenModify;
+		this.buffBarFinal[ID.Attrs.HPRES] = value[ID.Attrs.HPRES] * lenModify;
+		this.buffBarFinal[ID.Attrs.KB] = value[ID.Attrs.KB] * lenModify;
 	}
 	
 	private void setShipList(int tid)
@@ -1015,9 +1116,6 @@ public class GuiFormation extends GuiContainer
 	
 	private void setShipName()
 	{
-		//reset mov string
-		this.strMOV = "0";
-		
 		//get ship name
 		if (shipList != null)
 		{
@@ -1033,9 +1131,6 @@ public class GuiFormation extends GuiContainer
         			{
         				shipName[i] = shipList[i].getName();
         			}
-        			
-        			//get MOV
-        			this.strMOV = String.format("%.2f", shipList[i].getStateFinal(ID.MOV));
 				}
 				else
 				{

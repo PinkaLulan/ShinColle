@@ -1,7 +1,6 @@
 package com.lulan.shincolle.entity.battleship;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -15,18 +14,18 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -42,7 +41,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 2F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipNagato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
@@ -86,7 +85,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   			if (this.ticksExisted % 4 == 0)
   			{
   				//生成裝備冒煙特效
-  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
+  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
   				{
   					//計算煙霧位置
   	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.56F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
@@ -136,11 +135,11 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         	if (target.size() > 0)
         	{
         		//add morale = ship * 150
-        		int m = host.getStateMinor(ID.M.Morale);
-        		if (m < 7000) host.setStateMinor(ID.M.Morale, m + 150 * target.size());
+        		if (host.getMorale() < (int)(ID.Morale.L_Excited * 1.5F)) host.addMorale(150 * target.size());
         		
-        		//try move to target
-        		if (!host.isSitting() && !host.isRiding() && !host.getStateFlag(ID.F.NoFuel))
+        		//try move to target if not in combat
+        		if (!host.isSitting() && !host.isRiding() && !host.getStateFlag(ID.F.NoFuel) &&
+        			EntityHelper.checkShipOutOfCombat(host) && host.getRand().nextFloat() > 0.5F)
         		{
         			host.getShipNavigate().tryMoveToEntityLiving(target.get(host.getRand().nextInt(target.size())), 1F);
         		
@@ -177,22 +176,10 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   	public boolean attackEntityWithHeavyAmmo(Entity target)
   	{
 		//calc equip special dmg: AA, ASM
-  		float atk1 = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK_H], 2);
-  		float atk2 = StateFinal[ID.ATK_H] * 2F;  //AE dmg without modifier
-		
+  		float atk1 = CombatHelper.modDamageByAdditionAttrs(this, target, this.getAttackBaseDamage(2, target), 2);
+  		float atk2 = atk1 * 0.5F;
+  		
 		boolean isTargetHurt = false;
-
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
-		float tarZ = (float)target.posZ;
-		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)this.posY;
-		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        float dX = distX / distSqrt;
-        float dY = distY / distSqrt;
-        float dZ = distZ / distSqrt;
 		
 		//experience++
 		addShipExp(ConfigHandler.expGain[2]);
@@ -230,55 +217,39 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         }
         
         //phase++
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         atkPhase++;
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
       
         if (atkPhase > 3)
         {	//攻擊準備完成, 計算攻擊傷害
+	        //calc dist to target
+	        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+	        
         	//display hit particle on target
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
-        	//calc miss chance, miss: atk1 = 0, atk2 = 50%
-            float missChance = 0.2F + 0.15F * (distSqrt / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-            missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
-            if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-           
-            if (this.rand.nextFloat() < missChance)
-            {	//MISS
-            	atk1 = 0F;
-            	atk2 *= 0.5F;
-            	//spawn miss particle
-            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-            }
-            else if (this.rand.nextFloat() < EffectEquip[ID.EquipEffect.CRI])
-            {	//CRI
-        		atk1 *= 1.5F;
-        		atk2 *= 1.5F;
-        		//spawn critical particle
-        		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-            }
-            
-       		//若攻擊到玩家, 限制最大傷害
-        	if (target instanceof EntityPlayer)
-        	{
-        		atk1 *= 0.25F;
-        		atk2 *= 0.5F;
-        		if (atk1 > 59F) atk1 = 59F;	//same with TNT
-        		if (atk2 > 59F) atk2 = 59F;	//same with TNT
-        	}
-        	
-        	//check friendly fire
-    		if (!TeamHelper.doFriendlyFire(this, target)) atk1 = 0F;
-      		
+		    //roll miss, cri, dhit, thit
+		    atk1 = CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk1);
+	  		
+	  		//damage limit on player target
+		    atk1 = CombatHelper.applyDamageReduceOnPlayer(target, atk1);
+	  		
+	  		//check friendly fire
+			if (!TeamHelper.doFriendlyFire(this, target)) atk1 = 0F;
+			
+			//aoe damage
+			atk2 = atk1 * 0.5F;
+	        
       		//對本體造成atk1傷害
       		isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk1);
       		
+      		//move host to target
   			this.motionX = 0D;
   			this.motionY = 0D;
   			this.motionZ = 0D;
-  			this.posX = tarX+dX*2F;
-  			this.posY = tarY;
-  			this.posZ = tarZ+dZ*2F;
+  			this.posX = target.posX + distVec.x * 2F;
+  			this.posY = target.posY;
+  			this.posZ = target.posZ + distVec.z * 2F;
   			this.setPosition(posX, posY, posZ);
       		
       		//對範圍造成atk2傷害
@@ -304,26 +275,15 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
                 			atkTemp = 0F;
                     	}
                 		
-                		//calc miss and cri
-                		if (this.rand.nextFloat() < missChance)
-                		{	//MISS
-                        	atkTemp *= 0.5F;
-                        }
-                        else if(this.rand.nextFloat() < EffectEquip[ID.EquipEffect.CRI])
-                        {	//CRI
-                    		atkTemp *= 1.5F;
-                        }
+            		    //roll miss, cri, dhit, thit
+                		atkTemp = CombatHelper.applyCombatRateToDamage(this, hitEntity, false, (float)distVec.distance, atkTemp);
+            	  		
+            	  		//damage limit on player target
+                		atkTemp = CombatHelper.applyDamageReduceOnPlayer(hitEntity, atkTemp);
+            	  		
+            	  		//check friendly fire
+            			if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
                 		
-                		//若攻擊到玩家, 限制最大傷害
-                    	if (hitEntity instanceof EntityPlayer)
-                    	{
-                    		atkTemp *= 0.25F;
-                    		if (atkTemp > 59F) atkTemp = 59F;	//same with TNT
-                    	}
-                    	
-                    	//check friendly fire
-                		if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
-
                 		//attack
                 	    hitEntity.attackEntityFrom(DamageSource.causeMobDamage(this), atkTemp);
                 	}//end can be collided with
@@ -360,7 +320,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	{
 		if (this.isSitting())
 		{
-			if (getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+			if (getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
 			{
 				return this.height * 0.42F;
 			}
@@ -387,23 +347,23 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	{
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
-		case ID.State.EQUIP00:
-			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+		case ID.ModelState.EQUIP00:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 		break;
-		case ID.State.EQUIP01:
-			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+		case ID.ModelState.EQUIP01:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}
 	
 	@Override
-	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
 	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         

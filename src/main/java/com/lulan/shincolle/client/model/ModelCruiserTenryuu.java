@@ -542,19 +542,19 @@ public class ModelCruiserTenryuu extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.Equip00.isHidden = true;
   			this.GlowEquip00.isHidden = true;
   			this.EarL01.isHidden = false;
   			this.EarR01.isHidden = false;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.Equip00.isHidden = false;
   			this.GlowEquip00.isHidden = false;
   			this.EarL01.isHidden = true;
   			this.EarR01.isHidden = true;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.Equip00.isHidden = false;
   			this.GlowEquip00.isHidden = false;
   			this.EarL01.isHidden = false;
@@ -570,27 +570,27 @@ public class ModelCruiserTenryuu extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.EquipSL00.isHidden = false;
   			this.EquipSR01.isHidden = true;
   			this.EyeMask.isHidden = true;
   		break;
-  		case ID.State.EQUIP01a:
+  		case ID.ModelState.EQUIP01a:
   			this.EquipSL00.isHidden = false;
   			this.EquipSR01.isHidden = false;
   			this.EyeMask.isHidden = true;
   		break;
-  		case ID.State.EQUIP02a:
+  		case ID.ModelState.EQUIP02a:
   			this.EquipSL00.isHidden = true;
   			this.EquipSR01.isHidden = true;
   			this.EyeMask.isHidden = false;
   		break;
-  		case ID.State.EQUIP03a:
+  		case ID.ModelState.EQUIP03a:
   			this.EquipSL00.isHidden = false;
   			this.EquipSR01.isHidden = true;
   			this.EyeMask.isHidden = false;
   		break;
-  		case ID.State.EQUIP04a:
+  		case ID.ModelState.EQUIP04a:
   			this.EquipSL00.isHidden = false;
   			this.EquipSR01.isHidden = false;
   			this.EyeMask.isHidden = false;

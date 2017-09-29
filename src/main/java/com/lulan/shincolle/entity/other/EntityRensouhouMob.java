@@ -8,16 +8,17 @@ import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class EntityRensouhouMob extends BasicEntitySummon
@@ -39,13 +40,6 @@ public class EntityRensouhouMob extends BasicEntitySummon
         this.atkTarget = target;
         this.setScaleLevel(scaleLevel);
         
-        //basic attr
-        this.atk = this.host2.getAttackDamage();
-        this.atkSpeed = this.host2.getAttackSpeed();
-        this.atkRange = this.host2.getAttackRange();
-        this.defValue = this.host2.getDefValue() * 0.5F;
-        this.movSpeed = this.host2.getMoveSpeed() * 0.2F + 0.35F;
-           
         //設定發射位置
         this.posX = this.host2.posX + rand.nextDouble() * 6D - 3D;
         this.posY = this.host2.posY + 0.5D;
@@ -63,14 +57,28 @@ public class EntityRensouhouMob extends BasicEntitySummon
     	this.prevPosY = this.posY;
     	this.prevPosZ = this.posZ;
         this.setPosition(this.posX, this.posY, this.posZ);
- 
-	    //設定基本屬性
-	    getEntityAttribute(MAX_HP).setBaseValue(this.host2.getMaxHealth() * 0.15D);
-		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
-		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64); //此為找目標, 路徑的範圍
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.35D);
+        
+        //calc attrs
+        this.shipAttrs = Attrs.copyAttrs(host.getAttrs());
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.HP, this.host2.getMaxHealth() * 0.15F);
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_L, host.getAttrs().getAttackDamage());
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_H, host.getAttrs().getAttackDamageHeavy());
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_AL, host.getAttrs().getAttackDamageAir());
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_AH, host.getAttrs().getAttackDamageAirHeavy());
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.DEF, host.getAttrs().getDefense() * 0.5F);
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.SPD, host.getAttrs().getAttackSpeed() * 0.75F - 0.25F);
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.MOV, host.getAttrs().getMoveSpeed() * 0.2F + 0.4F);
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.HIT, host.getAttrs().getAttackRange() + 1F);
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.CRI, host.getAttrs().getAttrsBuffed(ID.Attrs.CRI) + 0.15F);
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.DODGE, this.shipAttrs.getAttrsBuffed(ID.Attrs.DODGE) + 0.2F);
+		
+		//apply attrs to entity
+	    getEntityAttribute(MAX_HP).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.HP));
+		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.MOV));
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);
+		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
 		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-				
+ 
 		//設定AI
 		this.shipNavigator = new ShipPathNavigate(this);
 		this.shipMoveHelper = new ShipMoveHelper(this, 60F);
@@ -151,64 +159,21 @@ public class EntityRensouhouMob extends BasicEntitySummon
   		float atk = getAttackBaseDamage(1, target);
   		
         //calc dist to target
-        float[] distVec = new float[4];  //x, y, z, dist
-        distVec[0] = (float) (target.posX - this.posX);
-        distVec[1] = (float) (target.posY - this.posY);
-        distVec[2] = (float) (target.posZ - this.posZ);
-        distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        distVec[0] = distVec[0] / distVec[3];
-        distVec[1] = distVec[1] / distVec[3];
-        distVec[2] = distVec[2] / distVec[3];
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
         
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
 	    applyParticleAtAttacker(1, target, distVec);
 
-        //calc miss -> crit -> double -> tripple
-  		if (rand.nextFloat() < 0.25F)
-  		{
-          	atk = 0F;	//still attack, but no damage
-          	applyParticleSpecialEffect(0);
-  		}
-  		else
-  		{
-  			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-  			//calc critical
-          	if (rand.nextFloat() < 0.1F)
-          	{
-          		atk *= 1.5F;
-          		applyParticleSpecialEffect(1);
-          	}
-          	else
-          	{
-          		//calc double hit
-              	if (rand.nextFloat() < 0.15F)
-              	{
-              		atk *= 2F;
-              		applyParticleSpecialEffect(2);
-              	}
-              	else
-              	{
-              		//calc triple hit
-                  	if (rand.nextFloat() < 0.05F)
-                  	{
-                  		atk *= 3F;
-                  		applyParticleSpecialEffect(3);
-                  	}
-              	}
-          	}
-  		}
+	    //roll miss, cri, dhit, thit
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
   		
- 		//calc damage to player
-  		if (target instanceof EntityPlayer)
-  		{
-  			atk *= 0.25F;
-  			if (atk > 59F) atk = 59F;	//same with TNT
-  		}
+  		//damage limit on player target
+	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
   		
   		//check friendly fire
 		if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
-  		
+		
   		//確認攻擊是否成功
 	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 
@@ -255,23 +220,6 @@ public class EntityRensouhouMob extends BasicEntitySummon
 	public boolean useAmmoHeavy()
 	{
 		return false;
-	}
-
-	@Override
-	public float getEffectEquip(int id)
-	{
-		switch (id)
-		{
-		case ID.EquipEffect.CRI:
-			return 0.15F;
-		case ID.EquipEffect.ASM:  //destroyer AA,ASM++
-		case ID.EquipEffect.AA:
-			return this.atk * 0.5F;
-		case ID.EquipEffect.DODGE:
-			return 20F;
-		default:
-			return 0F;
-		}
 	}
 	
 	@Override
@@ -324,7 +272,7 @@ public class EntityRensouhouMob extends BasicEntitySummon
 	@Override
 	public float getAttackBaseDamage(int type, Entity target)
 	{
-		return CalcHelper.calcDamageBySpecialEffect(this.host, target, this.atk, 0);
+		return CombatHelper.modDamageByAdditionAttrs(this.host, target, this.shipAttrs.getAttackDamage(), 0);
 	}
 	
 	

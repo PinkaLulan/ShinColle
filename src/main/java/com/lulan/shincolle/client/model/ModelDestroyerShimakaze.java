@@ -314,7 +314,7 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
 		{
 			this.EquipBase.isHidden = false;
 			this.HairAnchor.isHidden = false;
@@ -572,7 +572,7 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
   		}//end if sitting
 	    
 	    //攻擊動作    
-	    if (ent.getAttackTick() > 0)
+	    if (ent.getAttackTick() > 20)
 	    {
 	    	GlStateManager.translate(0F, 0.14F + ent.getScaleLevel() * 0.07F, 0F);
 	    	//body

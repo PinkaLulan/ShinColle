@@ -32,7 +32,7 @@ public class EntityCANe extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.6F, 1.3F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserNE);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserNE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
@@ -66,14 +66,14 @@ public class EntityCANe extends BasicEntityShipSmall
 
 	//晚上時額外增加屬性
 	@Override
-	public void calcShipAttributes()
+	public void calcShipAttributesAddRaw()
 	{
+		super.calcShipAttributesAddRaw();
+		
 		if (!this.world.isDaytime())
 		{
-			EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.3F;
+			this.getAttrs().setAttrsRaw(ID.Attrs.CRI, this.getAttrs().getAttrsRaw(ID.Attrs.CRI) + 0.3F);
 		}
-		
-		super.calcShipAttributes();	
 	}
 
     @Override

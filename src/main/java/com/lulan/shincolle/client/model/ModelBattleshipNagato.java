@@ -491,17 +491,17 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 	{
 		switch (ent.getStateEmotion(ID.S.State))
 		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.HeadEquip.isHidden = false;
   			this.HeadEquip05.isHidden = false;
   			this.EquipBase.isHidden = true;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.HeadEquip.isHidden = true;
   			this.HeadEquip05.isHidden = true;
   			this.EquipBase.isHidden = false;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.HeadEquip.isHidden = false;
   			this.HeadEquip05.isHidden = false;
   			this.EquipBase.isHidden = false;
@@ -619,7 +619,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 		this.LegRight.rotateAngleY = 0F;
 		this.LegRight.rotateAngleZ = -0.05F;
 		//cannon
-		if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+		if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
 		{
 			this.EquipBase.rotateAngleX = 0.17F;
 			
@@ -667,7 +667,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 			this.LegLeft.rotateAngleZ = 0F;
 			this.LegRight.rotateAngleZ = 0F;
 			//cannon
-			if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+			if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 			{
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
 //				this.EquipLC201.rotateAngleX -= 0.5F;
@@ -698,7 +698,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 			this.LegLeft.rotateAngleZ = 0F;
 			this.LegRight.rotateAngleZ = 0F;
 			//cannon
-			if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+			if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 			{
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
 //				this.EquipLC201.rotateAngleX -= 0.5F;
@@ -712,7 +712,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
   		
 	    if (ent.getIsSitting() || ent.getIsRiding())
 	    {  //騎乘動作
-	    	if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+	    	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 	    	{
 	    		GlStateManager.translate(0F, 0.42F, 0F);
 		    	//Body

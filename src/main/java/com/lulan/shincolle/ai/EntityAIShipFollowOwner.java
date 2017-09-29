@@ -62,7 +62,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase
 	public boolean shouldExecute()
     {
     	if (!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
-    		host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1)
+    		host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1 &&
+    		host.getStateMinor(ID.M.NumGrudge) > 0)
     	{
     		EntityLivingBase OwnerEntity = EntityHelper.getEntityPlayerByUID(this.host.getPlayerUID());
 
@@ -96,7 +97,8 @@ public class EntityAIShipFollowOwner extends EntityAIBase
     	{
     		//非坐下, 騎乘, 綁住, 可跟隨, 非裝載中 = 可執行AI
     		if (!host.getIsSitting() && !host.getIsRiding() && !host.getIsLeashed() && 
-    			host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1)
+    			host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1 &&
+    			host.getStateMinor(ID.M.NumGrudge) > 0)
     		{
 	        	//還沒走進min follow range, 繼續走
 	        	if (this.distSq > this.minDistSq)

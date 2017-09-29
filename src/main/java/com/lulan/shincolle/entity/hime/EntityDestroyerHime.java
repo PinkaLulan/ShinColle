@@ -5,8 +5,10 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -21,7 +23,7 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.6F, 1.55F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
@@ -80,13 +82,13 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
 		if (isSneaking)
 		{
 			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP06a) i = ID.State.NORMALa;
+			if (i > ID.ModelState.EQUIP06a) i = ID.ModelState.NORMALa;
 			setStateEmotion(ID.S.State2, i, true);
 		}
 		else
 		{
 			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.State.EQUIP06) i = ID.State.NORMAL;
+			if (i > ID.ModelState.EQUIP06) i = ID.ModelState.NORMAL;
 			setStateEmotion(ID.S.State, i, true);
 		}
 	}
@@ -113,6 +115,24 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
   			}
   		}
   	}
-
+  	
+	@Override
+	public float getAttackBaseDamage(int type, Entity target)
+	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+  		case 2:  //heavy cannon
+  			return this.shipAttrs.getAttackDamageHeavy();
+  		case 3:  //light aircraft
+  			return this.shipAttrs.getAttackDamageAir();
+  		case 4:  //heavy aircraft
+  			return this.shipAttrs.getAttackDamageAirHeavy();
+		default: //melee
+			return this.shipAttrs.getAttackDamage();
+  		}
+  	}
+  	
 	
 }

@@ -17,19 +17,19 @@ public class EntityCarrierAkagiMob extends BasicEntityShipHostileCV
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierAkagi);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierAkagi);
         this.launchHeight = this.height * 0.65F;
         
 		//model display
-		this.setStateEmotion(ID.S.State2, ID.State.EQUIP03a, false);
+		this.setStateEmotion(ID.S.State2, ID.ModelState.EQUIP03a, false);
 		
 		if (this.getRNG().nextInt(3) == 0)
 		{
-			this.setStateEmotion(ID.S.State, ID.State.EQUIP06, false);
+			this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP06, false);
 		}
 		else
 		{
-			this.setStateEmotion(ID.S.State, ID.State.EQUIP02, false);
+			this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, false);
 		}
 	}
 	

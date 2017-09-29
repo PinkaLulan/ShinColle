@@ -704,7 +704,7 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.EquipBase.isHidden = false;
   			this.EquipTL03.isHidden = false;
   		break;
@@ -716,12 +716,12 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.HatBase.isHidden = false;
   			this.Hair02f1.isHidden = false;
   			this.HatBase2.isHidden = true;
   		break;
-  		case ID.State.EQUIP01a:
+  		case ID.ModelState.EQUIP01a:
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
   			this.HatBase2.isHidden = false;
@@ -729,7 +729,7 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
   			this.HatBase2.offsetY = 0F;
   			this.HatBase2.offsetZ = 0F;
   		break;
-  		case ID.State.EQUIP02a:
+  		case ID.ModelState.EQUIP02a:
   			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
   			this.HatBase2.isHidden = false;
@@ -909,7 +909,7 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
 	  	if (this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
 	  	this.EquipC05a.rotateAngleX = this.EquipC04a.rotateAngleX;
 	    
-	    if (ent.getStateEmotion(ID.S.State) < ID.State.EQUIP00)
+	    if (ent.getStateEmotion(ID.S.State) < ID.ModelState.EQUIP00)
 	    {
 	    	this.ArmLeft01.rotateAngleZ += 0.1F;
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;

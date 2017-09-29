@@ -474,7 +474,7 @@ public class ModelCarrierHime extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.GlowBodyMain2.isHidden = false;
   		break;
   		default:  //normal
@@ -743,7 +743,7 @@ public class ModelCarrierHime extends ShipModelBaseAdv
 		  	this.Hair02.rotateAngleX -= 0.3F;
 		  	this.Hair03.rotateAngleX -= 0.3F;
 		    //arm
-		  	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
+		  	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
 		  	{
 		  		this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F - 0.1F;
 		    	this.ArmLeft01.rotateAngleY = -0.7F;

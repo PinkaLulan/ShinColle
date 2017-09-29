@@ -1079,15 +1079,15 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.EquipBaseBelt.isHidden = true;
   			this.EquipHeadBase.isHidden = false;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.EquipBaseBelt.isHidden = false;
   			this.EquipHeadBase.isHidden = true;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.EquipBaseBelt.isHidden = false;
   			this.EquipHeadBase.isHidden = false;
   		break;
@@ -1099,17 +1099,17 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.EquipU01.isHidden = true;
   			this.EquipLegR01.isHidden = false;
   			this.EquipLegL01.isHidden = false;
   		break;
-  		case ID.State.EQUIP01a:
+  		case ID.ModelState.EQUIP01a:
   			this.EquipU01.isHidden = false;
   			this.EquipLegR01.isHidden = true;
   			this.EquipLegL01.isHidden = true;
   		break;
-  		case ID.State.EQUIP02a:
+  		case ID.ModelState.EQUIP02a:
   			this.EquipU01.isHidden = false;
   			this.EquipLegR01.isHidden = false;
   			this.EquipLegL01.isHidden = false;
@@ -1274,7 +1274,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 	    //equipU
 	    this.EquipU01.rotateAngleY = 2.4F;
 	    
-	    if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00a)
+	    if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.EQUIP00a)
 	    {
 	    	this.ArmRight01.rotateAngleX = -f1 * 0.4F + 0.1745F;
 		    this.ArmRight01.rotateAngleY = 0F;
@@ -1305,7 +1305,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 		this.AnchorR.rotateAngleX = f1 * 0.5F - 0.2F;
 		this.AnchorR.rotateAngleZ = 0.35F;
 		//cannon
-		if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+		if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
 		{
 			this.EquipRotateBase.rotateAngleX = 0F;
 			this.EquipLCBase02_1.rotateAngleY = 3.1415F;
@@ -1368,7 +1368,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 		    //arm 
 		    this.ArmLeft01.rotateAngleX = -0.7F;
 		    this.ArmLeft01.rotateAngleZ = 0.2618F;
-			if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00a)
+			if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.EQUIP00a)
 			{
 				this.ArmRight01.rotateAngleX -= 1.0472F;
 		    }
@@ -1389,7 +1389,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 			this.Hair04.rotateAngleX = -0.3491F;
 			this.Hair04.rotateAngleZ = 0.2618F;
 			//cannon
-			if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+			if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
 			{
 				this.EquipRotateBase.rotateAngleX -= 1.0472F;
 			}
@@ -1397,7 +1397,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
   		
 	    if (ent.getIsSitting() || ent.getIsRiding())
 	    {	//騎乘動作
-	    	if (ent.getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+	    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
 	    	{
 	    		GlStateManager.translate(0F, 0.4F, 0F);
 		    	//Body
@@ -1407,7 +1407,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 				//arm 
 			  	this.ArmLeft01.rotateAngleX = -0.2094F;
 			  	this.ArmLeft01.rotateAngleZ = 0.2618F;
-			  	if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00a)
+			  	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.EQUIP00a)
 			  	{
 			    	this.ArmRight01.rotateAngleX = 0.1745F;
 				    this.ArmRight01.rotateAngleY = 0F;
@@ -1459,7 +1459,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 			  	this.ArmLeft01.rotateAngleY = -0.5236F;
 			  	this.ArmLeft01.rotateAngleZ = -0.2618F;
 			  	this.ArmLeft02.rotateAngleX = -0.5236F;
-			  	if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00a)
+			  	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.EQUIP00a)
 			  	{
 			    	this.ArmRight01.rotateAngleX = 0F;
 				    this.ArmRight01.rotateAngleY = 0F;
@@ -1506,7 +1506,7 @@ public class ModelBattleshipYamato extends ShipModelBaseAdv
 				//arm 
 			  	this.ArmLeft01.rotateAngleX = -0.2094F;
 			  	this.ArmLeft01.rotateAngleZ = 0.2618F;
-			  	if (ent.getStateEmotion(ID.S.State2) > ID.State.EQUIP00a)
+			  	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.EQUIP00a)
 			  	{
 			    	this.ArmRight01.rotateAngleX = 0.1745F;
 				    this.ArmRight01.rotateAngleY = 0F;

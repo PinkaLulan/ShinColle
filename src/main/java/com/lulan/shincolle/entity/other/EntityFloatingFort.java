@@ -10,7 +10,8 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
@@ -18,7 +19,6 @@ import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -46,13 +46,6 @@ public class EntityFloatingFort extends BasicEntityAirplane
         	this.targetSelector = new TargetHelper.Selector(ship);
     		this.targetSorter = new TargetHelper.Sorter(ship);
     		
-        	//basic attr
-            this.atk = ship.getStateFinal(ID.ATK_H) * 0.75F;
-            this.atkSpeed = ship.getStateFinal(ID.SPD);
-            this.atkRange = 6F;
-            this.defValue = ship.getStateFinal(ID.DEF) * 0.75F;
-            this.movSpeed = ship.getStateFinal(ID.MOV) * 0.1F + 0.3F;
-            
             //AI flag
             this.numAmmoLight = 0;
             this.numAmmoHeavy = 1;
@@ -68,14 +61,27 @@ public class EntityFloatingFort extends BasicEntityAirplane
         	this.prevPosY = this.posY;
         	this.prevPosZ = this.posZ;
             this.setPosition(this.posX, this.posY, this.posZ);
-     
-    	    //設定基本屬性
-    	    getEntityAttribute(MAX_HP).setBaseValue(ship.getStateFinal(ID.HP)*0.1D);
-    		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.movSpeed);
+            
+            //calc attrs
+            this.shipAttrs = Attrs.copyAttrs(ship.getAttrs());
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HP, ship.getMaxHealth() * 0.1F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_L, ship.getAttackBaseDamage(1, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_H, ship.getAttackBaseDamage(2, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_AL, ship.getAttackBaseDamage(1, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.ATK_AH, ship.getAttackBaseDamage(2, target));
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.DEF, ship.getAttrs().getDefense() * 0.5F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.SPD, ship.getAttrs().getAttackSpeed());
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.MOV, ship.getAttrs().getMoveSpeed() * 0.1F + 0.3F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HIT, 6F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.DODGE, this.shipAttrs.getAttrsBuffed(ID.Attrs.DODGE) + 0.3F);
+    		
+    		//apply attrs to entity
+    	    getEntityAttribute(MAX_HP).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.HP));
+    		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.MOV));
     		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64D);
     		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
     		if (this.getHealth() < this.getMaxHealth()) this.setHealth(this.getMaxHealth());
-    				
+     
     		//設定AI
     		this.shipNavigator = new ShipPathNavigate(this);
     		this.shipMoveHelper = new ShipMoveHelper(this, 45F);
@@ -168,13 +174,13 @@ public class EntityFloatingFort extends BasicEntityAirplane
         //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
         for(Entity ent : hitList)
         {
-        	atk = this.atk;
+        	atk = this.shipAttrs.getAttackDamageHeavy();
         	
         	//check target attackable
       		if (!TargetHelper.checkUnattackTargetList(ent))
       		{
       			//calc equip special dmg: AA, ASM
-      			atk = CalcHelper.calcDamageBySpecialEffect(this, ent, atk, 0);
+      			atk = CombatHelper.modDamageByAdditionAttrs(this.host, ent, atk, 0);
             	
             	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
             	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
@@ -185,24 +191,14 @@ public class EntityFloatingFort extends BasicEntityAirplane
             			atk = 0F;
             		}
             		
-        			//calc critical, only for type:ship
-            		if (this.rand.nextFloat() < host2.getEffectEquip(ID.EquipEffect.CRI))
-            		{
-            			atk *= 3F;
-                		//spawn critical particle at host position
-                		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-                    	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
-                	}
-            		
-              		//calc damage to player
-              		if (ent instanceof EntityPlayer)
-              		{
-              			atk *= 0.25F;
-              			if (atk > 59F) atk = 59F;	//same with TNT
-              		}
-              		
-              		//check friendly fire
-            		if (!TeamHelper.doFriendlyFire(this.host, ent)) atk = 0F;
+            		 //roll miss, cri, dhit, thit
+            		atk = CombatHelper.applyCombatRateToDamage(this.host, ent, false, 1F, atk);
+        	  		
+        	  		//damage limit on player target
+            		atk = CombatHelper.applyDamageReduceOnPlayer(ent, atk);
+        	  		
+        	  		//check friendly fire
+        			if (!TeamHelper.doFriendlyFire(this.host, ent)) atk = 0F;
             		
             		//對entity造成傷害
                 	ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), atk);
@@ -234,6 +230,6 @@ public class EntityFloatingFort extends BasicEntityAirplane
 	{
 		return ID.ShipMisc.FloatingFort;
 	}
-
-
+	
+	
 }

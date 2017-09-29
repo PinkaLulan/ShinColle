@@ -388,7 +388,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion
     
     private void isKisaragi(BasicEntityShip ent)
     {
-		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
 		{
 			k00.isHidden = false;
 		}

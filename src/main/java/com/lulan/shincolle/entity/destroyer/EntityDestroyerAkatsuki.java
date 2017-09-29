@@ -52,7 +52,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		super(world);
 		this.setSize(0.5F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerAkatsuki);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerAkatsuki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
@@ -113,8 +113,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   				if (this.riderType > 0)
 				{
   					this.addMoraleToRider();
-  	  				int m = this.getStateMinor(ID.M.Morale);
-  	  				if (m < 7000) this.setStateMinor(ID.M.Morale, m + 100);
+  	  				if (this.getMorale() < (int)(ID.Morale.L_Excited * 1.5F)) this.addMorale(100);
 				}
   				
   				if (this.ticksExisted % 128 == 0)
@@ -146,7 +145,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 1)
+  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 1)
   				{
   					double smokeY = posY + 1.4D;
   					float addz = 0F;
@@ -266,17 +265,17 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 	{
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
-		case ID.State.EQUIP00:
-			setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+		case ID.ModelState.EQUIP00:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 		break;
-		case ID.State.EQUIP01:
-			setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+		case ID.ModelState.EQUIP01:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}
@@ -384,8 +383,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   		{
   			if (rider instanceof BasicEntityShip)
   			{
-  				int m = ((BasicEntityShip) rider).getStateMinor(ID.M.Morale);
-  				if (m < 7000) ((BasicEntityShip) rider).setStateMinor(ID.M.Morale, m + 100);
+  				if (((BasicEntityShip) rider).getMorale() < (int)(ID.Morale.L_Excited * 1.5F)) ((BasicEntityShip) rider).addMorale(100);
   				
   				//set rider type to riders
   				if (rider instanceof IShipRiderType)
@@ -497,6 +495,15 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 	{
 		this.ridingState = state;
 	}
-
-
+	
+	//increase inventory size
+  	@Override
+  	public void calcShipAttributesAddEquip()
+  	{
+  		super.calcShipAttributesAddEquip();
+  		
+  		this.StateMinor[ID.M.DrumState] = 2;
+  	}
+  	
+  	
 }

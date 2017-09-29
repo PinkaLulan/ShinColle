@@ -1,7 +1,6 @@
 package com.lulan.shincolle.entity;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.base.Predicate;
@@ -15,14 +14,16 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -100,7 +101,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
     @Override
 	public void moveEntityWithHeading(float strafe, float forward)
     { 	
-        this.moveRelative(strafe, forward, this.movSpeed * 0.4F); //水中的速度計算(含漂移效果)
+        this.moveRelative(strafe, forward, this.shipAttrs.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
         this.move(this.motionX, this.motionY, this.motionZ);
 
         this.motionX *= 0.91D;
@@ -301,7 +302,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
         		ParticleHelper.spawnAttackParticleAt(posX-range+this.rand.nextDouble()*range*2D, posY+this.height*0.3D+this.rand.nextDouble()*0.3D, posZ-range+this.rand.nextDouble()*range*2D, 1.5D, 0D, 0D, (byte)43);
         	}
         	
-        	if (this.deathTime >= 79)
+        	if (this.deathTime >= 89)
         	{
         		float ran1, ran2;
         		
@@ -320,7 +321,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
     	}
         
         //dead particle
-        if (this.deathTime == 80)
+        if (this.deathTime == 90)
         {
         	//play sound
         	this.playSound(ModSounds.SHIP_EXPLODE, ConfigHandler.volumeFire, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
@@ -340,7 +341,17 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 	@Override
   	public float getAttackBaseDamage(int type, Entity target)
   	{
-  		return CalcHelper.calcDamageBySpecialEffect(this.host, target, this.atk, 0);
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  		case 3:  //light aircraft
+  			return CombatHelper.modDamageByAdditionAttrs(this.host, target, this.shipAttrs.getAttackDamageAir(), 0);
+  		case 2:  //heavy cannon
+  		case 4:  //heavy aircraft
+  			return this.shipAttrs.getAttackDamageAirHeavy();
+		default: //melee
+			return this.shipAttrs.getAttackDamageAir() * 0.125F;
+  		}
   	}
 
 	//light attack
@@ -358,72 +369,34 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
   		if (numAmmoLight > 0) numAmmoLight--;
 
   		//get attack value
-  		float atkLight = getAttackBaseDamage(1, target);
+  		float atk = getAttackBaseDamage(1, target);
   		
   		Entity host2 = (Entity) this.host;
 		
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
-	    applyParticleAtAttacker(1, target, new float[4]);
+	    applyParticleAtAttacker(1, target, Dist4d.ONE);
 	    
-		//calc miss chance, if not miss, calc cri/multi hit
-		float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);
-        missChance -= this.host.getEffectEquip(ID.EquipEffect.MISS);	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+	    
+	    //roll miss, cri, dhit, thit
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
   		
-        //calc miss chance
-        if (this.rand.nextFloat() < missChance)
-        {
-        	atkLight = 0;	//still attack, but no damage
-        	applyParticleSpecialEffect(0);        	
-        }
-        else
-        {
-        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-        	//calc critical
-        	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.CRI))
-        	{
-        		atkLight *= 1.5F;
-        		applyParticleSpecialEffect(1);
-        	}
-        	else
-        	{
-        		//calc double hit
-            	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.DHIT))
-            	{
-            		atkLight *= 2F;
-            		applyParticleSpecialEffect(2);
-            	}
-            	else
-            	{
-            		//calc double hit
-                	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.THIT))
-                	{
-                		atkLight *= 3F;
-                		applyParticleSpecialEffect(3);
-                	}
-            	}
-        	}
-        }
-        
-  		//calc damage to player
-  		if (target instanceof EntityPlayer)
-  		{
-  			atkLight *= 0.25F;
-  			if (atkLight > 59F) atkLight = 59F;	//same with TNT
-  		}
+  		//damage limit on player target
+	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
   		
   		//check friendly fire
-		if (!TeamHelper.doFriendlyFire(this, target)) atkLight = 0F;
-
+		if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
+		
 	    //並且回傳是否成功傷害到目標
-  		boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
+  		boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 	    
 	    //if attack success
 	    if (isTargetHurt)
 	    {
 	    	applySoundAtTarget(1, target);
-	        applyParticleAtTarget(0, target, new float[4]);
+	        applyParticleAtTarget(0, target, Dist4d.ONE);
 	        
 	        if (ConfigHandler.canFlare && this.host instanceof BasicEntityShip) ((BasicEntityShip)this.host).flareTarget(target);
         }
@@ -441,33 +414,25 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 		float atk = getAttackBaseDamage(2, target);
 		float kbValue = 0.15F;
 		
-		//計算目標距離
-		float[] distVec = new float[4];
-		float tarX = (float) target.posX;
-		float tarY = (float) target.posY;
-		float tarZ = (float) target.posZ;
-		
-		distVec[0] = tarX - (float) this.posX;
-        distVec[1] = tarY - (float) this.posY;
-        distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+
         //play sound and particle
         applySoundAtAttacker(2, target);
 	    applyParticleAtAttacker(2, target, distVec);
 		
-        //calc miss chance
-	    float missChance = 0.25F - 0.001F * this.host.getStateMinor(ID.M.ShipLevel);
-        missChance -= this.host.getEffectEquip(ID.EquipEffect.MISS);	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;
-       
-        if (this.rand.nextFloat() < missChance)
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	
-        	applyParticleSpecialEffect(0);  //miss particle
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
         //spawn missile
@@ -574,7 +539,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
   	}
   	
 	@Override
-  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         

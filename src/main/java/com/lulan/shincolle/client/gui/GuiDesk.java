@@ -1201,7 +1201,7 @@ public class GuiDesk extends GuiContainer
 					
 					int ix = 44;
 					
-					switch (EntityHelper.getMoraleLevel(s2.getStateMinor(ID.M.Morale)))
+					switch (EntityHelper.getMoraleLevel(s2.getMorale()))
 					{
 					case ID.Morale.Excited:
 						ix = 0;
@@ -2096,7 +2096,7 @@ public class GuiDesk extends GuiContainer
     			
     			this.iconXY = new int[2][3];
     			this.iconXY[0] = Values.ShipTypeIconMap.get((byte)this.shipType);
-    			this.iconXY[1] = Values.ShipNameIconMap.get((short)this.shipClass);
+    			this.iconXY[1] = Values.ShipNameIconMap.get(this.shipClass);
             }
         }
 	}
@@ -2106,7 +2106,7 @@ public class GuiDesk extends GuiContainer
 		if (this.shipModel != null && this.shipModel.canSummonMounts())
 		{
 			//summon mount if emotion state >= equip00
-  	  		if (this.shipModel.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+  	  		if (this.shipModel.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
   	  		{
   	  			if (!this.shipModel.isRiding())
   	  			{

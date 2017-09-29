@@ -345,7 +345,7 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
 	public void showEquip(IShipEmotion ent)
 	{
 	   	//equip display
-    	if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
     	{
     		this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
@@ -363,7 +363,7 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
     	}
     	
     	//hair display
-    	if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
+    	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
     	{
     		this.HeadTail0.isHidden = false;
     	}

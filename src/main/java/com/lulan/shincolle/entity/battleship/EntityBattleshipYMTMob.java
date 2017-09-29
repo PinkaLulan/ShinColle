@@ -9,11 +9,13 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
@@ -30,13 +32,13 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipYamato);
         this.smokeX = 0F;
         this.smokeY = 0F;
         
 		//model display
-		this.setStateEmotion(ID.S.State2, ID.State.EQUIP02a, false);
-		this.setStateEmotion(ID.S.State, ID.State.EQUIP02, false);
+		this.setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, false);
+		this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, false);
 	}
 	
 	@Override
@@ -115,21 +117,8 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
   	public boolean attackEntityWithHeavyAmmo(Entity target)
   	{	
   		//get attack value
-  		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, this.atk * 3F, 3);
-		
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
-		float tarZ = (float)target.posZ;
-		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)(this.posY + this.height * 0.5F) + this.scaleLevel*0.5F + 0.75F;
-		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        if (distSqrt < 0.001F) distSqrt = 0.001F; //prevent large dXYZ
-        float dX = distX / distSqrt;
-        float dY = distY / distSqrt;
-        float dZ = distZ / distSqrt;
-
+  		float atk = CombatHelper.modDamageByAdditionAttrs(this, target, this.getAttackBaseDamage(2, target), 3);
+  		
         //play entity attack sound
         if (this.getRNG().nextInt(10) > 7)
         {
@@ -141,16 +130,19 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
         
         if (getStateEmotion(ID.S.Phase) > 0)
         {	//spawn beam particle & entity
+            //calc dist to target
+            Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+            
         	//shot sound
         	this.playSound(ModSounds.SHIP_YAMATO_SHOT, ConfigHandler.volumeFire, 1F);
         	
         	//spawn beam entity
             EntityProjectileBeam beam = new EntityProjectileBeam(this.world);
-            beam.initAttrs(this, 0, dX, dY, dZ, atk, 0.12F);
+            beam.initAttrs(this, 0, (float)distVec.x, (float)distVec.y, (float)distVec.z, atk, 0.12F);
             this.world.spawnEntity(beam);
             
             //spawn beam particle
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, beam, dX, dY, dZ, 2, true), point);
+            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, beam, (float)distVec.x, (float)distVec.y, (float)distVec.z, 2, true), point);
         	
         	this.setStateEmotion(ID.S.Phase, 0, true);
         	return true;
@@ -173,7 +165,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 	}
   	
 	@Override
-	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
 	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         

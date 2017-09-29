@@ -1,10 +1,10 @@
 package com.lulan.shincolle.ai;
 
-import net.minecraft.entity.Entity;
-
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.utility.TargetHelper;
+
+import net.minecraft.entity.Entity;
 
 /** Set attack target by revenge target
  * 

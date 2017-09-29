@@ -8,12 +8,15 @@ import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
@@ -21,15 +24,13 @@ import net.minecraft.world.World;
 public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipInvisible
 {
 
-	private static float ilevel = 35F;
-	
 	
 	public EntitySubmRo500Mob(World world)
 	{
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineRo500);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineRo500);
         
 		//model display
         this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
@@ -110,26 +111,18 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   	public boolean attackEntityWithAmmo(Entity target)
   	{
 		//get attack value
-		float atk = this.getAttackDamage();
+		float atk = this.getAttrs().getAttackDamage();
 		float kbValue = 0.15F;
 		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		float launchPos = (float) posY + height * 0.75F;
 		
-		//計算目標距離
-		float[] distVec = new float[4];
-		float tarX = (float) target.posX;
-		float tarY = (float) target.posY;
-		float tarZ = (float) target.posZ;
-		
-		distVec[0] = tarX - (float) this.posX;
-        distVec[1] = tarY - (float) this.posY;
-        distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec[3] < 4F)
+        if (distVec.distance < 5D)
         {
         	isDirect = true;
         }
@@ -144,14 +137,18 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
         applySoundAtAttacker(2, target);
 	    applyParticleAtAttacker(2, target, distVec);
 		
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        if (this.rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	
-        	applyParticleSpecialEffect(0);  //miss particle
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
         //spawn missile
@@ -176,14 +173,11 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
   	@Override
 	public float getInvisibleLevel()
   	{
-		return this.ilevel;
+		return 0.35F;
 	}
 	
 	@Override
-	public void setInvisibleLevel(float level)
-	{
-		this.ilevel = level;
-	}
+	public void setInvisibleLevel(float level) {}
 	
 	@Override
 	public double getShipFloatingDepth()
@@ -191,5 +185,5 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 		return 1.2D + this.scaleLevel * 0.3D;
 	}
   	
-
+	
 }

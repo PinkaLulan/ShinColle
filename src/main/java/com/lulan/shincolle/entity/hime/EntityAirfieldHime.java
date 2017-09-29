@@ -12,7 +12,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
@@ -29,7 +29,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.AirfieldHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.AirfieldHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
@@ -162,20 +162,20 @@ public class EntityAirfieldHime extends BasicEntityShipCV
 		{
 			switch(getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
 			break;
-			case ID.State.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02a, true);
+			case ID.ModelState.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, true);
 			break;
-			case ID.State.EQUIP02a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP02a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -184,15 +184,15 @@ public class EntityAirfieldHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 				this.setPositionAndUpdate(posX, posY + 2D, posZ);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}
@@ -204,17 +204,17 @@ public class EntityAirfieldHime extends BasicEntityShipCV
   		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
   		case 2:  //heavy cannon
-  			return StateFinal[ID.ATK_H];
+  			return this.shipAttrs.getAttackDamageHeavy();
   		case 3:  //light aircraft
-  			return StateFinal[ID.ATK_AL];
+  			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft
-  			return StateFinal[ID.ATK_AH];
+  			return this.shipAttrs.getAttackDamageAirHeavy();
 		default: //melee
-			return StateFinal[ID.ATK];
+			return this.shipAttrs.getAttackDamage();
   		}
   	}
-
-
+	
+	
 }

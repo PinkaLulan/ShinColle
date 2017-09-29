@@ -250,7 +250,7 @@ public class EventHandler
 	    	{
 	    		BasicEntityShip ship = (BasicEntityShip) ent;
 	    		ship.addKills();
-	    		ship.setStateMinor(ID.M.Morale, ship.getStateMinor(ID.M.Morale) + 2);
+	    		ship.addMorale(2);
 	    	}
 	    	//由召喚物擊殺
 	    	else if (ent instanceof IShipAttackBase)
@@ -422,7 +422,7 @@ public class EventHandler
 //			ships.removeIf(s -> ship.equals(s));
 //		}
 //	}
-	
+
 	/** on entity attack event, BOTH SIDE EVENT
 	 *  set ship's revenge target if player attack or be attacked
 	 *  

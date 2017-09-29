@@ -195,7 +195,7 @@ public class EntityAIShipRangeTarget extends EntityAIBase
     
     private void updateRange()
     {
-    	 this.range = (int) this.host.getAttackRange();
+    	 this.range = (int) this.host.getAttrs().getAttackRange();
          
     	 //min range
     	 if (this.range < 2)

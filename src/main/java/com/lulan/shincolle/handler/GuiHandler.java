@@ -66,7 +66,7 @@ public class GuiHandler implements IGuiHandler
             	EntityHelper.addPlayerColledShip(cid, player);
             	
             	//sync ship when gui opened
-            	((BasicEntityShip) entity).sendSyncPacketAllValue();
+            	((BasicEntityShip) entity).sendSyncPacketAll();
 				
             	return new ContainerShipInventory(player.inventory,(BasicEntityShip) entity);
 			}

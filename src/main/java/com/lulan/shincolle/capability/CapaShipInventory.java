@@ -177,7 +177,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		//change equip slot
 		if (!this.host.world.isRemote && i < 6)
 		{
-			this.host.calcEquipAndUpdateState();  //update equip and attribute value
+			this.host.calcShipAttributes(2, true);  //update equip and attribute value
 		}
 	}
 	
@@ -198,7 +198,7 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		//if change equip slot
 		if (!this.host.world.isRemote && i < 6)
 		{
-			this.host.calcEquipAndUpdateState();  //update equip and attribute value
+			this.host.calcShipAttributes(2, true);  //update equip and attribute value
 		}
 	}
 

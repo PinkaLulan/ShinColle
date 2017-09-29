@@ -20,7 +20,7 @@ public class EntityCATakao extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 1.75F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserTakao);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserTakao);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
@@ -57,7 +57,7 @@ public class EntityCATakao extends BasicEntityShipSmall
 	{
 		if (this.isSitting())
 		{
-			if (getStateEmotion(ID.S.State) > ID.State.NORMAL)
+			if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
 			{
 				return this.height * 0.42F;
 			}
@@ -85,13 +85,13 @@ public class EntityCATakao extends BasicEntityShipSmall
 		if (isSneaking)
 		{
 			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP02a) i = ID.State.NORMALa;
+			if (i > ID.ModelState.EQUIP02a) i = ID.ModelState.NORMALa;
 			setStateEmotion(ID.S.State2, i, true);
 		}
 		else
 		{
 			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.State.EQUIP02) i = ID.State.NORMAL;
+			if (i > ID.ModelState.EQUIP02) i = ID.ModelState.NORMAL;
 			setStateEmotion(ID.S.State, i, true);
 		}
 	}

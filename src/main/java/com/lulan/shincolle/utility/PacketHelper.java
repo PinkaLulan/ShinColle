@@ -1,9 +1,11 @@
 package com.lulan.shincolle.utility;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -28,10 +30,137 @@ public class PacketHelper
 
 	public PacketHelper() {}
 	
+	/**
+	 * send array
+	 * 0:size, 1~N:data
+	 */
+	public static void sendArrayByte(ByteBuf buf, byte[] data)
+	{
+		if (data != null)
+		{
+			//send size
+			buf.writeInt(data.length);
+			
+			//send data
+			for (byte value : data) buf.writeByte(value);
+		}
+		else
+		{
+			buf.writeInt(-1);
+		}
+	}
+	
+	/**
+	 * send array
+	 * 0:size, 1~N:data
+	 */
+	public static void sendArrayBoolean(ByteBuf buf, boolean[] data)
+	{
+		if (data != null)
+		{
+			//send size
+			buf.writeInt(data.length);
+			
+			//send data
+			for (boolean value : data) buf.writeBoolean(value);
+		}
+		else
+		{
+			buf.writeInt(-1);
+		}
+	}
+	
+	/**
+	 * send array
+	 * 0:size, 1~N:data
+	 */
+	public static void sendArrayInt(ByteBuf buf, int[] data)
+	{
+		if (data != null)
+		{
+			//send size
+			buf.writeInt(data.length);
+			
+			//send data
+			for (int value : data) buf.writeInt(value);
+		}
+		else
+		{
+			buf.writeInt(-1);
+		}
+	}
+	
+	/**
+	 * send array
+	 * 0:size, 1~N:data
+	 */
+	public static void sendArrayFloat(ByteBuf buf, float[] data)
+	{
+		if (data != null)
+		{
+			//send size
+			buf.writeInt(data.length);
+			
+			//send data
+			for (float value : data) buf.writeFloat(value);
+		}
+		else
+		{
+			buf.writeInt(-1);
+		}
+	}
+	
+	/**
+	 * send array
+	 * 0:size, 1~N:data
+	 */
+	public static void sendArrayDouble(ByteBuf buf, double[] data)
+	{
+		if (data != null)
+		{
+			//send size
+			buf.writeInt(data.length);
+			
+			//send data
+			for (double value : data) buf.writeDouble(value);
+		}
+		else
+		{
+			buf.writeInt(-1);
+		}
+	}
+	
+	/**
+	 * send integer map
+	 * 0:size, 1~N:data: key1, value1, key2, value2, ...
+	 */
+	public static void sendMapInt(ByteBuf buf, Map<Integer, Integer> data)
+	{
+		if (data != null)
+		{
+			Iterator iter = data.entrySet().iterator();
+			
+			//send size
+			buf.writeInt(data.size());
+			
+			//send data
+			while (iter.hasNext())
+			{
+				Map.Entry<Integer, Integer> entry = (Entry<Integer, Integer>) iter.next();
+				buf.writeInt(entry.getKey());
+				buf.writeInt(entry.getValue());
+			}
+		}
+		else
+		{
+			buf.writeInt(-1);
+		}
+	}
+	
 	/** send integer list data
 	 *  stream: 0:size 1~N:data
 	 */
-	public static void sendListInt(ByteBuf buf, List data)
+	public static void sendListInt(ByteBuf buf, List<Integer> data)
 	{
 		if (data != null)
 		{
@@ -57,7 +186,7 @@ public class PacketHelper
 	 *  
 	 *  NOTE: 不能發送null string, 否則會跳一堆NPE (只會貼log 不會crash)
 	 */
-	public static void sendListString(ByteBuf buf, List data)
+	public static void sendListString(ByteBuf buf, List<String> data)
 	{
 		if (data != null)
 		{
@@ -85,6 +214,26 @@ public class PacketHelper
 		{
 			buf.writeInt(-1);
 		}
+	}
+	
+	/** get int map data */
+	public static Map<Integer, Integer> readMapInt(ByteBuf buf)
+	{
+		Map<Integer, Integer> getMap = new HashMap<Integer, Integer>();
+		
+		//get size
+		int size = buf.readInt();
+		
+		//get data
+		if (size > 0)
+		{
+			for (int i = 0; i < size; ++i)
+			{
+				getMap.put(buf.readInt(), buf.readInt());
+			}
+		}
+		
+		return getMap;
 	}
 	
 	/** get int list data */
@@ -155,7 +304,21 @@ public class PacketHelper
 		return str;
 	}
 	
-	/** get float array data */
+	/** get double array data */
+	public static double[] readDoubleArray(ByteBuf buf)
+	{
+		int length = buf.readInt();
+		double[] array = new double[length];
+		
+		if (length > 0)
+		{
+			array = readDoubleArray(buf, length);
+		}
+		
+		return array;
+	}
+	
+	/** get double array data */
 	public static double[] readDoubleArray(ByteBuf buf, int length)
 	{
 		double[] array = new double[length];
@@ -163,6 +326,20 @@ public class PacketHelper
 		for (int i = 0; i < length; i++)
 		{
 			array[i] = buf.readDouble();
+		}
+		
+		return array;
+	}
+	
+	/** get int array data */
+	public static int[] readIntArray(ByteBuf buf)
+	{
+		int length = buf.readInt();
+		int[] array = new int[length];
+		
+		if (length > 0)
+		{
+			array = readIntArray(buf, length);
 		}
 		
 		return array;
@@ -182,6 +359,20 @@ public class PacketHelper
 	}
 	
 	/** get float array data */
+	public static float[] readFloatArray(ByteBuf buf)
+	{
+		int length = buf.readInt();
+		float[] array = new float[length];
+		
+		if (length > 0)
+		{
+			array = readFloatArray(buf, length);
+		}
+		
+		return array;
+	}
+	
+	/** get float array data */
 	public static float[] readFloatArray(ByteBuf buf, int length)
 	{
 		float[] array = new float[length];
@@ -194,7 +385,21 @@ public class PacketHelper
 		return array;
 	}
 	
-	/** get float array data */
+	/** get boolean array data */
+	public static boolean[] readBooleanArray(ByteBuf buf)
+	{
+		int length = buf.readInt();
+		boolean[] array = new boolean[length];
+		
+		if (length > 0)
+		{
+			array = readBooleanArray(buf, length);
+		}
+		
+		return array;
+	}
+	
+	/** get boolean array data */
 	public static boolean[] readBooleanArray(ByteBuf buf, int length)
 	{
 		boolean[] array = new boolean[length];
@@ -202,6 +407,20 @@ public class PacketHelper
 		for (int i = 0; i < length; i++)
 		{
 			array[i] = buf.readBoolean();
+		}
+		
+		return array;
+	}
+	
+	/** get byte array data */
+	public static byte[] readByteArray(ByteBuf buf)
+	{
+		int length = buf.readInt();
+		byte[] array = new byte[length];
+		
+		if (length > 0)
+		{
+			array = readByteArray(buf, length);
 		}
 		
 		return array;

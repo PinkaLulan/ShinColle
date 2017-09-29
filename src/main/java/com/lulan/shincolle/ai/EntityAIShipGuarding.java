@@ -119,7 +119,8 @@ public class EntityAIShipGuarding extends EntityAIBase
     {
     	//非坐下, 非騎乘, 非被綁, 非可跟隨, 非裝載中
     	if (host != null && !host.getIsRiding() && !host.getIsSitting() &&
-    		!host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1)
+    		!host.getStateFlag(ID.F.CanFollow) && host.getStateMinor(ID.M.CraneState) < 1 &&
+    		host.getStateMinor(ID.M.NumGrudge) > 0)
     	{
     		//get guard target
     		return checkGuardTarget();
@@ -136,7 +137,7 @@ public class EntityAIShipGuarding extends EntityAIBase
     	{
     		//非坐下, 非騎乘, 非被綁, 非可跟隨, 非裝載中
     		if (!host.getIsRiding() && !host.getIsSitting() && !host.getStateFlag(ID.F.CanFollow) &&
-    			host.getStateMinor(ID.M.CraneState) < 1)
+    			host.getStateMinor(ID.M.CraneState) < 1 && host.getStateMinor(ID.M.NumGrudge) > 0)
     		{
     			//還沒走進min follow range, 繼續走
 	        	if (this.distSq > this.minDistSq)
@@ -317,7 +318,7 @@ public class EntityAIShipGuarding extends EntityAIBase
     	if (this.ship != null)
     	{
     		//attack range = 70% normal range
-    		this.range = (int) this.ship.getAttackRange();
+    		this.range = (int) this.ship.getAttrs().getAttackRange();
     		
     		//檢查範圍, 使range2 > range1 > 1
             if (this.range < 1)
@@ -328,9 +329,9 @@ public class EntityAIShipGuarding extends EntityAIBase
     		this.rangeSq = this.range * this.range;
 
     		//attack delay
-    		this.maxDelayTime[0] = (int)(ConfigHandler.baseAttackSpeed[1] / (this.ship.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[1];
-    		this.maxDelayTime[1] = (int)(ConfigHandler.baseAttackSpeed[2] / (this.ship.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[2];
-    		this.maxDelayTime[2] = (int)(ConfigHandler.baseAttackSpeed[3] / (this.ship.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[3];
+    		this.maxDelayTime[0] = (int)(ConfigHandler.baseAttackSpeed[1] / (this.ship.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[1];
+    		this.maxDelayTime[1] = (int)(ConfigHandler.baseAttackSpeed[2] / (this.ship.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[2];
+    		this.maxDelayTime[2] = (int)(ConfigHandler.baseAttackSpeed[3] / (this.ship.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[3];
     		
     		//aim time (no change)
     		this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;

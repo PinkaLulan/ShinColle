@@ -18,7 +18,7 @@ public class EntityCARi extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.75F, 1.7F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.HeavyCruiserRI);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserRI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
@@ -52,15 +52,15 @@ public class EntityCARi extends BasicEntityShipSmall
 	
 	//晚上時額外增加屬性
 	@Override
-	public void calcShipAttributes()
+	public void calcShipAttributesAddRaw()
 	{
+		super.calcShipAttributesAddRaw();
+		
 		if (!this.world.isDaytime())
 		{
-			EffectEquip[ID.EquipEffect.CRI] = EffectEquip[ID.EquipEffect.CRI] + 0.15F;
-			EffectEquip[ID.EquipEffect.MISS] = EffectEquip[ID.EquipEffect.MISS] + 0.15F;
+			this.getAttrs().setAttrsRaw(ID.Attrs.CRI, this.getAttrs().getAttrsRaw(ID.Attrs.CRI) + 0.15F);
+			this.getAttrs().setAttrsRaw(ID.Attrs.MISS, this.getAttrs().getAttrsRaw(ID.Attrs.MISS) + 0.15F);
 		}
-		
-		super.calcShipAttributes();	
 	}
 
     @Override
@@ -111,14 +111,14 @@ public class EntityCARi extends BasicEntityShipSmall
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;	
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -126,14 +126,14 @@ public class EntityCARi extends BasicEntityShipSmall
 		{
 			switch(getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}

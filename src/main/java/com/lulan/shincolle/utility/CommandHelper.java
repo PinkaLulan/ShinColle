@@ -102,7 +102,7 @@ public class CommandHelper
 				sender.sendMessage(new TextComponentString("UID: "+TextFormatting.GREEN+ship.getShipUID()));
 				sender.sendMessage(new TextComponentString("Owner UID: "+TextFormatting.RED+ship.getPlayerUID()));
 				sender.sendMessage(new TextComponentString("Owner UUID: "+TextFormatting.YELLOW+EntityHelper.getPetPlayerUUID(ship)));
-				sender.sendMessage(new TextComponentString("Morale: "+TextFormatting.YELLOW+ship.getStateMinor(ID.M.Morale)));
+				sender.sendMessage(new TextComponentString("Morale: "+TextFormatting.YELLOW+ship.getMorale()));
 			}
 		}
 	}

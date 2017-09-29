@@ -5,9 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
 import net.minecraft.entity.Entity;
@@ -125,76 +123,6 @@ public class CalcHelper
 		}
 	}
 	
-	/** damage calc by damage type 
-	 *  dmg: damage value
-	 *  typeAtk: attacker type id
-	 *  typeDef: defender type id
-	 *  modSet: use which damage modifier setting: 0:day 1:night 2+:no use
-	 */
-    public static float calcDamageByType(float dmg, int typeAtk, int typeDef, int modSet)
-    {
-    	//if type = undefined, return org damage
-    	if (typeAtk <= 0 || typeDef <= 0) return dmg;
-    	
-    	//get damage modifier
-    	float mod = 1F;
-    	
-    	if (modSet > 0)
-    	{
-    		mod = Values.ModDmgNight[typeAtk-1][typeDef-1];
-    	}
-    	else
-    	{
-    		mod = Values.ModDmgDay[typeAtk-1][typeDef-1];
-    	}
-//    	LogHelper.info("DEBUG : calc helper: org dmg "+dmg+" new dmg "+(dmg*mod));
-    	return dmg * mod;
-    }
-    
-    /** damage calc by special effect: AA, ASM
-     *  host: attacker
-     *  target: target
-     *  dmg: attack damage
-     *  type: 0:light 1:heavy 2:nagato 3:yamato
-     */
-    public static float calcDamageBySpecialEffect(IShipAttrs host, Entity target, float dmg, int type)
-    {
-    	float newDmg = dmg;
-    	float modEffect = 1F;
-  		
-  		//normal or special attack
-  		switch(type)
-  		{
-  		case 2:   //nagato heavy attack
-  			modEffect = 4F;
-  			break;
-  		case 3:   //yamato heavy attack
-  			modEffect = 1.5F;
-  			break;
-		default:  //normal attack
-			modEffect = 1F;
-			break;
-  		}
-  		
-  		//check target type
-  		int targettype = EntityHelper.checkEntityTypeForEquipEffect(target);
-  		
-  		if (targettype == 1)  //air mob
-  		{
-  			newDmg = (newDmg + host.getEffectEquip(ID.EquipEffect.AA)) * modEffect;
-  		}
-  		else if (targettype == 2)  //water mob
-  		{
-  			newDmg = (newDmg + host.getEffectEquip(ID.EquipEffect.ASM)) * modEffect;
-  		}
-  		else
-  		{
-  			newDmg *= modEffect;
-  		}
-  		
-  		return newDmg;
-    }
-    
     /** calc normal distribution
      *  f(x) = 1 / (s*sqrt(2*PI)) * exp(-(x-m)^2/(2*s^2))
      *  s = SD, m = mean
@@ -587,6 +515,6 @@ public class CalcHelper
 		
 		return newPos;
 	}
-    
+	
     
 }

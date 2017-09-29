@@ -224,12 +224,13 @@ public class EntityAIShipRangeAttack extends EntityAIBase
     
     private void updateAttackParms()
     {
-    	this.maxDelayLight = (int)(ConfigHandler.baseAttackSpeed[1] / (this.host.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[1];
-    	this.maxDelayHeavy = (int)(ConfigHandler.baseAttackSpeed[2] / (this.host.getAttackSpeed())) + ConfigHandler.fixedAttackDelay[2];
+    	this.maxDelayLight = (int)(ConfigHandler.baseAttackSpeed[1] / (this.host.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[1];
+    	this.maxDelayHeavy = (int)(ConfigHandler.baseAttackSpeed[2] / (this.host.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[2];
     	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
     	
-    	this.range = this.host.getAttackRange();
+    	this.range = this.host.getAttrs().getAttackRange();
         this.rangeSq = this.range * this.range;
     }
+    
     
 }

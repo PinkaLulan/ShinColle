@@ -7,26 +7,27 @@ import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisible {
+public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisible
+{
 
-	private static float ilevel = 30F;
-	
 	
 	public EntitySubmU511(World world)
 	{
 		super(world);
 		this.setSize(0.6F, 1.4F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.SubmarineU511);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineU511);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
@@ -110,26 +111,18 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		setCombatTick(this.ticksExisted);
 	
 		//get attack value
-		float atk = StateFinal[ID.ATK];
+		float atk = this.getAttrs().getAttackDamage();
 		float kbValue = 0.15F;
 		
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		float launchPos = (float) posY + height * 0.75F;
 		
-		//計算目標距離
-		float[] distVec = new float[4];
-		float tarX = (float) target.posX;
-		float tarY = (float) target.posY;
-		float tarZ = (float) target.posZ;
-		
-		distVec[0] = tarX - (float) this.posX;
-        distVec[1] = tarY - (float) this.posY;
-        distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
         
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec[3] < 4F)
+        if (distVec.distance < 5D)
         {
         	isDirect = true;
         }
@@ -144,18 +137,18 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
         applySoundAtAttacker(2, target);
 	    applyParticleAtAttacker(2, target, distVec);
 		
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-       
-        if (this.rand.nextFloat() < missChance)
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	
-        	applyParticleSpecialEffect(0);  //miss particle
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
         //spawn missile
@@ -189,31 +182,28 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   	@Override
 	public float getInvisibleLevel()
   	{
-		return this.ilevel;
+		return 0.3F;
 	}
 	
 	@Override
-	public void setInvisibleLevel(float level)
-	{
-		this.ilevel = level;
-	}
+	public void setInvisibleLevel(float level) {}
 
 	@Override
 	public void setShipOutfit(boolean isSneaking)
 	{
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
-		case ID.State.EQUIP00:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+		case ID.ModelState.EQUIP00:
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}
   	
-
+	
 }

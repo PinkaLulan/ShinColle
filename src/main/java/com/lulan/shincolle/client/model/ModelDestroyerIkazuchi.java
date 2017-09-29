@@ -453,15 +453,15 @@ public class ModelDestroyerIkazuchi extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.EquipBase.isHidden = true;
   			this.EquipHead01.isHidden = false;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.EquipBase.isHidden = false;
   			this.EquipHead01.isHidden = true;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.EquipBase.isHidden = false;
   			this.EquipHead01.isHidden = false;
   		break;
@@ -612,7 +612,7 @@ public class ModelDestroyerIkazuchi extends ShipModelBaseAdv
 	  	if (this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
 	  	this.EquipC05a.rotateAngleX = this.EquipC04a.rotateAngleX;
 	    
-	    if (ent.getStateEmotion(ID.S.State) < ID.State.EQUIP01)
+	    if (ent.getStateEmotion(ID.S.State) < ID.ModelState.EQUIP01)
 	    {
 	    	this.ArmLeft01.rotateAngleZ += 0.1F;
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;

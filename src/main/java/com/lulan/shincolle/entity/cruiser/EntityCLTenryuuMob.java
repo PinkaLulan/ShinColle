@@ -14,15 +14,16 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -47,7 +48,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.LightCruiserTenryuu);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.LightCruiserTenryuu);
 		this.targetSelector = new TargetHelper.SelectorForHostile(this);
 		this.remainAttack = 0;
 		this.skillMotion = Vec3d.ZERO;
@@ -152,12 +153,12 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 				this.playSound(ModSounds.SHIP_JET, ConfigHandler.volumeFire, this.getSoundPitch());
 			
 				//apply attack time
-				this.applyParticleAtAttacker(5, null, new float[0]);
+				this.applyParticleAtAttacker(5, null, Dist4d.ONE);
 			}
 			//draw movement blur
 			else if (this.attackTime3 == 3)
 			{
-				this.applyParticleAtTarget(5, null, new float[] {(float) this.skillMotion.xCoord, (float) this.skillMotion.yCoord, (float) this.skillMotion.zCoord});
+				this.applyParticleAtTarget(5, null, new Dist4d(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, 1D));
 			
 				//apply final attack sound
 				if (this.stateEmotion[ID.S.Phase] == 3)
@@ -220,7 +221,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 				this.damagedTarget.add(target);		//not attacked, add to attacked list
 			}
 			
-			float atk = CalcHelper.calcDamageBySpecialEffect(this, target, rawatk, 0);
+			float atk = CombatHelper.modDamageByAdditionAttrs(this, target, rawatk, 0);
 			
         	//目標不能是自己 or 主人, 且可以被碰撞
         	if (target.canBeCollidedWith() && EntityHelper.isNotHost(this, target))
@@ -232,47 +233,11 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
             	}
         		else
         		{
-        	        //calc miss -> crit -> double -> tripple
-        	  		if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.MISS))
-        	  		{
-        	          	atk = 0F;	//still attack, but no damage
-        	          	applyParticleSpecialEffect(0);
-        	  		}
-        	  		else
-        	  		{
-        	  			//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-        	  			//calc critical
-        	          	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.CRI))
-        	          	{
-        	          		atk *= 1.5F;
-        	          		applyParticleSpecialEffect(1);
-        	          	}
-        	          	else
-        	          	{
-        	          		//calc double hit
-        	              	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.DHIT))
-        	              	{
-        	              		atk *= 2F;
-        	              		applyParticleSpecialEffect(2);
-        	              	}
-        	              	else
-        	              	{
-        	              		//calc triple hit
-        	                  	if (rand.nextFloat() < this.getEffectEquip(ID.EquipEffect.THIT))
-        	                  	{
-        	                  		atk *= 3F;
-        	                  		applyParticleSpecialEffect(3);
-        	                  	}
-        	              	}
-        	          	}
-        	  		}
+        		    //roll miss, cri, dhit, thit
+        		    atk = CombatHelper.applyCombatRateToDamage(this, target, true, 1F, atk);
         	  		
-        	  		//calc damage to player
-        	  		if (target instanceof EntityPlayer)
-        	  		{
-        	  			atk *= 0.25F;
-        	  			if (atk > 59F) atk = 59F;	//same with TNT
-        	  		}
+        	  		//damage limit on player target
+        		    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
         	  		
         	  		//check friendly fire
         			if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
@@ -280,7 +245,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
         	  		//確認攻擊是否成功
         		    if (target.attackEntityFrom(DamageSource.causeMobDamage(this), atk))
         		    {
-        		    	applyParticleAtTarget(1, target, new float[0]);
+        		    	applyParticleAtTarget(1, target, Dist4d.ONE);
         		    	if (this.rand.nextInt(2) == 0) this.playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, ConfigHandler.volumeFire, this.getSoundPitch());
         		    	
         		        //push target
@@ -320,7 +285,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
   				this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
   	        }
   			
-  			applyParticleAtAttacker(2, target, new float[0]);
+  			applyParticleAtAttacker(2, target, Dist4d.ONE);
   			
   			//charging
   			this.stateEmotion[ID.S.Phase] = -1;
@@ -348,7 +313,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		else
 		{
 			//if target dead or too far away, find new target
-			if (!target.isEntityAlive() || target.getDistanceSqToEntity(this) > (this.getAttackRange() * this.getAttackRange()))
+			if (!target.isEntityAlive() || target.getDistanceSqToEntity(this) > (this.getAttrs().getAttackRange() * this.getAttrs().getAttackRange()))
 			{
 				if (this.remainAttack > 0)
 				{
@@ -482,7 +447,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 	}
 	
 	@Override
-  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
@@ -533,18 +498,18 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
   		switch (type)
   		{
   		case 1:  //light attack
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, this.atk, 0);
-  		case 2:  //heavy attack: horizontal
-  			return this.atk * 3F * 0.4F;
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+  	  	case 2:  //heavy attack: horizontal
+  			return this.shipAttrs.getAttackDamageHeavy() * 0.4F;
   		case 3:  //heavy attack: final
-  			return this.atk * 3F;
+  			return this.shipAttrs.getAttackDamageHeavy();
 		default: //melee
-			return this.atk;
+			return this.shipAttrs.getAttackDamage();
   		}
   	}
 	
 	@Override
-  	public void applyParticleAtTarget(int type, Entity target, float[] vec)
+  	public void applyParticleAtTarget(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
@@ -558,7 +523,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
   		case 4:  //heavy aircraft
   		break;
   		case 5:  //high speed movement
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 44, posX+skillMotion.xCoord*2D, posY+height*0.4D+skillMotion.yCoord*2.5D, posZ+skillMotion.zCoord*2D, vec[0], vec[1], vec[2], false), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 44, posX+skillMotion.xCoord*2D, posY+height*0.4D+skillMotion.yCoord*2.5D, posZ+skillMotion.zCoord*2D, distVec.x, distVec.y, distVec.z, false), point);
 		break;
 		default: //melee
     		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
@@ -591,6 +556,6 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		break;
   		}
   	}
-
-
+	
+	
 }

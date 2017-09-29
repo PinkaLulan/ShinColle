@@ -364,7 +364,7 @@ public class ModelDestroyerI extends ModelBase implements IModelEmotion
 
 	private void isKisaragi(BasicEntityShip ent)
 	{
-		if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP00)
+		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
 		{
 			PKisaragi00.isHidden = false;
 			PKisaragi01.isHidden = false;

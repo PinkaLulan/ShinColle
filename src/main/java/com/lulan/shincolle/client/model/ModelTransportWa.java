@@ -545,19 +545,19 @@ public class ModelTransportWa extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.EquipBase.isHidden = true;
   			this.GlowEquipBase.isHidden = true;
   			this.EquipHeadBase.isHidden = false;
   			this.Ahoke.isHidden = true;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.EquipBase.isHidden = false;
   			this.GlowEquipBase.isHidden = false;
   			this.EquipHeadBase.isHidden = true;
   			this.Ahoke.isHidden = false;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.EquipBase.isHidden = false;
   			this.GlowEquipBase.isHidden = false;
   			this.EquipHeadBase.isHidden = false;
@@ -573,7 +573,7 @@ public class ModelTransportWa extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.EquipBase.isHidden = false;
   			this.GlowEquipBase.isHidden = false;
   			this.LegLeft01.isHidden = true;
@@ -703,7 +703,7 @@ public class ModelTransportWa extends ShipModelBaseAdv
 	  	this.EquipTubeR01.rotateAngleX = -angleX * 0.08F - 0.35F;
 	    
 	    //fly mode
-	    if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
+	    if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
 	    {
 	    	//body
 	    	this.Cloth04.rotateAngleX += 0.23F;
@@ -760,7 +760,7 @@ public class ModelTransportWa extends ShipModelBaseAdv
 	    	float ax = MathHelper.cos(f2 * 0.5F) * 0.5F;
 	    	
 	    	//fly mode
-		    if (ent.getStateEmotion(ID.S.State2) > ID.State.NORMALa)
+		    if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
 		    {
 		    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    	{

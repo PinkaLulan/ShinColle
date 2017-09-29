@@ -24,6 +24,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *    11: 15-Inch Fortress Gun
  *    12: 5-inch Coastal Gun
  *    13: 8-inch Long Range Twin Cannon
+ *    
+ * todo
+ *   12in triple
+ *   15in quadruple
+ *   Abyssal 15inch Late Model Twin Gun Mount
  */
 public class EquipCannon extends BasicEquip
 {

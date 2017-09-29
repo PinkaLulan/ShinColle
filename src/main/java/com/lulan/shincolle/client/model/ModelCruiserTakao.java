@@ -641,15 +641,15 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.Hat01.isHidden = false;
   			this.EquipBag00.isHidden = true;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.Hat01.isHidden = true;
   			this.EquipBag00.isHidden = false;
   		break;
-  		case ID.State.EQUIP02:
+  		case ID.ModelState.EQUIP02:
   			this.Hat01.isHidden = false;
   			this.EquipBag00.isHidden = false;
   		break;
@@ -661,21 +661,21 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.EquipBase.isHidden = false;
   			this.ShoeL01.isHidden = true;
   			this.ShoeR01.isHidden = true;
   			this.ShoeL03.isHidden = false;
   			this.ShoeL03_1.isHidden = false;
   		break;
-  		case ID.State.EQUIP01a:
+  		case ID.ModelState.EQUIP01a:
   			this.EquipBase.isHidden = true;
   			this.ShoeL01.isHidden = false;
   			this.ShoeR01.isHidden = false;
   			this.ShoeL03.isHidden = true;
   			this.ShoeL03_1.isHidden = true;
   		break;
-  		case ID.State.EQUIP02a:
+  		case ID.ModelState.EQUIP02a:
   			this.EquipBase.isHidden = false;
   			this.ShoeL01.isHidden = false;
   			this.ShoeR01.isHidden = false;

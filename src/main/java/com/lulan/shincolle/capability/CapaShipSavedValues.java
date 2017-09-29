@@ -2,6 +2,7 @@ package com.lulan.shincolle.capability;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.NBTHelper;
 
@@ -73,12 +74,12 @@ public class CapaShipSavedValues
 		
 		//save BonusPoint
 		nbtExt.setTag("Point", nbtExt_add3);	
-		nbtExt_add3.setByte("HP", ship.getBonusPoint(ID.HP));
-		nbtExt_add3.setByte("ATK", ship.getBonusPoint(ID.ATK));
-		nbtExt_add3.setByte("DEF", ship.getBonusPoint(ID.DEF));
-		nbtExt_add3.setByte("SPD", ship.getBonusPoint(ID.SPD));
-		nbtExt_add3.setByte("MOV", ship.getBonusPoint(ID.MOV));
-		nbtExt_add3.setByte("HIT", ship.getBonusPoint(ID.HIT));
+		nbtExt_add3.setByte("HP", ship.getAttrs().getAttrsBonus(ID.AttrsBase.HP));
+		nbtExt_add3.setByte("ATK", ship.getAttrs().getAttrsBonus(ID.AttrsBase.ATK));
+		nbtExt_add3.setByte("DEF", ship.getAttrs().getAttrsBonus(ID.AttrsBase.DEF));
+		nbtExt_add3.setByte("SPD", ship.getAttrs().getAttrsBonus(ID.AttrsBase.SPD));
+		nbtExt_add3.setByte("MOV", ship.getAttrs().getAttrsBonus(ID.AttrsBase.MOV));
+		nbtExt_add3.setByte("HIT", ship.getAttrs().getAttrsBonus(ID.AttrsBase.HIT));
 		
 		//save EntityFlag
 		nbtExt.setTag("ShipFlags", nbtExt_add4);
@@ -168,12 +169,13 @@ public class CapaShipSavedValues
 		
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");
-		ship.setBonusPoint(ID.HP, nbt_load.getByte("HP"));
-		ship.setBonusPoint(ID.ATK, nbt_load.getByte("ATK"));
-		ship.setBonusPoint(ID.DEF, nbt_load.getByte("DEF"));
-		ship.setBonusPoint(ID.SPD, nbt_load.getByte("SPD"));
-		ship.setBonusPoint(ID.MOV, nbt_load.getByte("MOV"));
-		ship.setBonusPoint(ID.HIT, nbt_load.getByte("HIT"));
+		Attrs attrs = ship.getAttrs();
+		attrs.setAttrsBonus(ID.AttrsBase.HP, nbt_load.getByte("HP"));
+		attrs.setAttrsBonus(ID.AttrsBase.ATK, nbt_load.getByte("ATK"));
+		attrs.setAttrsBonus(ID.AttrsBase.DEF, nbt_load.getByte("DEF"));
+		attrs.setAttrsBonus(ID.AttrsBase.SPD, nbt_load.getByte("SPD"));
+		attrs.setAttrsBonus(ID.AttrsBase.MOV, nbt_load.getByte("MOV"));
+		attrs.setAttrsBonus(ID.AttrsBase.HIT, nbt_load.getByte("HIT"));
 		
 		//load flags
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("ShipFlags");
@@ -224,7 +226,7 @@ public class CapaShipSavedValues
 		
 		//calc equip and attribute
 		ship.setExpNext();	//for gui display
-		ship.calcEquipAndUpdateState();	//re-calc attributes and send sync packet
+		ship.calcShipAttributes(31, true);	//re-calc attributes and send sync packet
 		
 		LogHelper.debug("DEBUG : load entity ExtNBT data on id: " + ship.getEntityId());
 	}

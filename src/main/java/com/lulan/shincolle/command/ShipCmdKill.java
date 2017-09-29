@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.utility.EntityHelper;
 
 import net.minecraft.command.CommandBase;
@@ -135,18 +136,37 @@ public class ShipCmdKill extends CommandBase
 					//kill ship
 					//set item entity dead
 					AxisAlignedBB aabb = new AxisAlignedBB(op.posX - range, -256D, op.posZ - range, op.posX + range, 512D, op.posZ + range);
-					List<BasicEntityShip> hitent = op.world.getEntitiesWithinAABB(BasicEntityShip.class, aabb);
-					
 					id -= 2;
 					
-		            for (BasicEntityShip i : hitent)
-		            {
-		            	if (i.getShipClass() == id)
-		            	{
-		            		i.setDead();
-		            		sender.sendMessage(new TextComponentString("remove "+i));
-		            	}
-		            }
+					//kill friendly ship (id < 2000)
+					if (id < 2000)
+					{
+						List<BasicEntityShip> hitent = op.world.getEntitiesWithinAABB(BasicEntityShip.class, aabb);
+						
+			            for (BasicEntityShip i : hitent)
+			            {
+			            	if (i.getShipClass() == id)
+			            	{
+			            		i.setDead();
+			            		sender.sendMessage(new TextComponentString("remove "+i));
+			            	}
+			            }
+					}
+					//kill mob ship (id >= 2000)
+					else
+					{
+						id -= 2000;
+						List<BasicEntityShipHostile> hitent = op.world.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
+						
+			            for (BasicEntityShipHostile i : hitent)
+			            {
+			            	if (i.getShipClass() == id)
+			            	{
+			            		i.setDead();
+			            		sender.sendMessage(new TextComponentString("remove "+i));
+			            	}
+			            }
+					}
 				}
 			}//is player
 		}//end server side

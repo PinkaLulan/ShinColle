@@ -25,7 +25,12 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -64,6 +69,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 {
 	
 	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
+	protected Attrs shipAttrs;
 	
 	public BasicEntityShip host;  				//host
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
@@ -105,6 +111,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         this.startEmotion = 0;
         this.startEmotion2 = 0;
         this.headTilt = false;
+        
+        this.shipAttrs = new Attrs();
 	}
     
     /** init attributes */
@@ -189,7 +197,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	//called client+server both side!!
 	@Override
-    public boolean attackEntityFrom(DamageSource attacker, float atk)
+    public boolean attackEntityFrom(DamageSource source, float atk)
 	{
 		if (this.world.isRemote) return false;
 		
@@ -203,19 +211,19 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		boolean checkDEF = true;
 		
 		//damage disabled
-		if (attacker == DamageSource.inWall || attacker == DamageSource.starve ||
-			attacker == DamageSource.cactus || attacker == DamageSource.fall)
+		if (source == DamageSource.inWall || source == DamageSource.starve ||
+			source == DamageSource.cactus || source == DamageSource.fall)
 		{
 			return false;
 		}
 		//damage ignore def value
-		else if (attacker == DamageSource.magic || attacker == DamageSource.wither ||
-				 attacker == DamageSource.dragonBreath)
+		else if (source == DamageSource.magic || source == DamageSource.wither ||
+				 source == DamageSource.dragonBreath)
 		{
 			checkDEF = false;
 		}
 		//out of world
-		else if (attacker == DamageSource.outOfWorld)
+		else if (source == DamageSource.outOfWorld)
 		{
 			this.setDead();
 			return false;
@@ -228,22 +236,22 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		if (this.rand.nextInt(10) == 0) this.host.randomSensitiveBody();
         
     	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
-		if (attacker.getEntity() instanceof EntityPlayer &&
-			TeamHelper.checkSameOwner(attacker.getEntity(), this))
+		if (source.getEntity() instanceof EntityPlayer &&
+			TeamHelper.checkSameOwner(source.getEntity(), this))
 		{
 			this.host.setSitting(false);
-			return super.attackEntityFrom(attacker, atk);
+			return super.attackEntityFrom(source, atk);
 		}
         
         //無敵的entity傷害無效
-		if (this.isEntityInvulnerable(attacker))
+		if (this.isEntityInvulnerable(source))
 		{
             return false;
         }
 		//只對entity damage類有效
-		else if (attacker.getEntity() != null)
+		else if (source.getEntity() != null)
 		{
-			Entity entity = attacker.getEntity();
+			Entity entity = source.getEntity();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 			if (entity.equals(this))
@@ -265,7 +273,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			
 			//進行dodge計算
 			float dist = (float) this.getDistanceSqToEntity(entity);
-			if (EntityHelper.canDodge(this, dist))
+			
+			if (CombatHelper.canDodge(this, dist))
 			{
 				return false;
 			}
@@ -274,8 +283,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					
 			//進行def計算
 			if (checkDEF)
-			{
-				reducedAtk = atk * (1F - (this.getDefValue() + rand.nextInt(50) - 25F) * 0.01F);
+			{	//get mounts's def (this.shipAttrs), not host's def (this.getAttrs())
+				reducedAtk = CombatHelper.applyDamageReduceByDEF(this.rand, this.shipAttrs, reducedAtk);
 			}
 			
 			//ship vs ship, config傷害調整 (僅限友善船)
@@ -287,14 +296,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
 			}
 			
-			//ship vs ship, damage type傷害調整
-			if (entity instanceof IShipAttackBase)
-			{
-				//get attack time for damage modifier setting (day, night or ...etc)
-				int modSet = this.world.provider.isDaytime() ? 0 : 1;
-				reducedAtk = CalcHelper.calcDamageByType(reducedAtk, ((IShipAttackBase) entity).getDamageType(), this.getDamageType(), modSet);
-			}
-			
+			//check resist potion
+			reducedAtk = BuffHelper.applyBuffOnDamageByResist(this, source, reducedAtk);
+
+			//check night vision potion
+			reducedAtk = BuffHelper.applyBuffOnDamageByLight(this, source, reducedAtk);
+
 			//tweak min damage
 	        if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
 	        else if (reducedAtk <= 0F) reducedAtk = 0F;
@@ -308,7 +315,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				this.host.applyEmotesReaction(2);
 	  		}
    
-            return super.attackEntityFrom(attacker, reducedAtk);
+            return super.attackEntityFrom(source, reducedAtk);
         }
 		
 		return false;
@@ -343,15 +350,15 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				{
 					switch (host.getStateEmotion(ID.S.State))
 					{
-					case ID.State.NORMAL:	//普通轉騎乘
-						host.setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+					case ID.ModelState.NORMAL:	//普通轉騎乘
+						host.setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 					break;
-					case ID.State.EQUIP00:	//騎乘轉普通
-						host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+					case ID.ModelState.EQUIP00:	//騎乘轉普通
+						host.setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 						this.clearRider();
 					break;
 					default:
-						host.setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+						host.setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 					break;
 					}
 					
@@ -359,17 +366,16 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					
 					return EnumActionResult.SUCCESS;
 				}
-				//caress head mode: morale +3
+				//caress head mode: morale +5
 				else if (stack.getItem() == ModItems.PointerItem && stack.getItemDamage() > 2)
 				{
 					//add little morale to host
 					int t = this.host.ticksExisted - this.host.getMoraleTick();
-					int m = this.host.getStateMinor(ID.M.Morale);
 					
-					if (t > 3 && m < 6100)
+					if (t > 3 && this.host.getMorale() < (int)(ID.Morale.L_Excited * 1.3F))
 					{	//if caress > 3 ticks
 						this.host.setMoraleTick(this.ticksExisted);
-						this.host.setStateMinor(ID.M.Morale, m + 3);
+						this.host.addMorale(ConfigHandler.baseCaressMorale);
 					}
 					
 					//TODO show mounts emotion
@@ -556,33 +562,38 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 					this.setEntityTarget(this.host.getEntityTarget());
 					
 					//check every 16 ticks
-					if (this.ticksExisted % 16 == 0)
+					if ((this.ticksExisted & 15) == 0)
 					{
 						//waypoint move
-	            		if (EntityHelper.updateWaypointMove(this))
+	            		if (EntityHelper.updateWaypointMove(this) && this.host.getStateMinor(ID.M.NumGrudge) > 0)
 	            		{
-	            			shipNavigator.tryMoveToXYZ(getGuardedPos(0), getGuardedPos(1), getGuardedPos(2), 1D);
-	            			host.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
+	            			this.shipNavigator.tryMoveToXYZ(getGuardedPos(0), getGuardedPos(1), getGuardedPos(2), 1D);
+	            			this.host.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
 	            		}
 	            		
-	            		//check every 128 ticks
-    					if (this.ticksExisted % 128 == 0)
+	            		//check every 32 ticks
+    					if ((this.ticksExisted & 31) == 0)
     					{
-    						this.sendSyncPacket(0);
-
     						//update attribute
     						this.setupAttrs();
     						
-    						//防止溺死
-    						if (this.isInWater())
-    						{
-    							this.setAir(300);
-    						}
-    					}//end every 128 ticks
+    						//check every 128 ticks
+        					if ((this.ticksExisted & 127) == 0)
+        					{
+        						this.sendSyncPacket(0);
+        					}//end every 128 ticks
+    					}//end every 32 ticks
 					}//end every 16 ticks
 				}//end every 8 ticks
 			}//end get host
 		}//end server side
+		
+		/* both side */
+		//check every 128 ticks
+		if ((this.ticksExisted & 127) == 0)
+		{
+			this.setAir(300);
+		}//end every 128 ticks
 		
 		//apply movement by key pressed
 		if (this.keyTick > 0)
@@ -910,14 +921,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
   	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
   	 */
-  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+1.5D, this.posZ, vec[0], 1.2F, vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY+1.5D, this.posZ, distVec.x, 1.2F, distVec.z, true), point);
   			//發送攻擊flag給host, 設定其attack time
   			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this.host, 0, true), point);
   		break;
@@ -937,7 +948,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
   	 *  vec: 0:distX, 1:distY, 2:distZ, 3:dist sqrt
   	 */
-  	public void applyParticleAtTarget(int type, Entity target, float[] vec)
+  	public void applyParticleAtTarget(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
   		
@@ -997,31 +1008,6 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		}//end switch
   	}
   	
-  	/** special particle at entity
-  	 * 
-  	 *  type: 0:miss, 1:critical, 2:double hit, 3:triple hit
-  	 */
-  	protected void applyParticleSpecialEffect(int type)
-  	{
-  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-  		
-  		switch (type)
-  		{
-  		case 1:  //critical
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 11, false), point);
-  			break;
-  		case 2:  //double hit
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 12, false), point);
-  			break;
-  		case 3:  //triple hit
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, false), point);
-  			break;
-		default: //miss
-      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
-			break;
-  		}
-  	}
-  	
   	/** attack particle at target
   	 * 
   	 *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
@@ -1048,22 +1034,25 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	 */
   	public float getAttackBaseDamage(int type, Entity target)
   	{
+  		//if no host = no damage
+  		if (this.getAttrs() == null) return 0F;
+  		
   		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, this.host.getStateFinal(ID.ATK), 0);
+  			return CombatHelper.modDamageByAdditionAttrs(this.host, target, this.getAttrs().getAttrsBuffed(ID.Attrs.ATK_L), 0);
   		case 2:  //heavy cannon
-  			return this.host.getStateFinal(ID.ATK_H);
+  			return this.getAttrs().getAttrsBuffed(ID.Attrs.ATK_H);
   		case 3:  //light aircraft
-  			return this.host.getStateFinal(ID.ATK_AL);
+  			return this.getAttrs().getAttrsBuffed(ID.Attrs.ATK_AL);
   		case 4:  //heavy aircraft
-  			return this.host.getStateFinal(ID.ATK_AH);
-		default: //melee
-			return this.host.getStateFinal(ID.ATK);	//mounts can deal 100% melee attack
+  			return this.getAttrs().getAttrsBuffed(ID.Attrs.ATK_AH);
+		default: //melee, mounts can deal 100% melee attack
+			return this.getAttrs().getAttrsBuffed(ID.Attrs.ATK_L);
   		}
   	}
   	
-  	//change melee damage to 100%
+  	//melee attack
   	@Override
   	public boolean attackEntityAsMob(Entity target)
   	{
@@ -1076,9 +1065,12 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		//attack time
   		this.host.setCombatTick(this.ticksExisted);
   		
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+  		
   		//entity attack effect
 	    applySoundAtAttacker(0, target);
-	    applyParticleAtAttacker(0, target, new float[4]);
+	    applyParticleAtAttacker(0, target, distVec);
   		
   	    //將atk跟attacker傳給目標的attackEntityFrom方法, 在目標class中計算傷害
   	    //並且回傳是否成功傷害到目標
@@ -1088,7 +1080,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	    if (isTargetHurt)
   	    {
   	    	applySoundAtTarget(0, target);
-	        applyParticleAtTarget(0, target, new float[4]);
+	        applyParticleAtTarget(0, target, distVec);
 			this.host.applyEmotesReaction(3);
 			
 			if (ConfigHandler.canFlare) this.host.flareTarget(target);
@@ -1114,75 +1106,26 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         this.host.setCombatTick(this.ticksExisted);
   		
   		//get attack value
-		float atkLight = getAttackBaseDamage(1, target);
+		float atk = getAttackBaseDamage(1, target);
 		
         //calc dist to target
-        float[] distVec = new float[4];  //x, y, z, dist
-        distVec[0] = (float) (target.posX - this.posX);
-        distVec[1] = (float) (target.posY - this.posY);
-        distVec[2] = (float) (target.posZ - this.posZ);
-        distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        distVec[0] = distVec[0] / distVec[3];
-        distVec[1] = distVec[1] / distVec[3];
-        distVec[2] = distVec[2] / distVec[3];
-        
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+		
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
 	    applyParticleAtAttacker(1, target, distVec);
 	    
-		//calc miss chance, if not miss, calc cri/multi hit
-		TargetPoint point = new TargetPoint(this.dimension, this.host.posX, this.host.posY, this.host.posZ, 64D);
-        float missChance = 0.2F + 0.15F * (distVec[3] / host.getStateFinal(ID.HIT)) - 0.001F * host.getLevel();
-        missChance -= this.host.getEffectEquip(ID.EquipEffect.MISS);		//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance
+	    //roll miss, cri, dhit, thit
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
   		
-        //calc miss chance
-        if (this.rand.nextFloat() < missChance)
-        {
-        	atkLight = 0;	//still attack, but no damage
-        	this.host.applyParticleSpecialEffect(0);
-        }
-        else
-        {
-        	//roll cri -> roll double hit -> roll triple hit (triple hit more rare)
-        	//calc critical
-        	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.CRI))
-        	{
-        		atkLight *= 1.5F;
-        		this.host.applyParticleSpecialEffect(1);
-        	}
-        	else
-        	{
-        		//calc double hit
-            	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.DHIT))
-            	{
-            		atkLight *= 2F;
-            		this.host.applyParticleSpecialEffect(2);
-            	}
-            	else
-            	{
-            		//calc double hit
-                	if (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.THIT))
-                	{
-                		atkLight *= 3F;
-                		this.host.applyParticleSpecialEffect(3);
-                	}
-            	}
-        	}
-        }
-        
- 		//calc damage to player
-  		if (target instanceof EntityPlayer)
-  		{
-  			atkLight *= 0.25F;
-  			if (atkLight > 59F) atkLight = 59F;	//same with TNT
-  		}
+  		//damage limit on player target
+	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
   		
   		//check friendly fire
-		if (!TeamHelper.doFriendlyFire(this.host, target)) atkLight = 0F;
+		if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
 
 	    //確認攻擊是否成功
-	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atkLight);
+	    boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
 	    		
 	    //if attack success
 	    if (isTargetHurt)
@@ -1213,26 +1156,18 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
       	this.host.setCombatTick(this.ticksExisted);
 		
 		//get attack value
-		float atkHeavy = getAttackBaseDamage(2, target);
+		float atk = getAttackBaseDamage(2, target);
 		float kbValue = 0.15F;
 
 		//飛彈是否採用直射
 		boolean isDirect = false;
 		float launchPos = (float) posY + height * 0.75F;
-				
-		//計算目標距離
-		float[] distVec = new float[4];
-		float tarX = (float) target.posX;
-		float tarY = (float) target.posY;
-		float tarZ = (float) target.posZ;
 		
-		distVec[0] = tarX - (float) this.posX;
-        distVec[1] = tarY - (float) this.posY;
-        distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+				
         //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec[3] < 7F)
+        if (distVec.distance < 7D)
         {
         	isDirect = true;
         }
@@ -1246,25 +1181,24 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         //play sound and particle
         applySoundAtAttacker(2, target);
 	    applyParticleAtAttacker(2, target, distVec);
+	    
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
         
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distVec[3] / host.getStateFinal(ID.HIT)) - 0.001F * host.getLevel();
-        missChance -= this.host.getEffectEquip(ID.EquipEffect.MISS);	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-		
-        //calc miss chance
-        if (this.rand.nextFloat() < missChance)
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
       	  	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
       	  	
-      	  	applyParticleSpecialEffect(0);  //miss particle
+      	  	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
 
         //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this.host, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
         this.world.spawnEntity(missile);
   		
         //play target effect
@@ -1300,28 +1234,11 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 
 	@Override
-	public float getAttackSpeed()
-	{
-		if (this.host != null) return this.host.getStateFinal(ID.SPD);
-		return 0F;
-	}
-
-	@Override
-	public float getAttackRange()
-	{
-		if (this.host != null) return this.host.getStateFinal(ID.HIT);
-		return 0F;
-	}
-	
-	@Override
 	public float getMoveSpeed()
 	{
-		if (this.host != null)
+		if (!this.getIsSitting() && this.getAttrs() != null)
 		{
-			if (!this.getIsSitting() && !this.host.isSitting())
-			{
-				return this.host.getStateFinal(ID.MOV);
-			}
+			return this.getAttrs().getMoveSpeed();
 		}
 			
 		return 0F;
@@ -1404,31 +1321,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	public void setAmmoHeavy(int num) {}	//no use
 
 	@Override
-	public float getAttackDamage()			//no use
-	{
-		if (this.host != null) return this.host.getAttackDamage();
-		return 0F;
-	}
-	
-	@Override
 	public boolean getAttackType(int par1)
 	{
 		if (this.host != null) return this.host.getAttackType(par1);
 		return true;
-	}
-	
-	@Override
-	public float getEffectEquip(int id)
-	{
-		if (this.host != null) return this.host.getEffectEquip(id);
-		return 0F;
-	}
-	
-	@Override
-	public float getDefValue()
-	{
-		if (this.host != null) return this.host.getStateFinal(ID.DEF) * 0.5F;
-		return 0F;
 	}
 
 	@Override
@@ -1564,10 +1460,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//update attribute
 	public void setupAttrs()
 	{
-		getEntityAttribute(MAX_HP).setBaseValue(this.host.getStateFinal(ID.HP) * 0.5D);
-		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.getMoveSpeed());
+		this.shipAttrs = AttrsAdv.copyAttrsAdv((AttrsAdv) this.host.getAttrs());
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.HP, this.host.getMaxHealth() * 0.5F);
+		this.shipAttrs.setAttrsBuffed(ID.Attrs.DEF, this.host.getAttrs().getDefense() * 0.5F);
+		
+		getEntityAttribute(MAX_HP).setBaseValue(this.host.getMaxHealth() * 0.5D);
+		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(host.getAttrs().getMoveSpeed());
 		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64);
-		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue((float) host.getLevel() * 0.005F);
+		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(host.getAttrs().getAttrsBuffed(ID.Attrs.KB));
 	}
 	
 	@Override
@@ -1898,31 +1798,52 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
-	public HashMap<Byte, Byte> getBuffMap() { return new HashMap<Byte, Byte>(); }
+	public HashMap<Integer, Integer> getBuffMap()
+	{
+		if (this.host != null) return this.host.getBuffMap();
+		return new HashMap<Integer, Integer>();
+	}
 
 	@Override
-	public void setBuffMap(HashMap<Byte, Byte> map) {}
+	public void setBuffMap(HashMap<Integer, Integer> map) {}
+	
+	//return host's attrs
+	@Override
+	public Attrs getAttrs()
+	{
+		if (this.host != null) return this.host.getAttrs();
+		return null;
+	}
 	
 	@Override
-	public float[] getEffectEquip() { return null; }
+	public void setAttrs(Attrs data) {}
+	
+	//apply heal effect
+	@Override
+    public void heal(float healAmount)
+    {
+		//server side
+		if (!this.world.isRemote)
+		{
+			//apply heal particle, server side only
+  			TargetPoint tp = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 23, 0D, 0.1D, 0D), tp);
+		
+  			//potion modify heal value (splash and cloud potion only)
+  			healAmount = BuffHelper.applyBuffOnHeal(this, healAmount);
+		}
+		
+		super.heal(healAmount);
+    }
+	
+	@Override
+	public void setUpdateFlag(int id, boolean value) {}
 
 	@Override
-	public void setEffectEquip(int id, float value) {}
-
-	@Override
-	public void setEffectEquip(float[] array) {}
-
-	@Override
-	public float getStateFinal(int id) { return 0; }
-
-	@Override
-	public float[] getStateFinal() { return null; }
-
-	@Override
-	public void setStateFinal(int id, float value) {}
-
-	@Override
-	public void setStateFinal(float[] array) {}
+	public boolean getUpdateFlag(int id)
+	{
+		return false;
+	}
 	
 	
 }

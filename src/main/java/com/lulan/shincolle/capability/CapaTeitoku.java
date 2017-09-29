@@ -728,6 +728,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	{
 		float mov = 10F;
 		float temp = 0F;
+		boolean getnoship = true;
 		
 		try
 		{
@@ -735,15 +736,16 @@ public class CapaTeitoku implements ICapaTeitoku
 			{
 				if (ship != null)
 				{
-					temp = ship.getStateFinalBU(ID.MOV);
+					getnoship = false;
+					temp = ship.getAttrs().getMoveSpeed();
 					if (temp < mov) mov = temp;
 				}
 			}
 			
-			if (mov >= 10F)
+			if (getnoship)
 			{
 				LogHelper.debug("DEBUG: get min move speed: no ship in team");
-				mov = 0F;  //get no ship in team, bug?
+				return 0F;
 			}
 		}
 		catch (Exception e)
@@ -1160,7 +1162,7 @@ public class CapaTeitoku implements ICapaTeitoku
 	/** check target is in team with #ship > 4 and formation type > 0
 	 * 
 	 *  return {team id, slot id}*/
-	public int[] checkIsInFormationTeam(int shipID)
+	public int[] checkIsInFormation(int shipID)
 	{
 		int[] val = new int[] {-1, -1};
 		
@@ -1185,7 +1187,7 @@ public class CapaTeitoku implements ICapaTeitoku
 			}
 		}
 		
-		//get no ship, reset team id to -1
+		//ship not found, reset team id to -1
 		if (val[1] < 0) val[0] = -1;
 		
 		return val;
@@ -1463,8 +1465,8 @@ public class CapaTeitoku implements ICapaTeitoku
 		this.selectState[tid][posB] = selA;
 		
 		//set ship formation update
-		if(this.teamList[tid][posA] != null) this.teamList[tid][posA].setUpdateFlag(ID.FU.FormationBuff, true);
-		if(this.teamList[tid][posB] != null) this.teamList[tid][posB].setUpdateFlag(ID.FU.FormationBuff, true);
+		if(this.teamList[tid][posA] != null) this.teamList[tid][posA].setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
+		if(this.teamList[tid][posB] != null) this.teamList[tid][posB].setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
 	
 		ArrayList<BasicEntityShip> ships = new ArrayList<BasicEntityShip>();
 		

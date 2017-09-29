@@ -13,7 +13,8 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -23,7 +24,6 @@ import com.lulan.shincolle.utility.TeamHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -61,6 +61,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     private IShipAttackBase host;	//main host type
     private EntityLiving host2;		//second host type: entity living
     private int playerUID;			//owner UID, for owner check
+    private Attrs attrs;
     
     //missile motion
     private boolean isDirect;		//false:parabola  true:direct
@@ -78,9 +79,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     
     //missile attributes
     public int type;				//missile type
-    private float atk;				//missile damage
-    private float kbValue;			//knockback value
-    private float missileHP;		//if hp = 0 -> onImpact
     
     
     //基本constructor, size必須在此設定
@@ -101,8 +99,14 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
         this.setPlayerUID(host.getPlayerUID());
         
         //set basic attributes
-        this.atk = atk;
-        this.kbValue  = kbValue;
+        this.attrs = new Attrs();
+        this.attrs.copyRaw2Buffed();
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_L, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_H, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AL, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AH, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.DODGE, 0.5F);
+        this.attrs.setAttrsBuffed(ID.Attrs.KB, kbValue);
         this.posX = pX;
         this.posY = pY;
         this.posZ = pZ;
@@ -135,8 +139,14 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
         this.setPlayerUID(host.getPlayerUID());
         
         //set basic attributes
-        this.atk = atk;
-        this.kbValue  = kbValue;
+        this.attrs = new Attrs();
+        this.attrs.copyRaw2Buffed();
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_L, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_H, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AL, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AH, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.DODGE, 0.5F);
+        this.attrs.setAttrsBuffed(ID.Attrs.KB, kbValue);
         this.posX = this.host2.posX;
         this.posZ = this.host2.posZ;
         this.posY = launchPos;
@@ -303,7 +313,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     				EntityAbyssMissile subm = new EntityAbyssMissile(this.world, this.host, 
     						(float)this.motionX, (float)this.motionY, (float)this.motionZ, 
     						(float)this.posX, (float)this.posY - 0.75F, (float)this.posZ,
-    		        		atk, kbValue);
+    		        		this.attrs.getAttackDamage(), this.attrs.getAttrsBuffed(ID.Attrs.KB));
     		        this.world.spawnEntity(subm);
     			}
     		}
@@ -400,10 +410,17 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     	//play sound
     	this.playSound(ModSounds.SHIP_EXPLODE, ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
+    	//null check
+    	if (this.host == null)
+    	{
+    		this.setDead();
+    		return;
+    	}
+    	
     	//server side
     	if (!this.world.isRemote)
     	{
-    		float missileAtk = atk;
+    		float missileAtk = this.attrs.getAttackDamage();
 
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
             List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class,
@@ -412,13 +429,13 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
             //對list中所有可攻擊entity做出傷害判定
             for (Entity ent : hitList)
             {
-            	missileAtk = this.atk;
+            	missileAtk = this.attrs.getAttackDamage();
             	
             	//check target attackable
           		if (!TargetHelper.checkUnattackTargetList(ent))
           		{
           			//calc equip special dmg: AA, ASM
-                	missileAtk = CalcHelper.calcDamageBySpecialEffect(this, ent, missileAtk, 0);
+                	missileAtk = CombatHelper.modDamageByAdditionAttrs(this, ent, missileAtk, 0);
                 	
                 	//目標不能是自己 or 主人, 且可以被碰撞
                 	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
@@ -430,24 +447,14 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
                     	}
                 		else
                 		{
-                			//calc critical, only for type:ship
-                    		if (this.host != null && (this.rand.nextFloat() < this.host.getEffectEquip(ID.EquipEffect.CRI)))
-                    		{
-                        		missileAtk *= 3F;
-                        		//spawn critical particle
-                        		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                            	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host2, 11, false), point);
-                        	}
-                    		
-                      		//calc damage to player
-                      		if (ent instanceof EntityPlayer)
-                      		{
-                      			missileAtk *= 0.25F;
-                      			if (missileAtk > 59F) missileAtk = 59F;	//same with TNT
-                      		}
-                      		
-                      		//check friendly fire
-                    		if (!TeamHelper.doFriendlyFire(this.host, ent)) missileAtk = 0F;
+                		    //roll miss, cri, dhit, thit
+                			missileAtk = CombatHelper.applyCombatRateToDamage(this.host, ent, false, 1F, missileAtk);
+                	  		
+                	  		//damage limit on player target
+                			missileAtk = CombatHelper.applyDamageReduceOnPlayer(ent, missileAtk);
+                	  		
+                	  		//check friendly fire
+                			if (!TeamHelper.doFriendlyFire(this.host, ent)) missileAtk = 0F;
                 		}
                 		
                 		//attack
@@ -524,7 +531,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
 		}
 		
     	//進行dodge計算
-		if (EntityHelper.canDodge(this, 0F))
+		if (CombatHelper.canDodge(this, 0F))
 		{
 			return false;
 		}
@@ -584,41 +591,22 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
 	}
 
 	@Override
-	public float getEffectEquip(int id)
-	{
-		//dodge = 50%
-		if (id == ID.EquipEffect.DODGE) return 50F;
-		
-		if (host != null) return host.getEffectEquip(id);
-		return 0F;
-	}
-
-	@Override
 	public int getTextureID()
 	{
 		return ID.ShipMisc.AbyssalMissile;
 	}
 
 	@Override
-	public float[] getEffectEquip() { return null; }
+	public Attrs getAttrs()
+	{
+		return this.attrs;
+	}
 
 	@Override
-	public void setEffectEquip(int id, float value) {}
-
-	@Override
-	public void setEffectEquip(float[] array) {}
-
-	@Override
-	public float getStateFinal(int id) { return 0; }
-
-	@Override
-	public float[] getStateFinal() { return null; }
-
-	@Override
-	public void setStateFinal(int id, float value) {}
-
-	@Override
-	public void setStateFinal(float[] array) {}
-
+	public void setAttrs(Attrs data)
+	{
+		this.attrs = data;
+	}
+	
 	
 }

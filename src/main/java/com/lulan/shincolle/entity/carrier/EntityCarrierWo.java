@@ -18,7 +18,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierWO);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
@@ -52,9 +52,9 @@ public class EntityCarrierWo extends BasicEntityShipCV
     
     //增加艦載機數量計算
   	@Override
-  	public void calcShipAttributes()
+  	public void calcShipAttributesAdd()
   	{
-  		super.calcShipAttributes();
+  		super.calcShipAttributesAdd();
   		
   		this.maxAircraftLight += this.getLevel() * 0.25F;
   		this.maxAircraftHeavy += this.getLevel() * 0.15F;
@@ -69,7 +69,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
     		if (this.ticksExisted % 4 ==  0)
     		{
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
-    			if (getStateEmotion(ID.S.State) >= ID.State.EQUIP00 && !getStateFlag(ID.F.NoFuel) &&
+    			if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00 && !getStateFlag(ID.F.NoFuel) &&
     				(!isSitting() || getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED))
     			{
     				//set origin position
@@ -121,7 +121,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
     @Override
 	public double getMountedYOffset()
     {
-    	if (this.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+    	if (this.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
     	{
     		if (this.isSitting())
     		{
@@ -157,14 +157,14 @@ public class EntityCarrierWo extends BasicEntityShipCV
 	{
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
-		case ID.State.EQUIP00:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+		case ID.ModelState.EQUIP00:
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}

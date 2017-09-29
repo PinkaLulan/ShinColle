@@ -512,7 +512,7 @@ public class ModelBattleshipRe extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+		if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
 		{
 			this.Hair01.isHidden = false;
 			this.HairU01.isHidden = false;

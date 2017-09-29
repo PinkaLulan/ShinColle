@@ -454,7 +454,7 @@ public class ModelDestroyerInazuma extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.EquipBase.isHidden = false;
   		break;
   		default:  //normal
@@ -605,7 +605,7 @@ public class ModelDestroyerInazuma extends ShipModelBaseAdv
 	  	if (this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
 	  	this.EquipC05a.rotateAngleX = this.EquipC04a.rotateAngleX;
 	    
-	    if (ent.getStateEmotion(ID.S.State) < ID.State.EQUIP01)
+	    if (ent.getStateEmotion(ID.S.State) < ID.ModelState.EQUIP01)
 	    {
 	    	this.ArmLeft01.rotateAngleZ += 0.1F;
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;

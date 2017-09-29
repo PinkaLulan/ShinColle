@@ -1,7 +1,10 @@
 package com.lulan.shincolle.network;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -12,6 +15,8 @@ import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
@@ -41,16 +46,17 @@ public class S2CEntitySync implements IMessage
 	private byte packetType;
 	private int entityID, valueInt;
 	private int[] valueInt1;
-	private float[] valueFloat1;
+	private float[] valueFloat1, valueFloat2, valueFloat3, valueFloat4, valueFloat5, valueFloat6;
 	private double[] valueDouble1;
 	private byte[] valueByte1;
 	private boolean[] valueBoolean1;
 	private List<String> valueString1;
+	private Map<Integer, Integer> valueMap1;
 	
 	//packet id
 	public static final class PID
 	{
-		public static final byte SyncShip_All = 0;
+		public static final byte SyncShip_AllMisc = 0;		//minor + emotion + flag
 		public static final byte SyncShip_Emo = 1;
 		public static final byte SyncShip_Flag = 2;
 		public static final byte SyncShip_Minor = 3;
@@ -62,13 +68,14 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncEntity_PosRot = 9;
 		public static final byte SyncEntity_Rot = 10;
 		public static final byte SyncShip_Formation = 11;
-		public static final byte SyncShip_Unbuff = 12;
+		public static final byte SyncShip_Buffmap = 12;
 		public static final byte SyncEntity_Motion = 13;
 		public static final byte SyncShip_Timer = 14;
 		public static final byte SyncShip_Guard = 15;
 		public static final byte SyncShip_ID = 16;
 		public static final byte SyncSystem_Config = 17;
 		public static final byte SyncShip_UnitName = 18;
+		public static final byte SyncShip_Attrs = 19;
 	}
 
 	
@@ -132,11 +139,51 @@ public class S2CEntitySync implements IMessage
 		
 		switch (this.packetType)
 		{
-		case PID.SyncShip_All:	//sync all attr
+		case PID.SyncShip_AllMisc:	//sync all misc states
 			this.valueInt1 = PacketHelper.readIntArray(buf, 1+30);
-			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+11+14);
-			this.valueByte1 = PacketHelper.readByteArray(buf, 6+6);
+			this.valueByte1 = PacketHelper.readByteArray(buf, 6);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 18);
+		break;
+		case PID.SyncShip_Attrs:	//sync all attrs
+			boolean bonus = buf.readBoolean();
+			boolean raw = buf.readBoolean();
+			boolean equip = buf.readBoolean();
+			boolean morale = buf.readBoolean();
+			boolean potion = buf.readBoolean();
+			boolean formation = buf.readBoolean();
+			boolean buffed = buf.readBoolean();
+			float[] data;
+			
+			if (bonus) { this.valueByte1 = PacketHelper.readByteArray(buf); }
+			else { this.valueByte1 = null; }
+			if (raw) { this.valueFloat1 = PacketHelper.readFloatArray(buf); }
+			else { this.valueFloat1 = null; }
+			if (equip) { this.valueFloat2 = PacketHelper.readFloatArray(buf); }
+			else { this.valueFloat2 = null; }
+			if (morale) { this.valueFloat3 = PacketHelper.readFloatArray(buf); }
+			else { this.valueFloat3 = null; }
+			if (potion) { this.valueFloat4 = PacketHelper.readFloatArray(buf); }
+			else { this.valueFloat4 = null; }
+			if (formation)
+			{
+				data = PacketHelper.readFloatArray(buf);
+				this.valueFloat5 = new float[Attrs.AttrsLength + 1];
+				//copy data
+				for (int i = 0; i < Attrs.AttrsLength; i++) this.valueFloat5[i] = data[i];
+				//read a float
+				this.valueFloat5[Attrs.AttrsLength] = buf.readFloat();
+			}
+			else { this.valueFloat5 = null; }
+			if (buffed)
+			{
+				data = PacketHelper.readFloatArray(buf);
+				this.valueFloat6 = new float[Attrs.AttrsLength + 1];
+				//copy data
+				for (int i = 0; i < Attrs.AttrsLength; i++) this.valueFloat6[i] = data[i];
+				//read a float
+				this.valueFloat6[Attrs.AttrsLength] = buf.readFloat();
+			}
+			else { this.valueFloat6 = null; }
 		break;
 		case PID.SyncShip_Emo: //entity emotion only
 			this.valueByte1 = PacketHelper.readByteArray(buf, 6);
@@ -160,9 +207,6 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncShip_Scale:
 			this.valueInt = buf.readInt();
-		break;
-		case PID.SyncShip_Unbuff:	//sync unbuff attr
-			this.valueFloat1 = PacketHelper.readFloatArray(buf, 9+11);
 		break;
 		case PID.SyncShip_Timer: //ship timer only
 			this.valueInt = buf.readInt();
@@ -203,6 +247,9 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_UnitName:	//sync ship unit names
 			this.valueString1 = PacketHelper.readListString(buf);
 		break;
+		case PID.SyncShip_Buffmap:	//sync buff map
+			this.valueMap1 = PacketHelper.readMapInt(buf);
+		break;
 		}//end switch
 		
 	}
@@ -225,7 +272,7 @@ public class S2CEntitySync implements IMessage
 		
 		switch (this.packetType)
 		{
-		case PID.SyncShip_All:	//sync all data
+		case PID.SyncShip_AllMisc:	//sync all data
 		{
 			BasicEntityShip entity = (BasicEntityShip) this.entity;
 			
@@ -261,53 +308,12 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateTimer(ID.T.CraneTime));
 			buf.writeInt(entity.getStateMinor(ID.M.SensBody));
 			
-			buf.writeFloat(entity.getStateFinal(ID.HP));
-			buf.writeFloat(entity.getStateFinal(ID.ATK));
-			buf.writeFloat(entity.getStateFinal(ID.DEF));
-			buf.writeFloat(entity.getStateFinal(ID.SPD));
-			buf.writeFloat(entity.getStateFinal(ID.MOV));
-			buf.writeFloat(entity.getStateFinal(ID.HIT));
-			buf.writeFloat(entity.getStateFinal(ID.ATK_H));
-			buf.writeFloat(entity.getStateFinal(ID.ATK_AL));
-			buf.writeFloat(entity.getStateFinal(ID.ATK_AH));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.CRI));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.DHIT));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.THIT));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.MISS));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.AA));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.ASM));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.DODGE));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.XP));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.GRUDGE));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.AMMO));
-			buf.writeFloat(entity.getEffectEquip(ID.EquipEffect.HPRES));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.ATK_L));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.ATK_H));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.ATK_AL));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.ATK_AH));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.DEF));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.MOV));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.MISS));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.DODGE));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.CRI));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.DHIT));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.THIT));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.AA));
-			buf.writeFloat(entity.getEffectFormation(ID.Formation.ASM));
-			buf.writeFloat(entity.getEffectFormationFixed(ID.FormationFixed.MOV));
-			
 			buf.writeByte(entity.getStateEmotion(ID.S.State));
 			buf.writeByte(entity.getStateEmotion(ID.S.State2));
 			buf.writeByte(entity.getStateEmotion(ID.S.HPState));
 			buf.writeByte(entity.getStateEmotion(ID.S.Emotion));
 			buf.writeByte(entity.getStateEmotion(ID.S.Emotion4));
 			buf.writeByte(entity.getStateEmotion(ID.S.Phase));
-			buf.writeByte(entity.getBonusPoint(ID.HP));
-			buf.writeByte(entity.getBonusPoint(ID.ATK));
-			buf.writeByte(entity.getBonusPoint(ID.DEF));
-			buf.writeByte(entity.getBonusPoint(ID.SPD));
-			buf.writeByte(entity.getBonusPoint(ID.MOV));
-			buf.writeByte(entity.getBonusPoint(ID.HIT));
 
 			buf.writeBoolean(entity.getStateFlag(ID.F.CanFloatUp));
 			buf.writeBoolean(entity.getStateFlag(ID.F.IsMarried));
@@ -327,6 +333,77 @@ public class S2CEntitySync implements IMessage
 			buf.writeBoolean(entity.getStateFlag(ID.F.PickItem));
 			buf.writeBoolean(entity.getStateFlag(ID.F.CanPickItem));
 			buf.writeBoolean(entity.getStateFlag(ID.F.ShowHeldItem));
+		}
+		break;
+		case PID.SyncShip_Attrs:	//sync all attrs
+		{
+			BasicEntityShip entity = (BasicEntityShip) this.entity;
+			AttrsAdv attrs = (AttrsAdv) entity.getAttrs();
+			byte[] data1;
+			float[] data2;
+			
+			//get flags
+			buf.writeBoolean(entity.getUpdateFlag(ID.FlagUpdate.AttrsBonus));
+			buf.writeBoolean(entity.getUpdateFlag(ID.FlagUpdate.AttrsRaw));
+			buf.writeBoolean(entity.getUpdateFlag(ID.FlagUpdate.AttrsEquip));
+			buf.writeBoolean(entity.getUpdateFlag(ID.FlagUpdate.AttrsMorale));
+			buf.writeBoolean(entity.getUpdateFlag(ID.FlagUpdate.AttrsPotion));
+			buf.writeBoolean(entity.getUpdateFlag(ID.FlagUpdate.AttrsFormation));
+			buf.writeBoolean(entity.getUpdateFlag(ID.FlagUpdate.AttrsBuffed));
+			
+			//send data
+			if (entity.getUpdateFlag(ID.FlagUpdate.AttrsBonus))
+			{
+				data1 = attrs.getAttrsBonus();
+				PacketHelper.sendArrayByte(buf, data1);
+			}
+			
+			if (entity.getUpdateFlag(ID.FlagUpdate.AttrsRaw))
+			{
+				data2 = attrs.getAttrsRaw();
+				PacketHelper.sendArrayFloat(buf, data2);
+			}
+			
+			if (entity.getUpdateFlag(ID.FlagUpdate.AttrsEquip))
+			{
+				data2 = attrs.getAttrsEquip();
+				PacketHelper.sendArrayFloat(buf, data2);
+			}
+			
+			if (entity.getUpdateFlag(ID.FlagUpdate.AttrsMorale))
+			{
+				data2 = attrs.getAttrsMorale();
+				PacketHelper.sendArrayFloat(buf, data2);
+			}
+			
+			if (entity.getUpdateFlag(ID.FlagUpdate.AttrsPotion))
+			{
+				data2 = attrs.getAttrsPotion();
+				PacketHelper.sendArrayFloat(buf, data2);
+			}
+			
+			if (entity.getUpdateFlag(ID.FlagUpdate.AttrsFormation))
+			{
+				data2 = attrs.getAttrsFormation();
+				PacketHelper.sendArrayFloat(buf, data2);
+				buf.writeFloat(attrs.getMinMOV());
+			}
+			
+			if (entity.getUpdateFlag(ID.FlagUpdate.AttrsBuffed))
+			{
+				data2 = attrs.getAttrsBuffed();
+				PacketHelper.sendArrayFloat(buf, data2);
+				buf.writeFloat(attrs.getMinMOV());
+			}
+			
+			//reset flags
+			entity.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, false);
+			entity.setUpdateFlag(ID.FlagUpdate.AttrsBonus, false);
+			entity.setUpdateFlag(ID.FlagUpdate.AttrsEquip, false);
+			entity.setUpdateFlag(ID.FlagUpdate.AttrsMorale, false);
+			entity.setUpdateFlag(ID.FlagUpdate.AttrsPotion, false);
+			entity.setUpdateFlag(ID.FlagUpdate.AttrsFormation, false);
+			entity.setUpdateFlag(ID.FlagUpdate.AttrsRaw, false);
 		}
 		break;
 		case PID.SyncShip_Emo:	//entity state only
@@ -427,33 +504,6 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_Scale:			//sync hostile ship level
 		{
 			buf.writeInt(((IShipEmotion) this.entity).getScaleLevel());
-		}
-		break;
-		case PID.SyncShip_Unbuff:	//sync unbuff data
-		{
-			BasicEntityShip entity = (BasicEntityShip) this.entity;
-			
-			buf.writeFloat(entity.getStateFinalBU(ID.HP));
-			buf.writeFloat(entity.getStateFinalBU(ID.ATK));
-			buf.writeFloat(entity.getStateFinalBU(ID.DEF));
-			buf.writeFloat(entity.getStateFinalBU(ID.SPD));
-			buf.writeFloat(entity.getStateFinalBU(ID.MOV));
-			buf.writeFloat(entity.getStateFinalBU(ID.HIT));
-			buf.writeFloat(entity.getStateFinalBU(ID.ATK_H));
-			buf.writeFloat(entity.getStateFinalBU(ID.ATK_AL));
-			buf.writeFloat(entity.getStateFinalBU(ID.ATK_AH));
-			
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.CRI));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.DHIT));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.THIT));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.MISS));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.AA));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.ASM));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.DODGE));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.XP));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.GRUDGE));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.AMMO));
-			buf.writeFloat(entity.getEffectEquipBU(ID.EquipEffect.HPRES));
 		}
 		break;
 		case PID.SyncEntity_Emo:	//IShipEmotion emotion only
@@ -570,7 +620,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateMinor(ID.M.GuardType));
 			buf.writeInt(entity.getStateMinor(ID.M.FormatType));
 			buf.writeInt(entity.getStateMinor(ID.M.FormatPos));
-			buf.writeFloat(entity.getEffectFormationFixed(ID.FormationFixed.MOV));
+			buf.writeFloat(((AttrsAdv)entity.getAttrs()).getMinMOV());
 		}
 		break;
 		case PID.SyncEntity_Motion:	//entity motion sync
@@ -634,6 +684,16 @@ public class S2CEntitySync implements IMessage
 			}
 		}
 		break;
+		case PID.SyncShip_Buffmap:	//sync buff map
+		{
+			BasicEntityShip ship = (BasicEntityShip) this.entity;
+			
+			if (ship.getBuffMap() != null)
+			{
+				PacketHelper.sendMapInt(buf, ship.getBuffMap());
+			}
+		}
+		break;
 		}
 	}
 	
@@ -653,17 +713,18 @@ public class S2CEntitySync implements IMessage
 		
 		switch(msg.packetType)
 		{
-		case PID.SyncShip_All:
+		case PID.SyncShip_AllMisc:
+		case PID.SyncShip_Attrs:
 		case PID.SyncShip_Emo:
 		case PID.SyncShip_Flag:
 		case PID.SyncShip_Formation:
 		case PID.SyncShip_Minor:
 		case PID.SyncShip_Guard:
 		case PID.SyncShip_ID:
-		case PID.SyncShip_Unbuff:
 		case PID.SyncShip_Timer:
 		case PID.SyncShip_Scale:
 		case PID.SyncShip_UnitName:
+		case PID.SyncShip_Buffmap:
 		case PID.SyncEntity_Emo:
 			if (entity instanceof BasicEntityShip ||
 				entity instanceof IShipEmotion ||
@@ -690,7 +751,7 @@ public class S2CEntitySync implements IMessage
 		{
 			switch (msg.packetType)
 			{
-			case PID.SyncShip_All:	//sync all attr
+			case PID.SyncShip_AllMisc:	//sync all attr
 			{
 				ship = (BasicEntityShip) entity;
 				
@@ -726,53 +787,12 @@ public class S2CEntitySync implements IMessage
 				ship.setStateTimer(ID.T.CraneTime, msg.valueInt1[29]);
 				ship.setStateMinor(ID.M.SensBody, msg.valueInt1[30]);
 				
-				ship.setStateFinal(ID.HP, msg.valueFloat1[0]);
-				ship.setStateFinal(ID.ATK, msg.valueFloat1[1]);
-				ship.setStateFinal(ID.DEF, msg.valueFloat1[2]);
-				ship.setStateFinal(ID.SPD, msg.valueFloat1[3]);
-				ship.setStateFinal(ID.MOV, msg.valueFloat1[4]);
-				ship.setStateFinal(ID.HIT, msg.valueFloat1[5]);
-				ship.setStateFinal(ID.ATK_H, msg.valueFloat1[6]);
-				ship.setStateFinal(ID.ATK_AL, msg.valueFloat1[7]);
-				ship.setStateFinal(ID.ATK_AH, msg.valueFloat1[8]);
-				ship.setEffectEquip(ID.EquipEffect.CRI, msg.valueFloat1[9]);
-				ship.setEffectEquip(ID.EquipEffect.DHIT, msg.valueFloat1[10]);
-				ship.setEffectEquip(ID.EquipEffect.THIT, msg.valueFloat1[11]);
-				ship.setEffectEquip(ID.EquipEffect.MISS, msg.valueFloat1[12]);
-				ship.setEffectEquip(ID.EquipEffect.AA, msg.valueFloat1[13]);
-				ship.setEffectEquip(ID.EquipEffect.ASM, msg.valueFloat1[14]);
-				ship.setEffectEquip(ID.EquipEffect.DODGE, msg.valueFloat1[15]);
-				ship.setEffectEquip(ID.EquipEffect.XP, msg.valueFloat1[16]);
-				ship.setEffectEquip(ID.EquipEffect.GRUDGE, msg.valueFloat1[17]);
-				ship.setEffectEquip(ID.EquipEffect.AMMO, msg.valueFloat1[18]);
-				ship.setEffectEquip(ID.EquipEffect.HPRES, msg.valueFloat1[19]);
-				ship.setEffectFormation(ID.Formation.ATK_L, msg.valueFloat1[20]);
-				ship.setEffectFormation(ID.Formation.ATK_H, msg.valueFloat1[21]);
-				ship.setEffectFormation(ID.Formation.ATK_AL, msg.valueFloat1[22]);
-				ship.setEffectFormation(ID.Formation.ATK_AH, msg.valueFloat1[23]);
-				ship.setEffectFormation(ID.Formation.DEF, msg.valueFloat1[24]);
-				ship.setEffectFormation(ID.Formation.MOV, msg.valueFloat1[25]);
-				ship.setEffectFormation(ID.Formation.MISS, msg.valueFloat1[26]);
-				ship.setEffectFormation(ID.Formation.DODGE, msg.valueFloat1[27]);
-				ship.setEffectFormation(ID.Formation.CRI, msg.valueFloat1[28]);
-				ship.setEffectFormation(ID.Formation.DHIT, msg.valueFloat1[29]);
-				ship.setEffectFormation(ID.Formation.THIT, msg.valueFloat1[30]);
-				ship.setEffectFormation(ID.Formation.AA, msg.valueFloat1[31]);
-				ship.setEffectFormation(ID.Formation.ASM, msg.valueFloat1[32]);
-				ship.setEffectFormationFixed(ID.FormationFixed.MOV, msg.valueFloat1[33]);
-				
 				ship.setStateEmotion(ID.S.State, msg.valueByte1[0], false);
 				ship.setStateEmotion(ID.S.State2, msg.valueByte1[1], false);
 				ship.setStateEmotion(ID.S.HPState, msg.valueByte1[2], false);
 				ship.setStateEmotion(ID.S.Emotion, msg.valueByte1[3], false);
 				ship.setStateEmotion(ID.S.Emotion4, msg.valueByte1[4], false);
 				ship.setStateEmotion(ID.S.Phase, msg.valueByte1[5], false);
-				ship.setBonusPoint(ID.HP, msg.valueByte1[6]);
-				ship.setBonusPoint(ID.ATK, msg.valueByte1[7]);
-				ship.setBonusPoint(ID.DEF, msg.valueByte1[8]);
-				ship.setBonusPoint(ID.SPD, msg.valueByte1[9]);
-				ship.setBonusPoint(ID.MOV, msg.valueByte1[10]);
-				ship.setBonusPoint(ID.HIT, msg.valueByte1[11]);
 
 				ship.setStateFlag(ID.F.CanFloatUp, msg.valueBoolean1[0]);
 				ship.setStateFlag(ID.F.IsMarried, msg.valueBoolean1[1]);
@@ -792,6 +812,30 @@ public class S2CEntitySync implements IMessage
 				ship.setStateFlag(ID.F.PickItem, msg.valueBoolean1[15]);
 				ship.setStateFlag(ID.F.CanPickItem, msg.valueBoolean1[16]);
 				ship.setStateFlag(ID.F.ShowHeldItem, msg.valueBoolean1[17]);
+			}
+			break;
+			case PID.SyncShip_Attrs:	//sync all attrs
+			{
+				ship = (BasicEntityShip) entity;
+				AttrsAdv attrs = (AttrsAdv) ship.getAttrs();
+				int flag = 0;
+				
+				//get data
+				if (msg.valueByte1 != null) { attrs.setAttrsBonus(Arrays.copyOf(msg.valueByte1, msg.valueByte1.length)); }
+				if (msg.valueFloat1 != null) { attrs.setAttrsRaw(Arrays.copyOf(msg.valueFloat1, msg.valueFloat1.length)); }
+				if (msg.valueFloat2 != null) { attrs.setAttrsEquip(Arrays.copyOf(msg.valueFloat2, msg.valueFloat2.length)); }
+				if (msg.valueFloat3 != null) { attrs.setAttrsMorale(Arrays.copyOf(msg.valueFloat3, msg.valueFloat3.length)); }
+				if (msg.valueFloat4 != null) { attrs.setAttrsPotion(Arrays.copyOf(msg.valueFloat4, msg.valueFloat4.length)); }
+				if (msg.valueFloat5 != null)
+				{
+					attrs.setAttrsFormation(Arrays.copyOf(msg.valueFloat5, Attrs.AttrsLength));
+					attrs.setMinMOV(msg.valueFloat5[Attrs.AttrsLength]);
+				}
+				if (msg.valueFloat6 != null)
+				{
+					attrs.setAttrsBuffed(Arrays.copyOf(msg.valueFloat6, Attrs.AttrsLength));
+					attrs.setMinMOV(msg.valueFloat6[Attrs.AttrsLength]);
+				}
 			}
 			break;
 			case PID.SyncShip_Emo: //entity emotion only
@@ -843,7 +887,7 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.GuardType, msg.valueInt1[4]);
 				ship.setStateMinor(ID.M.FormatType, msg.valueInt1[5]);
 				ship.setStateMinor(ID.M.FormatPos, msg.valueInt1[6]);
-				ship.setEffectFormationFixed(ID.FormationFixed.MOV, msg.valueFloat1[0]);
+				((AttrsAdv)ship.getAttrs()).setMinMOV(msg.valueFloat1[0]);
 			}
 			break;
 			case PID.SyncShip_Minor: //entity minor only
@@ -901,32 +945,6 @@ public class S2CEntitySync implements IMessage
 				ship.setStateMinor(ID.M.PlayerUID, msg.valueInt1[0]);
 				ship.setStateMinor(ID.M.ShipUID, msg.valueInt1[1]);
 				ship.setStateMinor(ID.M.PlayerEID, msg.valueInt1[2]);
-			}
-			break;
-			case PID.SyncShip_Unbuff:	//sync unbuff attr
-			{
-				ship = (BasicEntityShip) entity;
-				
-				ship.setStateFinalBU(ID.HP, msg.valueFloat1[0]);
-				ship.setStateFinalBU(ID.ATK, msg.valueFloat1[1]);
-				ship.setStateFinalBU(ID.DEF, msg.valueFloat1[2]);
-				ship.setStateFinalBU(ID.SPD, msg.valueFloat1[3]);
-				ship.setStateFinalBU(ID.MOV, msg.valueFloat1[4]);
-				ship.setStateFinalBU(ID.HIT, msg.valueFloat1[5]);
-				ship.setStateFinalBU(ID.ATK_H, msg.valueFloat1[6]);
-				ship.setStateFinalBU(ID.ATK_AL, msg.valueFloat1[7]);
-				ship.setStateFinalBU(ID.ATK_AH, msg.valueFloat1[8]);
-				ship.setEffectEquipBU(ID.EquipEffect.CRI, msg.valueFloat1[9]);
-				ship.setEffectEquipBU(ID.EquipEffect.DHIT, msg.valueFloat1[10]);
-				ship.setEffectEquipBU(ID.EquipEffect.THIT, msg.valueFloat1[11]);
-				ship.setEffectEquipBU(ID.EquipEffect.MISS, msg.valueFloat1[12]);
-				ship.setEffectEquipBU(ID.EquipEffect.AA, msg.valueFloat1[13]);
-				ship.setEffectEquipBU(ID.EquipEffect.ASM, msg.valueFloat1[14]);
-				ship.setEffectEquipBU(ID.EquipEffect.DODGE, msg.valueFloat1[15]);
-				ship.setEffectEquipBU(ID.EquipEffect.XP, msg.valueFloat1[16]);
-				ship.setEffectEquipBU(ID.EquipEffect.GRUDGE, msg.valueFloat1[17]);
-				ship.setEffectEquipBU(ID.EquipEffect.AMMO, msg.valueFloat1[18]);
-				ship.setEffectEquipBU(ID.EquipEffect.HPRES, msg.valueFloat1[19]);
 			}
 			break;
 			case PID.SyncShip_Timer: //ship timer only
@@ -1105,6 +1123,12 @@ public class S2CEntitySync implements IMessage
 			{
 				ship = (BasicEntityShip) entity;
 				ship.unitNames = (ArrayList<String>) msg.valueString1;
+			}
+			break;
+			case PID.SyncShip_Buffmap:	//sync buff map
+			{
+				ship = (BasicEntityShip) entity;
+				ship.setBuffMap((HashMap<Integer, Integer>) msg.valueMap1);
 			}
 			break;
 			}//end switch

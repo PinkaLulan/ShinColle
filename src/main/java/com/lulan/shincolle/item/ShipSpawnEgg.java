@@ -10,6 +10,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 
@@ -125,66 +126,66 @@ public class ShipSpawnEgg extends BasicItem
 	{
 		switch (meta)
 		{
-		case ID.Ship.DestroyerI+2:				//DD
-		case ID.Ship.DestroyerRO+2:
-		case ID.Ship.DestroyerHA+2:
-		case ID.Ship.DestroyerNI+2:
-		case ID.Ship.DestroyerAkatsuki+2:
-		case ID.Ship.DestroyerAkatsuki+2002:
-		case ID.Ship.DestroyerHibiki+2:
-		case ID.Ship.DestroyerHibiki+2002:
-		case ID.Ship.DestroyerIkazuchi+2:
-		case ID.Ship.DestroyerIkazuchi+2002:
-		case ID.Ship.DestroyerInazuma+2:
-		case ID.Ship.DestroyerInazuma+2002:
-		case ID.Ship.DestroyerShimakaze+2:
-		case ID.Ship.DestroyerShimakaze+2002:
+		case ID.ShipClass.DestroyerI+2:				//DD
+		case ID.ShipClass.DestroyerRO+2:
+		case ID.ShipClass.DestroyerHA+2:
+		case ID.ShipClass.DestroyerNI+2:
+		case ID.ShipClass.DestroyerAkatsuki+2:
+		case ID.ShipClass.DestroyerAkatsuki+2002:
+		case ID.ShipClass.DestroyerHibiki+2:
+		case ID.ShipClass.DestroyerHibiki+2002:
+		case ID.ShipClass.DestroyerIkazuchi+2:
+		case ID.ShipClass.DestroyerIkazuchi+2002:
+		case ID.ShipClass.DestroyerInazuma+2:
+		case ID.ShipClass.DestroyerInazuma+2002:
+		case ID.ShipClass.DestroyerShimakaze+2:
+		case ID.ShipClass.DestroyerShimakaze+2002:
 			return 2;
-		case ID.Ship.LightCruiserTenryuu+2:		//CL
-		case ID.Ship.LightCruiserTenryuu+2002:
-		case ID.Ship.LightCruiserTatsuta+2:
-		case ID.Ship.LightCruiserTatsuta+2002:
+		case ID.ShipClass.LightCruiserTenryuu+2:		//CL
+		case ID.ShipClass.LightCruiserTenryuu+2002:
+		case ID.ShipClass.LightCruiserTatsuta+2:
+		case ID.ShipClass.LightCruiserTatsuta+2002:
 			return 3;
-		case ID.Ship.HeavyCruiserAtago+2:		//CA
-		case ID.Ship.HeavyCruiserAtago+2002:
-		case ID.Ship.HeavyCruiserTakao+2:
-		case ID.Ship.HeavyCruiserTakao+2002:
-		case ID.Ship.HeavyCruiserRI+2:
-		case ID.Ship.HeavyCruiserNE+2:
+		case ID.ShipClass.HeavyCruiserAtago+2:		//CA
+		case ID.ShipClass.HeavyCruiserAtago+2002:
+		case ID.ShipClass.HeavyCruiserTakao+2:
+		case ID.ShipClass.HeavyCruiserTakao+2002:
+		case ID.ShipClass.HeavyCruiserRI+2:
+		case ID.ShipClass.HeavyCruiserNE+2:
 			return 4;
-		case ID.Ship.BattleshipRU+2:			//BB
-		case ID.Ship.BattleshipTA+2:
-		case ID.Ship.BattleshipRE+2:
-		case ID.Ship.BattleshipNagato+2:
-		case ID.Ship.BattleshipNagato+2002:
-		case ID.Ship.BattleshipYamato+2:
-		case ID.Ship.BattleshipYamato+2002:
+		case ID.ShipClass.BattleshipRU+2:			//BB
+		case ID.ShipClass.BattleshipTA+2:
+		case ID.ShipClass.BattleshipRE+2:
+		case ID.ShipClass.BattleshipNagato+2:
+		case ID.ShipClass.BattleshipNagato+2002:
+		case ID.ShipClass.BattleshipYamato+2:
+		case ID.ShipClass.BattleshipYamato+2002:
 			return 5;
-		case ID.Ship.TransportWA+2:				//AO, AR
+		case ID.ShipClass.TransportWA+2:				//AO, AR
 			return 6;
-		case ID.Ship.SubmarineKA+2:				//SS
-		case ID.Ship.SubmarineYO+2:
-		case ID.Ship.SubmarineSO+2:
-		case ID.Ship.SubmarineU511+2:
-		case ID.Ship.SubmarineU511+2002:
-		case ID.Ship.SubmarineRo500+2:
-		case ID.Ship.SubmarineRo500+2002:
+		case ID.ShipClass.SubmarineKA+2:				//SS
+		case ID.ShipClass.SubmarineYO+2:
+		case ID.ShipClass.SubmarineSO+2:
+		case ID.ShipClass.SubmarineU511+2:
+		case ID.ShipClass.SubmarineU511+2002:
+		case ID.ShipClass.SubmarineRo500+2:
+		case ID.ShipClass.SubmarineRo500+2002:
 			return 7;
-		case ID.Ship.CarrierWD+2:				//DE, demon, water demon
+		case ID.ShipClass.CarrierWD+2:				//DE, demon, water demon
 			return 8;
-		case ID.Ship.CarrierHime+2:				//PR
-		case ID.Ship.DestroyerHime+2:
-		case ID.Ship.HeavyCruiserHime+2:
-		case ID.Ship.AirfieldHime+2:
-		case ID.Ship.BattleshipHime+2:
-		case ID.Ship.HarbourHime+2:
-		case ID.Ship.NorthernHime+2:
+		case ID.ShipClass.CarrierHime+2:				//PR
+		case ID.ShipClass.DestroyerHime+2:
+		case ID.ShipClass.HeavyCruiserHime+2:
+		case ID.ShipClass.AirfieldHime+2:
+		case ID.ShipClass.BattleshipHime+2:
+		case ID.ShipClass.HarbourHime+2:
+		case ID.ShipClass.NorthernHime+2:
 			return 9;
-		case ID.Ship.CarrierWO+2:				//CV
-		case ID.Ship.CarrierKaga+2:
-		case ID.Ship.CarrierKaga+2002:
-		case ID.Ship.CarrierAkagi+2:
-		case ID.Ship.CarrierAkagi+2002:
+		case ID.ShipClass.CarrierWO+2:				//CV
+		case ID.ShipClass.CarrierKaga+2:
+		case ID.ShipClass.CarrierKaga+2002:
+		case ID.ShipClass.CarrierAkagi+2:
+		case ID.ShipClass.CarrierAkagi+2002:
 			return 10;
 		case 1:		//large egg
 			return 1;
@@ -201,59 +202,59 @@ public class ShipSpawnEgg extends BasicItem
   	{
   		shipList.add(0);  //small egg
   		shipList.add(1);  //large egg
-		shipList.add(ID.Ship.DestroyerI+2);
-  		shipList.add(ID.Ship.DestroyerRO+2);
-  		shipList.add(ID.Ship.DestroyerHA+2);
-  		shipList.add(ID.Ship.DestroyerNI+2);
-  		shipList.add(ID.Ship.HeavyCruiserRI+2);
-  		shipList.add(ID.Ship.HeavyCruiserNE+2);
-  		shipList.add(ID.Ship.CarrierWO+2);
-  		shipList.add(ID.Ship.BattleshipRU+2);
-  		shipList.add(ID.Ship.BattleshipTA+2);
-  		shipList.add(ID.Ship.BattleshipRE+2);
-  		shipList.add(ID.Ship.TransportWA+2);
-  		shipList.add(ID.Ship.SubmarineKA+2);
-  		shipList.add(ID.Ship.SubmarineYO+2);
-  		shipList.add(ID.Ship.SubmarineSO+2);
-  		shipList.add(ID.Ship.DestroyerHime+2);
-  		shipList.add(ID.Ship.HeavyCruiserHime+2);
-  		shipList.add(ID.Ship.CarrierHime+2);
-  		shipList.add(ID.Ship.BattleshipHime+2);
-  		shipList.add(ID.Ship.AirfieldHime+2);
-  		shipList.add(ID.Ship.HarbourHime+2);
-  		shipList.add(ID.Ship.NorthernHime+2);
-  		shipList.add(ID.Ship.CarrierWD+2);
+		shipList.add(ID.ShipClass.DestroyerI+2);
+  		shipList.add(ID.ShipClass.DestroyerRO+2);
+  		shipList.add(ID.ShipClass.DestroyerHA+2);
+  		shipList.add(ID.ShipClass.DestroyerNI+2);
+  		shipList.add(ID.ShipClass.HeavyCruiserRI+2);
+  		shipList.add(ID.ShipClass.HeavyCruiserNE+2);
+  		shipList.add(ID.ShipClass.CarrierWO+2);
+  		shipList.add(ID.ShipClass.BattleshipRU+2);
+  		shipList.add(ID.ShipClass.BattleshipTA+2);
+  		shipList.add(ID.ShipClass.BattleshipRE+2);
+  		shipList.add(ID.ShipClass.TransportWA+2);
+  		shipList.add(ID.ShipClass.SubmarineKA+2);
+  		shipList.add(ID.ShipClass.SubmarineYO+2);
+  		shipList.add(ID.ShipClass.SubmarineSO+2);
+  		shipList.add(ID.ShipClass.DestroyerHime+2);
+  		shipList.add(ID.ShipClass.HeavyCruiserHime+2);
+  		shipList.add(ID.ShipClass.CarrierHime+2);
+  		shipList.add(ID.ShipClass.BattleshipHime+2);
+  		shipList.add(ID.ShipClass.AirfieldHime+2);
+  		shipList.add(ID.ShipClass.HarbourHime+2);
+  		shipList.add(ID.ShipClass.NorthernHime+2);
+  		shipList.add(ID.ShipClass.CarrierWD+2);
   		//hostile ship
-  		shipList.add(ID.Ship.DestroyerAkatsuki+2);
-  		shipList.add(ID.Ship.DestroyerAkatsuki+2002);	//hostile entity
-  		shipList.add(ID.Ship.DestroyerHibiki+2);
-  		shipList.add(ID.Ship.DestroyerHibiki+2002);		//hostile entity
-  		shipList.add(ID.Ship.DestroyerIkazuchi+2);
-  		shipList.add(ID.Ship.DestroyerIkazuchi+2002);	//hostile entity
-  		shipList.add(ID.Ship.DestroyerInazuma+2);
-  		shipList.add(ID.Ship.DestroyerInazuma+2002);	//hostile entity
-  		shipList.add(ID.Ship.DestroyerShimakaze+2);
-  		shipList.add(ID.Ship.DestroyerShimakaze+2002);	//hostile entity
-  		shipList.add(ID.Ship.LightCruiserTenryuu+2);
-  		shipList.add(ID.Ship.LightCruiserTenryuu+2002);	//hostile entity
-  		shipList.add(ID.Ship.LightCruiserTatsuta+2);
-  		shipList.add(ID.Ship.LightCruiserTatsuta+2002);	//hostile entity
-  		shipList.add(ID.Ship.HeavyCruiserTakao+2);
-  		shipList.add(ID.Ship.HeavyCruiserTakao+2002);	//hostile entity
-  		shipList.add(ID.Ship.HeavyCruiserAtago+2);
-  		shipList.add(ID.Ship.HeavyCruiserAtago+2002);	//hostile entity
-  		shipList.add(ID.Ship.CarrierKaga+2);
-  		shipList.add(ID.Ship.CarrierKaga+2002);			//hostile entity
-  		shipList.add(ID.Ship.CarrierAkagi+2);
-  		shipList.add(ID.Ship.CarrierAkagi+2002);		//hostile entity
-  		shipList.add(ID.Ship.BattleshipNagato+2);
-  		shipList.add(ID.Ship.BattleshipNagato+2002);	//hostile entity
-  		shipList.add(ID.Ship.BattleshipYamato+2);
-  		shipList.add(ID.Ship.BattleshipYamato+2002);	//hostile entity
-  		shipList.add(ID.Ship.SubmarineU511+2);
-  		shipList.add(ID.Ship.SubmarineU511+2002);		//hostile entity
-  		shipList.add(ID.Ship.SubmarineRo500+2);
-  		shipList.add(ID.Ship.SubmarineRo500+2002);		//hostile entity
+  		shipList.add(ID.ShipClass.DestroyerAkatsuki+2);
+  		shipList.add(ID.ShipClass.DestroyerAkatsuki+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.DestroyerHibiki+2);
+  		shipList.add(ID.ShipClass.DestroyerHibiki+2002);		//hostile entity
+  		shipList.add(ID.ShipClass.DestroyerIkazuchi+2);
+  		shipList.add(ID.ShipClass.DestroyerIkazuchi+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.DestroyerInazuma+2);
+  		shipList.add(ID.ShipClass.DestroyerInazuma+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.DestroyerShimakaze+2);
+  		shipList.add(ID.ShipClass.DestroyerShimakaze+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.LightCruiserTenryuu+2);
+  		shipList.add(ID.ShipClass.LightCruiserTenryuu+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.LightCruiserTatsuta+2);
+  		shipList.add(ID.ShipClass.LightCruiserTatsuta+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.HeavyCruiserTakao+2);
+  		shipList.add(ID.ShipClass.HeavyCruiserTakao+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.HeavyCruiserAtago+2);
+  		shipList.add(ID.ShipClass.HeavyCruiserAtago+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.CarrierKaga+2);
+  		shipList.add(ID.ShipClass.CarrierKaga+2002);			//hostile entity
+  		shipList.add(ID.ShipClass.CarrierAkagi+2);
+  		shipList.add(ID.ShipClass.CarrierAkagi+2002);		//hostile entity
+  		shipList.add(ID.ShipClass.BattleshipNagato+2);
+  		shipList.add(ID.ShipClass.BattleshipNagato+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.BattleshipYamato+2);
+  		shipList.add(ID.ShipClass.BattleshipYamato+2002);	//hostile entity
+  		shipList.add(ID.ShipClass.SubmarineU511+2);
+  		shipList.add(ID.ShipClass.SubmarineU511+2002);		//hostile entity
+  		shipList.add(ID.ShipClass.SubmarineRo500+2);
+  		shipList.add(ID.ShipClass.SubmarineRo500+2002);		//hostile entity
   	}
   	
   	//for list all same id items
@@ -374,12 +375,13 @@ public class ShipSpawnEgg extends BasicItem
 					
 					if (attrs.length >= 7)
 					{
-						entity.setBonusPoint(ID.HP, (byte) attrs[1]);
-						entity.setBonusPoint(ID.ATK, (byte) attrs[2]);
-						entity.setBonusPoint(ID.DEF, (byte) attrs[3]);
-						entity.setBonusPoint(ID.SPD, (byte) attrs[4]);
-						entity.setBonusPoint(ID.MOV, (byte) attrs[5]);
-						entity.setBonusPoint(ID.HIT, (byte) attrs[6]);
+						Attrs shipattrs = entity.getAttrs();
+						shipattrs.setAttrsBonus(ID.AttrsBase.HP, attrs[1]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.ATK, attrs[2]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.DEF, attrs[3]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.SPD, attrs[4]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.MOV, attrs[5]);
+						shipattrs.setAttrsBonus(ID.AttrsBase.HIT, attrs[6]);
 				    	
 				    	//最後一行為設定等級, 並重新計算所有屬性數值
 				    	entity.setShipLevel(attrs[0], true);
@@ -450,14 +452,6 @@ public class ShipSpawnEgg extends BasicItem
 			//set owner
 			EntityHelper.setPetPlayerUUID(player.getUniqueID(), entity);
 			EntityHelper.setPetPlayerUID(player, entity);
-	  		
-	  		//init bonus point to zero
-	  		entity.setBonusPoint(ID.HP, (byte)0);
-	  		entity.setBonusPoint(ID.ATK, (byte)0);
-	  		entity.setBonusPoint(ID.DEF, (byte)0);
-	  		entity.setBonusPoint(ID.SPD, (byte)0);
-	  		entity.setBonusPoint(ID.MOV, (byte)0);
-	  		entity.setBonusPoint(ID.HIT, (byte)0);
 	  		
 	  		//calc ship attribute and save to nbt: hp atk def ...
 	  		entity.setShipLevel(1, true);
@@ -564,7 +558,7 @@ public class ShipSpawnEgg extends BasicItem
                         	this.initEntityAttribute(stack, player, ship);
                         	
                         	//send sync packet
-                        	ship.sendSyncPacketAllValue();
+                        	ship.sendSyncPacketAll();
                         }
                     }//end spawn entity
                 }//end get position

@@ -1,9 +1,9 @@
 package com.lulan.shincolle.ai;
 
+import com.lulan.shincolle.entity.BasicEntityShip;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-
-import com.lulan.shincolle.entity.BasicEntityShip;
 
 /**SIT AI FOR SHIP
  * 可以在液體中坐下

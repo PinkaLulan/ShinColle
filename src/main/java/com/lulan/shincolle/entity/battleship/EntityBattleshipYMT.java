@@ -9,11 +9,13 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -29,7 +31,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.8F, 2.1F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipYamato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipYamato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
@@ -73,7 +75,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   			if (this.ticksExisted % 4 == 0)
   			{
   				//生成裝備冒煙特效
-  				if (getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
+  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
   				{
   					//計算煙霧位置
   	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.63F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
@@ -102,23 +104,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   	public boolean attackEntityWithHeavyAmmo(Entity target)
   	{
   		//get attack value
-		float atk = CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK_H], 3);
-		
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)(target.posY + target.height * 0.5F);
-		float tarZ = (float)target.posZ;
-		float[] distVec = new float[4];
-		
-		distVec[0] = tarX - (float)this.posX;
-		distVec[1] = tarY - (float)this.posY;
-		distVec[2] = tarZ - (float)this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        if (distVec[3] < 0.001F) distVec[3] = 0.001F; //prevent large dXYZ
-        
-        distVec[0] = distVec[0] / distVec[3];
-        distVec[1] = distVec[1] / distVec[3];
-        distVec[2] = distVec[2] / distVec[3];
+		float atk = CombatHelper.modDamageByAdditionAttrs(this, target, this.getAttackBaseDamage(2, target), 3);
 		
 		//experience++
 		addShipExp(ConfigHandler.expGain[2]);
@@ -144,16 +130,19 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
         
         if (getStateEmotion(ID.S.Phase) > 0)
         {	//spawn beam particle & entity
+            //calc dist to target
+            Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+            
         	//shot sound
         	this.playSound(ModSounds.SHIP_YAMATO_SHOT, ConfigHandler.volumeFire, 1F);
         	
         	//spawn beam entity
             EntityProjectileBeam beam = new EntityProjectileBeam(this.world);
-            beam.initAttrs(this, 0, distVec[0], distVec[1], distVec[2], atk, 0.12F);
+            beam.initAttrs(this, 0, (float)distVec.x, (float)distVec.y, (float)distVec.z, atk, 0.12F);
             this.world.spawnEntity(beam);
             
             //spawn beam particle
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, beam, distVec[0], distVec[1], distVec[2], 1, true), point);
+            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, beam, (float)distVec.x, (float)distVec.y, (float)distVec.z, 1, true), point);
         	
         	this.setStateEmotion(ID.S.Phase, 0, true);
         	return true;
@@ -182,7 +171,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 	{
 		if (this.isSitting())
 		{
-			if (getStateEmotion(ID.S.State) > ID.State.NORMAL)
+			if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
 			{
 				return this.height * 0.5F;
 			}
@@ -211,17 +200,17 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP01a, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
 			break;
-			case ID.State.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP02a, true);
+			case ID.ModelState.EQUIP01a:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -229,24 +218,24 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 			break;
-			case ID.State.EQUIP01:
-				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+			case ID.ModelState.EQUIP01:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}
 	}
 	
 	@Override
-	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
 	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         

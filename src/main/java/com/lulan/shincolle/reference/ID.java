@@ -5,6 +5,59 @@ public class ID
 {
 	
 	
+	/** ship attributes index */
+	public static final class Attrs
+	{
+		/**
+		 * HP: float, 0~N
+		 * ATK: float, 1~N
+		 * DEF: int, -N~1 (1 = 100%)
+		 * SPD: float, 0.1~4
+		 * MOV: float, 0~0.6 (blocks per tick)
+		 * HIT: int, 1~64 (blocks)
+		 * CRI, DHIT, THIT, MISS, DODGE, KB: float, 0.0~1.0 (1 = 100%)
+		 * XP, GRUDGE, AMMO, HPRES: float, 0~N (1 = 100%, default = 100%)
+		 */
+		public static final byte HP = 0;
+		public static final byte ATK_L = 1;
+		public static final byte ATK_H = 2;
+		public static final byte ATK_AL = 3;
+		public static final byte ATK_AH = 4;
+		public static final byte DEF = 5;
+		public static final byte SPD = 6;
+		public static final byte MOV = 7;
+		public static final byte HIT = 8;
+		public static final byte CRI = 9;
+		public static final byte DHIT = 10;
+		public static final byte THIT = 11;
+		public static final byte MISS = 12;
+		public static final byte AA = 13;
+		public static final byte ASM = 14;
+		public static final byte DODGE = 15;
+		public static final byte XP = 16;
+		public static final byte GRUDGE = 17;
+		public static final byte AMMO = 18;
+		public static final byte HPRES = 19;
+		public static final byte KB = 20;
+	}
+	
+	/** index for bonus point, type modify, scale config */
+	public static final class AttrsBase
+	{
+		public static final byte HP = 0;
+		public static final byte ATK = 1;
+		public static final byte DEF = 2;
+		public static final byte SPD = 3;
+		public static final byte MOV = 4;
+		public static final byte HIT = 5;
+		public static final byte modHP = 6;
+		public static final byte modATK = 7;
+		public static final byte modDEF = 8;
+		public static final byte modSPD = 9;
+		public static final byte modMOV = 10;
+		public static final byte modHIT = 11;
+	}
+	
 	/**GUI Button ID*/
 	public static final class B
 	{
@@ -99,95 +152,16 @@ public class ID
 	}
 	
 	/** equip raw data array */
-	public static final class EquipData
+	public static final class EquipMisc
 	{
 		public static final byte EQUIP_TYPE = 0;	//0:none, 1:cannon, 2:misc, 3:aircraft
-		public static final byte HP = 1;
-		public static final byte ATK_L = 2;
-		public static final byte ATK_H = 3;
-		public static final byte ATK_AL = 4;
-		public static final byte ATK_AH = 5;
-		public static final byte DEF = 6;
-		public static final byte SPD = 7;
-		public static final byte MOV = 8;
-		public static final byte HIT = 9;
-		public static final byte CRI = 10;
-		public static final byte DHIT = 11;
-		public static final byte THIT = 12;
-		public static final byte MISS = 13;
-		public static final byte AA = 14;
-		public static final byte ASM = 15;
-		public static final byte RARE_TYPE = 16;
-		public static final byte RARE_MEAN = 17;
-		public static final byte DODGE = 18;
-		public static final byte DEVELOP_NUM = 19;
-		public static final byte DEVELOP_MAT = 20;
-		public static final byte ENCH_TYPE = 21;	//0:none, 1:weapon, 2:armor, 3:misc
+		public static final byte RARE_TYPE = 1;
+		public static final byte RARE_MEAN = 2;
+		public static final byte DEVELOP_NUM = 3;
+		public static final byte DEVELOP_MAT = 4;
+		public static final byte ENCH_TYPE = 5;	//0:none, 1:weapon, 2:armor, 3:misc
 	}
-	
-	/** EffectEquip */
-	public static final class EquipEffect
-	{
-		public static final byte CRI = 0;
-		public static final byte DHIT = 1;
-		public static final byte THIT = 2;
-		public static final byte MISS = 3;
-		public static final byte AA = 4;
-		public static final byte ASM = 5;
-		public static final byte DODGE = 6;
-		public static final byte XP = 7;
-		public static final byte GRUDGE = 8;
-		public static final byte AMMO = 9;
-		public static final byte HPRES = 10;
-	}
-	
-	/** equip enchant array */
-	public static final class EquipEnch
-	{
-		public static final byte HP = 0;
-		public static final byte ATK = 1;
-		public static final byte DEF = 2;
-		public static final byte SPD = 3;
-		public static final byte MOV = 4;
-		public static final byte HIT = 5;
-		public static final byte CRI = 6;
-		public static final byte DHIT = 7;
-		public static final byte THIT = 8;
-		public static final byte MISS = 9;
-		public static final byte AA = 10;
-		public static final byte ASM = 11;
-		public static final byte DODGE = 12;
-		public static final byte XP = 13;
-		public static final byte GRUDGE = 14;
-		public static final byte AMMO = 15;
-		public static final byte HPRES = 16;
-	}
-	
-	/** equip final stats array */
-	public static final class EquipFinal
-	{
-		public static final byte HP = 0;
-		public static final byte ATK_L = 1;
-		public static final byte ATK_H = 2;
-		public static final byte ATK_AL = 3;
-		public static final byte ATK_AH = 4;
-		public static final byte DEF = 5;
-		public static final byte SPD = 6;
-		public static final byte MOV = 7;
-		public static final byte HIT = 8;
-		public static final byte CRI = 9;
-		public static final byte DHIT = 10;
-		public static final byte THIT = 11;
-		public static final byte MISS = 12;
-		public static final byte AA = 13;
-		public static final byte ASM = 14;
-		public static final byte DODGE = 15;
-		public static final byte XP = 16;
-		public static final byte GRUDGE = 17;
-		public static final byte AMMO = 18;
-		public static final byte HPRES = 19;
-	}
-	
+
 	/** Equip type */
 	public static final class EquipType
 	{
@@ -322,7 +296,7 @@ public class ID
 		public static final byte SEARCHLIGHT = 0;
 	}
 	
-	/** Entity Flag */
+	/** entity flag index */
 	public static final class F
 	{
 		public static final byte CanFloatUp = 0;
@@ -354,36 +328,6 @@ public class ID
 		public static final byte AutoPump = 26;
 	}
 	
-	/** Update Flag */
-	public static final class FU
-	{
-		public static final byte FormationBuff = 0;
-	}
-	
-	/** Formation Effect */
-	public static final class Formation
-	{
-		public static final byte ATK_L = 0;
-		public static final byte ATK_H = 1;
-		public static final byte ATK_AL = 2;
-		public static final byte ATK_AH = 3;
-		public static final byte DEF = 4;
-		public static final byte MOV = 5;
-		public static final byte MISS = 6;
-		public static final byte DODGE = 7;
-		public static final byte CRI = 8;
-		public static final byte DHIT = 9;
-		public static final byte THIT = 10;
-		public static final byte AA = 11;
-		public static final byte ASM = 12;
-	}
-	
-	/** Formation Fixed Effect */
-	public static final class FormationFixed
-	{
-		public static final byte MOV = 0;
-	}
-	
 	/** GUI ID */
 	public static final class Gui
 	{
@@ -398,7 +342,7 @@ public class ID
 
 	}
 	
-	/** ICON ID for BOOK */
+	/** icon id for book GUI */
 	public static final class Icon
 	{
 		public static final short IronIG = 0;
@@ -475,7 +419,7 @@ public class ID
 		public static final short Cauldron = 71;
 	}
 	
-	/**ship state2*/
+	/** hp state index */
 	public static final class HPState
 	{
 		public static final byte NORMAL = 0;	//正常
@@ -484,7 +428,7 @@ public class ID
 		public static final byte HEAVY = 3;		//大破
 	}
 	
-	/** Minor State */
+	/** minor state index */
 	public static final class M
 	{
 		public static final byte ShipLevel = 0;
@@ -537,11 +481,17 @@ public class ID
 	/** morale level */
 	public static final class Morale
 	{
+		/* morale id */
 		public static final byte Excited = 0;
 		public static final byte Happy = 1;
 		public static final byte Normal = 2;
 		public static final byte Tired = 3;
 		public static final byte Exhausted = 4;
+		/* morale level value */
+		public static final int L_Excited = 5100;
+		public static final int L_Happy = 3900;
+		public static final int L_Normal = 2100;
+		public static final int L_Tired = 900;
 	}
 	
 	/** packet type ID */
@@ -566,7 +516,7 @@ public class ID
 		public static final byte Damage = 3;
 	}
 	
-	/** Entity State */
+	/** entity emotion array index */
 	public static final class S
 	{
 		public static final byte State = 0;				//equip state
@@ -580,7 +530,7 @@ public class ID
 	}
 	
 	/** ship class id */
-	public static final class Ship
+	public static final class ShipClass
 	{
 		public static final short DestroyerI = 0;
 		public static final short DestroyerRO = 1;
@@ -617,7 +567,7 @@ public class ID
 		public static final short BattleshipHime = 26;
 		public static final short DestroyerHime = 27;
 		public static final short HarbourHime = 28;
-		public static final short IsolatedDemon = 29;
+		public static final short IsolatedHime = 29;
 		public static final short MidwayHime = 30;
 		public static final short NorthernHime = 31;
 		public static final short SouthernHime = 32;
@@ -654,6 +604,11 @@ public class ID
 		public static final short LightCruiserTatsuta = 57;
 		public static final short HeavyCruiserAtago = 58;
 		public static final short HeavyCruiserTakao = 59;
+		
+		public static final short BattleshipKongou = 60;
+		public static final short BattleshipHiei = 61;
+		public static final short BattleshipHaruna = 62;
+		public static final short BattleshipKirishima = 63;
 	}
 	
 	/** ship misc entity id for renderer */
@@ -675,23 +630,6 @@ public class ID
 		public static final short CarrierMount = 12;
 	}
 	
-	/** ship attrs id, for Values.ShipAttrMap */
-	public static final class ShipAttr
-	{
-		public static final byte BaseHP = 0;
-		public static final byte BaseATK = 1;
-		public static final byte BaseDEF = 2;
-		public static final byte BaseSPD = 3;
-		public static final byte BaseMOV = 4;
-		public static final byte BaseHIT = 5;
-		public static final byte ModHP = 6;
-		public static final byte ModATK = 7;
-		public static final byte ModDEF = 8;
-		public static final byte ModSPD = 9;
-		public static final byte ModMOV = 10;
-		public static final byte ModHIT = 11;
-	}
-	
 	/** ship type for damage calc */
 	public static final class ShipDmgType
 	{
@@ -707,7 +645,7 @@ public class ID
 	
 	/** ship type for GUI display */
 	public static final class ShipType
-	{				//for GUI display
+	{
 		public static final byte DESTROYER = -1;		//DD
 		public static final byte LIGHT_CRUISER = 1;		//CL
 		public static final byte HEAVY_CRUISER = 2;		//CA CAV
@@ -721,7 +659,7 @@ public class ID
 		public static final byte HIME = 10;				//princess (Pr)
 	}
 	
-	/** ship type for consumption ID */
+	/** consumption type and action index */
 	public static final class ShipConsume
 	{
 		/** ship type */
@@ -745,7 +683,7 @@ public class ID
 	}
 	
 	/** ship state for equip model display */
-	public static final class State
+	public static final class ModelState
 	{
 		/** for ID.S.State */
 		public static final byte NORMAL = 0;
@@ -792,17 +730,19 @@ public class ID
 		public static final byte AttackTime2 = 13;		//CLIENT: attack time 2 for model display
 		public static final byte AttackTime3 = 14;		//SERVER: attack time 3 for skill AI
 	}
-
-	/** StateEquip, StateFinal, BonusPoint, TypeModify */
-	public static final byte HP = 0;
-	public static final byte ATK = 1;
-	public static final byte DEF = 2;
-	public static final byte SPD = 3;
-	public static final byte MOV = 4;
-	public static final byte HIT = 5;
-	public static final byte ATK_H = 6;
-	public static final byte ATK_AL = 7;
-	public static final byte ATK_AH = 8;
+	
+	/** Update Flag */
+	public static final class FlagUpdate
+	{
+		public static final byte FormationBuff = 0;
+		public static final byte AttrsBuffed = 1;
+		public static final byte AttrsBonus = 2;
+		public static final byte AttrsEquip = 3;
+		public static final byte AttrsMorale = 4;
+		public static final byte AttrsPotion = 5;
+		public static final byte AttrsFormation = 6;
+		public static final byte AttrsRaw = 7;
+	}
 	
 	
 }

@@ -9,9 +9,12 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
@@ -28,7 +31,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.DestroyerShimakaze);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerShimakaze);
 		this.numRensouhou = 10;
 		
 		//model display
@@ -76,7 +79,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
   	public void onLivingUpdate()
 	{
   		super.onLivingUpdate();
-          
+  		
   		if (!world.isRemote)
   		{
   			//add aura to master every N ticks
@@ -128,27 +131,22 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
   	public boolean attackEntityWithHeavyAmmo(Entity target)
   	{	
 		//get attack value
-		float atkHeavy = this.atk * 0.9F;
+		float atkHeavy = this.getAttackBaseDamage(2, target) * 0.9F;
 		float kbValue = 0.08F;
 		
 		//飛彈是否採用直射
 		boolean isDirect = false;
-		//計算目標距離
-		float tarX = (float)target.posX;	//for miss chance calc
-		float tarY = (float)target.posY;
-		float tarZ = (float)target.posZ;
-		float distX = tarX - (float)this.posX;
-		float distY = tarY - (float)this.posY;
-		float distZ = tarZ - (float)this.posZ;
-        float distSqrt = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        float launchPos = (float)posY + height * 0.45F;
+		float launchPos = (float)posY + height * 0.45F;
+		
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
         
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if ((distX*distX+distY*distY+distZ*distZ) < 36F || this.getShipDepth() > 0D)
+        //水中 or 近距離, 採用直射
+        if (distVec.distance < (6D + this.getScaleLevel()) || this.getShipDepth() > 0D)
         {
         	isDirect = true;
         }
-	
+        
 		//play attack sound
         this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
         this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.8F);
@@ -160,34 +158,45 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
         	this.playSound(ModSounds.SHIP_HIT, this.getSoundVolume(), this.getSoundPitch());
         }
         
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.25F;	//max miss chance = 30%
-       
-        if (this.rand.nextFloat() < missChance)
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if too close, extend target position
+	    if (distVec.distance < (6D + this.getScaleLevel()) && isDirect)
+	    {
+	    	tarX += distVec.x * 6D;
+	    	tarY += (distVec.y + (target.height - this.height)) * 1D;
+	    	tarZ += distVec.z * 6D;
+	    }
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atkHeavy) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-        	//spawn miss particle
-        	TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        	CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 10, false), point);
+        	
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
         //發射者煙霧特效 (不使用特效, 但是要發送封包來設定attackTime)
         TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-
+		
+		float spread = 3F + this.scaleLevel * 0.5F;
+		
         //spawn missile
         EntityAbyssMissile missile1 = new EntityAbyssMissile(this.world, this, 
         		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile2 = new EntityAbyssMissile(this.world, this, 
-        		tarX+5F, tarY+target.height*0.2F, tarZ+5F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX+spread, tarY+target.height*0.2F, tarZ+spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile3 = new EntityAbyssMissile(this.world, this, 
-        		tarX+5F, tarY+target.height*0.2F, tarZ-5F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX+spread, tarY+target.height*0.2F, tarZ-spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile4 = new EntityAbyssMissile(this.world, this, 
-        		tarX-5F, tarY+target.height*0.2F, tarZ+5F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX-spread, tarY+target.height*0.2F, tarZ+spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
         EntityAbyssMissile missile5 = new EntityAbyssMissile(this.world, this, 
-        		tarX-5F, tarY+target.height*0.2F, tarZ-5F, launchPos, atkHeavy, kbValue, isDirect, -1F);
+        		tarX-spread, tarY+target.height*0.2F, tarZ-spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
         
         this.world.spawnEntity(missile1);
         this.world.spawnEntity(missile2);
@@ -207,20 +216,5 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		return ID.ShipDmgType.DESTROYER;
 	}
   	
-  	@Override
-	public float getEffectEquip(int id)
-  	{
-		switch (id)
-		{
-		case ID.EquipEffect.CRI:
-			return 0.15F;
-		case ID.EquipEffect.AA:  //DD vs AA,ASM effect
-		case ID.EquipEffect.ASM:
-			return this.atk * 0.5F;
-		default:
-			return 0F;
-		}
-	}
   	
-
 }

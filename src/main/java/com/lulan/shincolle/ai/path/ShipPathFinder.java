@@ -168,7 +168,7 @@ public class ShipPathFinder
                 	pp.totalPathDistance = dist2;
                 	pp.distanceToNext = pp.distanceManhattan(endpp) + pp.costMalus;
 //                	pp.distanceToNext = pp.distanceToSquared(endpp) + pp.costMalus;
-
+                	
                 	//若這個點已經存在於path中, 則計算新距離並重新排序該點在path中的位置
                     if (pp.isAssigned())
                     {

@@ -7,7 +7,8 @@ import com.lulan.shincolle.entity.mounts.EntityMountCaH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -20,7 +21,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.CarrierHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
@@ -94,12 +95,12 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+			case ID.ModelState.EQUIP00a:
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
-			case ID.State.NORMALa:
+			case ID.ModelState.NORMALa:
 			default:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
 			}
 		}
@@ -108,13 +109,13 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 				this.setPositionAndUpdate(posX, posY + 2D, posZ);
 			break;
-			case ID.State.NORMAL:
+			case ID.ModelState.NORMAL:
 			default:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
 			}
 		}
@@ -125,7 +126,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 	public boolean attackEntityAsMob(Entity target)
 	{
 		//get attack value
-		float atk = StateFinal[ID.ATK_AL];
+		float atk = this.getAttackBaseDamage(0, target);
 		
 		//experience++
 		addShipExp(ConfigHandler.expGain[0]);
@@ -136,7 +137,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 				
 	    //entity attack effect
 	    applySoundAtAttacker(0, target);
-	    applyParticleAtAttacker(0, target, new float[4]);
+	    applyParticleAtAttacker(0, target, Dist4d.ONE);
 	    
 	    //spawn missile
         EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
@@ -150,6 +151,24 @@ public class EntityCarrierHime extends BasicEntityShipCV
 
 	    return true;
 	}
-
-
+	
+	@Override
+  	public float getAttackBaseDamage(int type, Entity target)
+  	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+  		case 2:  //heavy cannon
+  			return this.shipAttrs.getAttackDamageHeavy();
+  		case 3:  //light aircraft
+  			return this.shipAttrs.getAttackDamageAir();
+  		case 4:  //heavy aircraft
+  			return this.shipAttrs.getAttackDamageAirHeavy();
+		default: //melee
+			return this.shipAttrs.getAttackDamage();
+  		}
+  	}
+	
+	
 }

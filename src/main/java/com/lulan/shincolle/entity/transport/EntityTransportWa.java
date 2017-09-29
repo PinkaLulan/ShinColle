@@ -24,7 +24,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 1.53F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.TRANSPORT);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.TransportWA);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.TransportWA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.UNDEFINED);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.AP]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.AP]);
@@ -101,7 +101,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
   				{
 					//supply ammo/grudge to nearby ships
 	  				int supCount = this.getLevel() / 50 + 1;
-	  				double range = 2D + this.getAttackRange() * 0.5D;
+	  				double range = 2D + this.getAttrs().getAttackRange() * 0.5D;
 	  				boolean canSupply = false;
 		            List<BasicEntityShip> slist = null;
 		            TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -121,24 +121,24 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		            		if (this.getStateMinor(ID.M.NumGrudge) > 5400 && s.getStateMinor(ID.M.NumGrudge) < 2700)
 		            		{
 		            			canSupply = true;
-		            			this.setStateMinor(ID.M.NumGrudge, this.getStateMinor(ID.M.NumGrudge) - 5400);
-		            			s.setStateMinor(ID.M.NumGrudge, s.getStateMinor(ID.M.NumGrudge) + 5400);
+		            			this.addGrudge(-5400);
+		            			s.addGrudge((int) (5400F * s.getAttrs().getAttrsBuffed(ID.Attrs.GRUDGE)));
 		            		}
 		            		
 		            		//supply light ammo
 		            		if (this.getStateMinor(ID.M.NumAmmoLight) >= 540 && s.getStateMinor(ID.M.NumAmmoLight) < 270)
 		            		{
 		            			canSupply = true;
-		            			this.setStateMinor(ID.M.NumAmmoLight, this.getStateMinor(ID.M.NumAmmoLight) - 540);
-		            			s.setStateMinor(ID.M.NumAmmoLight, s.getStateMinor(ID.M.NumAmmoLight) + 540);
+		            			this.addAmmoLight(-540);
+		            			s.addAmmoLight((int) (540F * s.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 		            		}
 		            		
 		            		//supply heavy ammo
 		            		if (this.getStateMinor(ID.M.NumAmmoHeavy) >= 270 && s.getStateMinor(ID.M.NumAmmoHeavy) < 135)
 		            		{
 		            			canSupply = true;
-		            			this.setStateMinor(ID.M.NumAmmoHeavy, this.getStateMinor(ID.M.NumAmmoHeavy) - 270);
-		            			s.setStateMinor(ID.M.NumAmmoHeavy, s.getStateMinor(ID.M.NumAmmoHeavy) + 270);
+		            			this.addAmmoHeavy(-270);
+		            			s.addAmmoHeavy((int) (270F * s.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 		            		}
 		            		
 		            		//count--
@@ -166,27 +166,29 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		case 0:
 			//try to find grudge
 			if (decrSupplies(4))
-			{	//find grudge
+			{
+				//find grudge
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 10 * EffectEquip[ID.EquipEffect.GRUDGE];
+					this.addGrudge((int) (Values.N.BaseGrudge * 10F * this.getAttrs().getAttrsBuffed(ID.Attrs.GRUDGE)));
 				}
 				else
 				{
-					StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * EffectEquip[ID.EquipEffect.GRUDGE];
+					this.addGrudge((int) (Values.N.BaseGrudge * this.getAttrs().getAttrsBuffed(ID.Attrs.GRUDGE)));
 				}
 			}
 			else
 			{
 				if (decrSupplies(5))
-				{	//find grudge block
+				{
+					//find grudge block
 					if (ConfigHandler.easyMode)
 					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 90 * EffectEquip[ID.EquipEffect.GRUDGE];
+						this.addGrudge((int) (Values.N.BaseGrudge * 90F * this.getAttrs().getAttrsBuffed(ID.Attrs.GRUDGE)));
 					}
 					else
 					{
-						StateMinor[ID.M.NumGrudge] += Values.N.BaseGrudge * 9 * EffectEquip[ID.EquipEffect.GRUDGE];
+						this.addGrudge((int) (Values.N.BaseGrudge * 9F * this.getAttrs().getAttrsBuffed(ID.Attrs.GRUDGE)));
 					}
 				}
 			}
@@ -196,11 +198,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 			{
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 10 * EffectEquip[ID.EquipEffect.AMMO];
+					this.addAmmoLight((int) (Values.N.BaseLightAmmo * 10F * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 				}
 				else
 				{
-					StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * EffectEquip[ID.EquipEffect.AMMO];
+					this.addAmmoLight((int) (Values.N.BaseLightAmmo * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 				}
 			}
 			else
@@ -209,11 +211,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 				{
 					if (ConfigHandler.easyMode)
 					{
-						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 90 * EffectEquip[ID.EquipEffect.AMMO];
+						this.addAmmoLight((int) (Values.N.BaseLightAmmo * 90F * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 					}
 					else
 					{
-						StateMinor[ID.M.NumAmmoLight] += Values.N.BaseLightAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO];
+						this.addAmmoLight((int) (Values.N.BaseLightAmmo * 9F * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 					}
 				}
 			}
@@ -223,11 +225,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 			{
 				if (ConfigHandler.easyMode)
 				{
-					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 10 * EffectEquip[ID.EquipEffect.AMMO];
+					this.addAmmoHeavy((int) (Values.N.BaseHeavyAmmo * 10F * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 				}
 				else
 				{
-					StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * EffectEquip[ID.EquipEffect.AMMO];
+					this.addAmmoHeavy((int) (Values.N.BaseHeavyAmmo * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 				}
 			}
 			else
@@ -236,11 +238,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 				{
 					if (ConfigHandler.easyMode)
 					{
-						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 90 * EffectEquip[ID.EquipEffect.AMMO];
+						this.addAmmoHeavy((int) (Values.N.BaseHeavyAmmo * 90F * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 					}
 					else
 					{
-						StateMinor[ID.M.NumAmmoHeavy] += Values.N.BaseHeavyAmmo * 9 * EffectEquip[ID.EquipEffect.AMMO];
+						this.addAmmoHeavy((int) (Values.N.BaseHeavyAmmo * 9F * this.getAttrs().getAttrsBuffed(ID.Attrs.AMMO)));
 					}
 				}
 			}
@@ -250,17 +252,17 @@ public class EntityTransportWa extends BasicEntityShipSmall
 	
 	//increase inventory size
   	@Override
-  	public void calcShipAttributes()
+  	public void calcShipAttributesAddEquip()
   	{
-  		StateMinor[ID.M.DrumState] = 2;
+  		super.calcShipAttributesAddEquip();
   		
-  		super.calcShipAttributes();	
+  		this.StateMinor[ID.M.DrumState] = 2;
   	}
   	
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (getStateEmotion(ID.S.State) > ID.State.EQUIP00)
+  		if (getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
   		{
   			if (this.isSitting())
   	  		{
@@ -291,11 +293,11 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		{
 			switch (getStateEmotion(ID.S.State2))
 			{
-			case ID.State.NORMALa:
-				setStateEmotion(ID.S.State2, ID.State.EQUIP00a, true);
+			case ID.ModelState.NORMALa:
+				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State2, ID.State.NORMALa, true);
+				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
 			break;
 			}
 		}
@@ -303,21 +305,21 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		{
 			switch (getStateEmotion(ID.S.State))
 			{
-			case ID.State.NORMAL:
-				setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+			case ID.ModelState.NORMAL:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 			break;
-			case ID.State.EQUIP00:
-				setStateEmotion(ID.S.State, ID.State.EQUIP01, true);
+			case ID.ModelState.EQUIP00:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
 			break;
-			case ID.State.EQUIP01:
-				setStateEmotion(ID.S.State, ID.State.EQUIP02, true);
+			case ID.ModelState.EQUIP01:
+				setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
 			break;
 			default:
-				setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 			break;
 			}
 		}
 	}
-
-
+	
+	
 }

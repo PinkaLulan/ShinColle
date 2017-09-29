@@ -42,7 +42,8 @@ public class EntityAIShipFlee extends EntityAIBase
 		
 		//血量低於fleeHP 且不是坐下也不是綁住的狀態才執行flee AI
 		if (!host.isSitting() && !host.getLeashed() && 
-			(host.getHealth() / host.getMaxHealth()) <= this.fleehp)
+			(host.getHealth() / host.getMaxHealth()) <= this.fleehp &&
+			host.getStateMinor(ID.M.NumGrudge) > 0)
 		{
 			EntityLivingBase OwnerEntity = (EntityLivingBase) host.getHostEntity();
 			

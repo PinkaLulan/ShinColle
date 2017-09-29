@@ -8,12 +8,13 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -29,7 +30,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 		super(world);
 		this.setSize(0.7F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipRU);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRU);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
@@ -64,12 +65,12 @@ public class EntityBattleshipRu extends BasicEntityShip
 
 	//Ta級額外增加屬性
 	@Override
-	public void calcShipAttributes()
+	public void calcShipAttributesAddRaw()
 	{
-		EffectEquip[ID.EquipEffect.DHIT] += 0.15F;
-		EffectEquip[ID.EquipEffect.THIT] += 0.15F;
+		super.calcShipAttributesAddRaw();
 		
-		super.calcShipAttributes();	
+		this.getAttrs().setAttrsRaw(ID.Attrs.DHIT, this.getAttrs().getAttrsRaw(ID.Attrs.DHIT) + 0.15F);
+		this.getAttrs().setAttrsRaw(ID.Attrs.THIT, this.getAttrs().getAttrsRaw(ID.Attrs.THIT) + 0.15F);
 	}
 	
 	@Override
@@ -94,7 +95,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 				{
 					//顯示流汗表情
 					if (this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED &&
-						this.getStateEmotion(ID.S.State) >= ID.State.EQUIP01 &&
+						this.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 &&
 						(this.ticksExisted & 511) > 400)
 					{
 						ParticleHelper.spawnAttackParticleAtEntity(this, 0.5D, 0D, this.rand.nextInt(2) == 0 ? 0 : 2, (byte)36);
@@ -149,7 +150,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 	{
 		if (this.isSitting())
 		{
-			if (this.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+			if (this.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 			{
 				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -181,13 +182,13 @@ public class EntityBattleshipRu extends BasicEntityShip
 		if (isSneaking)
 		{
 			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.State.EQUIP00a) i = ID.State.NORMALa;
+			if (i > ID.ModelState.EQUIP00a) i = ID.ModelState.NORMALa;
 			setStateEmotion(ID.S.State2, i, true);
 		}
 		else
 		{
 			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.State.EQUIP01) i = ID.State.NORMAL;
+			if (i > ID.ModelState.EQUIP01) i = ID.ModelState.NORMAL;
 			setStateEmotion(ID.S.State, i, true);
 		}
 	}
@@ -213,48 +214,21 @@ public class EntityBattleshipRu extends BasicEntityShip
 		boolean isDirect = false;
 		float launchPos = (float) posY + height * 0.75F;
 		
-		//計算目標距離
-		float[] distVec = new float[4];
-		float tarX = (float) target.posX;
-		float tarY = (float) target.posY;
-		float tarZ = (float) target.posZ;
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
 		
-		distVec[0] = tarX - (float) this.posX;
-        distVec[1] = tarY - (float) this.posY;
-        distVec[2] = tarZ - (float) this.posZ;
-		distVec[3] = MathHelper.sqrt(distVec[0]*distVec[0] + distVec[1]*distVec[1] + distVec[2]*distVec[2]);
-        
-        if (distVec[3] > 1.0E-4D)
-        {
-            distVec[0] = distVec[0] / distVec[3];
-            distVec[1] = distVec[1] / distVec[3];
-            distVec[2] = distVec[2] / distVec[3];
-        }
-        
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec[3] < 5F)
-        {
-        	isDirect = true;
-        }
-        
-        if (getShipDepth() > 0D)
-        {
-        	isDirect = true;
-        	launchPos = (float) posY;
-        }
-        
-        //calc miss chance, miss: add random offset(0~6) to missile target 
-        float missChance = 0.2F + 0.15F * (distVec[3] / StateFinal[ID.HIT]) - 0.001F * StateMinor[ID.M.ShipLevel];
-        missChance -= EffectEquip[ID.EquipEffect.MISS];	//equip miss reduce
-        if (missChance > 0.35F) missChance = 0.35F;	//max miss chance = 30%
-       
-        if (this.rand.nextFloat() < missChance)
+	    float tarX = (float) target.posX;
+	    float tarY = (float) target.posY;
+	    float tarZ = (float) target.posZ;
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, 1F) <= 0F)
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
         	
-        	applyParticleSpecialEffect(0);  //miss particle
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
 		if (this.StateEmotion[ID.S.Phase] == 0)
@@ -267,7 +241,7 @@ public class EntityBattleshipRu extends BasicEntityShip
   				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
   	        }
   			
-  			applyParticleAtAttacker(2, target, new float[0]);
+  			applyParticleAtAttacker(2, target, Dist4d.ONE);
   			
   			//charging
   			this.StateEmotion[ID.S.Phase] = 1;
@@ -286,28 +260,28 @@ public class EntityBattleshipRu extends BasicEntityShip
   		switch (type)
   		{
   		case 1:  //light cannon
-  			return CalcHelper.calcDamageBySpecialEffect(this, target, StateFinal[ID.ATK], 0);
-  		case 2:  //heavy cannon
-  			return StateFinal[ID.ATK_H] * 0.2F;
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+  	  	case 2:  //heavy cannon
+  			return this.shipAttrs.getAttackDamageHeavy() * 0.2F;
   		case 3:  //light aircraft
-  			return StateFinal[ID.ATK_AL];
+  			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft
-  			return StateFinal[ID.ATK_AH];
+  			return this.shipAttrs.getAttackDamageAirHeavy();
 		default: //melee
-			return StateFinal[ID.ATK] * 2F;
+			return this.shipAttrs.getAttackDamage() * 2F;
   		}
   	}
 	
     //change light cannon particle
     @Override
-    public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+    public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
     {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         
   		switch (type)
   		{
   		case 1:  //light cannon
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY, this.posZ, vec[0], 0.7F, vec[2], true), point);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 19, this.posX, this.posY, this.posZ, distVec.x, 0.7F, distVec.z, true), point);
   		break;
   		case 2:  //heavy cannon
   		case 3:  //light aircraft

@@ -656,7 +656,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
     	//head equip
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.EquipBase.isHidden = false;
   			this.GlowEquipBase.isHidden = false;
   			this.Hair03.isHidden = true;
@@ -675,7 +675,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
   		//outfit and torpedo
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.BodyMain1.isHidden = true;
   			this.Butt1.isHidden = true;
   			this.BoobL.isHidden = true;
@@ -848,7 +848,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 	  	this.HairR01.rotateAngleZ = 0.1396F;
 	  	this.HairR02.rotateAngleZ = -0.1396F;
   		
-  		if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+  		if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
   		{
   			GlStateManager.translate(0F, angleX * 0.035F + 0.1F, -0.1F);
   			//head
@@ -914,7 +914,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 	    {	//奔跑動作
 	    	GlStateManager.translate(0F, 0.1F, 0F);
 	    	
-	    	if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+	    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
 	  		{
 	    		this.Head.rotateAngleX += 0.6F;
 	  		}
@@ -955,7 +955,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 		    addk1 -= 0.1F;
 		  	addk2 -= 0.1F;
 		  	
-		  	if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+		  	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
 	  		{
 		  		this.Head.rotateAngleX += 0.8F;
 		  		this.ArmLeft01.rotateAngleX = -0.25F;
@@ -987,7 +987,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 			    this.LegLeft01.rotateAngleY = -0.1F - angleX * 0.05F;
 			  	this.LegRight01.rotateAngleY = 0.1F + angleX * 0.05F;
 			  	
-			  	if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+			  	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
 		  		{
 			  		GlStateManager.translate(0F, 0.36F, 0F);
 			  		float ax = MathHelper.cos(f2 * 0.5F) * 0.5F;
@@ -1014,7 +1014,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 		    	this.LegLeft01.rotateAngleY = -0.3491F;
 		    	this.LegRight01.rotateAngleY = 0.3491F;
 		    	
-		    	if (ent.getStateEmotion(ID.S.State) > ID.State.NORMAL)
+		    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
 		  		{
 		    		//body
 		    		this.Head.rotateAngleX += 0.7F;

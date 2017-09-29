@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
@@ -79,7 +80,7 @@ public class EntityMountBaH extends BasicEntityMount
 	}
 	
 	@Override
-  	public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+  	public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
   	{
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         

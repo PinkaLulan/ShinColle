@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -67,14 +68,15 @@ public class EnchantHelper
 	 */
 	public static float[] calcEnchantEffect(ItemStack stack)
 	{
-		float[] ench = new float[17];
+		float[] ench = new float[Attrs.AttrsLength];
         NBTTagList nbttaglist = stack.getEnchantmentTagList();
 
         if (nbttaglist != null)
         {
+        	//loop all enchantments
             for (int i = 0; i < nbttaglist.tagCount(); ++i)
             {
-            	boolean nonVanilla = false;		//not vanilla enchantment
+            	boolean nonVanilla = false;		//not vanilla enchantment flag
                 int id = nbttaglist.getCompoundTagAt(i).getShort("id");
                 int lv = nbttaglist.getCompoundTagAt(i).getShort("lvl");
 
@@ -83,82 +85,85 @@ public class EnchantHelper
                 {
                 //hp
                 case 3:		//R  4 blast_protection
-                	ench[ID.EquipEnch.HP] += 0.05F * lv;
+                	ench[ID.Attrs.HP] += 0.05F * lv;
+                	ench[ID.Attrs.KB] += 0.1F * lv;
                 case 1:		//UC 4 fire_protection
                 case 4:		//UC 4 projectile_protection
-                	ench[ID.EquipEnch.HP] += 0.05F * lv;
+                	ench[ID.Attrs.HP] += 0.05F * lv;
                 case 0:		//C  4 protection
-                	ench[ID.EquipEnch.HP] += 0.1F * lv;
+                	ench[ID.Attrs.HP] += 0.1F * lv;
             	break;
             	//atk
                 case 17:	//UC 5 smite
                 case 18:	//UC 5 bane_of_arthropods
-                	ench[ID.EquipEnch.ATK] += 0.08F * lv;
+                	ench[ID.Attrs.ATK_L] += 0.08F * lv;
                 case 16:	//C  5 sharpness
                 case 48:	//C  5 power
-                	ench[ID.EquipEnch.ATK] += 0.08F * lv;
+                	ench[ID.Attrs.ATK_L] += 0.08F * lv;
                 break;
                 //def
                 case 34:	//UC 3 unbreaking
-                	ench[ID.EquipEnch.DEF] += 0.2F * lv;
+                	ench[ID.Attrs.DEF] += 0.2F * lv;
             	break;
             	//spd
                 case 32:	//C  5 efficiency
-                	ench[ID.EquipEnch.SPD] += 0.1F * lv;
+                	ench[ID.Attrs.SPD] += 0.1F * lv;
             	break;
             	//mov
                 case 6:		//R  1 aqua_affinity
                 case 8:		//R  3 depth_strider
-                	ench[ID.EquipEnch.MOV] += 0.05F * lv;
-                	ench[ID.EquipEnch.DODGE] += 0.25F * lv;
+                	ench[ID.Attrs.MOV] += 0.05F * lv;
+                	ench[ID.Attrs.DODGE] += 0.25F * lv;
             	break;
                 case 2:		//UC 4 feather_falling
-                	ench[ID.EquipEnch.MOV] += 0.1F * lv;
+                	ench[ID.Attrs.MOV] += 0.1F * lv;
+                	ench[ID.Attrs.KB] -= 0.1F * lv;
             	break;
             	//range
                 case 49:	//R  2 punch
                 case 19:	//UC 2 knockback
-                	ench[ID.EquipEnch.HIT] += 0.15F * lv;
+                	ench[ID.Attrs.HIT] += 0.15F * lv;
+                	ench[ID.Attrs.KB] += 0.05F * lv;
             	break;
             	//cri
                 case 9:		//R  2 frost_walker
-                	ench[ID.EquipEnch.CRI] += 0.25F * lv;
+                	ench[ID.Attrs.CRI] += 0.25F * lv;
             	break;
             	//dhit, thit
                 case 20:	//R  2 fire_aspect
                 case 50:	//R  1 flame
-                	ench[ID.EquipEnch.DHIT] += 0.25F * lv;
-                	ench[ID.EquipEnch.THIT] += 0.25F * lv;
+                	ench[ID.Attrs.DHIT] += 0.25F * lv;
+                	ench[ID.Attrs.THIT] += 0.25F * lv;
             	break;
             	//miss
                 case 62:	//R  3 lure
-                	ench[ID.EquipEnch.MISS] += 0.25F * lv;
+                	ench[ID.Attrs.MISS] += 0.25F * lv;
             	break;
             	//aa
                 case 7:		//VR 3 thorns
-                	ench[ID.EquipEnch.AA] += 0.15F * lv;
+                	ench[ID.Attrs.AA] += 0.15F * lv;
             	break;
             	//asm
                 case 5:		//R  3 respiration
-                	ench[ID.EquipEnch.ASM] += 0.15F * lv;
+                	ench[ID.Attrs.ASM] += 0.15F * lv;
             	break;
                 //xp gain
                 case 21:	//R  3 looting
                 case 35:	//R  3 fortune
                 case 61:	//R  3 luck_of_the_sea
-                	ench[ID.EquipEnch.XP] += 0.15F * lv;
+                	ench[ID.Attrs.XP] += 0.25F * lv;
             	break;
             	//grudge gain
                 case 33:	//VR 1 silk_touch
-                	ench[ID.EquipEnch.GRUDGE] += 0.25F * lv;
+                	ench[ID.Attrs.GRUDGE] += 0.25F * lv;
             	break;
             	//ammo gain
                 case 51:	//VR 1 infinity
-                	ench[ID.EquipEnch.AMMO] += 0.25F * lv;
+                	ench[ID.Attrs.AMMO] += 0.25F * lv;
             	break;
             	//hp restore
                 case 70:	//R  1 mending
-                	ench[ID.EquipEnch.HPRES] += 0.5F * lv;
+                	ench[ID.Attrs.HPRES] += 0.5F * lv;
             	break;
             	default:
             		nonVanilla = true;

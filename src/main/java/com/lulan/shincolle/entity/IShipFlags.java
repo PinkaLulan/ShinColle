@@ -5,27 +5,23 @@ package com.lulan.shincolle.entity;
 public interface IShipFlags
 {
 	
-	/**Get state flag
-	 * flag: 8:head tilt
-	 */
-	public boolean getStateFlag(int flag);
-	
-	/**Set state flag
-	 * for individual entity displaying head tilt or other emotion
-	 * flag: 8:head tilt
-	 * sync: send sync packet to client?
-	 */
-	public void setStateFlag(int id, boolean flag);
-
-	/**Get state minor
-	 * state = ID.N.xxx , include level, kills, follow range...
+	/**
+	 * minor states like level, kills, ammo...
 	 */
 	public int getStateMinor(int id);
-	
-	/**Set state minor
-	 * state = ID.N.xxx , include level, kills, follow range...
-	 */
 	public void setStateMinor(int state, int par1);
+	
+	/**
+	 * state flags
+	 */
+	public boolean getStateFlag(int flag);
+	public void setStateFlag(int id, boolean flag);
+
+	/**
+	 * update flag
+	 */
+	public void setUpdateFlag(int id, boolean value);
+	public boolean getUpdateFlag(int id);
 	
 	
 }

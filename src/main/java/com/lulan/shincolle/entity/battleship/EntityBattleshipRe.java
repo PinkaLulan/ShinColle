@@ -12,13 +12,13 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -39,7 +39,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.6F, 1.55F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.Ship.BattleshipRE);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
@@ -68,15 +68,21 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 
 	//增加艦載機數量計算
 	@Override
-	public void calcShipAttributes()
+	public void calcShipAttributesAdd()
 	{
-		EffectEquip[ID.EquipEffect.DHIT] = EffectEquip[ID.EquipEffect.DHIT] + 0.1F;
-		EffectEquip[ID.EquipEffect.THIT] = EffectEquip[ID.EquipEffect.THIT] + 0.1F;
+		super.calcShipAttributesAdd();
 		
 		this.maxAircraftLight += this.getLevel() * 0.1F;
 		this.maxAircraftHeavy += this.getLevel() * 0.05F;
+	}
+	
+	@Override
+	public void calcShipAttributesAddRaw()
+	{
+		super.calcShipAttributesAddRaw();
 		
-		super.calcShipAttributes();	
+		this.getAttrs().setAttrsRaw(ID.Attrs.DHIT, this.getAttrs().getAttrsRaw(ID.Attrs.DHIT) + 0.1F);
+		this.getAttrs().setAttrsRaw(ID.Attrs.THIT, this.getAttrs().getAttrsRaw(ID.Attrs.THIT) + 0.1F);
 	}
 	
 	@Override
@@ -169,19 +175,19 @@ public class EntityBattleshipRe extends BasicEntityShipCV
     {
 		switch (getStateEmotion(ID.S.State))
 		{
-		case ID.State.NORMAL:
-			setStateEmotion(ID.S.State, ID.State.EQUIP00, true);
+		case ID.ModelState.NORMAL:
+			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
 		break;
 		default:
-			setStateEmotion(ID.S.State, ID.State.NORMAL, true);
+			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
 		break;
 		}
 	}
     
+	//if attack successfully, spread light beam to nearby target
     @Override
-	protected void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
+    public void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
 	{
-    	//if attack successfully, spread light beam to nearby target
     	if (type == 1 && isTargetHurt)
     	{
     		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -207,20 +213,13 @@ public class EntityBattleshipRe extends BasicEntityShipCV
                 		!TargetHelper.checkUnattackTargetList(hitEntity) &&
                 		hitEntity.canBeCollidedWith() && !TeamHelper.checkSameOwner(this, hitEntity))
                 	{
-                		//CRI
-                		if(this.rand.nextFloat() < EffectEquip[ID.EquipEffect.CRI])
-                        {
-                    		atkTemp *= 1.5F;
-                        }
-                		
-                		//若攻擊到玩家, 限制最大傷害
-                    	if (hitEntity instanceof EntityPlayer)
-                    	{
-                    		atkTemp *= 0.25F;
-                    		if (atkTemp > 59F) atkTemp = 59F;	//same with TNT
-                    	}
-                    	
-                    	//check friendly fire
+                		//roll miss, cri, dhit, thit
+                		atkTemp = CombatHelper.applyCombatRateToDamage(this, hitEntity, true, 3F, atkTemp);
+                  		
+                		//damage limit on player target
+                		atkTemp = CombatHelper.applyDamageReduceOnPlayer(hitEntity, atkTemp);
+                  		
+                  		//check friendly fire
                 		if (!TeamHelper.doFriendlyFire(this, hitEntity)) atkTemp = 0F;
 
                 		//attack
@@ -240,7 +239,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
     
     //change light cannon particle
     @Override
-    public void applyParticleAtAttacker(int type, Entity target, float[] vec)
+    public void applyParticleAtAttacker(int type, Entity target, Dist4d distVec)
     {
   		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
         

@@ -641,13 +641,13 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 	{
   		switch (ent.getStateEmotion(ID.S.State))
   		{
-  		case ID.State.EQUIP00:
+  		case ID.ModelState.EQUIP00:
   			this.GloveL.isHidden = false;
   			this.GloveR.isHidden = false;
   			this.EquipLBase.isHidden = true;
   			this.EquipRBase.isHidden = true;
   		break;
-  		case ID.State.EQUIP01:
+  		case ID.ModelState.EQUIP01:
   			this.GloveL.isHidden = false;
   			this.GloveR.isHidden = false;
   			this.EquipLBase.isHidden = false;
@@ -663,7 +663,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
   		
   		switch (ent.getStateEmotion(ID.S.State2))
   		{
-  		case ID.State.EQUIP00a:
+  		case ID.ModelState.EQUIP00a:
   			this.EquipBase.isHidden = false;
   		break;
   		default:  //normal
@@ -780,7 +780,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 	  	this.Hair02.rotateAngleX = -angleX1 * 0.04F - 0.12F + headX;
 	  	this.Hair02.rotateAngleZ = 0F;
 	    //arm
-	  	if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+	  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 	  	{
 	  		this.ArmLeft01.rotateAngleZ = angleX * 0.03F - 0.3F;
 	  		this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.3F;
@@ -842,7 +842,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 		
 		//special stand pos
 		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED &&
-			ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01 && t2 > 400)
+			ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && t2 > 400)
 		{
 			spStand = true;
 			
@@ -878,7 +878,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 			this.BodyMain.rotateAngleY = 0F;
 			this.BodyMain.rotateAngleZ = 0F;
 		    //arm
-		  	if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+		  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 		  	{
 		  		this.ArmLeft01.rotateAngleX = angleAdd2 * 0.05F + 0.5F;
 		  		this.ArmRight01.rotateAngleX = angleAdd1 * 0.05F + 0.5F;
@@ -926,7 +926,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 	    	this.Head.rotateAngleX -= 0.6283F;
 		  	this.BodyMain.rotateAngleX = 0.8727F;
 		    //arm
-		  	if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+		  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 		  	{
 		  		this.ArmLeft01.rotateAngleX = angleAdd2 * 0.05F + 0.5F;
 		  		this.ArmLeft01.rotateAngleZ = -0.25F;
@@ -1001,7 +1001,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 				this.LegRight02.rotateAngleZ = 0.0F;
 	    	}
 	    	else if (ent.getStateEmotion(ID.S.Emotion4) == ID.Emotion.BORED &&
-		    		 ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+		    		 ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 	    	{
 		    	GlStateManager.translate(0F, 0.52F, 0F);
 		    	//body
@@ -1127,7 +1127,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 		  	this.BodyMain.rotateAngleZ = 0F;
 		  	this.Butt.rotateAngleX = 0.35F;
 	    	//arm
-		  	if (ent.getStateEmotion(ID.S.State) >= ID.State.EQUIP01)
+		  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
 		  	{
 		  		this.ArmLeft02.rotateAngleX = -0.8726646259971648F;
 		  		this.ArmRight02.rotateAngleX = -0.8726646259971648F;
