@@ -82,6 +82,22 @@ public class ID
 		public static final byte ShipInv_ShowHeld = 18;
 		public static final byte ShipInv_AutoCR = 19;
 		public static final byte ShipInv_AutoPump = 20;
+		public static final byte ShipInv_ModelState01 = 21;
+		public static final byte ShipInv_ModelState02 = 22;
+		public static final byte ShipInv_ModelState03 = 23;
+		public static final byte ShipInv_ModelState04 = 24;
+		public static final byte ShipInv_ModelState05 = 25;
+		public static final byte ShipInv_ModelState06 = 26;
+		public static final byte ShipInv_ModelState07 = 27;
+		public static final byte ShipInv_ModelState08 = 28;
+		public static final byte ShipInv_ModelState09 = 29;
+		public static final byte ShipInv_ModelState10 = 30;
+		public static final byte ShipInv_ModelState11 = 31;
+		public static final byte ShipInv_ModelState12 = 32;
+		public static final byte ShipInv_ModelState13 = 33;
+		public static final byte ShipInv_ModelState14 = 34;
+		public static final byte ShipInv_ModelState15 = 35;
+		public static final byte ShipInv_ModelState16 = 36;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -444,7 +460,7 @@ public class ID
 		public static final byte FollowMin = 10;	//follow range min/max
 		public static final byte FollowMax = 11;	
 		public static final byte FleeHP = 12;		//flee hp%
-		public static final byte TargetAI = 13;		//NO USE
+		public static final byte NumState = 13;	//total model state number
 		public static final byte GuardX = 14;		//guard xyz pos
 		public static final byte GuardY = 15;
 		public static final byte GuardZ = 16;
@@ -516,14 +532,14 @@ public class ID
 		public static final byte Damage = 3;
 	}
 	
-	/** entity emotion array index */
+	/** entity state array index */
 	public static final class S
 	{
-		public static final byte State = 0;				//equip state
+		public static final byte State = 0;				//model state (1 bit for 1 state; if has mounts, first bit = mounts bit)
 		public static final byte Emotion = 1;			//emotion, for face emotion
 		public static final byte Emotion2 = 2;			//emotion 2, for head tilt
 		public static final byte HPState = 3;			//hp state
-		public static final byte State2 = 4;			//equip state 2
+		public static final byte NO_USE = 4;			//
 		public static final byte Phase = 5;				//skill phase
 		public static final byte Emotion3 = 6;			//emotion 3, for caress reaction
 		public static final byte Emotion4 = 7;			//emotion 4, for the other pose emotion
@@ -680,35 +696,6 @@ public class ID
 		public static final byte LAir = 2;
 		public static final byte HAir = 3;
 		public static final byte Move = 4;
-	}
-	
-	/** ship state for equip model display */
-	public static final class ModelState
-	{
-		/** for ID.S.State */
-		public static final byte NORMAL = 0;
-		public static final byte EQUIP00 = 1;
-		public static final byte EQUIP01 = 2;
-		public static final byte EQUIP02 = 3;
-		public static final byte EQUIP03 = 4;
-		public static final byte EQUIP04 = 5;
-		public static final byte EQUIP05 = 6;
-		public static final byte EQUIP06 = 7;
-		public static final byte EQUIP07 = 8;
-		public static final byte EQUIP08 = 9;
-		public static final byte EQUIP09 = 10;
-		/** for ID.S.State2 */
-		public static final byte NORMALa = 0;
-		public static final byte EQUIP00a = 1;
-		public static final byte EQUIP01a = 2;
-		public static final byte EQUIP02a = 3;
-		public static final byte EQUIP03a = 4;
-		public static final byte EQUIP04a = 5;
-		public static final byte EQUIP05a = 6;
-		public static final byte EQUIP06a = 7;
-		public static final byte EQUIP07a = 8;
-		public static final byte EQUIP08a = 9;
-		public static final byte EQUIP09a = 10;
 	}
 	
 	/** Timer Array */

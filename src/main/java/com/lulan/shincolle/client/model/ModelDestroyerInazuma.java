@@ -452,15 +452,10 @@ public class ModelDestroyerInazuma extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.EquipBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
+		this.EquipBase.isHidden = flag;
 	}
 
 	@Override
@@ -605,7 +600,7 @@ public class ModelDestroyerInazuma extends ShipModelBaseAdv
 	  	if (this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
 	  	this.EquipC05a.rotateAngleX = this.EquipC04a.rotateAngleX;
 	    
-	    if (ent.getStateEmotion(ID.S.State) < ID.ModelState.EQUIP01)
+	    if (!EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State)))
 	    {
 	    	this.ArmLeft01.rotateAngleZ += 0.1F;
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;

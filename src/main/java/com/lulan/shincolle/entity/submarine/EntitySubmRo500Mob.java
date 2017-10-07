@@ -21,6 +21,10 @@ import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:equip1, 1:equip2, 2:flower
+ */
 public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipInvisible
 {
 
@@ -33,7 +37,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineRo500);
         
 		//model display
-        this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
+        this.setStateEmotion(ID.S.State, rand.nextInt(8), false);
 	}
 	
 	@Override

@@ -13,6 +13,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -32,7 +33,10 @@ import net.minecraft.world.World;
  * 1. 單縱陣狀態
  * 2. 曉響雷電互相靠近
  * 3. 響雷電全部騎乘在曉身上
- * 4. 必須有響騎乘在曉時, 雷電才會接著騎乘 
+ * 4. 必須有響騎乘在曉時, 雷電才會接著騎乘
+ * 
+ * model state:
+ *   0:cannon, 1:head, 2:weapon, 3:armor
  */
 public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements IShipRiderType
 {
@@ -54,6 +58,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerAkatsuki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
+		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
@@ -145,7 +150,8 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 1)
+  				if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)) &&
+  					!isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 1)
   				{
   					double smokeY = posY + 1.4D;
   					float addz = 0F;
@@ -259,26 +265,6 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
         	}
         }
     }
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		case ID.ModelState.EQUIP00:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
-		break;
-		case ID.ModelState.EQUIP01:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
-	}
 	
   	/** Akatsuki can use flare by AI option */
 	@Override

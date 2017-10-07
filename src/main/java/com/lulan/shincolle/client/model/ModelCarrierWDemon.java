@@ -437,14 +437,7 @@ public class ModelCarrierWDemon extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-    	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
-    	{
-    		this.EquipBase.isHidden = false;
-    	}
-    	else
-    	{
-    		this.EquipBase.isHidden = true;
-    	}
+		this.EquipBase.isHidden = !EmotionHelper.checkModelState(1, ent.getStateEmotion(ID.S.State));
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
@@ -26,6 +27,10 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:head , 1:equip
+ */
 public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 {
 	
@@ -42,7 +47,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
         this.smokeY = 0F;
         
 		//model display
-		this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, false);
+		this.setStateEmotion(ID.S.State, this.rand.nextInt(4), false);
 	}
 	
 	@Override
@@ -101,7 +106,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
   			if (this.ticksExisted % 4 == 0)
   			{
   				//生成裝備冒煙特效
-  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+  				if (EmotionHelper.checkModelState(1, this.getStateEmotion(ID.S.State)))
   				{
   	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*1D, 0D, 0D, (byte)43);

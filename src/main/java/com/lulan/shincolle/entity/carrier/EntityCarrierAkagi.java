@@ -12,7 +12,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.World;
 
-
+/**
+ * model state:
+ *   0:bow, 1:quiver, 2:deck, 3:bag, 4:armor, 5:skirt, 6:ear+tail
+ */
 public class EntityCarrierAkagi extends BasicEntityShipCV
 {
 	
@@ -23,6 +26,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierAkagi);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
+		this.setStateMinor(ID.M.NumState, 7);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {0F, 20F, 0F, 40F};
@@ -101,23 +105,6 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
   		{
   			return (double)this.height * 0.72F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.ModelState.EQUIP03a) i = ID.ModelState.NORMALa;
-			setStateEmotion(ID.S.State2, i, true);
-		}
-		else
-		{
-			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.ModelState.EQUIP06) i = ID.ModelState.NORMAL;
-			setStateEmotion(ID.S.State, i, true);
-		}
 	}
 
 	@Override

@@ -34,6 +34,10 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:cannon, 1:head, 2:sword, 3:eye, 4:shoes
+ */
 public class EntityCLTenryuuMob extends BasicEntityShipHostile
 {
 	
@@ -55,8 +59,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		this.damagedTarget = new ArrayList<Entity>();
 		
 		//model display
-		this.setStateEmotion(ID.S.State, this.rand.nextInt(4), false);
-		this.setStateEmotion(ID.S.State2, this.rand.nextInt(6), false);
+		this.setStateEmotion(ID.S.State, this.rand.nextInt(32), false);
 	}
 	
 	@Override

@@ -572,133 +572,30 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.Hat01.isHidden = false;
-  			this.BeltBase.isHidden = true;
-  			this.ArmLeft02a.isHidden = true;
-  			this.ArmRight02a.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.Hat01.isHidden = true;
-  			this.BeltBase.isHidden = false;
-  			this.ArmLeft02a.isHidden = true;
-  			this.ArmRight02a.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.Hat01.isHidden = true;
-  			this.BeltBase.isHidden = true;
-  			this.ArmLeft02a.isHidden = false;
-  			this.ArmRight02a.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP03:
-  			this.Hat01.isHidden = false;
-  			this.BeltBase.isHidden = false;
-  			this.ArmLeft02a.isHidden = true;
-  			this.ArmRight02a.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP04:
-  			this.Hat01.isHidden = false;
-  			this.BeltBase.isHidden = true;
-  			this.ArmLeft02a.isHidden = false;
-  			this.ArmRight02a.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP05:
-  			this.Hat01.isHidden = true;
-  			this.BeltBase.isHidden = false;
-  			this.ArmLeft02a.isHidden = false;
-  			this.ArmRight02a.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP06:
-  			this.Hat01.isHidden = false;
-  			this.BeltBase.isHidden = false;
-  			this.ArmLeft02a.isHidden = false;
-  			this.ArmRight02a.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.Hat01.isHidden = true;
-  			this.BeltBase.isHidden = true;
-  			this.ArmLeft02a.isHidden = true;
-  			this.ArmRight02a.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.LegLeft01.isHidden = true;
-  			this.LegRight01.isHidden = true;
-  			this.EquipLegL.isHidden = false;
-  			this.EquipLegR.isHidden = false;
-  			this.EquipBaseL.isHidden = false;
-  			this.EquipBaseR.isHidden = false;
-  			this.Cannon01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01a:
-  			this.LegLeft01.isHidden = true;
-  			this.LegRight01.isHidden = true;
-  			this.EquipLegL.isHidden = false;
-  			this.EquipLegR.isHidden = false;
-  			this.EquipBaseL.isHidden = true;
-  			this.EquipBaseR.isHidden = true;
-  			this.Cannon01.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP02a:
-  			this.LegLeft01.isHidden = true;
-  			this.LegRight01.isHidden = true;
-  			this.EquipLegL.isHidden = false;
-  			this.EquipLegR.isHidden = false;
-  			this.EquipBaseL.isHidden = false;
-  			this.EquipBaseR.isHidden = false;
-  			this.Cannon01.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP03a:
-  			this.LegLeft01.isHidden = false;
-  			this.LegRight01.isHidden = false;
-  			this.EquipLegL.isHidden = true;
-  			this.EquipLegR.isHidden = true;
-  			this.EquipBaseL.isHidden = true;
-  			this.EquipBaseR.isHidden = true;
-  			this.Cannon01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP04a:
-  			this.LegLeft01.isHidden = false;
-  			this.LegRight01.isHidden = false;
-  			this.EquipLegL.isHidden = false;
-  			this.EquipLegR.isHidden = false;
-  			this.EquipBaseL.isHidden = false;
-  			this.EquipBaseR.isHidden = false;
-  			this.Cannon01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP05a:
-  			this.LegLeft01.isHidden = false;
-  			this.LegRight01.isHidden = false;
-  			this.EquipLegL.isHidden = true;
-  			this.EquipLegR.isHidden = true;
-  			this.EquipBaseL.isHidden = true;
-  			this.EquipBaseR.isHidden = true;
-  			this.Cannon01.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP06a:
-  			this.LegLeft01.isHidden = false;
-  			this.LegRight01.isHidden = false;
-  			this.EquipLegL.isHidden = false;
-  			this.EquipLegR.isHidden = false;
-  			this.EquipBaseL.isHidden = false;
-  			this.EquipBaseR.isHidden = false;
-  			this.Cannon01.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.LegLeft01.isHidden = true;
-  			this.LegRight01.isHidden = true;
-  			this.EquipLegL.isHidden = false;
-  			this.EquipLegR.isHidden = false;
-  			this.EquipBaseL.isHidden = true;
-  			this.EquipBaseR.isHidden = true;
-  			this.Cannon01.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
+		this.EquipLegL.isHidden = flag;
+		this.EquipLegR.isHidden = flag;
+		this.EquipBaseL.isHidden = flag;
+		this.EquipBaseR.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);	//hat
+		this.Hat01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//weapon
+		this.Cannon01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(3, state);	//belt
+		this.BeltBase.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(4, state);	//leg
+		this.LegLeft01.isHidden = flag;
+		this.LegRight01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(5, state);	//wristband
+		this.ArmLeft02a.isHidden = flag;
+		this.ArmRight02a.isHidden = flag;
 	}
 
 	@Override
@@ -805,7 +702,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   		boolean spStand = false;
   		
   		//水上漂浮
-  		if (ent.getStateEmotion(ID.S.State2) < ID.ModelState.EQUIP03a && !ent.getIsSitting())
+  		if (!ent.getIsSitting())
   		{
   			GlStateManager.translate(0F, angleX * 0.015F + 0.025F, 0F);
   		}
@@ -843,8 +740,10 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 	  	this.Hair06.rotateAngleX = -angleX3 * 0.12F - 0.15F + headX;
 	  	this.Hair06.rotateAngleZ = 0.52F;
 	    //arm
+	  	boolean showCannon = EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State));
+	  	
 	  	//equip on
-	  	if ((ent.getStateEmotion(ID.S.State2) & 1) == 1)
+	  	if (showCannon)
 	  	{
 	  		this.ArmLeft01.rotateAngleZ = -0.78F;
 	  		this.ArmRight01.rotateAngleZ = 0.78F;
@@ -937,7 +836,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 			this.LegRight02.offsetZ = 0F;
 	    	
 			//equip on
-			if (ent.getStateEmotion(ID.S.State2) < ID.ModelState.EQUIP03a)
+			if (!EmotionHelper.checkModelState(4, ent.getStateEmotion(ID.S.State)))
 			{
 				addk1 = angleAdd1 * 0.05F;
 				addk2 = angleAdd2 * 0.05F;

@@ -13,6 +13,10 @@ import com.lulan.shincolle.utility.CombatHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:mounts, 1:sword L, 2:sword R
+ */
 public class EntityCarrierHime extends BasicEntityShipCV
 {
 	
@@ -23,6 +27,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
+		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
@@ -55,7 +60,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 
   	//true if use mounts
   	@Override
-  	public boolean canSummonMounts()
+  	public boolean hasShipMounts()
   	{
   		return true;
   	}
@@ -85,40 +90,6 @@ public class EntityCarrierHime extends BasicEntityShipCV
   		{
   			return this.height * 0.75F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		//切換裝備顯示
-		if (isSneaking)
-		{
-			switch (getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			case ID.ModelState.NORMALa:
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			}
-		}
-		//切換是否騎乘座騎
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.EQUIP00:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-				this.setPositionAndUpdate(posX, posY + 2D, posZ);
-			break;
-			case ID.ModelState.NORMAL:
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			}
-		}
 	}
 	
 	//AoE melee attack

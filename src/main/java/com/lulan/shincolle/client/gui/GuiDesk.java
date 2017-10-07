@@ -777,13 +777,13 @@ public class GuiDesk extends GuiContainer
         			{
             		case 0:  //ship model
             		break;
-            		case 1:  //cake
-            			this.shipModel.setShipOutfit(false);
-            			this.setShipMount();
-            		break;
-            		case 2:  //cake sneaking
-            			this.shipModel.setShipOutfit(true);
-            		break;
+//            		case 1:  //cake TODO
+//            			this.shipModel.setShipOutfit(false);
+//            			this.setShipMount();
+//            		break;
+//            		case 2:  //cake sneaking
+//            			this.shipModel.setShipOutfit(true);
+//            		break;
             		case 3:  //sit
             			this.shipModel.setSitting(!this.shipModel.isSitting());
             			
@@ -2103,10 +2103,10 @@ public class GuiDesk extends GuiContainer
 	
 	private void setShipMount()
 	{
-		if (this.shipModel != null && this.shipModel.canSummonMounts())
+		if (this.shipModel != null && this.shipModel.hasShipMounts())
 		{
 			//summon mount if emotion state >= equip00
-  	  		if (this.shipModel.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+  	  		if (this.shipModel.canSummonMounts())
   	  		{
   	  			if (!this.shipModel.isRiding())
   	  			{
@@ -2280,7 +2280,6 @@ public class GuiDesk extends GuiContainer
 			}
 		}
 	}
-
-
+	
+	
 }
-

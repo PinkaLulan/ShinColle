@@ -6,12 +6,18 @@ import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:armor, 2:hat1, 3:hat2, 4:hat3
+ *   if 2 & 3 & 4 false = no hat
+ */
 public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements IShipRiderType
 {
 
@@ -30,8 +36,7 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
         this.smokeY = 0F;
         
 		//model display
-        this.setStateEmotion(ID.S.State, rand.nextInt(2), false);
-        this.setStateEmotion(ID.S.State2, rand.nextInt(4), false);
+        this.setStateEmotion(ID.S.State, rand.nextInt(32), false);
 	}
 	
 	@Override
@@ -95,7 +100,7 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (this.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+  				if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
   				{
   					//計算煙霧位置, 生成裝備冒煙特效
   	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);

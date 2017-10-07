@@ -17,6 +17,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
@@ -32,6 +33,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 /**特殊heavy attack:
  * 用StateEmotion[ID.S.Phase]來儲存攻擊階段
  * Phase 1:集氣 2:爆氣 3:集氣 
+ * 
+ * model state:
+ *   0:head , 1:equip
  */
 public class EntityBattleshipNGT extends BasicEntityShipSmall
 {
@@ -43,6 +47,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
+		this.setStateMinor(ID.M.NumState, 2);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
@@ -85,7 +90,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   			if (this.ticksExisted % 4 == 0)
   			{
   				//生成裝備冒煙特效
-  				if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && !isSitting() && !getStateFlag(ID.F.NoFuel))
+  				if (EmotionHelper.checkModelState(1, this.getStateEmotion(ID.S.State)) && !isSitting() && !getStateFlag(ID.F.NoFuel))
   				{
   					//計算煙霧位置
   	  				float[] partPos = CalcHelper.rotateXZByAxis(-0.56F, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
@@ -320,7 +325,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	{
 		if (this.isSitting())
 		{
-			if (getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
+			if (EmotionHelper.checkModelState(1, this.getStateEmotion(ID.S.State)))
 			{
 				return this.height * 0.42F;
 			}
@@ -340,26 +345,6 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   		{
   			return this.height * 0.75F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		case ID.ModelState.EQUIP00:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
-		break;
-		case ID.ModelState.EQUIP01:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
 	}
 	
 	@Override

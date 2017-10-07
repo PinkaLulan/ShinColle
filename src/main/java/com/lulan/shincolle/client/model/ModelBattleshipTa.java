@@ -275,29 +275,14 @@ public class ModelBattleshipTa extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:	//只有披風
-  			this.Cloak01.isHidden = false;
-			this.EquipLeft.isHidden = true;
-			this.EquipRight.isHidden = true;
-		break;
-  		case ID.ModelState.EQUIP01:	//只有護肩
-  			this.Cloak01.isHidden = true;
-			this.EquipLeft.isHidden = false;
-			this.EquipRight.isHidden = false;
-		break;
-  		case ID.ModelState.EQUIP02:	//披風+護肩
-  			this.Cloak01.isHidden = false;
-			this.EquipLeft.isHidden = false;
-			this.EquipRight.isHidden = false;
-		break;
-		default:				//都沒有
-			this.Cloak01.isHidden = true;
-			this.EquipLeft.isHidden = true;
-			this.EquipRight.isHidden = true;
-		break;	
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(1, state);
+		this.Cloak01.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(2, state);
+		this.EquipLeft.isHidden = flag;
+		this.EquipRight.isHidden = flag;
 	}
 
 	@Override

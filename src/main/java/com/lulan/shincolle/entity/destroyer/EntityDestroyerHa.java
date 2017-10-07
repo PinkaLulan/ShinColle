@@ -12,6 +12,10 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:head
+ */
 public class EntityDestroyerHa extends BasicEntityShipSmall
 {
 
@@ -23,6 +27,7 @@ public class EntityDestroyerHa extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerHA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
+		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
@@ -88,23 +93,6 @@ public class EntityDestroyerHa extends BasicEntityShipSmall
   		{
   			return (double)this.height * 0.7F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		case ID.ModelState.EQUIP00:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
 	}
 	
 	

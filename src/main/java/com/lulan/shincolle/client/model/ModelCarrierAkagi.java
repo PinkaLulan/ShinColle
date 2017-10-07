@@ -575,107 +575,31 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP03:
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP04:
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP05:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP06:
-  			this.EquipC01.isHidden = false;  //水袋
-  			this.EquipB01.isHidden = false;  //胸甲
-  			this.EquipS01.isHidden = false;  //裙甲
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  			this.Tail01.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipC01.isHidden = true;  //水袋
-  			this.EquipB01.isHidden = true;  //胸甲
-  			this.EquipS01.isHidden = true;  //裙甲
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-  			this.Tail01.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.EquipABase.isHidden = true;//箭袋
-  			this.EquipD01.isHidden = true;  //甲板
-  			this.EquipE01.isHidden = false;  //弓
-  			this.EquipGlove.isHidden = false;//手套
-  		break;
-  		case ID.ModelState.EQUIP01a:
-  			this.EquipABase.isHidden = false;//箭袋
-  			this.EquipD01.isHidden = false;  //甲板
-  			this.EquipE01.isHidden = true;  //弓
-  			this.EquipGlove.isHidden = true;//手套
-  		break;
-  		case ID.ModelState.EQUIP02a:
-  			this.EquipABase.isHidden = false;//箭袋
-  			this.EquipD01.isHidden = true;  //甲板
-  			this.EquipE01.isHidden = false;  //弓
-  			this.EquipGlove.isHidden = false;//手套
-  		break;
-  		case ID.ModelState.EQUIP03a:
-  			this.EquipABase.isHidden = false;//箭袋
-  			this.EquipD01.isHidden = false;  //甲板
-  			this.EquipE01.isHidden = false;  //弓
-  			this.EquipGlove.isHidden = false;//手套
-  		break;
-  		default:  //normal
-  			this.EquipABase.isHidden = true;//箭袋
-  			this.EquipD01.isHidden = true;  //甲板
-  			this.EquipE01.isHidden = true;  //弓
-  			this.EquipGlove.isHidden = true;//手套
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);
+		this.EquipE01.isHidden = flag;    //bow
+		this.EquipGlove.isHidden = flag;  //glove
+				
+		flag = !EmotionHelper.checkModelState(1, state);
+		this.EquipABase.isHidden = flag;  //quiver
+		
+		flag = !EmotionHelper.checkModelState(2, state);
+		this.EquipD01.isHidden = flag;    //deck
+		
+		flag = !EmotionHelper.checkModelState(3, state);
+		this.EquipC01.isHidden = flag;    //water bag
+		
+		flag = !EmotionHelper.checkModelState(4, state);
+		this.EquipB01.isHidden = flag;    //armor
+		
+		flag = !EmotionHelper.checkModelState(5, state);
+		this.EquipS01.isHidden = flag;    //skirt
+		
+		flag = !EmotionHelper.checkModelState(6, state);
+		this.Ear01.isHidden = flag;       //ear+tail
+		this.Ear02.isHidden = flag;
+		this.Tail01.isHidden = flag;
 	}
 
 	@Override
@@ -712,12 +636,14 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 	    //arm 
 		this.ArmRight02.offsetX = 0F;
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
+		int state = ent.getStateEmotion(ID.S.State);
+		
+	    if (EmotionHelper.checkModelState(3, state))
 	    {
 	    	this.ArmRight01.rotateAngleZ += 0.15F;
 	    }
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP02)
+	    if (EmotionHelper.checkModelState(6, state))
 	    {
 	    	this.ArmLeft01.rotateAngleZ -= 0.15F;
 	    	
@@ -874,13 +800,17 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 		this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.21F;
 		this.ArmRight02.rotateAngleZ = 0F;
 		this.ArmRight02.offsetX = 0F;
+		
+		int state = ent.getStateEmotion(ID.S.State);
+		boolean fbag = !EmotionHelper.checkModelState(3, state);
+		boolean ftail = !EmotionHelper.checkModelState(6, state);
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
+	    if (fbag)
 	    {
 	    	this.ArmRight01.rotateAngleZ += 0.15F;
 	    }
 	    
-	    if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP02)
+	    if (ftail)
 	    {
 	    	this.ArmLeft01.rotateAngleZ -= 0.15F;
 	    	

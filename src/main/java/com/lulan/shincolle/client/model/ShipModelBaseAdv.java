@@ -608,6 +608,6 @@ abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotio
 	{
 		return 0;
 	}
-    
-    
+	
+	
 }

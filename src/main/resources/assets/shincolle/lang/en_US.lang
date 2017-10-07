@@ -729,6 +729,7 @@ gui.shincolle:modernlevel=Modernization Level
 gui.shincolle:showhelditem=Show Held Item
 gui.shincolle:autocombatration=Autouse CombatRation
 gui.shincolle:autopump=Auto Pump
+gui.shincolle:appearance=Appearance
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials

@@ -702,47 +702,52 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.EquipBase.isHidden = false;
-  			this.EquipTL03.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  			this.EquipTL03.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.HatBase.isHidden = false;
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
+		this.EquipBase.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(1, state);			//armor
+		this.EquipTL03.isHidden = flag;
+				
+		boolean fh1 = EmotionHelper.checkModelState(2, state);		//hat state 1
+		boolean fh2 = EmotionHelper.checkModelState(3, state);		//hat state 2
+		boolean fh3 = EmotionHelper.checkModelState(4, state);		//hat state 3
+		
+		//hat state 1
+		if (fh1)
+		{
+			this.HatBase.isHidden = false;
   			this.Hair02f1.isHidden = false;
   			this.HatBase2.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01a:
-  			this.HatBase.isHidden = true;
+		}
+		//hat state 2
+		else if (fh2)
+		{
+			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
   			this.HatBase2.isHidden = false;
   			this.HatBase2.rotateAngleX = -0.2618F;
   			this.HatBase2.offsetY = 0F;
   			this.HatBase2.offsetZ = 0F;
-  		break;
-  		case ID.ModelState.EQUIP02a:
-  			this.HatBase.isHidden = true;
+		}
+		//hat state 3
+		else if (fh3)
+		{
+			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
   			this.HatBase2.isHidden = false;
   			this.HatBase2.rotateAngleX = -0.7F;
   			this.HatBase2.offsetY = -0.06F;
   			this.HatBase2.offsetZ = 0.06F;
-  		break;
-  		default:  //normal
-  			this.HatBase.isHidden = true;
+		}
+		//no hat
+		else
+		{
+			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = false;
   			this.HatBase2.isHidden = true;
-  		break;
-  		}
+		}
 	}
 
 	@Override
@@ -909,7 +914,7 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
 	  	if (this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
 	  	this.EquipC05a.rotateAngleX = this.EquipC04a.rotateAngleX;
 	    
-	    if (ent.getStateEmotion(ID.S.State) < ID.ModelState.EQUIP00)
+	    if (EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State)))
 	    {
 	    	this.ArmLeft01.rotateAngleZ += 0.1F;
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;

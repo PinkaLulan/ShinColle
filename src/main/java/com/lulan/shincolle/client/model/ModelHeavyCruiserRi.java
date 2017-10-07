@@ -87,9 +87,9 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.EquipRightTooth2.setRotationPoint(-1.6F, 2.3F, 0.0F);
         this.EquipRightTooth2.addBox(0.0F, 0.0F, -2.5F, 2, 5, 5, 0.0F);
         this.LegRight = new ModelRenderer(this, 1, 85);
-        this.LegRight.setRotationPoint(-4.7F, 12.0F, 1.0F);
+        this.LegRight.setRotationPoint(-4.7F, 7.5F, -1F);
         this.LegRight.addBox(-3F, 0F, -3F, 6, 17, 6, 0.0F);
-        this.setRotateAngle(LegRight, 0.0F, 0.0F, -0.08726646259971647F);
+        this.setRotateAngle(LegRight, -0.2F, 0.0F, -0.087F);
         this.EquipRightTooth1 = new ModelRenderer(this, 44, 13);
         this.EquipRightTooth1.setRotationPoint(0.0F, 4.0F, 0.0F);
         this.EquipRightTooth1.addBox(0.0F, 0.0F, -4.0F, 2, 5, 8, 0.0F);
@@ -129,9 +129,9 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.Head.setRotationPoint(0.0F, 0.5F, 0.0F);
         this.Head.addBox(-7.0F, -14.5F, -6.5F, 14, 14, 13, 0.0F);
         this.LegLeft = new ModelRenderer(this, 1, 85);
-        this.LegLeft.setRotationPoint(4.7F, 12.0F, 1.0F);
+        this.LegLeft.setRotationPoint(4.7F, 7.5F, -1F);
         this.LegLeft.addBox(-3F, 0F, -3F, 6, 17, 6, 0.0F);
-        this.setRotateAngle(LegLeft, 0.0F, 0.0F, 0.08726646259971647F);
+        this.setRotateAngle(LegLeft, -0.087F, 0.0F, 0.087F);
         this.EquipLeftBase3 = new ModelRenderer(this, 77, 5);
         this.EquipLeftBase3.setRotationPoint(0.0F, 0.0F, 0.0F);
         this.EquipLeftBase3.addBox(-7.5F, 5.0F, -10.0F, 13, 19, 10, 0.0F);
@@ -143,15 +143,15 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.ArmRight = new ModelRenderer(this, 0, 53);
         this.ArmRight.setRotationPoint(-6F, -9.5F, 0.0F);
         this.ArmRight.addBox(-5F, 0.0F, -2.5F, 5, 25, 5, 0.0F);
-        this.setRotateAngle(ArmRight, 0.0F, 0.0F, 0.2617993877991494F);
+        this.setRotateAngle(ArmRight, 0.2F, 0.0F, 0.2617993877991494F);
         this.ArmLeft = new ModelRenderer(this, 0, 53);
         this.ArmLeft.mirror = true;
         this.ArmLeft.setRotationPoint(6.0F, -9.5F, 0.0F);
         this.ArmLeft.addBox(0.0F, 0.0F, -2.5F, 5, 25, 5, 0.0F);
-        this.setRotateAngle(ArmLeft, 0.0F, 0.0F, -0.2617993877991494F);
-        this.Neck = new ModelRenderer(this, 76, 3);
+        this.setRotateAngle(ArmLeft, -0.087F, 0.0F, -0.2617993877991494F);
+        this.Neck = new ModelRenderer(this, 78, 5);
         this.Neck.setRotationPoint(0F, -13F, 1F);
-        this.Neck.addBox(-6.5F, 0F, -6F, 13, 3, 12, 0.0F);
+        this.Neck.addBox(-5.5F, 0F, -5.6F, 11, 3, 10, 0.0F);
         this.setRotateAngle(Neck, 0.1F, 0F, 0F);
         this.ShoesRight = new ModelRenderer(this, 52, 52);
         this.ShoesRight.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -199,7 +199,7 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.EquipRightTube1.addBox(-1.5F, -16.0F, -1.5F, 3, 16, 3, 0.0F);
         this.setRotateAngle(EquipRightTube1, -1.0471975511965976F, 0.0F, 0.0F);
         this.Cloak = new ModelRenderer(this, 0, 112);
-        this.Cloak.setRotationPoint(0.0F, 2.0F, 8.0F);
+        this.Cloak.setRotationPoint(0F, 1F, 4F);
         this.Cloak.addBox(-8.0F, 0.0F, 0.0F, 16, 16, 0, 0.0F);
         this.setRotateAngle(Cloak, 1.3089969389957472F, 0.0F, 0.0F); 
         this.EquipLeftTube3 = new ModelRenderer(this, 82, 56);
@@ -219,7 +219,7 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.HeadTail2.addBox(-4F, 0.0F, -2.5F, 8, 18, 5, 0.0F);
         this.setRotateAngle(HeadTail2, -0.1745F, 0.0F, 0.0F);
         this.EquipRightTube1.addChild(this.EquipRightTube2);
-        this.BodyMain.addChild(this.LegRight);
+        this.Butt.addChild(this.LegRight);
         this.BodyMain.addChild(this.BoobL);
         this.EquipLeftBase.addChild(this.EquipLeftBase2);
         this.EquipRightBase.addChild(this.EquipRightBase1);
@@ -228,7 +228,7 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
         this.EquipLeftTube1.addChild(this.EquipLeftTube2);
         this.EquipLeftBase.addChild(this.EquipLeftBase4);
         this.Neck.addChild(this.Head);
-        this.BodyMain.addChild(this.LegLeft);
+        this.Butt.addChild(this.LegLeft);
         this.EquipLeftBase.addChild(this.EquipLeftBase3);
         this.EquipRightBase.addChild(this.EquipRightBase4);
         this.LegLeft.addChild(this.ShoesLeft);
@@ -344,33 +344,36 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-	   	//equip display
-    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
-    	{
+		int state = ent.getStateEmotion(ID.S.State);
+		boolean fc1 = EmotionHelper.checkModelState(0, state);	//left cannon
+		boolean fc2 = EmotionHelper.checkModelState(1, state);	//right cannon
+		
+		if (fc1)
+		{
     		this.EquipBase.isHidden = false;
 			this.EquipLeftBase.isHidden = false;
-			this.EquipRightBase.isHidden = false;
 			this.GlowEquipLeftBase.isHidden = false;
+		}
+		else if (fc2)
+		{
+    		this.EquipBase.isHidden = false;
+			this.EquipRightBase.isHidden = false;
 			this.GlowEquipRightBase.isHidden = false;
-    	}
-    	else
-    	{
+		}
+		else
+		{
     		this.EquipBase.isHidden = true;
 			this.EquipLeftBase.isHidden = true;
 			this.EquipRightBase.isHidden = true;
 			this.GlowEquipLeftBase.isHidden = true;
 			this.GlowEquipRightBase.isHidden = true;
-    	}
-    	
-    	//hair display
-    	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
-    	{
-    		this.HeadTail0.isHidden = false;
-    	}
-    	else
-    	{
-    		this.HeadTail0.isHidden = true;
-    	}
+		}
+
+		boolean flag = !EmotionHelper.checkModelState(2, state);	//cloak
+		this.Cloak.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(3, state);			//hair
+		this.HeadTail0.isHidden = flag;
 	}
 
 	@Override
@@ -440,8 +443,8 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
     	}
   		
   		//leg move parm
-  		addk1 = MathHelper.cos(f * 0.6662F) * 1.4F * f1 + 0.15F;
-	  	addk2 = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1 + 0.15F;
+  		addk1 = MathHelper.cos(f * 0.6662F) * 1.4F * f1 - 0.087F;
+	  	addk2 = MathHelper.cos(f * 0.6662F + 3.1415927F) * 1.4F * f1 - 0.2F;
 
   	    //移動頭部 使其看人, 不看人時持續擺動頭部
 	    this.Head.rotateAngleY = f3 * 0.01F;	//左右角度

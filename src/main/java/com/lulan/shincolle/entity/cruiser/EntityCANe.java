@@ -191,8 +191,5 @@ public class EntityCANe extends BasicEntityShipSmall
         return 0.3D;
     }
 
-	@Override
-	public void setShipOutfit(boolean isSneaking) {}
-
 
 }

@@ -20,6 +20,11 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:rensouhou type, 1:cannon, 2:hair anchor, 3:hat1, 4:hat2
+ *   if 3 & 4 false = no hat
+ */
 public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 {
 
@@ -35,7 +40,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		this.numRensouhou = 10;
 		
 		//model display
-        this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
+        this.setStateEmotion(ID.S.State, rand.nextInt(32), false);
 	}
 	
 	@Override

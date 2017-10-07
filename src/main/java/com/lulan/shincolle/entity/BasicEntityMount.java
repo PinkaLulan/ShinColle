@@ -79,8 +79,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte stateEmotion;				//表情1
-	protected byte stateEmotion2;				//表情2
+	protected int stateEmotion;					//表情1
+	protected int stateEmotion2;				//表情2
 	protected int attackTime, attackTime2, startEmotion, startEmotion2;  //motion開始時間
 	protected boolean headTilt;
 	protected float[] seatPos;					//ship rider position
@@ -345,29 +345,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			//use item
 			if (stack != null && host != null)
 			{
-				//use cake
-				if (stack.getItem() == Items.CAKE)
-				{
-					switch (host.getStateEmotion(ID.S.State))
-					{
-					case ID.ModelState.NORMAL:	//普通轉騎乘
-						host.setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-					break;
-					case ID.ModelState.EQUIP00:	//騎乘轉普通
-						host.setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-						this.clearRider();
-					break;
-					default:
-						host.setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-					break;
-					}
-					
-					this.host.setPositionAndUpdate(posX, posY + 1.5D, posZ);
-					
-					return EnumActionResult.SUCCESS;
-				}
 				//caress head mode: morale +5
-				else if (stack.getItem() == ModItems.PointerItem && stack.getItemDamage() > 2)
+				if (stack.getItem() == ModItems.PointerItem && stack.getItemDamage() > 2)
 				{
 					//add little morale to host
 					int t = this.host.ticksExisted - this.host.getMoraleTick();
@@ -809,7 +788,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 
 	@Override
-	public byte getStateEmotion(int id)
+	public int getStateEmotion(int id)
 	{
 		return id == ID.S.Emotion ? stateEmotion : stateEmotion2;
 	}
@@ -820,10 +799,10 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		switch (id)
 		{
 		case ID.S.Emotion:
-			stateEmotion = (byte) value;
+			stateEmotion = value;
 		break;
 		case ID.S.Emotion2:
-			stateEmotion2 = (byte) value;
+			stateEmotion2 = value;
 		break;
 		default:
 		break;

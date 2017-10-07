@@ -14,6 +14,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -24,6 +25,11 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:rensouhou type, 1:cannon, 2:hair anchor, 3:hat1, 4:hat2
+ *   if 3 & 4 false = no hat
+ */
 public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IShipSummonAttack
 {
 
@@ -37,6 +43,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
+		this.setStateMinor(ID.M.NumState, 5);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
@@ -143,7 +150,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn rensouhou
-    	if (this.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
+    	if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
     	{
     		EntityRensouhouS rensoho2 = new EntityRensouhouS(this.world);
     		rensoho2.initAttrs(this, target, 0);
@@ -285,41 +292,6 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		{
   			return this.height * 0.67F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			switch (getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.NORMALa:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			case ID.ModelState.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;	
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			}
-		}
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.NORMAL:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			case ID.ModelState.EQUIP00:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			}
-		}
 	}
 	
 	

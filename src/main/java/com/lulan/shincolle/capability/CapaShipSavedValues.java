@@ -65,12 +65,11 @@ public class CapaShipSavedValues
 		nbtExt_add0.setString("tagName", ship.getCustomNameTag());
 		
 		//save EntityState
-		nbtExt.setTag("Emotion", nbtExt_add2);	
-		nbtExt_add2.setByte("State", ship.getStateEmotion(ID.S.State));
-		nbtExt_add2.setByte("State2", ship.getStateEmotion(ID.S.State2));
-		nbtExt_add2.setByte("Emotion", ship.getStateEmotion(ID.S.Emotion));
-		nbtExt_add2.setByte("Emotion2", ship.getStateEmotion(ID.S.Emotion2));
-		nbtExt_add2.setByte("Phase", ship.getStateEmotion(ID.S.Phase));
+		nbtExt.setTag("Display", nbtExt_add2);
+		nbtExt_add2.setInteger("State", ship.getStateEmotion(ID.S.State));
+		nbtExt_add2.setInteger("Emotion", ship.getStateEmotion(ID.S.Emotion));
+		nbtExt_add2.setInteger("Emotion2", ship.getStateEmotion(ID.S.Emotion2));
+		nbtExt_add2.setInteger("Phase", ship.getStateEmotion(ID.S.Phase));
 		
 		//save BonusPoint
 		nbtExt.setTag("Point", nbtExt_add3);	
@@ -159,13 +158,22 @@ public class CapaShipSavedValues
 		ship.setStateMinor(ID.M.UseCombatRation, nbt_load.getInteger("AutoCR"));
 		ship.setNameTag(nbt_load.getString("tagName"));
 		
-		//load emotion state
-		nbt_load = (NBTTagCompound) nbt_tag.getTag("Emotion");
-		ship.setStateEmotion(ID.S.State, nbt_load.getByte("State"), false);
-		ship.setStateEmotion(ID.S.State2, nbt_load.getByte("State2"), false);
-		ship.setStateEmotion(ID.S.Emotion, nbt_load.getByte("Emotion"), false);
-		ship.setStateEmotion(ID.S.Emotion2, nbt_load.getByte("Emotion2"), false);
-		ship.setStateEmotion(ID.S.Phase, nbt_load.getByte("Phase"), false);
+		//load display state
+		nbt_load = (NBTTagCompound) nbt_tag.getTag("Display");
+		if (nbt_load != null)	//null check for updated version
+		{
+			ship.setStateEmotion(ID.S.State, nbt_load.getInteger("State"), false);
+			ship.setStateEmotion(ID.S.Emotion, nbt_load.getInteger("Emotion"), false);
+			ship.setStateEmotion(ID.S.Emotion2, nbt_load.getInteger("Emotion2"), false);
+			ship.setStateEmotion(ID.S.Phase, nbt_load.getInteger("Phase"), false);
+		}
+		else
+		{
+			ship.setStateEmotion(ID.S.State, 0, false);
+			ship.setStateEmotion(ID.S.Emotion, 0, false);
+			ship.setStateEmotion(ID.S.Emotion2, 0, false);
+			ship.setStateEmotion(ID.S.Phase, 0, false);
+		}
 		
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");

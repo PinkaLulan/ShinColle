@@ -8,12 +8,17 @@ import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:anchor
+ */
 public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile implements IShipRiderType
 {
 
@@ -95,7 +100,8 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile implement
   		//client side
   		if (world.isRemote)
   		{
-  			if (this.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP01 && this.ticksExisted % 4 == 0)
+  			if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)) &&
+  				this.ticksExisted % 4 == 0)
   			{
   				//計算煙霧位置, 生成裝備冒煙特效
   				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);

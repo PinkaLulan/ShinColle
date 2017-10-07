@@ -10,11 +10,16 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:equip, 1:leg, 2:hat
+ */
 public class EntityTransportWa extends BasicEntityShipSmall
 {
 
@@ -26,6 +31,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.TRANSPORT);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.TransportWA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.UNDEFINED);
+		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.AP]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.AP]);
 		this.ModelPos = new float[] {-3F, 20F, 0F, 45F};
@@ -262,7 +268,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
+  		if (EmotionHelper.checkModelState(1, this.getStateEmotion(ID.S.State)))
   		{
   			if (this.isSitting())
   	  		{
@@ -284,41 +290,6 @@ public class EntityTransportWa extends BasicEntityShipSmall
   	  			return this.height * 0.64F;
   	  		}
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			switch (getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.NORMALa:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			}
-		}
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.NORMAL:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			case ID.ModelState.EQUIP00:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
-			break;
-			case ID.ModelState.EQUIP01:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			}
-		}
 	}
 	
 	

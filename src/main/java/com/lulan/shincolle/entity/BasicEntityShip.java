@@ -151,7 +151,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected int[] StateTimer;
 	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase 6:Emotion3
 	 *               7:Emotion4 */
-	protected byte[] StateEmotion;
+	protected int[] StateEmotion;
 	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
 	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
 	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
@@ -213,7 +213,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, -1, -1, 0,  0
 				                    };
 		this.StateTimer = new int[15];
-		this.StateEmotion = new byte[8];
+		this.StateEmotion = new int[8];
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
@@ -972,7 +972,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	}
 	
 	@Override
-	public byte getStateEmotion(int id)
+	public int getStateEmotion(int id)
 	{
 		return StateEmotion[id];
 	}
@@ -1342,7 +1342,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		
 		//若修改melee flag, 則reload AI
 		if (!this.world.isRemote)
-		{ 
+		{
 			if (id == ID.F.UseMelee)
 			{
 				clearAITasks();
@@ -1385,7 +1385,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void setStateEmotion(int id, int value, boolean sync)
 	{
-		StateEmotion[id] = (byte)value;
+		StateEmotion[id] = value;
 		
 		if (sync && !this.world.isRemote)
 		{
@@ -1702,12 +1702,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				else if (stack.getItem() == ModItems.ModernKit)
 				{
 					if (interactModernKit(player, stack)) return EnumActionResult.SUCCESS;
-				}
-				//use cake
-				else if (stack.getItem() == Items.CAKE)
-				{
-					setShipOutfit(player.isSneaking());
-					return EnumActionResult.SUCCESS;
 				}
 				//use pointer item (caress head mode server side)
 				else if (stack.getItem() == ModItems.PointerItem && stack.getMetadata() > 2 && !player.isSneaking())
@@ -2587,9 +2581,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		}
                 		
                 		//cancel mounts
-                		if (this.canSummonMounts())
+                		if (this.hasShipMounts())
                 		{
-                			if (getStateEmotion(ID.S.State) < ID.ModelState.EQUIP00)
+                			if (!this.canSummonMounts())
                 			{
               	  	  			//cancel riding
               	  	  			if (this.isRiding() && this.getRidingEntity() instanceof BasicEntityMount)
@@ -3625,10 +3619,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return true;
 	}
 	
-	//true if use mounts
-	public boolean canSummonMounts()
+	//true if host has mounts
+	public boolean hasShipMounts()
 	{
 		return false;
+	}
+	
+	//true if host can summon mounts
+	public boolean canSummonMounts()
+	{
+		return (this.getStateEmotion(ID.S.State) ^ 1) == 1;
 	}
 	
 	public BasicEntityMount summonMountEntity()
@@ -3860,10 +3860,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//update hp state
   	protected void updateMountSummon()
   	{
-    	if (this.canSummonMounts())
+    	if (this.hasShipMounts())
     	{
     		//summon mount if emotion state >= equip00
-  	  		if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+  	  		if (this.canSummonMounts())
   	  		{
   	  			if (!this.isRiding())
   	  			{
@@ -4078,10 +4078,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		}
   	}
   	
-  	/** change ship outfit by right click cake on ship */
-  	abstract public void setShipOutfit(boolean isSneaking);
-  	
-
+  	/** change ship outfit */
+  	public void setShipOutfit(int id)
+  	{
+  		if (id > this.getStateMinor(ID.M.NumState) || id < 0) id = 0;
+  		this.setStateEmotion(ID.S.State, this.getStateEmotion(ID.S.State) ^ Values.N.Pow2[id], false);
+  	}
   	
   	public void setSensitiveBody(int par1)
   	{

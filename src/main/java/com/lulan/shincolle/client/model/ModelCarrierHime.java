@@ -472,15 +472,20 @@ public class ModelCarrierHime extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.GlowBodyMain2.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.GlowBodyMain2.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		boolean f1 = EmotionHelper.checkModelState(1, state);
+		boolean f2 = EmotionHelper.checkModelState(2, state);
+		
+		if (f1 || f2)
+		{
+			this.GlowBodyMain2.isHidden = false;
+			this.GlowArmLeft01.isHidden = !f1;
+			this.GlowArmRight01.isHidden = !f2;
+		}
+		else
+		{
+			this.GlowBodyMain2.isHidden = true;
+		}
 	}
 
 	@Override
@@ -743,7 +748,11 @@ public class ModelCarrierHime extends ShipModelBaseAdv
 		  	this.Hair02.rotateAngleX -= 0.3F;
 		  	this.Hair03.rotateAngleX -= 0.3F;
 		    //arm
-		  	if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
+		  	int state = ent.getStateEmotion(ID.S.State);
+			boolean fs1 = EmotionHelper.checkModelState(1, state);
+			boolean fs2 = EmotionHelper.checkModelState(2, state);
+
+		  	if (fs1 || fs2)
 		  	{
 		  		this.ArmLeft01.rotateAngleX = angleAdd2 * 0.25F - 0.1F;
 		    	this.ArmLeft01.rotateAngleY = -0.7F;

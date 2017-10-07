@@ -512,24 +512,15 @@ public class ModelBattleshipRe extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
-		{
-			this.Hair01.isHidden = false;
-			this.HairU01.isHidden = false;
-			this.Ear01.isHidden = false;
-			this.Ear02.isHidden = false;
-			this.Cap.isHidden = true;
-			this.Cap2.isHidden = false;
-		}
-		else
-		{
-			this.Hair01.isHidden = true;
-			this.HairU01.isHidden = true;
-			this.Ear01.isHidden = true;
-			this.Ear02.isHidden = true;
-			this.Cap.isHidden = false;
-			this.Cap2.isHidden = true;
-		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);
+		this.Hair01.isHidden = flag;
+		this.HairU01.isHidden = flag;
+		this.Ear01.isHidden = flag;
+		this.Ear02.isHidden = flag;
+		this.Cap.isHidden = !flag;
+		this.Cap2.isHidden = flag;
 	}
 
 	@Override

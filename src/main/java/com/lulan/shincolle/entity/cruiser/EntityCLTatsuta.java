@@ -29,6 +29,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:cannon, 1:head, 2:weapon
+ */
 public class EntityCLTatsuta extends BasicEntityShipSmall
 {
 	
@@ -45,6 +49,7 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.LIGHT_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.LightCruiserTatsuta);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
+		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CL]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CL]);
 		this.ModelPos = new float[] {0F, 22F, 0F, 42F};
@@ -508,23 +513,6 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
   		{
   			return this.height * 0.7F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.ModelState.EQUIP00a) i = ID.ModelState.NORMALa;
-			setStateEmotion(ID.S.State2, i, true);
-		}
-		else
-		{
-			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.ModelState.EQUIP02) i = ID.ModelState.NORMAL;
-			setStateEmotion(ID.S.State, i, true);
-		}
 	}
 	
 	@Override

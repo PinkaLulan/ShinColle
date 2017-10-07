@@ -26,6 +26,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:head
+ */
 public class EntityBattleshipRe extends BasicEntityShipCV
 {
 	
@@ -41,6 +45,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
+		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 25F, 0F, 40F};
@@ -169,20 +174,6 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 			this.isPushing = true;
         }
     }
-    
-    @Override
-	public void setShipOutfit(boolean isSneaking)
-    {
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
-	}
     
 	//if attack successfully, spread light beam to nearby target
     @Override

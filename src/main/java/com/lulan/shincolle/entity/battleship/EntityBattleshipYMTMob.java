@@ -21,6 +21,10 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:cannon, 1:head, 2:umbrella, 3:leg equip
+ */
 public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 {
 	
@@ -37,8 +41,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
         this.smokeY = 0F;
         
 		//model display
-		this.setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, false);
-		this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, false);
+		this.setStateEmotion(ID.S.State, this.rand.nextInt(16), false);
 	}
 	
 	@Override

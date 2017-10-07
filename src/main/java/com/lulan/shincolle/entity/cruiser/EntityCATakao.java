@@ -4,6 +4,7 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
@@ -11,6 +12,10 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:bag, 2:hat, 3:shoes
+ */
 public class EntityCATakao extends BasicEntityShipSmall
 {
 
@@ -22,6 +27,7 @@ public class EntityCATakao extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserTakao);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
+		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
@@ -57,7 +63,7 @@ public class EntityCATakao extends BasicEntityShipSmall
 	{
 		if (this.isSitting())
 		{
-			if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+			if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
 			{
 				return this.height * 0.42F;
 			}
@@ -77,23 +83,6 @@ public class EntityCATakao extends BasicEntityShipSmall
   		{
   			return this.height * 0.75F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.ModelState.EQUIP02a) i = ID.ModelState.NORMALa;
-			setStateEmotion(ID.S.State2, i, true);
-		}
-		else
-		{
-			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.ModelState.EQUIP02) i = ID.ModelState.NORMAL;
-			setStateEmotion(ID.S.State, i, true);
-		}
 	}
 	
 	//slow attacker

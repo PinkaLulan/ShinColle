@@ -10,6 +10,7 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -29,6 +30,8 @@ import net.minecraft.world.World;
  * 1. 除了六驅合體以外, 雷電可自行合體
  * 2. 雷跟電在4格內
  * 
+ * model state:
+ *   0:cannon
  */
 public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShipRiderType
 {
@@ -50,6 +53,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerInazuma);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
+		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
@@ -138,7 +142,8 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL && !isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 4)
+  				if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)) &&
+  					!isSitting() && !getStateFlag(ID.F.NoFuel) && this.riderType < 4)
   				{
   					double smokeY = posY + 1.4D;
   					
@@ -241,20 +246,6 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   		{
   			return this.height * 0.64F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
 	}
 	
   	@Override

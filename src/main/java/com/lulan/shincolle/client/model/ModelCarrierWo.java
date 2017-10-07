@@ -81,6 +81,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
     public ModelRenderer Cloak01;
     public ModelRenderer Cloak02;
     public ModelRenderer Cloak03;
+    public ModelRenderer Neck03;
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
@@ -99,6 +100,9 @@ public class ModelCarrierWo extends ShipModelBaseAdv
         this.Head = new ModelRenderer(this, 43, 101);
         this.Head.setRotationPoint(0.0F, -13.5F, -0.5F);
         this.Head.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 13, 0.0F);
+        this.Neck03 = new ModelRenderer(this, 8, 0);
+        this.Neck03.setRotationPoint(0F, -11.9F, -0F);
+        this.Neck03.addBox(-2.5F, -2F, -2.5F, 5, 2, 5, 0F);
         this.EquipLC02 = new ModelRenderer(this, 128, 0);
         this.EquipLC02.setRotationPoint(-1.0F, -2.0F, -7.0F);
         this.EquipLC02.addBox(-1.5F, -1.5F, -17.0F, 3, 3, 17, 0.0F);
@@ -335,6 +339,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
         this.Ahoke.addBox(0F, -13.5F, -12F, 0, 12, 12, 0.0F);
         this.setRotateAngle(Ahoke, 0F, 0.7F, 0F);
         this.BodyMain.addChild(this.Head);
+        this.BodyMain.addChild(this.Neck03);
         this.EquipLC01.addChild(this.EquipLC02);
         this.EquipTB02R.addChild(this.EquipTB03R);
         this.BodyMain.addChild(this.BoobL);
@@ -487,18 +492,20 @@ public class ModelCarrierWo extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
-		{
-			this.EquipBase.isHidden = false;
-			this.EquipEye01.isHidden = false;
-			this.EquipEye02.isHidden = false;
-		}
-		else
-		{
-			this.EquipBase.isHidden = true;
-			this.EquipEye01.isHidden = true;
-			this.EquipEye02.isHidden = true;
-		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//head
+		this.EquipBase.isHidden = flag;
+		this.GlowEquipBase.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);	//weapon
+		this.Staff.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//neck
+		this.Neck.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(3, state);	//cloak
+		this.CloakNeck.isHidden = flag;
 	}
 
 	@Override
@@ -573,7 +580,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
 		this.Staff.offsetY = -1.5F;
 		this.Staff.offsetZ = -1.7F;
 		//觸手晃動 (equip only)
-		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+		if (EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State)))
 		{
 			this.EquipLC01.rotateAngleX = this.Head.rotateAngleX;
 			this.EquipRC01.rotateAngleX = this.Head.rotateAngleX;
@@ -686,7 +693,8 @@ public class ModelCarrierWo extends ShipModelBaseAdv
 		this.Staff.offsetY = -1.7F;
 		this.Staff.offsetZ = -1.4F;
 		//觸手晃動 (equip only)
-		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+		boolean fhead = EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State));
+		if (fhead)
 		{
 			this.EquipLC01.rotateAngleX = this.Head.rotateAngleX;
 			this.EquipRC01.rotateAngleX = this.Head.rotateAngleX;
@@ -751,7 +759,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
 			this.Staff.offsetY = -1F;
 			this.Staff.offsetZ = -0.1F;
 			//觸手晃動 (equip only)
-			if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+			if (fhead)
 			{
 				this.EquipT01L.rotateAngleX = angleZFast * 0.05F + 0.2618F;
 				this.EquipT01L.rotateAngleZ = -0.2618F;
@@ -850,7 +858,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
 				this.Staff.offsetY = -1.5F;
 				this.Staff.offsetZ = -1.7F;
 				//觸手晃動 (equip only)
-				if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+				if (fhead)
 				{
 					this.EquipT01L.rotateAngleX = angleZ * 0.01F - 0.2618F;
 					this.EquipT01L.rotateAngleZ = -0.2618F;
@@ -917,7 +925,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
 				this.Staff.offsetY = -1.95F;
 				this.Staff.offsetZ = -1.4F;
 				//觸手晃動 (equip only)
-				if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+				if (fhead)
 				{
 					this.EquipT01L.rotateAngleX = -angleZ * 0.05F + 0.2618F;
 					this.EquipT01L.rotateAngleZ = -0.2618F;

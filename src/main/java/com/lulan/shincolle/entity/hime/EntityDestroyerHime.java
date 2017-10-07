@@ -14,6 +14,10 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:hat, 2:weapon, 3:belt, 4:leg, 5:wristband
+ */
 public class EntityDestroyerHime extends BasicEntityShipSmall
 {
 	
@@ -25,6 +29,7 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
+		this.setStateMinor(ID.M.NumState, 6);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
@@ -74,23 +79,6 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
   		{
   			return this.height * 0.76F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.ModelState.EQUIP06a) i = ID.ModelState.NORMALa;
-			setStateEmotion(ID.S.State2, i, true);
-		}
-		else
-		{
-			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.ModelState.EQUIP06) i = ID.ModelState.NORMAL;
-			setStateEmotion(ID.S.State, i, true);
-		}
 	}
 	
     //check entity state every tick

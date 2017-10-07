@@ -11,6 +11,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -20,6 +21,10 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:equip, 1:cloth
+ */
 public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 {
 	
@@ -31,6 +36,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineYO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
+		this.setStateMinor(ID.M.NumState, 2);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
@@ -101,7 +107,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
   			if(this.ticksExisted % 4 ==  0)
   			{
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
-    			if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL && !getStateFlag(ID.F.NoFuel) &&
+    			if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)) && !getStateFlag(ID.F.NoFuel) &&
     				(isSitting() && getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED || !isSitting()))
     			{
     				//set origin position
@@ -140,7 +146,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
   	@Override
 	public double getMountedYOffset()
   	{
-  		if (getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+  		if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
   		{
   			if (this.isSitting())
   	  		{
@@ -186,35 +192,6 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 	
 	@Override
 	public void setInvisibleLevel(float level) {}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			switch (getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.NORMALa:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			}
-		}
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.NORMAL:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			}
-		}
-	}
 	
 	//潛艇的輕攻擊一樣使用飛彈
   	@Override

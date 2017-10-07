@@ -2236,7 +2236,7 @@ public class EntityHelper
     	int[] save2 = new int[7];
     	
     	save2[0] = ship.getStateEmotion(ID.S.State);
-    	save2[1] = ship.getStateEmotion(ID.S.State2);
+//    	save2[1] = ship.getStateEmotion(ID.S.State2);	//NO USE
     	save2[2] = ship.getStateMinor(ID.M.FollowMin);
     	save2[3] = ship.getStateMinor(ID.M.FollowMax);
     	save2[4] = ship.getStateMinor(ID.M.FleeHP);

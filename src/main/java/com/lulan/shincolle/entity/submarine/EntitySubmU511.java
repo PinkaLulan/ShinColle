@@ -18,6 +18,10 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:hat, 2:tube
+ */
 public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisible
 {
 
@@ -29,6 +33,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineU511);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
+		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.ModelPos = new float[] {0F, 20F, 0F, 45F};
@@ -187,23 +192,6 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
 	
 	@Override
 	public void setInvisibleLevel(float level) {}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		case ID.ModelState.EQUIP00:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
-	}
   	
 	
 }

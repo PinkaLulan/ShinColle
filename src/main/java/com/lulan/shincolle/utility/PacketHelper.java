@@ -11,6 +11,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
@@ -536,6 +537,54 @@ public class PacketHelper
 			break;
 			case ID.B.ShipInv_AutoPump:
 				entity.setStateFlagI(ID.F.AutoPump, value);
+			break;
+			case ID.B.ShipInv_ModelState01:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[0], false);
+			break;
+			case ID.B.ShipInv_ModelState02:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[1], false);
+			break;
+			case ID.B.ShipInv_ModelState03:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[2], false);
+			break;
+			case ID.B.ShipInv_ModelState04:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[3], false);
+			break;
+			case ID.B.ShipInv_ModelState05:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[4], false);
+			break;
+			case ID.B.ShipInv_ModelState06:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[5], false);
+			break;
+			case ID.B.ShipInv_ModelState07:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[6], false);
+			break;
+			case ID.B.ShipInv_ModelState08:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[7], false);
+			break;
+			case ID.B.ShipInv_ModelState09:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[8], false);
+			break;
+			case ID.B.ShipInv_ModelState10:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[9], false);
+			break;
+			case ID.B.ShipInv_ModelState11:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[10], false);
+			break;
+			case ID.B.ShipInv_ModelState12:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[11], false);
+			break;
+			case ID.B.ShipInv_ModelState13:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[12], false);
+			break;
+			case ID.B.ShipInv_ModelState14:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[13], false);
+			break;
+			case ID.B.ShipInv_ModelState15:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[14], false);
+			break;
+			case ID.B.ShipInv_ModelState16:
+				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[15], false);
 			break;
 			}
 		}

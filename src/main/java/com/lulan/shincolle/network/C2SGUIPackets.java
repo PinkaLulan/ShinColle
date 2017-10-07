@@ -148,8 +148,7 @@ public class C2SGUIPackets implements IMessage
 		switch(this.packetType)
 		{
 		case PID.ShipBtn:	//ship entity gui click
-			this.valueInt = PacketHelper.readIntArray(buf, 2);
-			this.valueByte = PacketHelper.readByteArray(buf, 2);
+			this.valueInt = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.TileBtn:	//tile entity gui click
 			this.valueInt = PacketHelper.readIntArray(buf, 4);
@@ -206,8 +205,8 @@ public class C2SGUIPackets implements IMessage
 		{
 			buf.writeInt(this.entity.getEntityId());
 			buf.writeInt(this.entity.world.provider.getDimension());
-			buf.writeByte(this.valueInt[0]);
-			buf.writeByte(this.valueInt[1]);
+			buf.writeInt(this.valueInt[0]);
+			buf.writeInt(this.valueInt[1]);
 		}
 		break;
 		case PID.TileBtn:	//tile entity gui click
@@ -298,7 +297,7 @@ public class C2SGUIPackets implements IMessage
 			
 			if (entity instanceof BasicEntityShip)
 			{
-				PacketHelper.setEntityByGUI((BasicEntityShip) entity, msg.valueByte[0], msg.valueByte[1]);
+				PacketHelper.setEntityByGUI((BasicEntityShip) entity, msg.valueInt[2], msg.valueInt[3]);
 			}
 		}
 		break;

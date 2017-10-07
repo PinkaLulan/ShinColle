@@ -489,29 +489,14 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		switch (ent.getStateEmotion(ID.S.State))
-		{
-  		case ID.ModelState.EQUIP00:
-  			this.HeadEquip.isHidden = false;
-  			this.HeadEquip05.isHidden = false;
-  			this.EquipBase.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.HeadEquip.isHidden = true;
-  			this.HeadEquip05.isHidden = true;
-  			this.EquipBase.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.HeadEquip.isHidden = false;
-  			this.HeadEquip05.isHidden = false;
-  			this.EquipBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.HeadEquip.isHidden = true;
-  			this.HeadEquip05.isHidden = true;
-  			this.EquipBase.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);
+		this.HeadEquip.isHidden = flag;
+		this.HeadEquip05.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(1, state);
+		this.EquipBase.isHidden = flag;
 	}
 
 	@Override
@@ -576,6 +561,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
+  		boolean showCannon = EmotionHelper.checkModelState(1, ent.getStateEmotion(ID.S.State));
   		
   		//水上漂浮
   		if (ent.getShipDepth(0) > 0D)
@@ -619,7 +605,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 		this.LegRight.rotateAngleY = 0F;
 		this.LegRight.rotateAngleZ = -0.05F;
 		//cannon
-		if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
+		if (showCannon)
 		{
 			this.EquipBase.rotateAngleX = 0.17F;
 			
@@ -667,7 +653,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 			this.LegLeft.rotateAngleZ = 0F;
 			this.LegRight.rotateAngleZ = 0F;
 			//cannon
-			if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+			if (showCannon)
 			{
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
 //				this.EquipLC201.rotateAngleX -= 0.5F;
@@ -698,7 +684,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
 			this.LegLeft.rotateAngleZ = 0F;
 			this.LegRight.rotateAngleZ = 0F;
 			//cannon
-			if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+			if (showCannon)
 			{
 				this.EquipLCBase02.rotateAngleX -= 0.45F;
 //				this.EquipLC201.rotateAngleX -= 0.5F;
@@ -712,7 +698,7 @@ public class ModelBattleshipNagato extends ShipModelBaseAdv
   		
 	    if (ent.getIsSitting() || ent.getIsRiding())
 	    {  //騎乘動作
-	    	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+	    	if (showCannon)
 	    	{
 	    		GlStateManager.translate(0F, 0.42F, 0F);
 		    	//Body

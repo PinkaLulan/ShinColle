@@ -19,6 +19,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:tail state 1, 1:tail state 2, 2:tail state 3,
+ *   3:hat state 1, 4:hat state 2, 5:hat state 3, 6:hat state 4
+ *   
+ *   0 & 1 & 2 false = no tail (tail state 0)
+ *   3 & 4 & 5 & 6 false = no hat (hat state 0)
+ */
 public class EntityCAHime extends BasicEntityShipSmall
 {
 	
@@ -96,23 +104,6 @@ public class EntityCAHime extends BasicEntityShipSmall
   		{
   			return this.height * 0.76F;
   		}
-	}
-  	
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.ModelState.EQUIP02a) i = ID.ModelState.NORMALa;
-			setStateEmotion(ID.S.State2, i, true);
-		}
-		else
-		{
-			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.ModelState.EQUIP02) i = ID.ModelState.NORMAL;
-			setStateEmotion(ID.S.State, i, true);
-		}
 	}
 	
     @Override

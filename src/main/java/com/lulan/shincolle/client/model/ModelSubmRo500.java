@@ -327,25 +327,16 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		switch (ent.getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.EQUIP00:
-			this.EquipBase1.isHidden = false;
-			this.EquipBase2.isHidden = true;
-		break;
-		case ID.ModelState.EQUIP01:
-			this.EquipBase1.isHidden = true;
-			this.EquipBase2.isHidden = false;
-		break;
-		case ID.ModelState.EQUIP02:
-			this.EquipBase1.isHidden = false;
-			this.EquipBase2.isHidden = false;
-		break;
-		default:
-			this.EquipBase1.isHidden = true;
-			this.EquipBase2.isHidden = true;
-		break;
-		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//equip1
+		this.EquipBase1.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);			//equip2
+		this.EquipBase2.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);			//flower
+		this.FlowerBase.isHidden = flag;
 	}
 
 	@Override
@@ -439,15 +430,16 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
 	  	this.HairL02.rotateAngleZ = 0.08F;
 	  	this.HairR01.rotateAngleZ = 0.14F;
 	  	this.HairR02.rotateAngleZ = -0.05F;
-	    //arm 
+	    //arm
+		boolean flag = !EmotionHelper.checkModelState(1, ent.getStateEmotion(ID.S.State));
 	  	this.ArmLeft01.rotateAngleX = 0.157F;
 	  	this.ArmLeft01.rotateAngleY = 0F;
 	  	this.ArmLeft01.rotateAngleZ = -0.384F;
-	  	if (ent.getStateEmotion(ID.S.State) <= ID.ModelState.EQUIP00) this.ArmLeft01.rotateAngleZ += -angleX * 0.06F;
+	  	if (flag) this.ArmLeft01.rotateAngleZ += -angleX * 0.06F;
 	    this.ArmRight01.rotateAngleX = 0.157F;
 	    this.ArmRight01.rotateAngleY = 0F;
 	    this.ArmRight01.rotateAngleZ = 0.384F;
-	    if (ent.getStateEmotion(ID.S.State) <= ID.ModelState.EQUIP00) this.ArmRight01.rotateAngleZ += angleX * 0.06F;
+	    if (flag) this.ArmRight01.rotateAngleZ += angleX * 0.06F;
     	this.ArmLeft02.rotateAngleX = 0F;
     	this.ArmRight02.rotateAngleX = 0F;
 		//leg

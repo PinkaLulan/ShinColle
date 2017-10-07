@@ -639,37 +639,18 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.GloveL.isHidden = false;
-  			this.GloveR.isHidden = false;
-  			this.EquipLBase.isHidden = true;
-  			this.EquipRBase.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.GloveL.isHidden = false;
-  			this.GloveR.isHidden = false;
-  			this.EquipLBase.isHidden = false;
-  			this.EquipRBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.GloveL.isHidden = true;
-  			this.GloveR.isHidden = true;
-  			this.EquipLBase.isHidden = true;
-  			this.EquipRBase.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.EquipBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);
+		this.EquipLBase.isHidden = flag;
+		this.EquipRBase.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(1, state);
+		this.EquipBase.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);
+		this.GloveL.isHidden = flag;
+		this.GloveR.isHidden = flag;
 	}
 
 	@Override
@@ -751,6 +732,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
   		float headZ = 0F;
   		float t2 = ent.getTickExisted() & 511;
   		boolean spStand = false;
+  		boolean showWeapon = EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State));
   		
   		//水上漂浮
   		if (ent.getShipDepth(0) > 0D)
@@ -780,7 +762,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 	  	this.Hair02.rotateAngleX = -angleX1 * 0.04F - 0.12F + headX;
 	  	this.Hair02.rotateAngleZ = 0F;
 	    //arm
-	  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+	  	if (showWeapon)
 	  	{
 	  		this.ArmLeft01.rotateAngleZ = angleX * 0.03F - 0.3F;
 	  		this.ArmRight01.rotateAngleZ = -angleX * 0.03F + 0.3F;
@@ -842,7 +824,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 		
 		//special stand pos
 		if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED &&
-			ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 && t2 > 400)
+			showWeapon && t2 > 400)
 		{
 			spStand = true;
 			
@@ -878,7 +860,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 			this.BodyMain.rotateAngleY = 0F;
 			this.BodyMain.rotateAngleZ = 0F;
 		    //arm
-		  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+		  	if (showWeapon)
 		  	{
 		  		this.ArmLeft01.rotateAngleX = angleAdd2 * 0.05F + 0.5F;
 		  		this.ArmRight01.rotateAngleX = angleAdd1 * 0.05F + 0.5F;
@@ -926,7 +908,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 	    	this.Head.rotateAngleX -= 0.6283F;
 		  	this.BodyMain.rotateAngleX = 0.8727F;
 		    //arm
-		  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+		  	if (showWeapon)
 		  	{
 		  		this.ArmLeft01.rotateAngleX = angleAdd2 * 0.05F + 0.5F;
 		  		this.ArmLeft01.rotateAngleZ = -0.25F;
@@ -1001,7 +983,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 				this.LegRight02.rotateAngleZ = 0.0F;
 	    	}
 	    	else if (ent.getStateEmotion(ID.S.Emotion4) == ID.Emotion.BORED &&
-		    		 ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+	    			 showWeapon)
 	    	{
 		    	GlStateManager.translate(0F, 0.52F, 0F);
 		    	//body
@@ -1127,7 +1109,7 @@ public class ModelBattleshipRu extends ShipModelBaseAdv
 		  	this.BodyMain.rotateAngleZ = 0F;
 		  	this.Butt.rotateAngleX = 0.35F;
 	    	//arm
-		  	if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+		  	if (showWeapon)
 		  	{
 		  		this.ArmLeft02.rotateAngleX = -0.8726646259971648F;
 		  		this.ArmRight02.rotateAngleX = -0.8726646259971648F;

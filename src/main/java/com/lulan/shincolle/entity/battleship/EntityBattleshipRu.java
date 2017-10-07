@@ -10,6 +10,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -18,6 +19,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:weapon , 1:armor, 2:glove
+ */
 public class EntityBattleshipRu extends BasicEntityShip
 {
 	
@@ -32,6 +37,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRU);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
+		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
@@ -95,7 +101,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 				{
 					//顯示流汗表情
 					if (this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED &&
-						this.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01 &&
+						EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)) &&
 						(this.ticksExisted & 511) > 400)
 					{
 						ParticleHelper.spawnAttackParticleAtEntity(this, 0.5D, 0D, this.rand.nextInt(2) == 0 ? 0 : 2, (byte)36);
@@ -150,7 +156,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 	{
 		if (this.isSitting())
 		{
-			if (this.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+			if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
 			{
 				if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -174,23 +180,6 @@ public class EntityBattleshipRu extends BasicEntityShip
   		{
   			return this.height * 0.72F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			int i = getStateEmotion(ID.S.State2) + 1;
-			if (i > ID.ModelState.EQUIP00a) i = ID.ModelState.NORMALa;
-			setStateEmotion(ID.S.State2, i, true);
-		}
-		else
-		{
-			int i = getStateEmotion(ID.S.State) + 1;
-			if (i > ID.ModelState.EQUIP01) i = ID.ModelState.NORMAL;
-			setStateEmotion(ID.S.State, i, true);
-		}
 	}
 	
 	//shot a lotsssss missiles

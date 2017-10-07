@@ -17,6 +17,10 @@ import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:hat, 2:tube
+ */
 public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipInvisible
 {
 	
@@ -29,7 +33,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineU511);
         
 		//model display
-        this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
+        this.setStateEmotion(ID.S.State, rand.nextInt(8), false);
 	}
 	
 	

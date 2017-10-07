@@ -8,6 +8,10 @@ import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:bag, 2:hat, 3:shoes
+ */
 public class EntityCATakaoMob extends BasicEntityShipHostile
 {
 	
@@ -20,8 +24,7 @@ public class EntityCATakaoMob extends BasicEntityShipHostile
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserTakao);
         
 		//model display
-		this.setStateEmotion(ID.S.State, this.rand.nextInt(4), false);
-		this.setStateEmotion(ID.S.State2, this.rand.nextInt(4), false);
+		this.setStateEmotion(ID.S.State, this.rand.nextInt(16), false);
 	}
 	
 	@Override

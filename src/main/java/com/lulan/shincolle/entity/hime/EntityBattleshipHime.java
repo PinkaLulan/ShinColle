@@ -18,6 +18,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ * 0: mounts
+ */
 public class EntityBattleshipHime extends BasicEntityShipSmall
 {
 	
@@ -28,6 +32,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
+		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
@@ -155,7 +160,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 
   	//true if use mounts
   	@Override
-  	public boolean canSummonMounts()
+  	public boolean hasShipMounts()
   	{
   		return true;
   	}
@@ -186,24 +191,6 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   			return this.height * 0.76F;
   		}
 	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		case ID.ModelState.EQUIP00:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			this.setPositionAndUpdate(posX, posY + 2D, posZ);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
-	}
-
+  	
 	
 }

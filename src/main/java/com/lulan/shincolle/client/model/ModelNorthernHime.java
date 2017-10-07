@@ -662,56 +662,23 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		switch (ent.getStateEmotion(ID.S.State))
-		{
-		default:
-			this.GlowEquipBase.isHidden = true;
-			this.EquipBase.isHidden = true;
-			this.ShoesL.isHidden = true;
-			this.ShoesL2.isHidden = true;
-			this.ShoesR.isHidden = true;
-		break;
-		case ID.ModelState.EQUIP00:
-			this.GlowEquipBase.isHidden = true;
-			this.EquipBase.isHidden = true;
-			this.ShoesL.isHidden = false;
-			this.ShoesL2.isHidden = false;
-			this.ShoesR.isHidden = false;
-		break;
-		case ID.ModelState.EQUIP01:
-			this.GlowEquipBase.isHidden = false;
-			this.EquipBase.isHidden = false;
-			this.ShoesL.isHidden = true;
-			this.ShoesL2.isHidden = true;
-			this.ShoesR.isHidden = true;
-		break;
-		case ID.ModelState.EQUIP02:
-			this.GlowEquipBase.isHidden = false;
-			this.EquipBase.isHidden = false;
-			this.ShoesL.isHidden = false;
-			this.ShoesL2.isHidden = false;
-			this.ShoesR.isHidden = false;
-		break;
-		}
+		int state = ent.getStateEmotion(ID.S.State);
 		
-		switch (ent.getStateEmotion(ID.S.State2))
-		{
-		default:
-			this.SantaCloth01.isHidden = true;
-			this.SantaHat01.isHidden = true;
-			this.EquipUmbre01a.isHidden = true;
-		break;
-		case ID.ModelState.EQUIP00a:
-			this.SantaCloth01.isHidden = false;
-			this.SantaHat01.isHidden = false;
-			this.EquipUmbre01a.isHidden = true;
-		break;
-		case ID.ModelState.EQUIP01a:
-			this.SantaCloth01.isHidden = true;
-			this.SantaHat01.isHidden = true;
-			this.EquipUmbre01a.isHidden = false;
-		break;
-		}
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
+		this.GlowEquipBase.isHidden = flag;
+		this.EquipBase.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);			//hat
+		this.SantaCloth01.isHidden = flag;
+		this.SantaHat01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);			//umbrella
+		this.EquipUmbre01a.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(3, state);			//leg equip
+		this.ShoesL.isHidden = flag;
+		this.ShoesL2.isHidden = flag;
+		this.ShoesR.isHidden = flag;
 	}
 
 	@Override
@@ -780,6 +747,9 @@ public class ModelNorthernHime extends ShipModelBaseAdv
   		float addk2 = 0;
   		float headX = 0F;
   		float headZ = 0F;
+  		int state = ent.getStateEmotion(ID.S.State);
+  		boolean showCannon = EmotionHelper.checkModelState(0, state);
+  		boolean showUmbrella = EmotionHelper.checkModelState(2, state);
   		
   		//水上漂浮
   		if (ent.getShipDepth(0) > 0D || ent.getShipDepth(1) > 0D)
@@ -826,7 +796,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		this.LegRight01.rotateAngleZ = 0.05F;
     	this.LegRight02.rotateAngleX = 0F;
     	//equip
-    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.EQUIP00)
+    	if (showCannon)
     	{
     		this.EquipBase.rotateAngleX = 0F;
     		this.TailJaw1.rotateAngleX = angleX * 0.08F - 0.15F;
@@ -838,7 +808,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
         	this.EquipLHead02.rotateAngleZ = -angleX * 0.3F;
     	}
     	//umbrella
-    	if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a)
+    	if (showUmbrella)
     	{
     		this.ArmLeft01.rotateAngleX = 0F;
     		this.ArmLeft01.rotateAngleY = -0.26F;
@@ -857,7 +827,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 	    	this.ArmRight01.rotateAngleX = -2.9F;
 	    	this.ArmRight01.rotateAngleZ = -0.7F;
 	    	
-	    	if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a)
+	    	if (showUmbrella)
 	    	{
 	    		this.ArmLeft04.rotateAngleY = -1F;
 	    	}
@@ -889,7 +859,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		  	//equip
 		  	this.EquipBase.rotateAngleX -= 0.8727F;
 		  	
-		  	if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a)
+		  	if (showUmbrella)
 		  	{
 		  		this.ArmLeft01.rotateAngleY = -1.05F;
 		  		this.ArmLeft02.rotateAngleX = -2.01F;
@@ -954,7 +924,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		    	this.LegLeft01.rotateAngleY = -0.5F;
 		    	this.LegRight01.rotateAngleY = 0.5F;
 		    	
-		    	if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a)
+		    	if (showUmbrella)
 		    	{
 		    		this.ArmLeft02.offsetY = 0F;
 		    		this.ArmLeft02.rotateAngleX = -0.8F;
@@ -978,7 +948,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 		    	this.LegLeft01.rotateAngleY = -0.5F;
 		    	this.LegRight01.rotateAngleY = 0.5F;
 		    	
-		    	if (ent.getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a)
+		    	if (showUmbrella)
 		    	{
 		    		this.ArmLeft02.offsetY = 0F;
 		    		this.ArmLeft02.rotateAngleX = -0.2F;

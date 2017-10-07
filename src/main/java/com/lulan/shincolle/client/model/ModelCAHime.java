@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -465,43 +464,51 @@ public class ModelCAHime extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.HatBase.isHidden = false;
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		//tail state
+		boolean ft1 = EmotionHelper.checkModelState(0, state);
+		boolean ft2 = EmotionHelper.checkModelState(1, state);
+		boolean ft3 = EmotionHelper.checkModelState(2, state);
+		
+		this.TailBase.isHidden = !(ft1 || ft2 || ft3);
+		
+		//hat state
+		boolean fh1 = EmotionHelper.checkModelState(3, state);
+		boolean fh2 = EmotionHelper.checkModelState(4, state);
+		boolean fh3 = EmotionHelper.checkModelState(5, state);
+		boolean fh4 = EmotionHelper.checkModelState(6, state);
+		
+		//hat state 1
+		if (fh1)
+		{
+			this.HatBase.isHidden = false;
   			this.Hair01.isHidden = true;
   			this.Horn01.isHidden = true;
   			this.Horn02.isHidden = true;
   			this.Ear01.isHidden = true;
   			this.Ear02.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.HatBase.isHidden = true;
-  			this.Hair01.isHidden = false;
-  			this.Horn01.isHidden = false;
-  			this.Horn02.isHidden = false;
-  			this.Ear01.isHidden = false;
-  			this.Ear02.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.HatBase.isHidden = false;
+		}
+		//hat state 2, 3, 4
+		else if (fh2 || fh3 || fh4)
+		{
+			this.HatBase.isHidden = false;
   			this.Hair01.isHidden = true;
   			this.Horn01.isHidden = false;
   			this.Horn02.isHidden = false;
   			this.Ear01.isHidden = false;
   			this.Ear02.isHidden = false;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP02a:
-  			this.TailBase.isHidden = true;
-  		break;
-  		default:  //normal
-  			this.TailBase.isHidden = false;
-  		break;
-  		}
+		}
+		//no hat
+		else
+		{
+			this.HatBase.isHidden = true;
+  			this.Hair01.isHidden = false;
+  			this.Horn01.isHidden = false;
+  			this.Horn02.isHidden = false;
+  			this.Ear01.isHidden = false;
+  			this.Ear02.isHidden = false;
+		}
 	}
 
 	@Override
@@ -551,25 +558,42 @@ public class ModelCAHime extends ShipModelBaseAdv
 		this.LegRight01.rotateAngleZ = -0.05F;
 		this.LegRight02.rotateAngleX = 0F;
 		this.LegRight02.rotateAngleZ = 0F;
+		
 		//equip: hat position
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.HatBase.rotateAngleX = 1.37F;
+		int state = ent.getStateEmotion(ID.S.State);
+		boolean fh1 = EmotionHelper.checkModelState(3, state);
+		boolean fh3 = EmotionHelper.checkModelState(5, state);
+		boolean fh4 = EmotionHelper.checkModelState(6, state);
+		
+		//hat state 1
+		if (fh1)
+		{
+			this.HatBase.rotateAngleX = 1.37F;//78
   			this.HatBase.offsetY = -0.45F;
   			this.HatBase.offsetZ = -0.2F;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.HatBase.rotateAngleX = -1.8F;
+		}
+		//hat state 3
+		else if (fh3)
+		{
+  			this.HatBase.rotateAngleX = -0.85F;//-48
+  			this.HatBase.offsetY = 0.33F;
+  			this.HatBase.offsetZ = 0.07F;
+		}
+		//hat state 4
+		else if (fh4)
+		{
+			this.HatBase.rotateAngleX = -1.8F;//-103
   			this.HatBase.offsetY = 0.6F;
   			this.HatBase.offsetZ = 0.07F;
-  		break;
-  		default:  //normal
-  			this.HatBase.rotateAngleX = 0F;
+		}
+		//no hat or hat state 2
+		else
+		{
+			this.HatBase.rotateAngleX = 0F;
   			this.HatBase.offsetY = 0F;
   			this.HatBase.offsetZ = 0F;
-  		break;
-  		}
+		}
+		
 		//tail head
 		this.TailHead01.rotateAngleX = -0.17F;
 		this.TailJaw01.rotateAngleX = 0.26F;
@@ -625,6 +649,14 @@ public class ModelCAHime extends ShipModelBaseAdv
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1;
   		float addk1 = 0;
   		float addk2 = 0;
+		int state = ent.getStateEmotion(ID.S.State);
+		boolean ft1 = EmotionHelper.checkModelState(0, state);
+		boolean ft2 = EmotionHelper.checkModelState(1, state);
+		boolean ft3 = EmotionHelper.checkModelState(2, state);
+		boolean fh1 = EmotionHelper.checkModelState(3, state);
+		boolean fh2 = EmotionHelper.checkModelState(4, state);
+		boolean fh3 = EmotionHelper.checkModelState(5, state);
+		boolean fh4 = EmotionHelper.checkModelState(6, state);
   		
   		//水上漂浮
   		if (ent.getShipDepth(0) > 0D)
@@ -666,26 +698,37 @@ public class ModelCAHime extends ShipModelBaseAdv
 		this.LegRight01.rotateAngleZ = -0.1745F;
 		this.LegRight02.rotateAngleX = 0F;
 		this.LegRight02.rotateAngleZ = 0F;
+		
 		//equip: hat position
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.HatBase.rotateAngleX = 1.37F;
+		//hat state 1
+		if (fh1)
+		{
+			this.HatBase.rotateAngleX = 1.37F;//78
   			this.HatBase.offsetY = -0.45F;
   			this.HatBase.offsetZ = -0.2F;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.HatBase.rotateAngleX = -0.85F;
+		}
+		//hat state 3
+		else if (fh3)
+		{
+  			this.HatBase.rotateAngleX = -0.85F;//-48
   			this.HatBase.offsetY = 0.33F;
   			this.HatBase.offsetZ = 0.07F;
-  		break;
-  		default:  //normal
-  			this.HatBase.rotateAngleX = 0F;
+		}
+		//hat state 4
+		else if (fh4)
+		{
+			this.HatBase.rotateAngleX = -1.8F;//-103
+  			this.HatBase.offsetY = 0.6F;
+  			this.HatBase.offsetZ = 0.07F;
+		}
+		//no hat or hat state 2
+		else
+		{
+			this.HatBase.rotateAngleX = 0F;
   			this.HatBase.offsetY = 0F;
   			this.HatBase.offsetZ = 0F;
-  		break;
-  		}
-  		
+		}
+		
   		//equip: tail position
   		float[] cosf2 = new float[9];
   		for (int i = 0; i < 9; i++)
@@ -704,9 +747,8 @@ public class ModelCAHime extends ShipModelBaseAdv
 		this.TailC02_1.rotateAngleX = angleX2 * 0.3F - 0.2F;
   		
 		//tail body
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
+		if (ft1)
+		{
   			this.TailBase.offsetY = -0.15F;
   			this.TailBase.offsetZ = 0F;
   			this.Tail01.rotateAngleX = -0.17F + cosf2[0] * 0.03F;
@@ -745,8 +787,9 @@ public class ModelCAHime extends ShipModelBaseAdv
   			this.Tail08_1.rotateAngleY = -0.17F + cosf2[7] * 0.08F;
   			this.Tail09_1.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
   			this.Tail09_1.rotateAngleY = -0.17F + cosf2[8] * 0.15F;
-  		break;
-  		case ID.ModelState.EQUIP01a:
+		}
+		else if (ft2 || ft3)
+		{
   			this.TailBase.offsetY = -0.54F;
   			this.TailBase.offsetZ = 0.86F;
   			this.Tail01.rotateAngleX = -0.17F + cosf2[0] * 0.03F;
@@ -785,8 +828,9 @@ public class ModelCAHime extends ShipModelBaseAdv
   			this.Tail08_1.rotateAngleY = -0.17F + cosf2[7] * 0.08F;
   			this.Tail09_1.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
   			this.Tail09_1.rotateAngleY = -0.17F + cosf2[8] * 0.15F;
-  		break;
-  		default:  //normal
+		}
+		else
+		{
   			this.TailBase.offsetY = -0.15F;
   			this.TailBase.offsetZ = 0F;
   			this.Tail01.rotateAngleX = 0.26F;
@@ -825,8 +869,7 @@ public class ModelCAHime extends ShipModelBaseAdv
   			this.Tail08_1.rotateAngleY = 0.35F + cosf2[7] * 0.09F;
   			this.Tail09_1.rotateAngleX = -0.09F;
   			this.Tail09_1.rotateAngleY = 0.44F + cosf2[8] * 0.12F;
-  		break;
-  		}
+		}
 		
 		//ear
 		float modf2 = f2 % 128F;
@@ -870,25 +913,34 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    {
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		//equip: hat position
-	      		switch (ent.getStateEmotion(ID.S.State))
-	      		{
-	      		case ID.ModelState.EQUIP00:
-	      			this.HatBase.rotateAngleX = 1.37F;
+	    		//hat state 1
+	    		if (fh1)
+	    		{
+	    			this.HatBase.rotateAngleX = 1.37F;//78
 	      			this.HatBase.offsetY = -0.45F;
 	      			this.HatBase.offsetZ = -0.2F;
-	      		break;
-	      		case ID.ModelState.EQUIP01:
-	      			this.HatBase.rotateAngleX = -0.85F;
+	    		}
+	    		//hat state 3
+	    		else if (fh3)
+	    		{
+	      			this.HatBase.rotateAngleX = -0.85F;//-48
 	      			this.HatBase.offsetY = 0.1F;
 	      			this.HatBase.offsetZ = 0.07F;
-	      		break;
-	      		default:  //normal
-	      			this.HatBase.rotateAngleX = 0F;
+	    		}
+	    		//hat state 4
+	    		else if (fh4)
+	    		{
+	    			this.HatBase.rotateAngleX = -1.8F;//-103
+	      			this.HatBase.offsetY = 0.6F;
+	      			this.HatBase.offsetZ = 0.07F;
+	    		}
+	    		//no hat or hat state 2
+	    		else
+	    		{
+	    			this.HatBase.rotateAngleX = 0F;
 	      			this.HatBase.offsetY = 0F;
 	      			this.HatBase.offsetZ = 0F;
-	      		break;
-	      		}
+	    		}
 	      		
 	    		GlStateManager.translate(0F, 0.21F, 0F);
 		    	//body
@@ -934,26 +986,35 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    	}
 	    	else
 	    	{
-	    		//equip: hat position
-	      		switch (ent.getStateEmotion(ID.S.State))
-	      		{
-	      		case ID.ModelState.EQUIP00:
-	      			this.HatBase.rotateAngleX = 1.37F;
+	    		//hat state 1
+	    		if (fh1)
+	    		{
+	      			this.HatBase.rotateAngleX = 1.37F;//78
 	      			this.HatBase.offsetY = -0.45F;
 	      			this.HatBase.offsetZ = -0.2F;
-	      		break;
-	      		case ID.ModelState.EQUIP01:
-	      			this.HatBase.rotateAngleX = -0.85F;
+	    		}
+	    		//hat state 3
+	    		else if (fh3)
+	    		{
+	    			this.HatBase.rotateAngleX = -0.85F;//-48
 	      			this.HatBase.offsetY = 0F;
 	      			this.HatBase.offsetZ = 0.07F;
-	      		break;
-	      		default:  //normal
-	      			this.HatBase.rotateAngleX = 0F;
+	    		}
+	    		//hat state 4
+	    		else if (fh4)
+	    		{
+	    			this.HatBase.rotateAngleX = -1.8F;//-103
+	      			this.HatBase.offsetY = 0.6F;
+	      			this.HatBase.offsetZ = 0.07F;
+	    		}
+	    		//no hat or hat state 2
+	    		else
+	    		{
+	    			this.HatBase.rotateAngleX = 0F;
 	      			this.HatBase.offsetY = 0F;
 	      			this.HatBase.offsetZ = 0F;
-	      		break;
-	      		}
-	      		
+	    		}
+
 	    		GlStateManager.translate(0F, 0.22F, 0F);
 		    	//head
 		    	this.Head.rotateAngleX -= 0.5F;

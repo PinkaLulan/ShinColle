@@ -9,11 +9,16 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:rensouhou type, 1:cape, 2:armor
+ */
 public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAttack
 {
 	
@@ -27,6 +32,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
+		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
@@ -121,7 +127,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
   		
 		//spawn airplane
-    	if (this.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
+    	if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
     	{
     		EntityRensouhou rensoho1 = new EntityRensouhou(this.world);
     		rensoho1.initAttrs(this, target, 0);
@@ -172,47 +178,6 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		{
   			return this.height * 0.76F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		if (isSneaking)
-		{
-			switch(getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.NORMALa:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			case ID.ModelState.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;	
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			}
-		}
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.NORMAL:	//都沒有
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			case ID.ModelState.EQUIP00:	//只有披風
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
-			break;
-			case ID.ModelState.EQUIP01:	//只有護肩
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
-			break;
-			case ID.ModelState.EQUIP02:	//披風+護肩
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			}
-		}
 	}
 	
 	

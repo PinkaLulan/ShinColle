@@ -543,47 +543,30 @@ public class ModelTransportWa extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.EquipBase.isHidden = true;
-  			this.GlowEquipBase.isHidden = true;
-  			this.EquipHeadBase.isHidden = false;
-  			this.Ahoke.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.EquipBase.isHidden = false;
-  			this.GlowEquipBase.isHidden = false;
-  			this.EquipHeadBase.isHidden = true;
-  			this.Ahoke.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.EquipBase.isHidden = false;
-  			this.GlowEquipBase.isHidden = false;
-  			this.EquipHeadBase.isHidden = false;
-  			this.Ahoke.isHidden = true;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  			this.GlowEquipBase.isHidden = true;
-  			this.EquipHeadBase.isHidden = true;
-  			this.Ahoke.isHidden = false;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.EquipBase.isHidden = false;
-  			this.GlowEquipBase.isHidden = false;
-  			this.LegLeft01.isHidden = true;
-  			this.LegRight01.isHidden = true;
-  		break;
-  		default:  //normal
-  			this.LegLeft01.isHidden = false;
-  			this.LegRight01.isHidden = false;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//equip
+		this.EquipBase.isHidden = flag;
+		this.GlowEquipBase.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);	//leg
+		
+		if (flag)
+		{
+			this.EquipBase.isHidden = false;
+			this.GlowEquipBase.isHidden = false;
+			this.LegLeft01.isHidden = true;
+			this.LegRight01.isHidden = true;
+		}
+		else
+		{
+			this.LegLeft01.isHidden = false;
+			this.LegRight01.isHidden = false;
+		}
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//hat
+		this.EquipHeadBase.isHidden = flag;
+		this.Ahoke.isHidden = !flag;
 	}
 
 	@Override
@@ -702,8 +685,10 @@ public class ModelTransportWa extends ShipModelBaseAdv
 	    this.EquipTubeL01.rotateAngleX = angleX * 0.08F - 0.35F;
 	  	this.EquipTubeR01.rotateAngleX = -angleX * 0.08F - 0.35F;
 	    
+	  	boolean hideLeg = !EmotionHelper.checkModelState(1, ent.getStateEmotion(ID.S.State));
+	  	
 	    //fly mode
-	    if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
+	    if (hideLeg)
 	    {
 	    	//body
 	    	this.Cloth04.rotateAngleX += 0.23F;
@@ -760,7 +745,7 @@ public class ModelTransportWa extends ShipModelBaseAdv
 	    	float ax = MathHelper.cos(f2 * 0.5F) * 0.5F;
 	    	
 	    	//fly mode
-		    if (ent.getStateEmotion(ID.S.State2) > ID.ModelState.NORMALa)
+		    if (hideLeg)
 		    {
 		    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 		    	{

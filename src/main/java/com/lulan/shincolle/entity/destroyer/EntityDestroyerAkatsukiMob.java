@@ -8,6 +8,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.util.math.BlockPos;
@@ -16,6 +17,10 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:cannon, 1:head, 2:weapon, 3:armor
+ */
 public class EntityDestroyerAkatsukiMob extends BasicEntityShipHostile implements IShipRiderType
 {
 
@@ -34,7 +39,7 @@ public class EntityDestroyerAkatsukiMob extends BasicEntityShipHostile implement
         this.smokeY = 0F;
         
 		//model display
-        this.setStateEmotion(ID.S.State, rand.nextInt(4), false);
+        this.setStateEmotion(ID.S.State, rand.nextInt(16), false);
 	}
 	
 	@Override
@@ -98,7 +103,7 @@ public class EntityDestroyerAkatsukiMob extends BasicEntityShipHostile implement
   		{
   			if (this.ticksExisted % 4 == 0)
   			{
-  				if (this.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP01)
+  				if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
   				{
   					//計算煙霧位置, 生成裝備冒煙特效
   	  				float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);

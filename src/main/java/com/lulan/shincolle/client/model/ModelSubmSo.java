@@ -338,71 +338,26 @@ public class ModelSubmSo extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-    	//head equip
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.EquipHeadBase.isHidden = false;
-  			this.EquipC01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.EquipHeadBase.isHidden = false;
-  			this.EquipC01.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipHeadBase.isHidden = true;
-  			this.EquipC01.isHidden = true;
-  		break;
-  		}
-  		
-  		//outfit and torpedo
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.EquipT01a.isHidden = false;
-  			this.BodyMain1.isHidden = false;
-  			this.Butt1.isHidden = false;
-  			this.BoobL.isHidden = false;
-  			this.BoobR.isHidden = false;
-  			this.BodyMain2.isHidden = true;
-  			this.Butt2.isHidden = true;
-  			this.BoobL2.isHidden = true;
-  			this.BoobR2.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01a:
-  			this.EquipT01a.isHidden = true;
-  			this.BodyMain1.isHidden = true;
-  			this.Butt1.isHidden = true;
-  			this.BoobL.isHidden = true;
-  			this.BoobR.isHidden = true;
-  			this.BodyMain2.isHidden = false;
-  			this.Butt2.isHidden = false;
-  			this.BoobL2.isHidden = false;
-  			this.BoobR2.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP02a:
-  			this.EquipT01a.isHidden = false;
-  			this.BodyMain1.isHidden = true;
-  			this.Butt1.isHidden = true;
-  			this.BoobL.isHidden = true;
-  			this.BoobR.isHidden = true;
-  			this.BodyMain2.isHidden = false;
-  			this.Butt2.isHidden = false;
-  			this.BoobL2.isHidden = false;
-  			this.BoobR2.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipT01a.isHidden = true;
-  			this.BodyMain1.isHidden = false;
-  			this.Butt1.isHidden = false;
-  			this.BoobL.isHidden = false;
-  			this.BoobR.isHidden = false;
-  			this.BodyMain2.isHidden = true;
-  			this.Butt2.isHidden = true;
-  			this.BoobL2.isHidden = true;
-  			this.BoobR2.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = EmotionHelper.checkModelState(0, state);		//head
+		this.EquipHeadBase.isHidden = flag;
+		
+		flag = EmotionHelper.checkModelState(1, state);		//head cannon
+		this.EquipC01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//cloth
+		this.BodyMain1.isHidden = flag;
+		this.Butt1.isHidden = flag;
+		this.BoobL.isHidden = flag;
+		this.BoobR.isHidden = flag;
+		this.BodyMain2.isHidden = !flag;
+		this.Butt2.isHidden = !flag;
+		this.BoobL2.isHidden = !flag;
+		this.BoobR2.isHidden = !flag;
+		
+		flag = !EmotionHelper.checkModelState(3, state);	//weapon
+		this.EquipT01a.isHidden = flag;
 	}
 
 	@Override

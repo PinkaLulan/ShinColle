@@ -540,67 +540,26 @@ public class ModelCruiserTenryuu extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.Equip00.isHidden = true;
-  			this.GlowEquip00.isHidden = true;
-  			this.EarL01.isHidden = false;
-  			this.EarR01.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.Equip00.isHidden = false;
-  			this.GlowEquip00.isHidden = false;
-  			this.EarL01.isHidden = true;
-  			this.EarR01.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.Equip00.isHidden = false;
-  			this.GlowEquip00.isHidden = false;
-  			this.EarL01.isHidden = false;
-  			this.EarR01.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.Equip00.isHidden = true;
-  			this.GlowEquip00.isHidden = true;
-  			this.EarL01.isHidden = true;
-  			this.EarR01.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.EquipSL00.isHidden = false;
-  			this.EquipSR01.isHidden = true;
-  			this.EyeMask.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01a:
-  			this.EquipSL00.isHidden = false;
-  			this.EquipSR01.isHidden = false;
-  			this.EyeMask.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP02a:
-  			this.EquipSL00.isHidden = true;
-  			this.EquipSR01.isHidden = true;
-  			this.EyeMask.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP03a:
-  			this.EquipSL00.isHidden = false;
-  			this.EquipSR01.isHidden = true;
-  			this.EyeMask.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP04a:
-  			this.EquipSL00.isHidden = false;
-  			this.EquipSR01.isHidden = false;
-  			this.EyeMask.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipSL00.isHidden = true;
-  			this.EquipSR01.isHidden = true;
-  			this.EyeMask.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
+		this.Equip00.isHidden = flag;
+		this.GlowEquip00.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);	//head
+		this.EarL01.isHidden = flag;
+		this.EarR01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//sword
+		this.EquipSL00.isHidden = flag;
+		this.EquipSR01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(3, state);	//eye mask
+		this.EyeMask.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(4, state);	//shoes
+		this.ShoeL02.isHidden = flag;
+		this.ShoeR02.isHidden = flag;
 	}
 
 	@Override

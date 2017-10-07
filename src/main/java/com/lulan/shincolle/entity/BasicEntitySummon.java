@@ -52,7 +52,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
     
     //model display
     /**EntityState: 0:HP State 1:Emotion 2:Emotion2*/
-	protected byte stateEmotion, stateEmotion2, scaleLevel;					//表情type
+	protected int stateEmotion, stateEmotion2, scaleLevel;					//表情type
 	protected int startEmotion, startEmotion2, attackTime, attackTime2;		//表情timer
 	protected boolean headTilt;
 	public boolean initScale;
@@ -150,7 +150,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	{
 		super.writeToNBT(nbt);
 		
-		nbt.setByte("scaleLV", this.scaleLevel);
+		nbt.setByte("scaleLV", (byte) this.scaleLevel);
 		
 		return nbt;
 	}
@@ -280,7 +280,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	abstract protected void returnSummonResource();
 
 	@Override
-	public byte getStateEmotion(int id)
+	public int getStateEmotion(int id)
 	{
 		return id == 1 ? stateEmotion : stateEmotion2;
 	}
@@ -291,10 +291,10 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 		switch (id)
 		{
 		case 1:
-			stateEmotion = (byte) value;
+			stateEmotion = value;
 		break;
 		case 2:
-			stateEmotion2 = (byte) value;
+			stateEmotion2 = value;
 		break;
 		default:
 		break;

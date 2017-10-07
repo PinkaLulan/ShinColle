@@ -10,7 +10,7 @@ public interface IShipEmotion extends IShipFlags
 {
 	
 	/** get emotion value */
-	public byte getStateEmotion(int id);
+	public int getStateEmotion(int id);
 	public void setStateEmotion(int id, int value, boolean sync);
 	
 	/** get emotion timer */

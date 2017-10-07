@@ -375,14 +375,7 @@ public class ModelDestroyerNi extends ModelBase implements IModelEmotion
     
     private void isKisaragi(BasicEntityShip ent)
     {
-		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
-		{
-			k00.isHidden = false;
-		}
-		else
-		{
-			k00.isHidden = true;
-		}
+    	this.k00.isHidden = !EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State));
   	}
     
     //隨機抽取顯示的表情 

@@ -75,7 +75,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	
     //model display
     /** emotion state: 0:State 1:Emotion 2:Emotion2 3:HPState 4:State2 5:AttackPhase 6:Emotion3 */
-    protected byte[] stateEmotion;
+    protected int[] stateEmotion;
 	protected int startEmotion, startEmotion2, attackTime, attackTime2, attackTime3, emoteDelay;
 	protected boolean headTilt;
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
@@ -116,7 +116,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         
 		//model display
         this.soundHurtDelay = 0;
-        this.stateEmotion = new byte[] {ID.ModelState.EQUIP00, 0, 0, 0, 0, 0, 0, 0};
+        this.stateEmotion = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
 	}
 	
 	@Override
@@ -395,7 +395,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     }
 
 	@Override
-	public byte getStateEmotion(int id)
+	public int getStateEmotion(int id)
 	{
 		return stateEmotion[id];
 	}
@@ -403,7 +403,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public void setStateEmotion(int id, int value, boolean sync)
 	{
-		stateEmotion[id] = (byte) value;
+		stateEmotion[id] = value;
 		
 		if (sync && !world.isRemote)
 		{

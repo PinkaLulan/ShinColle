@@ -6,10 +6,15 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:head, 1:weapon, 2:neck, 3:cloak
+ */
 public class EntityCarrierWo extends BasicEntityShipCV
 {
 	
@@ -20,6 +25,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
+		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {0F, 20F, 0F, 30F};
@@ -69,7 +75,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
     		if (this.ticksExisted % 4 ==  0)
     		{
     			//若顯示裝備時, 則生成眼睛煙霧特效 (client only)
-    			if (getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00 && !getStateFlag(ID.F.NoFuel) &&
+    			if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)) && !getStateFlag(ID.F.NoFuel) &&
     				(!isSitting() || getStateEmotion(ID.S.Emotion) != ID.Emotion.BORED))
     			{
     				//set origin position
@@ -121,7 +127,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
     @Override
 	public double getMountedYOffset()
     {
-    	if (this.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+    	if (EmotionHelper.checkModelState(0, this.getStateEmotion(ID.S.State)))
     	{
     		if (this.isSitting())
     		{
@@ -150,23 +156,6 @@ public class EntityCarrierWo extends BasicEntityShipCV
       			return (double)this.height * 0.68D;
       		}
     	}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		switch (getStateEmotion(ID.S.State))
-		{
-		case ID.ModelState.NORMAL:
-			setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-		break;
-		case ID.ModelState.EQUIP00:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		default:
-			setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-		break;
-		}
 	}
 	
 

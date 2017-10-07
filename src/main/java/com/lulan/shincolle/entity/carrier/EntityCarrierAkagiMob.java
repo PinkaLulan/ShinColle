@@ -8,6 +8,10 @@ import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:bow, 1:quiver, 2:deck, 3:bag, 4:armor, 5:skirt, 6:ear+tail
+ */
 public class EntityCarrierAkagiMob extends BasicEntityShipHostileCV
 {
 
@@ -21,16 +25,7 @@ public class EntityCarrierAkagiMob extends BasicEntityShipHostileCV
         this.launchHeight = this.height * 0.65F;
         
 		//model display
-		this.setStateEmotion(ID.S.State2, ID.ModelState.EQUIP03a, false);
-		
-		if (this.getRNG().nextInt(3) == 0)
-		{
-			this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP06, false);
-		}
-		else
-		{
-			this.setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, false);
-		}
+		this.setStateEmotion(ID.S.State, this.rand.nextInt(128), false);
 	}
 	
 	@Override

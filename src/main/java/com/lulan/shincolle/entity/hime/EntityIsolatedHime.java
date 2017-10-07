@@ -4,24 +4,25 @@ import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
+/**
+ * model state:
+ *   0:mounts, 1:
+ */
 public class EntityIsolatedHime extends BasicEntityShipCV
 {
 	
 	public EntityIsolatedHime(World world)
 	{
 		super(world);
-		this.setSize(0.7F, 2.2F);
+		this.setSize(0.6F, 1.6F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.IsolatedHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
@@ -106,67 +107,68 @@ public class EntityIsolatedHime extends BasicEntityShipCV
 	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target)
 	{
-  		//get attack value
-  		float atk = this.getAttackBaseDamage(2, target);
-  		float launchPos = (float)posY + 0.4F;
-		
-        //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-  		
-  		if (this.getRidingEntity() instanceof BasicEntityMount)
-  		{
-  			launchPos = (float)posY - 1.2F;
-  		}
-  		
-  		//experience++
-  		addShipExp(ConfigHandler.expGain[2]);
-  		
-  		//grudge--
-  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-  		
-  		//morale--
-  		decrMorale(2);
-  		setCombatTick(this.ticksExisted);
-  	
-  		//play attack effect
-        applySoundAtAttacker(2, target);
-	    applyParticleAtAttacker(2, target, distVec);
-          
-  		//heavy ammo--
-  		if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-  		
-	    float tarX = (float) target.posX;
-	    float tarY = (float) target.posY;
-	    float tarZ = (float) target.posZ;
-	    
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
-        {
-        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-        	tarY = tarY + this.rand.nextFloat() * 5F;
-        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-        	
-        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-        }
-  		
-  		//spawn missile
-  		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-          		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, 0.15F, true, 0.3F);
-  		this.world.spawnEntity(missile);
-  		
-  		//play target effect
-        applySoundAtTarget(2, target);
-        applyParticleAtTarget(2, target, distVec);
-      	applyEmotesReaction(3);
-      	
-      	if (ConfigHandler.canFlare) flareTarget(target);
-      	
-  		return true;
+		return super.attackEntityWithHeavyAmmo(target);
+//  		//get attack value
+//  		float atk = this.getAttackBaseDamage(2, target);
+//  		float launchPos = (float)posY + 0.4F;
+//		
+//        //calc dist to target
+//        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+//  		
+//  		if (this.getRidingEntity() instanceof BasicEntityMount)
+//  		{
+//  			launchPos = (float)posY - 1.2F;
+//  		}
+//  		
+//  		//experience++
+//  		addShipExp(ConfigHandler.expGain[2]);
+//  		
+//  		//grudge--
+//  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+//  		
+//  		//morale--
+//  		decrMorale(2);
+//  		setCombatTick(this.ticksExisted);
+//  	
+//  		//play attack effect
+//        applySoundAtAttacker(2, target);
+//	    applyParticleAtAttacker(2, target, distVec);
+//          
+//  		//heavy ammo--
+//  		if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
+//  		
+//	    float tarX = (float) target.posX;
+//	    float tarY = (float) target.posY;
+//	    float tarZ = (float) target.posZ;
+//	    
+//	    //if miss
+//        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
+//        {
+//        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+//        	tarY = tarY + this.rand.nextFloat() * 5F;
+//        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
+//        	
+//        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
+//        }
+//  		
+//  		//spawn missile
+//  		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
+//          		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, 0.15F, true, 0.3F);
+//  		this.world.spawnEntity(missile);
+//  		
+//  		//play target effect
+//        applySoundAtTarget(2, target);
+//        applyParticleAtTarget(2, target, distVec);
+//      	applyEmotesReaction(3);
+//      	
+//      	if (ConfigHandler.canFlare) flareTarget(target);
+//      	
+//  		return true;
   	}
 
   	//true if use mounts
   	@Override
-  	public boolean canSummonMounts()
+  	public boolean hasShipMounts()
   	{
   		return true;
   	}
@@ -174,8 +176,7 @@ public class EntityIsolatedHime extends BasicEntityShipCV
   	@Override
   	public BasicEntityMount summonMountEntity()
   	{
-  		return null;
-//		return new EntityMountHbH(this.world); TODO
+		return new EntityMountHbH(this.world); //TODO
 	}
   	
   	@Override
@@ -196,50 +197,6 @@ public class EntityIsolatedHime extends BasicEntityShipCV
   		{
   			return this.height * 0.76F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		//切換裝備顯示
-		if (isSneaking)
-		{
-			switch (getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.NORMALa:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			case ID.ModelState.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
-			break;
-			case ID.ModelState.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, true);
-			break;
-			case ID.ModelState.EQUIP02a:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			}
-		}
-		//切換是否騎乘座騎
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.NORMAL:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			case ID.ModelState.EQUIP00:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-				this.setPositionAndUpdate(posX, posY + 2D, posZ);
-			break;
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			}
-		}
 	}
 	
 	

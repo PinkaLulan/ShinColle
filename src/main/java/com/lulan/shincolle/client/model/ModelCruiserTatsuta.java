@@ -471,39 +471,17 @@ public class ModelCruiserTatsuta extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.Equip00.isHidden = true;
-  			this.GlowEquip00.isHidden = true;
-  			this.CirBase.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.Equip00.isHidden = false;
-  			this.GlowEquip00.isHidden = false;
-  			this.CirBase.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.Equip00.isHidden = false;
-  			this.GlowEquip00.isHidden = false;
-  			this.CirBase.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.Equip00.isHidden = true;
-  			this.GlowEquip00.isHidden = true;
-  			this.CirBase.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.EquipSL00.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipSL00.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
+		this.Equip00.isHidden = flag;
+		this.GlowEquip00.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);	//head
+		this.CirBase.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//weapon
+		this.EquipSL00.isHidden = flag;
 	}
 
 	@Override

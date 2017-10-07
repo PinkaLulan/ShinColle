@@ -25,6 +25,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:mounts, TODO: hair type
+ */
 public class EntityHarbourHime extends BasicEntityShipCV
 {
 	
@@ -35,6 +39,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HarbourHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
+		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
@@ -209,7 +214,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
 
   	//true if use mounts
   	@Override
-  	public boolean canSummonMounts()
+  	public boolean hasShipMounts()
   	{
   		return true;
   	}
@@ -238,50 +243,6 @@ public class EntityHarbourHime extends BasicEntityShipCV
   		{
   			return this.height * 0.76F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		//切換裝備顯示
-		if (isSneaking)
-		{
-			switch (getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.NORMALa:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			case ID.ModelState.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
-			break;
-			case ID.ModelState.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP02a, true);
-			break;
-			case ID.ModelState.EQUIP02a:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			}
-		}
-		//切換是否騎乘座騎
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.NORMAL:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			case ID.ModelState.EQUIP00:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-				this.setPositionAndUpdate(posX, posY + 2D, posZ);
-			break;
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			}
-		}
 	}
 	
 	

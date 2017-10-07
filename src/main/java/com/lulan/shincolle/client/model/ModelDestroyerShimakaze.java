@@ -314,15 +314,24 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-		if (ent.getStateEmotion(ID.S.State) >= ID.ModelState.EQUIP00)
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(1, state);	//cannon
+		this.EquipBase.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);			//hair
+		this.HairAnchor.isHidden = flag;
+				
+		boolean fh1 = EmotionHelper.checkModelState(3, state);		//ear state 1
+		boolean fh2 = EmotionHelper.checkModelState(4, state);		//ear state 2
+		
+		if (fh1 || fh2)
 		{
-			this.EquipBase.isHidden = false;
-			this.HairAnchor.isHidden = false;
+			this.EarBase.isHidden = false;
 		}
 		else
 		{
-			this.EquipBase.isHidden = true;
-			this.HairAnchor.isHidden = true;
+			this.EarBase.isHidden = true;
 		}
 	}
 
@@ -407,6 +416,11 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 	  	this.Head.rotateAngleX = f4 * 0.014F + 0.1F;
 	  	this.Head.rotateAngleY = f3 * 0.01F;
   	    //ear
+	  	//TODO ear state 耳朵彎曲類型1,2
+	  	int state = ent.getStateEmotion(ID.S.State);
+		boolean fh1 = EmotionHelper.checkModelState(3, state);
+		boolean fh2 = EmotionHelper.checkModelState(4, state);
+	  	
   	    this.EarL01.rotateAngleX = angleX * 0.1F + 0.4F;
   	    this.EarL01.rotateAngleY = -0.8F;
 	    this.EarR01.rotateAngleX = angleX * 0.1F + 0.7F;

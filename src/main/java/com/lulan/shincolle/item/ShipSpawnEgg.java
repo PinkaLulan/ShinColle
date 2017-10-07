@@ -179,6 +179,7 @@ public class ShipSpawnEgg extends BasicItem
 		case ID.ShipClass.AirfieldHime+2:
 		case ID.ShipClass.BattleshipHime+2:
 		case ID.ShipClass.HarbourHime+2:
+		case ID.ShipClass.IsolatedHime+2:
 		case ID.ShipClass.NorthernHime+2:
 			return 9;
 		case ID.ShipClass.CarrierWO+2:				//CV
@@ -222,6 +223,7 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.ShipClass.BattleshipHime+2);
   		shipList.add(ID.ShipClass.AirfieldHime+2);
   		shipList.add(ID.ShipClass.HarbourHime+2);
+  		shipList.add(ID.ShipClass.IsolatedHime+2);
   		shipList.add(ID.ShipClass.NorthernHime+2);
   		shipList.add(ID.ShipClass.CarrierWD+2);
   		//hostile ship
@@ -365,7 +367,7 @@ public class ShipSpawnEgg extends BasicItem
 					if (attrs2.length >= 7)
 					{
 						entity.setStateEmotion(ID.S.State, attrs2[0], false);
-						entity.setStateEmotion(ID.S.State2, attrs2[1], false);
+//						entity.setStateEmotion(ID.S.State2, attrs2[1], false); //NO USE
 				    	entity.setStateMinor(ID.M.FollowMin, attrs2[2]);
 				    	entity.setStateMinor(ID.M.FollowMax, attrs2[3]);
 				    	entity.setStateMinor(ID.M.FleeHP, attrs2[4]);

@@ -1,8 +1,6 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -639,57 +637,22 @@ public class ModelCruiserTakao extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.Hat01.isHidden = false;
-  			this.EquipBag00.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP01:
-  			this.Hat01.isHidden = true;
-  			this.EquipBag00.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP02:
-  			this.Hat01.isHidden = false;
-  			this.EquipBag00.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.Hat01.isHidden = true;
-  			this.EquipBag00.isHidden = true;
-  		break;
-  		}
-  		
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.EquipBase.isHidden = false;
-  			this.ShoeL01.isHidden = true;
-  			this.ShoeR01.isHidden = true;
-  			this.ShoeL03.isHidden = false;
-  			this.ShoeL03_1.isHidden = false;
-  		break;
-  		case ID.ModelState.EQUIP01a:
-  			this.EquipBase.isHidden = true;
-  			this.ShoeL01.isHidden = false;
-  			this.ShoeR01.isHidden = false;
-  			this.ShoeL03.isHidden = true;
-  			this.ShoeL03_1.isHidden = true;
-  		break;
-  		case ID.ModelState.EQUIP02a:
-  			this.EquipBase.isHidden = false;
-  			this.ShoeL01.isHidden = false;
-  			this.ShoeR01.isHidden = false;
-  			this.ShoeL03.isHidden = false;
-  			this.ShoeL03_1.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  			this.ShoeL01.isHidden = true;
-  			this.ShoeR01.isHidden = true;
-  			this.ShoeL03.isHidden = true;
-  			this.ShoeL03_1.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
+		this.EquipBase.isHidden = flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);	//bag
+		this.EquipBag00.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//hat
+		this.Hat01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(3, state);	//shoes
+		this.ShoeL01.isHidden = flag;
+		this.ShoeR01.isHidden = flag;
+		this.ShoeL03.isHidden = flag;
+		this.ShoeL03_1.isHidden = flag;
 	}
 
 	@Override

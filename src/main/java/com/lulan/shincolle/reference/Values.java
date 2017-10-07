@@ -30,6 +30,11 @@ public class Values
 		public static final int BaseGrudge = 300;
 		public static final int BaseLightAmmo = 30;
 		public static final int BaseHeavyAmmo = 15;
+		
+		public static final int[] Pow2 = new int[] {1, 2, 4, 8, 16,  //2^0~19
+													32, 64, 128, 256, 512,
+													1024, 2048, 4096, 8192, 16384,
+													32768, 65536, 131072, 262144, 524288};
 	}
 	
 	/**SHIP ATTRIBUTES MAP

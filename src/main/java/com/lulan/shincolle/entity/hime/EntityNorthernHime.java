@@ -18,6 +18,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -34,6 +35,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   0:cannon, 1:hat, 2:umbrella, 3:leg equip
+ */
 public class EntityNorthernHime extends BasicEntityShipCV
 {
 	
@@ -49,6 +54,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
+		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
@@ -206,7 +212,8 @@ public class EntityNorthernHime extends BasicEntityShipCV
   			//drip water effect
   			if (this.ticksExisted % 8 == 0)
   			{
-  				if (getStateEmotion(ID.S.State2) == ID.ModelState.EQUIP01a && !getStateFlag(ID.F.NoFuel))
+  				if (EmotionHelper.checkModelState(2, this.getStateEmotion(ID.S.State)) &&
+  					!getStateFlag(ID.F.NoFuel))
   				{
   					if (this.isSitting() || this.isRiding())
   					{
@@ -370,45 +377,6 @@ public class EntityNorthernHime extends BasicEntityShipCV
   		{
   			return this.height * 0.48F;
   		}
-	}
-
-	@Override
-	public void setShipOutfit(boolean isSneaking)
-	{
-		//切換裝備顯示
-		if (isSneaking)
-		{
-			switch (getStateEmotion(ID.S.State2))
-			{
-			case ID.ModelState.EQUIP00a:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP01a, true);
-			break;
-			case ID.ModelState.EQUIP01a:
-				setStateEmotion(ID.S.State2, ID.ModelState.NORMALa, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State2, ID.ModelState.EQUIP00a, true);
-			break;
-			}
-		}
-		else
-		{
-			switch (getStateEmotion(ID.S.State))
-			{
-			case ID.ModelState.EQUIP00:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP01, true);
-			break;
-			case ID.ModelState.EQUIP01:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP02, true);
-			break;
-			case ID.ModelState.EQUIP02:
-				setStateEmotion(ID.S.State, ID.ModelState.NORMAL, true);
-			break;
-			default:
-				setStateEmotion(ID.S.State, ID.ModelState.EQUIP00, true);
-			break;
-			}
-		}
 	}
 	
 	@Override

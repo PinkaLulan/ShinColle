@@ -4,6 +4,7 @@ import com.lulan.shincolle.client.model.IModelEmotion;
 import com.lulan.shincolle.client.model.IModelEmotionAdv;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
 
 import net.minecraft.util.math.MathHelper;
 
@@ -359,6 +360,16 @@ public class EmotionHelper
 			break;
     		}
     	}
+	}
+    
+	/**
+	 * check model display flags
+	 * id = 0, 1, 2, ..., 15
+	 * state = entity.getStateEmotion(ID.S.State)
+	 */
+	public static boolean checkModelState(int id, int state)
+	{
+		return (state & Values.N.Pow2[id]) == Values.N.Pow2[id];
 	}
     
     

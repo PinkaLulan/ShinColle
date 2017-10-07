@@ -653,49 +653,24 @@ public class ModelSubmYo extends ShipModelBaseAdv
 	@Override
 	public void showEquip(IShipEmotion ent)
 	{
-    	//head equip
-  		switch (ent.getStateEmotion(ID.S.State))
-  		{
-  		case ID.ModelState.EQUIP00:
-  			this.EquipBase.isHidden = false;
-  			this.GlowEquipBase.isHidden = false;
-  			this.Hair03.isHidden = true;
-  			this.LegLeft01.isHidden = true;
-  			this.LegRight01.isHidden = true;
-  		break;
-  		default:  //normal
-  			this.EquipBase.isHidden = true;
-  			this.GlowEquipBase.isHidden = true;
-  			this.Hair03.isHidden = false;
-  			this.LegLeft01.isHidden = false;
-  			this.LegRight01.isHidden = false;
-  		break;
-  		}
-  		
-  		//outfit and torpedo
-  		switch (ent.getStateEmotion(ID.S.State2))
-  		{
-  		case ID.ModelState.EQUIP00a:
-  			this.BodyMain1.isHidden = true;
-  			this.Butt1.isHidden = true;
-  			this.BoobL.isHidden = true;
-  			this.BoobR.isHidden = true;
-  			this.BodyMain2.isHidden = false;
-  			this.Butt2.isHidden = false;
-  			this.BoobL2.isHidden = false;
-  			this.BoobR2.isHidden = false;
-  		break;
-  		default:  //normal
-  			this.BodyMain1.isHidden = false;
-  			this.Butt1.isHidden = false;
-  			this.BoobL.isHidden = false;
-  			this.BoobR.isHidden = false;
-  			this.BodyMain2.isHidden = true;
-  			this.Butt2.isHidden = true;
-  			this.BoobL2.isHidden = true;
-  			this.BoobR2.isHidden = true;
-  		break;
-  		}
+		int state = ent.getStateEmotion(ID.S.State);
+		
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//equip
+		this.EquipBase.isHidden = flag;
+		this.GlowEquipBase.isHidden = flag;
+		this.Hair03.isHidden = !flag;
+		this.LegLeft01.isHidden = !flag;
+		this.LegRight01.isHidden = !flag;
+				
+		flag = !EmotionHelper.checkModelState(1, state);			//cloth
+		this.BodyMain1.isHidden = flag;
+		this.Butt1.isHidden = flag;
+		this.BoobL.isHidden = flag;
+		this.BoobR.isHidden = flag;
+		this.BodyMain2.isHidden = !flag;
+		this.Butt2.isHidden = !flag;
+		this.BoobL2.isHidden = !flag;
+		this.BoobR2.isHidden = !flag;
 	}
 
 	@Override
@@ -848,7 +823,9 @@ public class ModelSubmYo extends ShipModelBaseAdv
 	  	this.HairR01.rotateAngleZ = 0.1396F;
 	  	this.HairR02.rotateAngleZ = -0.1396F;
   		
-  		if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+	  	boolean showEquip = EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State));
+	  	
+  		if (showEquip)
   		{
   			GlStateManager.translate(0F, angleX * 0.035F + 0.1F, -0.1F);
   			//head
@@ -914,7 +891,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 	    {	//奔跑動作
 	    	GlStateManager.translate(0F, 0.1F, 0F);
 	    	
-	    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+	    	if (showEquip)
 	  		{
 	    		this.Head.rotateAngleX += 0.6F;
 	  		}
@@ -955,7 +932,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 		    addk1 -= 0.1F;
 		  	addk2 -= 0.1F;
 		  	
-		  	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+		  	if (showEquip)
 	  		{
 		  		this.Head.rotateAngleX += 0.8F;
 		  		this.ArmLeft01.rotateAngleX = -0.25F;
@@ -987,7 +964,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 			    this.LegLeft01.rotateAngleY = -0.1F - angleX * 0.05F;
 			  	this.LegRight01.rotateAngleY = 0.1F + angleX * 0.05F;
 			  	
-			  	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+			  	if (showEquip)
 		  		{
 			  		GlStateManager.translate(0F, 0.36F, 0F);
 			  		float ax = MathHelper.cos(f2 * 0.5F) * 0.5F;
@@ -1014,7 +991,7 @@ public class ModelSubmYo extends ShipModelBaseAdv
 		    	this.LegLeft01.rotateAngleY = -0.3491F;
 		    	this.LegRight01.rotateAngleY = 0.3491F;
 		    	
-		    	if (ent.getStateEmotion(ID.S.State) > ID.ModelState.NORMAL)
+		    	if (showEquip)
 		  		{
 		    		//body
 		    		this.Head.rotateAngleX += 0.7F;
