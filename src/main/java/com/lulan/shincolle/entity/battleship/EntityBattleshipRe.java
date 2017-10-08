@@ -28,7 +28,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
  * model state:
- *   0:head
+ *   0:head, 1:bag, 2:ear
  */
 public class EntityBattleshipRe extends BasicEntityShipCV
 {
@@ -45,7 +45,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
-		this.setStateMinor(ID.M.NumState, 1);
+		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 25F, 0F, 40F};

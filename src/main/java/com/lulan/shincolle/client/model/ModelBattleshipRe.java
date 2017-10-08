@@ -514,13 +514,20 @@ public class ModelBattleshipRe extends ShipModelBaseAdv
 	{
 		int state = ent.getStateEmotion(ID.S.State);
 		
-		boolean flag = !EmotionHelper.checkModelState(0, state);
+		boolean flag = !EmotionHelper.checkModelState(0, state);	//hat
 		this.Hair01.isHidden = flag;
 		this.HairU01.isHidden = flag;
 		this.Ear01.isHidden = flag;
 		this.Ear02.isHidden = flag;
 		this.Cap.isHidden = !flag;
 		this.Cap2.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(1, state);	//bag
+		this.BagMain.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(2, state);	//ear
+		this.Ear01.isHidden = flag;
+		this.Ear02.isHidden = flag;
 	}
 
 	@Override

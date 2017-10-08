@@ -781,6 +781,7 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 	  	this.ArmLeft01.rotateAngleY = 0F;
 	  	this.ArmLeft01.rotateAngleZ = -angleX * 0.1F - 0.5235F;
 	  	this.ArmLeft02.rotateAngleX = 0F;
+	  	this.ArmLeft02.offsetY = 0F;
 	  	this.ArmLeft02.offsetZ = 0F;
 	  	this.ArmLeft04.rotateAngleY = 0F;
 	    this.ArmRight01.rotateAngleX = angleAdd1 + 0.2618F;

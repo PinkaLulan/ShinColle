@@ -19,6 +19,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * model state:
+ *   -
+ */
 public class EntityCANe extends BasicEntityShipSmall
 {
 	
@@ -34,6 +38,7 @@ public class EntityCANe extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserNE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
+		this.setStateMinor(ID.M.NumState, 0);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 40F};

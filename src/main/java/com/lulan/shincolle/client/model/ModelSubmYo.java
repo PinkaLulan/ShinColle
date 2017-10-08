@@ -663,14 +663,14 @@ public class ModelSubmYo extends ShipModelBaseAdv
 		this.LegRight01.isHidden = !flag;
 				
 		flag = !EmotionHelper.checkModelState(1, state);			//cloth
-		this.BodyMain1.isHidden = flag;
-		this.Butt1.isHidden = flag;
-		this.BoobL.isHidden = flag;
-		this.BoobR.isHidden = flag;
-		this.BodyMain2.isHidden = !flag;
-		this.Butt2.isHidden = !flag;
-		this.BoobL2.isHidden = !flag;
-		this.BoobR2.isHidden = !flag;
+		this.BodyMain1.isHidden = !flag;
+		this.Butt1.isHidden = !flag;
+		this.BoobL.isHidden = !flag;
+		this.BoobR.isHidden = !flag;
+		this.BodyMain2.isHidden = flag;
+		this.Butt2.isHidden = flag;
+		this.BoobL2.isHidden = flag;
+		this.BoobR2.isHidden = flag;
 	}
 
 	@Override

@@ -98,7 +98,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
         this.offsetBlock = new float[] {0.11F, 0.92F, -0.09F};
         
         this.Head = new ModelRenderer(this, 43, 101);
-        this.Head.setRotationPoint(0.0F, -13.5F, -0.5F);
+        this.Head.setRotationPoint(0.0F, -13F, -0.5F);
         this.Head.addBox(-7.0F, -14.0F, -6.5F, 14, 14, 13, 0.0F);
         this.Neck03 = new ModelRenderer(this, 8, 0);
         this.Neck03.setRotationPoint(0F, -11.9F, -0F);
@@ -319,11 +319,11 @@ public class ModelCarrierWo extends ShipModelBaseAdv
         this.setRotateAngle(EquipTooth01, 0.10471975511965977F, 0.0F, 0.0F);
         this.BoobL = new ModelRenderer(this, 3, 27);
         this.BoobL.mirror = true;
-        this.BoobL.setRotationPoint(3.8F, -9.0F, -3.2F);
+        this.BoobL.setRotationPoint(3.5F, -9.0F, -3.2F);
         this.BoobL.addBox(-3.5F, 0.0F, -1.0F, 7, 5, 4, 0.0F);
         this.setRotateAngle(BoobL, -0.7853981633974483F, 0.08726646259971647F, 0.14F); 
         this.BoobR = new ModelRenderer(this, 3, 27);
-        this.BoobR.setRotationPoint(-3.8F, -9.0F, -3.2F);
+        this.BoobR.setRotationPoint(-3.5F, -9.0F, -3.2F);
         this.BoobR.addBox(-3.5F, 0.0F, -1.0F, 7, 5, 4, 0.0F);
         this.setRotateAngle(BoobR, -0.7853981633974483F, -0.08726646259971647F, -0.14F);
         this.Butt = new ModelRenderer(this, 0, 38);
@@ -403,7 +403,7 @@ public class ModelCarrierWo extends ShipModelBaseAdv
         this.GlowBodyMain.setRotationPoint(0.0F, -11.0F, 0.0F);
         this.setRotateAngle(GlowBodyMain, -0.3490658503988659F, 0.0F, 0.0F);
         this.GlowHead = new ModelRenderer(this, 0, 0);
-        this.GlowHead.setRotationPoint(0.0F, -13.5F, -0.5F);
+        this.GlowHead.setRotationPoint(0.0F, -13F, -0.5F);
         this.GlowEquipBase = new ModelRenderer(this, 0, 0);
         this.GlowEquipBase.setRotationPoint(0.0F, -10.0F, -3.0F);
         this.setRotateAngle(GlowEquipBase, 0.08726646259971647F, 0.0F, 0.0F);

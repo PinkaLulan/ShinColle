@@ -119,7 +119,7 @@ public class GuiDesk extends GuiContainer
 	//ship model
 	BasicEntityShip shipModel = null;
 	BasicEntityMount shipMount = null;
-	private int shipType, shipClass;
+	private int shipType, shipClass, shipStats, shipMaxStats;
 	private int[][] iconXY = null;
 	
 	//object: ship entity + pixel position
@@ -777,14 +777,7 @@ public class GuiDesk extends GuiContainer
         			{
             		case 0:  //ship model
             		break;
-//            		case 1:  //cake TODO
-//            			this.shipModel.setShipOutfit(false);
-//            			this.setShipMount();
-//            		break;
-//            		case 2:  //cake sneaking
-//            			this.shipModel.setShipOutfit(true);
-//            		break;
-            		case 3:  //sit
+            		case 1:  //sit
             			this.shipModel.setSitting(!this.shipModel.isSitting());
             			
             			//roll Emotion
@@ -807,16 +800,16 @@ public class GuiDesk extends GuiContainer
             				this.shipModel.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
             			}
             		break;
-            		case 4:  //run
+            		case 2:  //run
             			this.shipModel.setSprinting(!this.shipModel.isSprinting());
             			if (this.shipMount != null) this.shipMount.setSprinting(!this.shipMount.isSprinting());
             		break;
-            		case 5:  //attack
+            		case 3:  //attack
             			this.shipModel.setAttackTick(50);
             			this.shipModel.setStateEmotion(ID.S.Phase, this.shipModel.getRNG().nextInt(4), false);
             			if (this.shipMount != null) this.shipMount.setAttackTick(50);
             		break;
-            		case 6:  //emotion
+            		case 4:  //emotion
             			//roll Emotion4
             			if (this.shipModel.getRNG().nextInt(2) == 0)
             			{
@@ -841,6 +834,27 @@ public class GuiDesk extends GuiContainer
             				this.shipModel.setStateEmotion(ID.S.Emotion, this.shipModel.getRNG().nextInt(10), false);
                 			if (this.shipMount != null) this.shipMount.setStateEmotion(ID.S.Emotion, this.shipMount.getRNG().nextInt(10), false);
             			}
+            		break;
+            		case 5:  //model state 1~16
+            		case 6:
+            		case 7:
+            		case 8:
+            		case 9:
+            		case 10:
+            		case 11:
+            		case 12:
+            		case 13:
+            		case 14:
+            		case 15:
+            		case 16:
+            		case 17:
+            		case 18:
+            		case 19:
+            		case 20:
+            			this.shipModel.setStateEmotion(ID.S.State, this.shipModel.getStateEmotion(ID.S.State) ^ Values.N.Pow2[getbtn2-5], false);
+            			
+            			//set mounts
+            			if (this.shipModel.hasShipMounts()) this.setShipMount();
             		break;
             		}//end switch
         		}//end get ship model
@@ -2093,10 +2107,16 @@ public class GuiDesk extends GuiContainer
             	this.shipModel.setStateFlag(ID.F.NoFuel, false);
             	this.shipType = this.shipModel.getShipType();
     			this.shipClass = this.shipModel.getShipClass();
+    			this.shipMaxStats = this.shipModel.getStateMinor(ID.M.NumState);
     			
     			this.iconXY = new int[2][3];
     			this.iconXY[0] = Values.ShipTypeIconMap.get((byte)this.shipType);
     			this.iconXY[1] = Values.ShipNameIconMap.get(this.shipClass);
+            }
+            else
+            {
+            	this.shipMaxStats = 0;
+    			this.shipStats = 0;
             }
         }
 	}
@@ -2132,20 +2152,44 @@ public class GuiDesk extends GuiContainer
 		if (this.shipModel != null)
 		{
 			//draw background
+			//draw ship model background
 			Minecraft.getMinecraft().getTextureManager().bindTexture(guiBook2);
 			
 			if (this.book_chapNum == 4)
 			{  //shinkei
-				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 0, 87, 125);
+				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 0, 87, 130);
 			}
 			else
 			{  //kanmusu
-				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 125, 87, 125);
+				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 125, 87, 130);
+			}
+			
+			//draw model state buttons
+			this.shipStats = this.shipModel.getStateEmotion(ID.S.State);
+			int numstats = 0;
+			
+			for (int i = 0; i < 8; i++)
+			{
+				if (numstats > this.shipMaxStats) break;
+				
+				for (int j = 0; j < 2; j++)
+				{
+					if (++numstats > this.shipMaxStats) break;
+					
+					if ((this.shipStats & Values.N.Pow2[numstats-1]) == Values.N.Pow2[numstats-1])
+					{
+						drawTexturedModalRect(guiLeft+45+i*9, guiTop+158+j*9, 115, 156, 7, 9);
+					}
+					else
+					{
+						drawTexturedModalRect(guiLeft+45+i*9, guiTop+158+j*9, 115, 147, 7, 9);
+					}
+				}
 			}
 	    	
 	    	Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
 	    	
-	    	//draw name icon
+	    	//draw ship name icon
         	try
         	{
         		drawTexturedModalRect(guiLeft+23, guiTop+53, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
@@ -2259,7 +2303,7 @@ public class GuiDesk extends GuiContainer
 		else
 		{
 			Minecraft.getMinecraft().getTextureManager().bindTexture(guiBook2);
-	    	drawTexturedModalRect(guiLeft+20, guiTop+48, 87, 0, 87, 125);
+	    	drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 148, 87, 108);
 		}
 	}
 	

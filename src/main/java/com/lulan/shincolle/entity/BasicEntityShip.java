@@ -3628,7 +3628,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//true if host can summon mounts
 	public boolean canSummonMounts()
 	{
-		return (this.getStateEmotion(ID.S.State) ^ 1) == 1;
+		return (this.getStateEmotion(ID.S.State) & 1) == 1;
 	}
 	
 	public BasicEntityMount summonMountEntity()
@@ -5454,18 +5454,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 * get/setField為GUI container更新用
   	 * 使資料可以只用相同方法取值, 不用每個資料用各自方法取值
   	 * 方便for loop撰寫
-  	 * 
-  	 * field id:
-  	 * 0: ExpCurrent, 1:NumAmmoLight, 2:NumAmmoHeavy, 3:NumAirLight, 4:NumAirHeavy
-  	 * 5: UseMelee, 6:UseAmmoLight, 7:UseAmmoHeavy, 8:UseAirLight, 9:UseAirHeavy
-  	 * 10:IsMarried, 11:FollowMin, 12:FollowMax, 13:FleeHP, 14:PassiveAI
-  	 * 15:UseRingEffect, 16:OnSightChase, 17:PVPFirst, 18:AntiAir, 19:AntiSS
-  	 * 20:TimeKeeper, 21:Morale, 22:InvSize, 23:PickItem, 24:WpStay
-  	 * 25:Kills, 26:NumGrudge, 27:ShowInvPage
   	 */
 	public int getFieldCount()
 	{
-		return 31;
+		return 32;
 	}
 	
 	public int getField(int id)
@@ -5534,6 +5526,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.StateMinor[ID.M.UseCombatRation];
 		case 30:
 			return this.getStateFlagI(ID.F.AutoPump);
+		case 31:
+			return this.getStateEmotion(ID.S.State);
 		}
 		
 		return 0;
@@ -5635,6 +5629,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		break;
 		case 30:
 			this.setStateFlagI(ID.F.AutoPump, value);
+		break;
+		case 31:
+			this.setStateEmotion(ID.S.State, value, false);
 		break;
 		}
 		

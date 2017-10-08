@@ -66,7 +66,7 @@ public class GuiShipInventory extends GuiContainer
 	               followMinValue, followMaxValue, fleeHPValue, barPosValue, Formation, strWpStayValue;
 	private int hpCurrent, hpMax, color, showPage, showPageAI, pageIndicator, pageIndicatorAI, showAttack,
 				fMinPos, fMaxPos, fleeHPPos, barPos, mousePressBar, shipType, shipClass, showPageInv,
-				wpStayPos, autoCRPos, xClick, yClick;
+				wpStayPos, autoCRPos, xClick, yClick, maxBtn;
 	private float xMouse, yMouse;
 	private boolean mousePress;
 	private boolean[] switchPage1a, switchPage1b, switchPage3, switchPage4, switchPage6;
@@ -95,6 +95,7 @@ public class GuiShipInventory extends GuiContainer
 		this.showAttack = 1;		//show attack 1
 		this.mousePress = false;	//no key clicked
 		this.mousePressBar = -1;	//no bar pressed
+		this.maxBtn = 0;
 		this.switchPage1a = new boolean[6];	//page 1 button value
 		this.switchPage1b = new boolean[6];	//page 1 item value
 		this.switchPage3 = new boolean[6];	//page 3 button value
@@ -107,6 +108,7 @@ public class GuiShipInventory extends GuiContainer
 			this.shipType = this.entity.getShipType();
 			this.shipClass = this.entity.getShipClass();
 			this.shipRiding[0] = this.entity;
+			this.maxBtn = this.entity.getStateMinor(ID.M.NumState);
 			
 			/** special name icon */
 			//raiden gattai
@@ -553,10 +555,18 @@ public class GuiShipInventory extends GuiContainer
         	}
     		
     		//draw button 1~16
+    		int numbtn = 0;
+    		
             for (int i = 0; i < 4; i++)
             {
+            	//check button number
+        		if (numbtn > this.maxBtn) break;
+        		
             	for (int j = 0; j < 4; j++)
                 {
+            		//check button number
+            		if (++numbtn > this.maxBtn) break;
+            		
             		if (this.switchPage6[i * 4 + j + 1])
                 	{
                 		drawTexturedModalRect(guiLeft + 176 + j * 16, guiTop + 156 + i * 12, 0, 214, 11, 11);
@@ -1377,6 +1387,8 @@ public class GuiShipInventory extends GuiContainer
     	mousePressBar = -1;
     }
 	
+    private static int[] btCols = new int[] {189, 205, 222};
+    
 	//handle mouse click, @parm posX, posY, mouseKey (0:left 1:right 2:middle 3:...etc)
 	@Override
 	protected void mouseClicked(int posX, int posY, int mouseKey) throws IOException
@@ -1489,15 +1501,15 @@ public class GuiShipInventory extends GuiContainer
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_PVPAI, getInverseInt(this.switchPage3[2])));
         	break;
         	case 6:		//page 6: model display switch button 0~3
-        		if (this.xClick < 188)
+        		if (this.xClick < btCols[0])
         		{
             		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState01, getInverseInt(this.switchPage6[1])));
         		}
-        		else if (this.xClick < 205)
+        		else if (this.xClick < btCols[1])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState02, getInverseInt(this.switchPage6[2])));
         		}
-        		else if (this.xClick < 222)
+        		else if (this.xClick < btCols[2])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState03, getInverseInt(this.switchPage6[3])));
         		}
@@ -1520,15 +1532,15 @@ public class GuiShipInventory extends GuiContainer
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AAAI, getInverseInt(this.switchPage3[3])));
         	break;
         	case 6:		//page 6: model display switch button 4~7
-        		if (this.xClick < 188)
+        		if (this.xClick < btCols[0])
         		{
             		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState05, getInverseInt(this.switchPage6[5])));
         		}
-        		else if (this.xClick < 205)
+        		else if (this.xClick < btCols[1])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState06, getInverseInt(this.switchPage6[6])));
         		}
-        		else if (this.xClick < 222)
+        		else if (this.xClick < btCols[2])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState07, getInverseInt(this.switchPage6[7])));
         		}
@@ -1551,15 +1563,15 @@ public class GuiShipInventory extends GuiContainer
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ASMAI, getInverseInt(this.switchPage3[4])));
         	break;
         	case 6:		//page 6: model display switch button 8~11
-        		if (this.xClick < 188)
+        		if (this.xClick < btCols[0])
         		{
             		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState09, getInverseInt(this.switchPage6[9])));
         		}
-        		else if (this.xClick < 205)
+        		else if (this.xClick < btCols[1])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState10, getInverseInt(this.switchPage6[10])));
         		}
-        		else if (this.xClick < 222)
+        		else if (this.xClick < btCols[2])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState11, getInverseInt(this.switchPage6[11])));
         		}
@@ -1582,15 +1594,15 @@ public class GuiShipInventory extends GuiContainer
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TIMEKEEPAI, getInverseInt(this.switchPage3[5])));
         	break;
         	case 6:		//page 6: model display switch button 12~15
-        		if (this.xClick < 188)
+        		if (this.xClick < btCols[0])
         		{
             		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState13, getInverseInt(this.switchPage6[13])));
         		}
-        		else if (this.xClick < 205)
+        		else if (this.xClick < btCols[1])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState14, getInverseInt(this.switchPage6[14])));
         		}
-        		else if (this.xClick < 222)
+        		else if (this.xClick < btCols[2])
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState15, getInverseInt(this.switchPage6[15])));
         		}

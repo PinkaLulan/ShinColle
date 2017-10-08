@@ -352,14 +352,14 @@ public class ModelSubmKa extends ShipModelBaseAdv
 		this.EquipHead01.isHidden = flag;
 		
 		flag = !EmotionHelper.checkModelState(2, state);			//cloth
-		this.BodyMain1.isHidden = flag;
-		this.Butt1.isHidden = flag;
-		this.BoobL.isHidden = flag;
-		this.BoobR.isHidden = flag;
-		this.BodyMain2.isHidden = !flag;
-		this.Butt2.isHidden = !flag;
-		this.BoobL2.isHidden = !flag;
-		this.BoobR2.isHidden = !flag;
+		this.BodyMain1.isHidden = !flag;
+		this.Butt1.isHidden = !flag;
+		this.BoobL.isHidden = !flag;
+		this.BoobR.isHidden = !flag;
+		this.BodyMain2.isHidden = flag;
+		this.Butt2.isHidden = flag;
+		this.BoobL2.isHidden = flag;
+		this.BoobR2.isHidden = flag;
 		
 		flag = !EmotionHelper.checkModelState(3, state);			//weapon
 		this.EquipT01a.isHidden = flag;

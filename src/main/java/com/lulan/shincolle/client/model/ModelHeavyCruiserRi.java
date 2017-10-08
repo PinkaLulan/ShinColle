@@ -354,13 +354,15 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
 			this.EquipLeftBase.isHidden = false;
 			this.GlowEquipLeftBase.isHidden = false;
 		}
-		else if (fc2)
+		
+		if (fc2)
 		{
     		this.EquipBase.isHidden = false;
 			this.EquipRightBase.isHidden = false;
 			this.GlowEquipRightBase.isHidden = false;
 		}
-		else
+		
+		if (!fc1 && !fc2)
 		{
     		this.EquipBase.isHidden = true;
 			this.EquipLeftBase.isHidden = true;
