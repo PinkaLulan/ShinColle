@@ -324,8 +324,9 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 				
 		boolean fh1 = EmotionHelper.checkModelState(3, state);		//ear state 1
 		boolean fh2 = EmotionHelper.checkModelState(4, state);		//ear state 2
+		boolean fh3 = EmotionHelper.checkModelState(5, state);		//ear state 3
 		
-		if (fh1 || fh2)
+		if (fh1 || fh2 || fh3)
 		{
 			this.EarBase.isHidden = false;
 		}
@@ -358,8 +359,10 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
   	    //ear
   	    this.EarL01.rotateAngleX = 1F;
   	    this.EarL01.rotateAngleY = -0.4F;
+  	    this.EarL01.rotateAngleZ = 0F;
 	    this.EarR01.rotateAngleX = 1F;
 	    this.EarR01.rotateAngleY = 1.0472F;
+	    this.EarR01.rotateAngleZ = 0F;
   	    this.EarL02.rotateAngleX = -0.8F;
   	    this.EarL02.rotateAngleY = 0F;
   	    this.EarL02.rotateAngleZ = 0F;
@@ -416,21 +419,121 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 	  	this.Head.rotateAngleX = f4 * 0.014F + 0.1F;
 	  	this.Head.rotateAngleY = f3 * 0.01F;
   	    //ear
-	  	//TODO ear state 耳朵彎曲類型1,2
 	  	int state = ent.getStateEmotion(ID.S.State);
 		boolean fh1 = EmotionHelper.checkModelState(3, state);
 		boolean fh2 = EmotionHelper.checkModelState(4, state);
+		boolean fh3 = EmotionHelper.checkModelState(5, state);
+		boolean fh4 = fh1 && fh2;
+		boolean fh5 = fh1 && fh3;
+		boolean fh6 = fh2 && fh3;
+		boolean fh7 = fh1 && fh2 && fh3;
 	  	
-  	    this.EarL01.rotateAngleX = angleX * 0.1F + 0.4F;
-  	    this.EarL01.rotateAngleY = -0.8F;
-	    this.EarR01.rotateAngleX = angleX * 0.1F + 0.7F;
-	    this.EarR01.rotateAngleY = 0.9F;
-  	    this.EarL02.rotateAngleX = angleX1 * 0.2F + 0.6F;
-  	    this.EarL02.rotateAngleY = 0F;
-  	    this.EarL02.rotateAngleZ = 0F;
-  	    this.EarR02.rotateAngleX = angleX1 * 0.2F + 1.1F;
-  	    this.EarR02.rotateAngleY = -0.5236F;
-  	    this.EarR02.rotateAngleZ = 0F;
+		if (fh7)
+		{
+			this.EarL01.rotateAngleX = angleX * 0.075F + 0.6F;
+	  	    this.EarL01.rotateAngleY = -0.5F;
+	  	    this.EarL01.rotateAngleZ = 0F;
+		    this.EarR01.rotateAngleX = angleX * 0.075F + 1.1F;
+		    this.EarR01.rotateAngleY = 0.5F;
+		    this.EarR01.rotateAngleZ = 0F;
+	  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.7F;
+	  	    this.EarL02.rotateAngleY = 0.1F;
+	  	    this.EarL02.rotateAngleZ = 0F;
+	  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 1.0F;
+	  	    this.EarR02.rotateAngleY = -0.1F;
+	  	    this.EarR02.rotateAngleZ = 0F;
+		}
+		else if (fh6)
+		{
+			this.EarL01.rotateAngleX = angleX * 0.075F + 1.1F;
+	  	    this.EarL01.rotateAngleY = -0.5F;
+	  	    this.EarL01.rotateAngleZ = 0F;
+		    this.EarR01.rotateAngleX = angleX * 0.075F + 1.1F;
+		    this.EarR01.rotateAngleY = 0.5F;
+		    this.EarR01.rotateAngleZ = 0F;
+	  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 1.0F;
+	  	    this.EarL02.rotateAngleY = 0.1F;
+	  	    this.EarL02.rotateAngleZ = 0F;
+	  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 1.0F;
+	  	    this.EarR02.rotateAngleY = -0.1F;
+	  	    this.EarR02.rotateAngleZ = 0F;
+		}
+		else if (fh5)
+		{
+			this.EarL01.rotateAngleX = angleX * 0.075F - 1.1F;
+	    	this.EarL01.rotateAngleY = 0.5F;
+	    	this.EarL01.rotateAngleZ = 0F;
+	    	this.EarR01.rotateAngleX = angleX1 * 0.075F - 1.1F;
+	    	this.EarR01.rotateAngleY = -0.5F;
+	    	this.EarR01.rotateAngleZ = 0F;
+	    	this.EarL02.rotateAngleX = angleX * 0.075F - 0.8F;
+	    	this.EarL02.rotateAngleY = 0F;
+	    	this.EarL02.rotateAngleZ = -0.5F;
+	    	this.EarR02.rotateAngleX = angleX1 * 0.075F - 0.8F;
+	    	this.EarR02.rotateAngleY = 0F;
+	    	this.EarR02.rotateAngleZ = 0.5F;
+		}
+		else if (fh4)
+		{
+			this.EarL01.rotateAngleX = angleX * 0.075F + 0.6F;
+	  	    this.EarL01.rotateAngleY = -0.5F;
+	  	    this.EarL01.rotateAngleZ = 0F;
+		    this.EarR01.rotateAngleX = angleX * 0.075F + 0.6F;
+		    this.EarR01.rotateAngleY = 0.5F;
+		    this.EarR01.rotateAngleZ = 0F;
+	  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.7F;
+	  	    this.EarL02.rotateAngleY = 0.1F;
+	  	    this.EarL02.rotateAngleZ = 0F;
+	  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 0.7F;
+	  	    this.EarR02.rotateAngleY = -0.1F;
+	  	    this.EarR02.rotateAngleZ = 0F;
+		}
+		else if (fh3)
+		{
+			this.EarL01.rotateAngleX = angleX * 0.075F + 0.3F;
+	  	    this.EarL01.rotateAngleY = -0.8F;
+	  	    this.EarL01.rotateAngleZ = 0F;
+		    this.EarR01.rotateAngleX = angleX * 0.075F + 0.9F;
+		    this.EarR01.rotateAngleY = 0.6F;
+		    this.EarR01.rotateAngleZ = 0F;
+	  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.6F;
+	  	    this.EarL02.rotateAngleY = 0.1F;
+	  	    this.EarL02.rotateAngleZ = 0F;
+	  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 1F;
+	  	    this.EarR02.rotateAngleY = -0.1F;
+	  	    this.EarR02.rotateAngleZ = 0F;
+		}
+		else if (fh2)
+		{
+			this.EarL01.rotateAngleX = angleX * 0.075F + 0.2F;
+	  	    this.EarL01.rotateAngleY = -0.4F;
+	  	    this.EarL01.rotateAngleZ = 0.4F;
+		    this.EarR01.rotateAngleX = angleX * 0.075F + 0.2F;
+		    this.EarR01.rotateAngleY = 0.4F;
+		    this.EarR01.rotateAngleZ = -0.4F;
+	  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.2F;
+	  	    this.EarL02.rotateAngleY = 0F;
+	  	    this.EarL02.rotateAngleZ = -0.3F;
+	  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 0.2F;
+	  	    this.EarR02.rotateAngleY = 0F;
+	  	    this.EarR02.rotateAngleZ = 0.3F;
+		}
+		else if (fh1)
+		{
+			this.EarL01.rotateAngleX = angleX * 0.075F + -0.1F;
+	  	    this.EarL01.rotateAngleY = 0.2F;
+	  	    this.EarL01.rotateAngleZ = 0.4F;
+		    this.EarR01.rotateAngleX = angleX * 0.075F + 0F;
+		    this.EarR01.rotateAngleY = 0.2F;
+		    this.EarR01.rotateAngleZ = -0.55F;
+	  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.4F;
+	  	    this.EarL02.rotateAngleY = 0F;
+	  	    this.EarL02.rotateAngleZ = -0.1F;
+	  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 0.9F;
+	  	    this.EarR02.rotateAngleY = 0.5F;
+	  	    this.EarR02.rotateAngleZ = 0F;
+		}
+
   	    //hair
   	    this.HairMidL01.rotateAngleX = angleX * 0.07F + 0.14F;
   	    this.HairMidL02.rotateAngleX = -angleX1 * 0.2F + 0.14F;
@@ -491,11 +594,13 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 	    	//ear
 	    	this.EarL01.rotateAngleX = -angleRun * 0.08F - 0.8727F;
 	    	this.EarL01.rotateAngleY = 0.5F;
+	    	this.EarL01.rotateAngleZ = 0F;
+	    	this.EarR01.rotateAngleX = angleRun * 0.08F - 0.8727F;
+	    	this.EarR01.rotateAngleY = -0.5F;
+	    	this.EarR01.rotateAngleZ = 0F;
 	    	this.EarL02.rotateAngleX = -angleRun * 0.1F - 0.5F;
 	    	this.EarL02.rotateAngleY = 0F;
 	    	this.EarL02.rotateAngleZ = -0.5F;
-	    	this.EarR01.rotateAngleX = angleRun * 0.08F - 0.8727F;
-	    	this.EarR01.rotateAngleY = -0.5F;
 	    	this.EarR02.rotateAngleX = angleRun * 0.1F - 0.5F;
 	    	this.EarR02.rotateAngleY = 0F;
 	    	this.EarR02.rotateAngleZ = 0.5F;
@@ -538,17 +643,6 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 		    	addk2 = -0.2618F;
 		    	this.LegLeft.rotateAngleZ = 0.1745F;
 		    	this.LegRight.rotateAngleZ = -0.35F;
-		  	    //ear
-		  	    this.EarL01.rotateAngleX = angleX * 0.075F + 0.3F;
-		  	    this.EarL01.rotateAngleY = -0.8F;
-			    this.EarR01.rotateAngleX = angleX * 0.075F + 0.9F;
-			    this.EarR01.rotateAngleY = 0.6F;
-		  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.6F;
-		  	    this.EarL02.rotateAngleY = 0.1F;
-		  	    this.EarL02.rotateAngleZ = 0F;
-		  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 1F;
-		  	    this.EarR02.rotateAngleY = -0.1F;
-		  	    this.EarR02.rotateAngleZ = 0F;
 	    	}
 	    	else
 	    	{
@@ -571,17 +665,6 @@ public class ModelDestroyerShimakaze extends ShipModelBaseAdv
 		    	addk2 = -2.2689F;
 		    	this.LegLeft.rotateAngleY = -0.3491F;
 		    	this.LegRight.rotateAngleY = 0.3491F;
-		  	    //ear
-		  	    this.EarL01.rotateAngleX = angleX * 0.075F + 0.8F;
-		  	    this.EarL01.rotateAngleY = -0.5F;
-			    this.EarR01.rotateAngleX = angleX * 0.075F + 1F;
-			    this.EarR01.rotateAngleY = 0.5F;
-		  	    this.EarL02.rotateAngleX = angleX1 * 0.1F + 0.9F;
-		  	    this.EarL02.rotateAngleY = 0.1F;
-		  	    this.EarL02.rotateAngleZ = 0F;
-		  	    this.EarR02.rotateAngleX = angleX1 * 0.1F + 1.0F;
-		  	    this.EarR02.rotateAngleY = -0.1F;
-		  	    this.EarR02.rotateAngleZ = 0F;
 	    	}
   		}//end if sitting
 	    

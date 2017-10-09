@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
  * model state:
- *   0:rensouhou type, 1:cannon, 2:hair anchor, 3:hat1, 4:hat2
+ *   0:rensouhou type, 1:cannon, 2:hair anchor, 3:hat1, 4:hat2, 5:hat3
  *   if 3 & 4 false = no hat
  */
 public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IShipSummonAttack
@@ -43,7 +43,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
-		this.setStateMinor(ID.M.NumState, 5);
+		this.setStateMinor(ID.M.NumState, 6);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 45F};

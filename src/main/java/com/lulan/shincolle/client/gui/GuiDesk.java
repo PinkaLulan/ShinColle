@@ -714,6 +714,12 @@ public class GuiDesk extends GuiContainer
         	if (this.book_chapNum == 4 || this.book_chapNum == 5)
         	{
         		getbtn2 = GuiHelper.getButton(ID.Gui.ADMIRALDESK, 5, xClick, yClick);
+        		
+        		//protected area for model state buttons
+        		if (getbtn2 < 0 && xClick > 15 && xClick < 115 && yClick > 150 && yClick < 180)
+        		{
+        			getbtn2 = 0;
+        		}
         	}
 
         	//get no button in ch5, check ch2 button
@@ -2161,7 +2167,7 @@ public class GuiDesk extends GuiContainer
 			}
 			else
 			{  //kanmusu
-				drawTexturedModalRect(guiLeft+20, guiTop+48, 0, 125, 87, 130);
+				drawTexturedModalRect(guiLeft+20, guiTop+48, 105, 0, 87, 130);
 			}
 			
 			//draw model state buttons

@@ -7,6 +7,7 @@ import com.lulan.shincolle.client.model.ModelMountBaH;
 import com.lulan.shincolle.client.model.ModelMountCaH;
 import com.lulan.shincolle.client.model.ModelMountCaWD;
 import com.lulan.shincolle.client.model.ModelMountHbH;
+import com.lulan.shincolle.client.model.ModelMountIsH;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 
@@ -31,6 +32,8 @@ public class RenderMountsEntity extends RenderShipEntity
 	private static final ModelBase MD_CarrierWDMount = new ModelMountCaWD();
 	private static final ResourceLocation TEX_HarbourMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountHbH.png");
 	private static final ModelBase MD_HarbourMount = new ModelMountHbH();
+	private static final ResourceLocation TEX_IsloatedMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountIsH.png");
+	private static final ModelBase MD_IsloatedMount = new ModelMountIsH();
 	
 	//factory
 	public static final FactoryDefault FACTORY_MOUNT = new FactoryDefault();
@@ -57,6 +60,8 @@ public class RenderMountsEntity extends RenderShipEntity
 			return TEX_CarrierWDMount;
 		case ID.ShipMisc.HarbourMount:
 			return TEX_HarbourMount;
+		case ID.ShipMisc.IsloatedMount:
+			return TEX_IsloatedMount;
 		default:	//default texture
 			return TEX_AirfieldMount;
 		}//end switch
@@ -84,6 +89,9 @@ public class RenderMountsEntity extends RenderShipEntity
 		break;
 		case ID.ShipMisc.HarbourMount:
 			this.mainModel = MD_HarbourMount;
+		break;
+		case ID.ShipMisc.IsloatedMount:
+			this.mainModel = MD_IsloatedMount;
 		break;
 		default:	//default model
 			this.mainModel = MD_AirfieldMount;
@@ -113,6 +121,8 @@ public class RenderMountsEntity extends RenderShipEntity
 			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
 		case ID.ShipMisc.HarbourMount:
 			return new float[] {0F, 0.5F, 0.5F, 0.5F, 0.6F};
+		case ID.ShipMisc.IsloatedMount:
+			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
 		default:
 			return new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F};
 		}
@@ -126,6 +136,6 @@ public class RenderMountsEntity extends RenderShipEntity
             return new RenderMountsEntity(rm);
         }
     }
-		
-
+    
+    
 }

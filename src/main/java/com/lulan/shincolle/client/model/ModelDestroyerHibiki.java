@@ -492,11 +492,11 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
         this.Hat202a = new ModelRenderer(this, 46, 8);
         this.Hat202a.setRotationPoint(9.5F, -2.5F, 0.0F);
         this.Hat202a.addBox(-3F, 0F, -0.5F, 6, 4, 1, 0.0F);
-        this.setRotateAngle(Hat202a, 0.0F, 0.0F, -0.08726646259971647F);
+        this.setRotateAngle(Hat202a, 0.0F, 1.57F, -0.08726646259971647F);
         this.Hat202b = new ModelRenderer(this, 46, 8);
         this.Hat202b.setRotationPoint(-9.5F, -2.5F, 0.0F);
         this.Hat202b.addBox(-3F, 0F, -0.5F, 6, 4, 1, 0.0F);
-        this.setRotateAngle(Hat202b, 0.0F, 0.0F, 0.08726646259971647F);
+        this.setRotateAngle(Hat202b, 0.0F, 1.57F, 0.08726646259971647F);
         
         this.EquipTR02.addChild(this.EquipTR02f);
         this.Butt.addChild(this.LegLeft01);
@@ -719,23 +719,37 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
 		{
 			this.HatBase.isHidden = false;
   			this.Hair02f1.isHidden = false;
+  			this.Hair01.isHidden = false;
   			this.HatBase2.isHidden = true;
 		}
 		//hat state 2
+		else if (fh2 && fh3)
+		{
+			this.HatBase.isHidden = true;
+			this.Hair01.isHidden = true;
+  			this.Hair02f1.isHidden = true;
+  			this.HatBase2.isHidden = false;
+  			this.HatBase2.rotateAngleX = -1.35F;
+  			this.HatBase2.offsetY = 0F;
+  			this.HatBase2.offsetZ = 0.1F;
+		}
+		//hat state 3
 		else if (fh2)
 		{
 			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
+  			this.Hair01.isHidden = false;
   			this.HatBase2.isHidden = false;
   			this.HatBase2.rotateAngleX = -0.2618F;
   			this.HatBase2.offsetY = 0F;
   			this.HatBase2.offsetZ = 0F;
 		}
-		//hat state 3
+		//hat state 4
 		else if (fh3)
 		{
 			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = true;
+  			this.Hair01.isHidden = false;
   			this.HatBase2.isHidden = false;
   			this.HatBase2.rotateAngleX = -0.7F;
   			this.HatBase2.offsetY = -0.06F;
@@ -746,6 +760,7 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
 		{
 			this.HatBase.isHidden = true;
   			this.Hair02f1.isHidden = false;
+  			this.Hair01.isHidden = false;
   			this.HatBase2.isHidden = true;
 		}
 	}
@@ -914,7 +929,7 @@ public class ModelDestroyerHibiki extends ShipModelBaseAdv
 	  	if (this.EquipC04a.rotateAngleX > 0F) this.EquipC04a.rotateAngleX = 0F;
 	  	this.EquipC05a.rotateAngleX = this.EquipC04a.rotateAngleX;
 	    
-	    if (EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State)))
+	    if (!EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State)))
 	    {
 	    	this.ArmLeft01.rotateAngleZ += 0.1F;
 	    	this.ArmRight01.rotateAngleZ -= 0.1F;

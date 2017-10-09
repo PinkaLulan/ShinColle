@@ -4,6 +4,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -718,7 +719,7 @@ public class ModelCAHime extends ShipModelBaseAdv
 		else if (fh4)
 		{
 			this.HatBase.rotateAngleX = -1.8F;//-103
-  			this.HatBase.offsetY = 0.6F;
+  			this.HatBase.offsetY = 0.4F;
   			this.HatBase.offsetZ = 0.07F;
 		}
 		//no hat or hat state 2
@@ -788,7 +789,7 @@ public class ModelCAHime extends ShipModelBaseAdv
   			this.Tail09_1.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
   			this.Tail09_1.rotateAngleY = -0.17F + cosf2[8] * 0.15F;
 		}
-		else if (ft2 || ft3)
+		else if (ft2)
 		{
   			this.TailBase.offsetY = -0.54F;
   			this.TailBase.offsetZ = 0.86F;
@@ -829,7 +830,7 @@ public class ModelCAHime extends ShipModelBaseAdv
   			this.Tail09_1.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
   			this.Tail09_1.rotateAngleY = -0.17F + cosf2[8] * 0.15F;
 		}
-		else
+		else if (ft3)
 		{
   			this.TailBase.offsetY = -0.15F;
   			this.TailBase.offsetZ = 0F;
@@ -931,7 +932,7 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    		else if (fh4)
 	    		{
 	    			this.HatBase.rotateAngleX = -1.8F;//-103
-	      			this.HatBase.offsetY = 0.6F;
+	      			this.HatBase.offsetY = 0.3F;
 	      			this.HatBase.offsetZ = 0.07F;
 	    		}
 	    		//no hat or hat state 2
@@ -983,6 +984,35 @@ public class ModelCAHime extends ShipModelBaseAdv
 		    	this.ArmRight01.rotateAngleX = -1.5359F;
 		    	this.ArmRight01.rotateAngleZ = 0F;
 		    	this.ArmRight01.offsetZ = -0.18F;
+		    	
+		    	//hat state 1
+	    		if (fh1)
+	    		{
+	      			this.HatBase.rotateAngleX = 1.37F;//78
+	      			this.HatBase.offsetY = -0.45F;
+	      			this.HatBase.offsetZ = -0.2F;
+	    		}
+	    		//hat state 3
+	    		else if (fh3)
+	    		{
+	    			this.HatBase.rotateAngleX = -0.85F;//-48
+	      			this.HatBase.offsetY = 0.6F;
+	      			this.HatBase.offsetZ = 0.07F;
+	    		}
+	    		//hat state 4
+	    		else if (fh4)
+	    		{
+	    			this.HatBase.rotateAngleX = -1.8F;//-103
+	      			this.HatBase.offsetY = 0.6F;
+	      			this.HatBase.offsetZ = -0.3F;
+	    		}
+	    		//no hat or hat state 2
+	    		else
+	    		{
+	    			this.HatBase.rotateAngleX = 0F;
+	      			this.HatBase.offsetY = 0F;
+	      			this.HatBase.offsetZ = 0F;
+	    		}
 	    	}
 	    	else
 	    	{
@@ -1004,7 +1034,7 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    		else if (fh4)
 	    		{
 	    			this.HatBase.rotateAngleX = -1.8F;//-103
-	      			this.HatBase.offsetY = 0.6F;
+	      			this.HatBase.offsetY = 0.2F;
 	      			this.HatBase.offsetZ = 0.07F;
 	    		}
 	    		//no hat or hat state 2

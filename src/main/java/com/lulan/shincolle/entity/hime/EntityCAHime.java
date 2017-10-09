@@ -42,6 +42,7 @@ public class EntityCAHime extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
+		this.setStateMinor(ID.M.NumState, 7);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 40F};

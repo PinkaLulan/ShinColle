@@ -725,12 +725,20 @@ public class ModelTransportWa extends ShipModelBaseAdv
 	    this.Head.rotateAngleZ = EmotionHelper.getHeadTiltAngle(ent, f2);
 	    
 	    if (ent.getIsSneaking())
-	    {		//潛行, 蹲下動作
+	    {
+	    	//潛行, 蹲下動作
 	    	GlStateManager.translate(0F, 0.05F, 0F);
 	    	//Body
 	    	this.Head.rotateAngleX -= 1.0472F;
 		  	this.BodyMain.rotateAngleX = 1.0472F;
-		  	this.Butt.rotateAngleX = -0.8378F;
+		  	if (hideLeg)
+		  	{
+		  		this.Butt.rotateAngleX = 0.8F;
+		  	}
+		  	else
+		  	{
+		  		this.Butt.rotateAngleX = -0.8378F;
+		  	}
 		  	this.Cloth03.rotateAngleX -= 0.7F;
 		  	this.Cloth04.rotateAngleX -= 0.45F;
 		    //arm 

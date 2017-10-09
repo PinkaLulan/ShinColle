@@ -94,6 +94,12 @@ public class ModelIsolatedHime extends ShipModelBaseAdv
     public ModelRenderer ArmLeft02;
     public ModelRenderer Cloth02b;
     public ModelRenderer Cloth03b;
+    public ModelRenderer EquipRdL01;
+    public ModelRenderer EquipRdL02;
+    public ModelRenderer EquipRdL03;
+    public ModelRenderer EquipRdL04;
+    public ModelRenderer EquipRdL05;
+    public ModelRenderer EquipRdL06;
     public ModelRenderer GlowBodyMain;
     public ModelRenderer GlowNeck;
     public ModelRenderer GlowHead;
@@ -412,6 +418,30 @@ public class ModelIsolatedHime extends ShipModelBaseAdv
         this.Hat04g.setRotationPoint(3.5F, -0.6F, 2.2F);
         this.Hat04g.addBox(-2.0F, -3.0F, 0.0F, 4, 2, 7, 0.0F);
         this.setRotateAngle(Hat04g, -0.05235987755982988F, -0.03490658503988659F, -3.07177948351002F);
+        this.EquipRdL01 = new ModelRenderer(this, 128, 115);
+        this.EquipRdL01.setRotationPoint(4.0F, -6.0F, 5.0F);
+        this.EquipRdL01.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
+        this.setRotateAngle(EquipRdL01, 1.5707963267948966F, -0.17453292519943295F, -0.7853981633974483F);
+        this.EquipRdL02 = new ModelRenderer(this, 128, 115);
+        this.EquipRdL02.setRotationPoint(0.0F, 0.0F, -11.0F);
+        this.EquipRdL02.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
+        this.setRotateAngle(EquipRdL02, -0.4363323129985824F, 0.0F, 0.0F);
+        this.EquipRdL03 = new ModelRenderer(this, 128, 115);
+        this.EquipRdL03.setRotationPoint(0.0F, 0.0F, -11.0F);
+        this.EquipRdL03.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
+        this.setRotateAngle(EquipRdL03, -0.6981317007977318F, 0.0F, 0.0F);
+        this.EquipRdL04 = new ModelRenderer(this, 128, 115);
+        this.EquipRdL04.setRotationPoint(0.0F, 0.0F, -11.0F);
+        this.EquipRdL04.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
+        this.setRotateAngle(EquipRdL04, -0.3490658503988659F, 0.0F, 0.0F);
+        this.EquipRdL05 = new ModelRenderer(this, 128, 115);
+        this.EquipRdL05.setRotationPoint(0.0F, 0.0F, -11.0F);
+        this.EquipRdL05.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
+        this.setRotateAngle(EquipRdL05, -0.2617993877991494F, 0.0F, 0.0F);
+        this.EquipRdL06 = new ModelRenderer(this, 128, 115);
+        this.EquipRdL06.setRotationPoint(0.0F, 0.0F, -11.0F);
+        this.EquipRdL06.addBox(-3.5F, 0.0F, -12.0F, 7, 1, 12, 0.0F);
+        this.setRotateAngle(EquipRdL06, -0.17453292519943295F, 0.0F, 0.0F);
         this.Butt.addChild(this.LegLeft01);
         this.Hat01.addChild(this.Hat02d);
         this.Cloth01a.addChild(this.Cloth01b2);
@@ -514,6 +544,12 @@ public class ModelIsolatedHime extends ShipModelBaseAdv
         this.GlowHatBase.addChild(this.HeadH4);
         this.HeadH4.addChild(this.HeadH5);
         this.HeadH5.addChild(this.HeadH6);
+        this.GlowBodyMain.addChild(this.EquipRdL01);
+        this.EquipRdL01.addChild(this.EquipRdL02);
+        this.EquipRdL02.addChild(this.EquipRdL03);
+        this.EquipRdL03.addChild(this.EquipRdL04);
+        this.EquipRdL04.addChild(this.EquipRdL05);
+        this.EquipRdL05.addChild(this.EquipRdL06);
         
      	//for held item rendering
         this.armMain = new ModelRenderer[] {this.BodyMain, this.ArmRight01, this.ArmRight02};
@@ -554,77 +590,35 @@ public class ModelIsolatedHime extends ShipModelBaseAdv
 	{
 		int state = ent.getStateEmotion(ID.S.State);
 		
-		boolean flag = !EmotionHelper.checkModelState(0, state);
+		boolean flag = !EmotionHelper.checkModelState(1, state);	//hat
+		this.HatBase.isHidden = flag;
+		this.GlowHatBase.isHidden = flag;
 		
-		this.GlowHatBase.isHidden = true;
-		this.HatBase.isHidden = true;
+		flag = !EmotionHelper.checkModelState(2, state);	//horn
+		this.HeadH1.isHidden = flag;
+		this.HeadH4.isHidden = flag;
 		
-		this.Cloth01a.isHidden = true;
+		flag = !EmotionHelper.checkModelState(3, state);	//bowtie
+		this.Cloth01a.isHidden = flag;
 		
-		this.Cloth02a.isHidden = true;
-		this.Cloth02b.isHidden = true;
-		this.Cloth02c.isHidden = true;
-		this.Cloth03a.isHidden = true;
-		this.Cloth03b.isHidden = true;
+		flag = !EmotionHelper.checkModelState(4, state);	//shawl
+		this.Cloth02a.isHidden = flag;
+		this.Cloth02b.isHidden = flag;
+		this.Cloth02c.isHidden = flag;
 		
-		this.LegArmor01a.isHidden = true;
-		this.LegArmor02a.isHidden = true;
+		flag = !EmotionHelper.checkModelState(5, state);	//shawl
+		this.Cloth03a.isHidden = flag;
+		this.Cloth03b.isHidden = flag;
 		
-		this.LegLeft02b.isHidden = false;
-		this.LegRight02b.isHidden = false;
-		this.LegLeft02a.isHidden = true;
-		this.LegRight02a.isHidden = true;
-//  		switch (ent.getStateEmotion(ID.S.State))
-//  		{
-//  		case ID.ModelState.EQUIP00:
-//  			this.Hat01.isHidden = false;
-//  			this.EquipBag00.isHidden = true;
-//  		break;
-//  		case ID.ModelState.EQUIP01:
-//  			this.Hat01.isHidden = true;
-//  			this.EquipBag00.isHidden = false;
-//  		break;
-//  		case ID.ModelState.EQUIP02:
-//  			this.Hat01.isHidden = false;
-//  			this.EquipBag00.isHidden = false;
-//  		break;
-//  		default:  //normal
-//  			this.Hat01.isHidden = true;
-//  			this.EquipBag00.isHidden = true;
-//  		break;
-//  		}
-//  		
-//  		switch (ent.getStateEmotion(ID.S.State2))
-//  		{
-//  		case ID.ModelState.EQUIP00a:
-//  			this.EquipBase.isHidden = false;
-//  			this.ShoeL01.isHidden = true;
-//  			this.ShoeR01.isHidden = true;
-//  			this.ShoeL03.isHidden = false;
-//  			this.ShoeL03_1.isHidden = false;
-//  		break;
-//  		case ID.ModelState.EQUIP01a:
-//  			this.EquipBase.isHidden = true;
-//  			this.ShoeL01.isHidden = false;
-//  			this.ShoeR01.isHidden = false;
-//  			this.ShoeL03.isHidden = true;
-//  			this.ShoeL03_1.isHidden = true;
-//  		break;
-//  		case ID.ModelState.EQUIP02a:
-//  			this.EquipBase.isHidden = false;
-//  			this.ShoeL01.isHidden = false;
-//  			this.ShoeR01.isHidden = false;
-//  			this.ShoeL03.isHidden = false;
-//  			this.ShoeL03_1.isHidden = false;
-//  		break;
-//  		default:  //normal
-//  			this.EquipBase.isHidden = true;
-//  			this.ShoeL01.isHidden = true;
-//  			this.ShoeR01.isHidden = true;
-//  			this.ShoeL03.isHidden = true;
-//  			this.ShoeL03_1.isHidden = true;
-//  		break;
-//  		}
+		flag = !EmotionHelper.checkModelState(6, state);	//leg
+		this.LegLeft02b.isHidden = !flag;
+		this.LegRight02b.isHidden = !flag;
+		this.LegLeft02a.isHidden = flag;
+		this.LegRight02a.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(7, state);	//leg armor
+		this.LegArmor01a.isHidden = flag;
+		this.LegArmor02a.isHidden = flag;
 	}
 
 	@Override

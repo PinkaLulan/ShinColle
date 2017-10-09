@@ -600,6 +600,10 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 		this.Ear01.isHidden = flag;       //ear+tail
 		this.Ear02.isHidden = flag;
 		this.Tail01.isHidden = flag;
+		
+		flag = !EmotionHelper.checkModelState(7, state);
+		this.EquipSL01.isHidden = flag;  //shoes
+    	this.EquipSR01.isHidden = flag;
 	}
 
 	@Override
@@ -754,11 +758,6 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 	  		this.EquipSL01.isHidden = false;
 	    	this.EquipSR01.isHidden = false;
     	}
-    	else
-    	{
-    		this.EquipSL01.isHidden = true;
-        	this.EquipSR01.isHidden = true;
-    	}
     	
   	    //head
 	  	this.Head.rotateAngleX = f4 * 0.014F + 0.1047F;
@@ -802,8 +801,8 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 		this.ArmRight02.offsetX = 0F;
 		
 		int state = ent.getStateEmotion(ID.S.State);
-		boolean fbag = !EmotionHelper.checkModelState(3, state);
-		boolean ftail = !EmotionHelper.checkModelState(6, state);
+		boolean fbag = EmotionHelper.checkModelState(3, state);
+		boolean ftail = EmotionHelper.checkModelState(6, state);
 	    
 	    if (fbag)
 	    {
@@ -812,8 +811,6 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
 	    
 	    if (ftail)
 	    {
-	    	this.ArmLeft01.rotateAngleZ -= 0.15F;
-	    	
 	    	//tail
 	    	this.Tail01.rotateAngleX = angleX1 * 0.5F - 0.7F;
 	    	this.Tail02.rotateAngleX = -angleX2 * 0.5F;

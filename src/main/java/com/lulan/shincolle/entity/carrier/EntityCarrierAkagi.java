@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 /**
  * model state:
- *   0:bow, 1:quiver, 2:deck, 3:bag, 4:armor, 5:skirt, 6:ear+tail
+ *   0:bow, 1:quiver, 2:deck, 3:bag, 4:armor, 5:skirt, 6:ear+tail, 7:shoes
  */
 public class EntityCarrierAkagi extends BasicEntityShipCV
 {
@@ -26,7 +26,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierAkagi);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
-		this.setStateMinor(ID.M.NumState, 7);
+		this.setStateMinor(ID.M.NumState, 8);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.ModelPos = new float[] {0F, 20F, 0F, 40F};

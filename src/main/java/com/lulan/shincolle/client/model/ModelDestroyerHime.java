@@ -575,8 +575,6 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 		int state = ent.getStateEmotion(ID.S.State);
 		
 		boolean flag = !EmotionHelper.checkModelState(0, state);	//cannon
-		this.EquipLegL.isHidden = flag;
-		this.EquipLegR.isHidden = flag;
 		this.EquipBaseL.isHidden = flag;
 		this.EquipBaseR.isHidden = flag;
 				
@@ -699,10 +697,12 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
   		float headX = 0F;
   		float headZ = 0F;
   		float t2 = ent.getTickExisted() & 511;
-  		boolean spStand = false;
+		int state = ent.getStateEmotion(ID.S.State);
+		boolean showCannon = EmotionHelper.checkModelState(0, state);
+		boolean showLeg = EmotionHelper.checkModelState(4, state);
   		
   		//水上漂浮
-  		if (!ent.getIsSitting())
+  		if (!ent.getIsSitting() && !showLeg)
   		{
   			GlStateManager.translate(0F, angleX * 0.015F + 0.025F, 0F);
   		}
@@ -740,8 +740,6 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 	  	this.Hair06.rotateAngleX = -angleX3 * 0.12F - 0.15F + headX;
 	  	this.Hair06.rotateAngleZ = 0.52F;
 	    //arm
-	  	boolean showCannon = EmotionHelper.checkModelState(0, ent.getStateEmotion(ID.S.State));
-	  	
 	  	//equip on
 	  	if (showCannon)
 	  	{
@@ -836,7 +834,7 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 			this.LegRight02.offsetZ = 0F;
 	    	
 			//equip on
-			if (!EmotionHelper.checkModelState(4, ent.getStateEmotion(ID.S.State)))
+			if (!showLeg)
 			{
 				addk1 = angleAdd1 * 0.05F;
 				addk2 = angleAdd2 * 0.05F;
@@ -848,8 +846,6 @@ public class ModelDestroyerHime extends ShipModelBaseAdv
 	    
 	    if (ent.getIsSneaking())
 	    {
-//	    	if (spStand)
-	    	
 	    	GlStateManager.translate(0F, 0.07F, 0F);
 	    	
 	    	//Body
