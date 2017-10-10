@@ -596,7 +596,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		else
 		{
 			//moving rotate
-			if (MathHelper.abs((float) (posX - prevPosX)) > 0.1F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.1F)
+			if (MathHelper.abs((float) (posX - prevPosX)) > 0.001F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.001F)
 	  		{
 	  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
     			this.rotationYaw = degree[0];

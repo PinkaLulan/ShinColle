@@ -2,6 +2,8 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.EventHandler;
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -371,12 +373,13 @@ public class ModelMountIsH extends ModelBase
   	private void motionHumanPos(float f, float f1, float f2, float f3, float f4, IShipEmotion ent)
   	{   
   		float angleX = MathHelper.cos(f2 * 0.08F);
-  		float angleX2 = MathHelper.cos(f2 * 0.08F + 0.1F);
-  		float angleX3 = MathHelper.cos(f2 * 0.08F + 0.2F);
+  		float angleX2 = MathHelper.cos(f2 * 0.5F + 0.3F);
+  		float angleX3 = MathHelper.cos(f2 * 0.5F + 0.6F);
+  		float angleX4 = MathHelper.cos(f2 * 0.5F + 0.9F);
   		float angleAdd1 = MathHelper.cos(f * 0.7F) * f1 * 0.7F;
   		float angleAdd2 = MathHelper.cos(f * 0.7F + 3.1415927F) * f1 * 0.7F;
-  		float addk1 = angleAdd1 * 0.6F;
-  		float addk2 = angleAdd2 * 0.6F;
+  		float addk1 = angleAdd1 * 0.5F;
+  		float addk2 = angleAdd2 * 0.5F;
   		
   		//水上漂浮
   		if (ent.getShipDepth(0) > 0D)
@@ -386,21 +389,31 @@ public class ModelMountIsH extends ModelBase
 
   		//leg
   		this.LegFL01.rotateAngleX = addk1 + 1.04F;
-  		this.LegFR01.rotateAngleX = addk1 + 1.04F;
+  		this.LegFR01.rotateAngleX = addk2 + 1.04F;
   		this.LegBL01.rotateAngleX = addk1 + 1.04F;
-  		this.LegBR01.rotateAngleX = addk1 + 1.04F;
+  		this.LegBR01.rotateAngleX = addk2 + 1.04F;
 	    //idle
-	  	this.Jaw.rotateAngleX = angleX * 0.1F + 0.26F;
-	  	this.GlowJaw.rotateAngleX = this.Jaw.rotateAngleX;
-	  	this.Tongue01.rotateAngleX = angleX * 0.05F - 0.38F;
-	  	this.Tongue02.rotateAngleX = angleX2 * 0.05F + 0.52F;
-	  	this.Tongue03.rotateAngleX = angleX3 * 0.05F + 0.69F;
+	  	this.Jaw.rotateAngleX = angleX * 0.075F + 0.26F;
+	  	this.Tongue01.rotateAngleX = angleX2 * 0.05F - 0.38F;
+	  	this.Tongue02.rotateAngleX = -angleX3 * 0.08F + 0.52F;
+	  	this.Tongue03.rotateAngleX = -angleX4 * 0.05F + 0.69F;
 	    //cannon
 	    this.HeadCannon.rotateAngleX = f4 * 0.01F - 1.68F;
 	    this.Cannon03a.rotateAngleX = f4 * 0.01F - 1.74F;
 	    this.Cannon03b.rotateAngleX = f4 * 0.01F - 1.7F;
-	    this.TopCannonBase.rotateAngleX = f3 * 0.01F;
-	    this.GlowTopCannonBase.rotateAngleX = this.TopCannonBase.rotateAngleX;
+	    this.TopCannon01a.rotateAngleX = f4 * 0.01F - 0.2F;
+	    this.TopCannon01b.rotateAngleX = f4 * 0.01F - 0.2F;
+	    this.TopCannonBase.rotateAngleY = f3 * 0.01F;
+	    
+	    //rider 2 on
+	    if (ent.getStateEmotion(ID.S.Emotion) > 0)
+	    {
+	    	this.Jaw.rotateAngleX = 0.7F;
+	    }
+	    
+	    //sync rotate
+	    this.GlowJaw.rotateAngleX = this.Jaw.rotateAngleX;
+	    this.GlowTopCannonBase.rotateAngleY = this.TopCannonBase.rotateAngleY;
   	}
   	
   	

@@ -136,7 +136,7 @@ public class EquipDrum extends BasicEquip
 			
 			//show EU rate
 			int num = EnchantHelper.calcEnchantNumber(stack) * ConfigHandler.drumEU[1] + ConfigHandler.drumEU[0];
-			if (num > 0) list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:equip.rateeu") + " " + num + " EU/t");
+			if (num > 0) list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:equip.rateeu") + " " + num + " EU/t (NYI)");
 		}
 		break;
 		default:
