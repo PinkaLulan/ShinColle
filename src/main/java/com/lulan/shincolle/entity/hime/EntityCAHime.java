@@ -21,11 +21,11 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
  * model state:
- *   0:tail state 1, 1:tail state 2, 2:tail state 3,
- *   3:hat state 1, 4:hat state 2, 5:hat state 3, 6:hat state 4
+ *   0:tail state 1, 1:tail state 2
+ *   2:hat state 1, 3:hat state 2, 4:hat state 3
  *   
- *   0 & 1 & 2 false = no tail (tail state 0)
- *   3 & 4 & 5 & 6 false = no hat (hat state 0)
+ *   0 & 1 false = no tail (tail state 0)
+ *   2 & 3 & 4 false = no hat (hat state 0)
  */
 public class EntityCAHime extends BasicEntityShipSmall
 {
@@ -42,7 +42,7 @@ public class EntityCAHime extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
-		this.setStateMinor(ID.M.NumState, 7);
+		this.setStateMinor(ID.M.NumState, 5);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.ModelPos = new float[] {0F, 10F, 0F, 40F};

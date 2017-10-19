@@ -7,12 +7,10 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
-import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.tileentity.ITileWaypoint;
+import com.lulan.shincolle.tileentity.ITileGuardPoint;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -544,7 +542,7 @@ public class PointerItem extends BasicItem
 						TileEntity tile = world.getTileEntity(hitObj2.getBlockPos());
 						
 						//if not waypoint, tweak target position
-						if (!BlockHelper.checkBlockIsLiquid(state) && !(tile instanceof ITileWaypoint))
+						if (!BlockHelper.checkBlockIsLiquid(state) && !(tile instanceof ITileGuardPoint))
 						{
 							switch (hitObj2.sideHit.getIndex())
 							{

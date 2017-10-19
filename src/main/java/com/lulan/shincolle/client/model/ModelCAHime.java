@@ -4,7 +4,6 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -470,28 +469,17 @@ public class ModelCAHime extends ShipModelBaseAdv
 		//tail state
 		boolean ft1 = EmotionHelper.checkModelState(0, state);
 		boolean ft2 = EmotionHelper.checkModelState(1, state);
-		boolean ft3 = EmotionHelper.checkModelState(2, state);
 		
-		this.TailBase.isHidden = !(ft1 || ft2 || ft3);
+		this.TailBase.isHidden = !(ft1 || ft2);
 		
 		//hat state
-		boolean fh1 = EmotionHelper.checkModelState(3, state);
-		boolean fh2 = EmotionHelper.checkModelState(4, state);
-		boolean fh3 = EmotionHelper.checkModelState(5, state);
-		boolean fh4 = EmotionHelper.checkModelState(6, state);
+		boolean fh1 = EmotionHelper.checkModelState(2, state);
+		boolean fh2 = EmotionHelper.checkModelState(3, state);
+		boolean fh3 = EmotionHelper.checkModelState(4, state);
+		boolean fh4 = fh1 & fh2;
 		
-		//hat state 1
-		if (fh1)
-		{
-			this.HatBase.isHidden = false;
-  			this.Hair01.isHidden = true;
-  			this.Horn01.isHidden = true;
-  			this.Horn02.isHidden = true;
-  			this.Ear01.isHidden = true;
-  			this.Ear02.isHidden = true;
-		}
 		//hat state 2, 3, 4
-		else if (fh2 || fh3 || fh4)
+		if (fh2 || fh3 || fh4)
 		{
 			this.HatBase.isHidden = false;
   			this.Hair01.isHidden = true;
@@ -499,6 +487,16 @@ public class ModelCAHime extends ShipModelBaseAdv
   			this.Horn02.isHidden = false;
   			this.Ear01.isHidden = false;
   			this.Ear02.isHidden = false;
+		}
+		//hat state 1
+		else if (fh1)
+		{
+			this.HatBase.isHidden = false;
+  			this.Hair01.isHidden = true;
+  			this.Horn01.isHidden = true;
+  			this.Horn02.isHidden = true;
+  			this.Ear01.isHidden = true;
+  			this.Ear02.isHidden = true;
 		}
 		//no hat
 		else
@@ -562,12 +560,20 @@ public class ModelCAHime extends ShipModelBaseAdv
 		
 		//equip: hat position
 		int state = ent.getStateEmotion(ID.S.State);
-		boolean fh1 = EmotionHelper.checkModelState(3, state);
-		boolean fh3 = EmotionHelper.checkModelState(5, state);
-		boolean fh4 = EmotionHelper.checkModelState(6, state);
+		boolean fh1 = EmotionHelper.checkModelState(2, state);
+		boolean fh2 = EmotionHelper.checkModelState(3, state);
+		boolean fh3 = EmotionHelper.checkModelState(4, state);
+		boolean fh4 = fh1 & fh2;
 		
+		//hat state 4
+		if (fh4)
+		{
+			this.HatBase.rotateAngleX = -1.8F;//-103
+  			this.HatBase.offsetY = 0.6F;
+  			this.HatBase.offsetZ = 0.07F;
+		}
 		//hat state 1
-		if (fh1)
+		else if (fh1)
 		{
 			this.HatBase.rotateAngleX = 1.37F;//78
   			this.HatBase.offsetY = -0.45F;
@@ -578,13 +584,6 @@ public class ModelCAHime extends ShipModelBaseAdv
 		{
   			this.HatBase.rotateAngleX = -0.85F;//-48
   			this.HatBase.offsetY = 0.33F;
-  			this.HatBase.offsetZ = 0.07F;
-		}
-		//hat state 4
-		else if (fh4)
-		{
-			this.HatBase.rotateAngleX = -1.8F;//-103
-  			this.HatBase.offsetY = 0.6F;
   			this.HatBase.offsetZ = 0.07F;
 		}
 		//no hat or hat state 2
@@ -653,11 +652,11 @@ public class ModelCAHime extends ShipModelBaseAdv
 		int state = ent.getStateEmotion(ID.S.State);
 		boolean ft1 = EmotionHelper.checkModelState(0, state);
 		boolean ft2 = EmotionHelper.checkModelState(1, state);
-		boolean ft3 = EmotionHelper.checkModelState(2, state);
-		boolean fh1 = EmotionHelper.checkModelState(3, state);
-		boolean fh2 = EmotionHelper.checkModelState(4, state);
-		boolean fh3 = EmotionHelper.checkModelState(5, state);
-		boolean fh4 = EmotionHelper.checkModelState(6, state);
+		boolean ft3 = ft1 & ft2;
+		boolean fh1 = EmotionHelper.checkModelState(2, state);
+		boolean fh2 = EmotionHelper.checkModelState(3, state);
+		boolean fh3 = EmotionHelper.checkModelState(4, state);
+		boolean fh4 = fh1 & fh2;
   		
   		//水上漂浮
   		if (ent.getShipDepth(0) > 0D)
@@ -701,8 +700,15 @@ public class ModelCAHime extends ShipModelBaseAdv
 		this.LegRight02.rotateAngleZ = 0F;
 		
 		//equip: hat position
+		//hat state 4
+		if (fh4)
+		{
+			this.HatBase.rotateAngleX = -1.8F;//-103
+  			this.HatBase.offsetY = 0.4F;
+  			this.HatBase.offsetZ = 0.07F;
+		}
 		//hat state 1
-		if (fh1)
+		else if (fh1)
 		{
 			this.HatBase.rotateAngleX = 1.37F;//78
   			this.HatBase.offsetY = -0.45F;
@@ -713,13 +719,6 @@ public class ModelCAHime extends ShipModelBaseAdv
 		{
   			this.HatBase.rotateAngleX = -0.85F;//-48
   			this.HatBase.offsetY = 0.33F;
-  			this.HatBase.offsetZ = 0.07F;
-		}
-		//hat state 4
-		else if (fh4)
-		{
-			this.HatBase.rotateAngleX = -1.8F;//-103
-  			this.HatBase.offsetY = 0.4F;
   			this.HatBase.offsetZ = 0.07F;
 		}
 		//no hat or hat state 2
@@ -748,7 +747,48 @@ public class ModelCAHime extends ShipModelBaseAdv
 		this.TailC02_1.rotateAngleX = angleX2 * 0.3F - 0.2F;
   		
 		//tail body
-		if (ft1)
+		if (ft3)
+		{
+  			this.TailBase.offsetY = -0.15F;
+  			this.TailBase.offsetZ = 0F;
+  			this.Tail01.rotateAngleX = 0.26F;
+  			this.Tail01.rotateAngleY = 1.7F + cosf2[0] * 0.015F;
+  			this.Tail02.rotateAngleX = 0.61F;
+  			this.Tail02.rotateAngleY = -0.09F + cosf2[1] * 0.02F;
+  			this.Tail03.rotateAngleX = 0.61F;
+  			this.Tail03.rotateAngleY = -0.09F + cosf2[2] * 0.025F;
+  			this.Tail04.rotateAngleX = 0.52F;
+  			this.Tail04.rotateAngleY = 0F + cosf2[3] * 0.03F;
+  			this.Tail05.rotateAngleX = 0.52F;
+  			this.Tail05.rotateAngleY = 0F + cosf2[4] * 0.04F;
+  			this.Tail06.rotateAngleX = 0.35F;
+  			this.Tail06.rotateAngleY = 0F + cosf2[5] * 0.05F;
+  			this.Tail07.rotateAngleX = 0.17F;
+  			this.Tail07.rotateAngleY = 0.1F + cosf2[6] * 0.06F;
+  			this.Tail08.rotateAngleX = 0.09F;
+  			this.Tail08.rotateAngleY = 0.1F + cosf2[7] * 0.08F;
+  			this.Tail09.rotateAngleX = -0.09F;
+  			this.Tail09.rotateAngleY = 0.5F + cosf2[8] * 0.15F;
+  			this.Tail01_1.rotateAngleX = 0.7F;
+  			this.Tail01_1.rotateAngleY = -1.57F + cosf2[0] * 0.02F;
+  			this.Tail02_1.rotateAngleX = 0.35F;
+  			this.Tail02_1.rotateAngleY = 0.26F + cosf2[1] * 0.03F;
+  			this.Tail03_1.rotateAngleX = 0.44F;
+  			this.Tail03_1.rotateAngleY = 0.35F + cosf2[2] * 0.04F;
+  			this.Tail04_1.rotateAngleX = 0.35F;
+  			this.Tail04_1.rotateAngleY = 0.44F + cosf2[3] * 0.05F;
+  			this.Tail05_1.rotateAngleX = 0.52F;
+  			this.Tail05_1.rotateAngleY = 0.35F + cosf2[4] * 0.06F;
+  			this.Tail06_1.rotateAngleX = 0.09F;
+  			this.Tail06_1.rotateAngleY = 0.26F + cosf2[5] * 0.07F;
+  			this.Tail07_1.rotateAngleX = -0.35F;
+  			this.Tail07_1.rotateAngleY = 0.35F + cosf2[6] * 0.08F;
+  			this.Tail08_1.rotateAngleX = -0.52F;
+  			this.Tail08_1.rotateAngleY = 0.35F + cosf2[7] * 0.09F;
+  			this.Tail09_1.rotateAngleX = -0.09F;
+  			this.Tail09_1.rotateAngleY = 0.44F + cosf2[8] * 0.12F;
+		}
+		else if (ft1)
 		{
   			this.TailBase.offsetY = -0.15F;
   			this.TailBase.offsetZ = 0F;
@@ -830,47 +870,6 @@ public class ModelCAHime extends ShipModelBaseAdv
   			this.Tail09_1.rotateAngleX = 0.52F + cosf2[8] * 0.15F;
   			this.Tail09_1.rotateAngleY = -0.17F + cosf2[8] * 0.15F;
 		}
-		else if (ft3)
-		{
-  			this.TailBase.offsetY = -0.15F;
-  			this.TailBase.offsetZ = 0F;
-  			this.Tail01.rotateAngleX = 0.26F;
-  			this.Tail01.rotateAngleY = 1.7F + cosf2[0] * 0.015F;
-  			this.Tail02.rotateAngleX = 0.61F;
-  			this.Tail02.rotateAngleY = -0.09F + cosf2[1] * 0.02F;
-  			this.Tail03.rotateAngleX = 0.61F;
-  			this.Tail03.rotateAngleY = -0.09F + cosf2[2] * 0.025F;
-  			this.Tail04.rotateAngleX = 0.52F;
-  			this.Tail04.rotateAngleY = 0F + cosf2[3] * 0.03F;
-  			this.Tail05.rotateAngleX = 0.52F;
-  			this.Tail05.rotateAngleY = 0F + cosf2[4] * 0.04F;
-  			this.Tail06.rotateAngleX = 0.35F;
-  			this.Tail06.rotateAngleY = 0F + cosf2[5] * 0.05F;
-  			this.Tail07.rotateAngleX = 0.17F;
-  			this.Tail07.rotateAngleY = 0.1F + cosf2[6] * 0.06F;
-  			this.Tail08.rotateAngleX = 0.09F;
-  			this.Tail08.rotateAngleY = 0.1F + cosf2[7] * 0.08F;
-  			this.Tail09.rotateAngleX = -0.09F;
-  			this.Tail09.rotateAngleY = 0.5F + cosf2[8] * 0.15F;
-  			this.Tail01_1.rotateAngleX = 0.7F;
-  			this.Tail01_1.rotateAngleY = -1.57F + cosf2[0] * 0.02F;
-  			this.Tail02_1.rotateAngleX = 0.35F;
-  			this.Tail02_1.rotateAngleY = 0.26F + cosf2[1] * 0.03F;
-  			this.Tail03_1.rotateAngleX = 0.44F;
-  			this.Tail03_1.rotateAngleY = 0.35F + cosf2[2] * 0.04F;
-  			this.Tail04_1.rotateAngleX = 0.35F;
-  			this.Tail04_1.rotateAngleY = 0.44F + cosf2[3] * 0.05F;
-  			this.Tail05_1.rotateAngleX = 0.52F;
-  			this.Tail05_1.rotateAngleY = 0.35F + cosf2[4] * 0.06F;
-  			this.Tail06_1.rotateAngleX = 0.09F;
-  			this.Tail06_1.rotateAngleY = 0.26F + cosf2[5] * 0.07F;
-  			this.Tail07_1.rotateAngleX = -0.35F;
-  			this.Tail07_1.rotateAngleY = 0.35F + cosf2[6] * 0.08F;
-  			this.Tail08_1.rotateAngleX = -0.52F;
-  			this.Tail08_1.rotateAngleY = 0.35F + cosf2[7] * 0.09F;
-  			this.Tail09_1.rotateAngleX = -0.09F;
-  			this.Tail09_1.rotateAngleY = 0.44F + cosf2[8] * 0.12F;
-		}
 		
 		//ear
 		float modf2 = f2 % 128F;
@@ -914,8 +913,15 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    {
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
+	    		//hat state 4
+	    		if (fh4)
+	    		{
+	    			this.HatBase.rotateAngleX = -1.8F;//-103
+	      			this.HatBase.offsetY = 0.3F;
+	      			this.HatBase.offsetZ = 0.07F;
+	    		}
 	    		//hat state 1
-	    		if (fh1)
+	    		else if (fh1)
 	    		{
 	    			this.HatBase.rotateAngleX = 1.37F;//78
 	      			this.HatBase.offsetY = -0.45F;
@@ -926,13 +932,6 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    		{
 	      			this.HatBase.rotateAngleX = -0.85F;//-48
 	      			this.HatBase.offsetY = 0.1F;
-	      			this.HatBase.offsetZ = 0.07F;
-	    		}
-	    		//hat state 4
-	    		else if (fh4)
-	    		{
-	    			this.HatBase.rotateAngleX = -1.8F;//-103
-	      			this.HatBase.offsetY = 0.3F;
 	      			this.HatBase.offsetZ = 0.07F;
 	    		}
 	    		//no hat or hat state 2
@@ -985,8 +984,15 @@ public class ModelCAHime extends ShipModelBaseAdv
 		    	this.ArmRight01.rotateAngleZ = 0F;
 		    	this.ArmRight01.offsetZ = -0.18F;
 		    	
+		    	//hat state 4
+	    		if (fh4)
+	    		{
+	    			this.HatBase.rotateAngleX = -1.8F;//-103
+	      			this.HatBase.offsetY = 0.6F;
+	      			this.HatBase.offsetZ = -0.3F;
+	    		}
 		    	//hat state 1
-	    		if (fh1)
+	    		else if (fh1)
 	    		{
 	      			this.HatBase.rotateAngleX = 1.37F;//78
 	      			this.HatBase.offsetY = -0.45F;
@@ -998,13 +1004,6 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    			this.HatBase.rotateAngleX = -0.85F;//-48
 	      			this.HatBase.offsetY = 0.6F;
 	      			this.HatBase.offsetZ = 0.07F;
-	    		}
-	    		//hat state 4
-	    		else if (fh4)
-	    		{
-	    			this.HatBase.rotateAngleX = -1.8F;//-103
-	      			this.HatBase.offsetY = 0.6F;
-	      			this.HatBase.offsetZ = -0.3F;
 	    		}
 	    		//no hat or hat state 2
 	    		else
@@ -1016,8 +1015,15 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    	}
 	    	else
 	    	{
+	    		//hat state 4
+	    		if (fh4)
+	    		{
+	    			this.HatBase.rotateAngleX = -1.8F;//-103
+	      			this.HatBase.offsetY = 0.2F;
+	      			this.HatBase.offsetZ = 0.07F;
+	    		}
 	    		//hat state 1
-	    		if (fh1)
+	    		else if (fh1)
 	    		{
 	      			this.HatBase.rotateAngleX = 1.37F;//78
 	      			this.HatBase.offsetY = -0.45F;
@@ -1028,13 +1034,6 @@ public class ModelCAHime extends ShipModelBaseAdv
 	    		{
 	    			this.HatBase.rotateAngleX = -0.85F;//-48
 	      			this.HatBase.offsetY = 0F;
-	      			this.HatBase.offsetZ = 0.07F;
-	    		}
-	    		//hat state 4
-	    		else if (fh4)
-	    		{
-	    			this.HatBase.rotateAngleX = -1.8F;//-103
-	      			this.HatBase.offsetY = 0.2F;
 	      			this.HatBase.offsetZ = 0.07F;
 	    		}
 	    		//no hat or hat state 2

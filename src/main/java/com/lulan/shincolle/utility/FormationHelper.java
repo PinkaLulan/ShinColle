@@ -1,6 +1,7 @@
 package com.lulan.shincolle.utility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -17,7 +18,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.MathHelper;
-import scala.actors.threadpool.Arrays;
 
 /** FORMATION HELPER
  * 

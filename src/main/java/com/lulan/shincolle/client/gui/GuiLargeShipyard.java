@@ -43,12 +43,6 @@ public class GuiLargeShipyard extends GuiContainer
 		this.tile = par2;
 		this.xSize = 208;
 		this.ySize = 223;
-	}
-	
-	@Override
-	public void initGui()
-	{
-		super.initGui();
 		
 		this.tickGUI = 0F;
 		

@@ -65,6 +65,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
+import com.lulan.shincolle.utility.TaskHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
@@ -83,7 +84,6 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
@@ -2566,6 +2566,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		this.initAI = true;
         		}
         		
+        		if (this.isEntityAlive())
+        		{
+        			//check task
+        			TaskHelper.onUpdateTask(this);
+        		}
+        		
         		//check every 16 ticks
             	if ((ticksExisted & 15) == 0)
             	{
@@ -3656,7 +3662,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			this.setStateMinor(ID.M.GuardID, -1);
 		}
 	}
-
+	
+	/**
+	 * vec:
+	 *   0:x, 1:y, 2:z, 3:dimension, 4:type
+	 *   
+	 *   type:
+	 *     0:none, 1:guard block, 2:guard entity
+	 */
 	@Override
 	public int getGuardedPos(int vec)
 	{
@@ -3670,8 +3683,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.getStateMinor(ID.M.GuardZ);
 		case 3:
 			return this.getStateMinor(ID.M.GuardDim);
-		default:
+		case 4:
 			return this.getStateMinor(ID.M.GuardType);
+		default:
+			return 0;
 		}
 	}
 
@@ -3863,7 +3878,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     	if (this.hasShipMounts())
     	{
     		//summon mount if emotion state >= equip00
-  	  		if (this.canSummonMounts())
+  	  		if (this.canSummonMounts() && !this.getStateFlag(ID.F.NoFuel))
   	  		{
   	  			if (!this.isRiding())
   	  			{
@@ -5457,7 +5472,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 */
 	public int getFieldCount()
 	{
-		return 32;
+		return 34;
 	}
 	
 	public int getField(int id)
@@ -5528,6 +5543,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.getStateFlagI(ID.F.AutoPump);
 		case 31:
 			return this.getStateEmotion(ID.S.State);
+		case 32:
+			return this.StateMinor[ID.M.Task];
+		case 33:
+			return this.StateMinor[ID.M.TaskSide];
 		}
 		
 		return 0;
@@ -5632,6 +5651,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		break;
 		case 31:
 			this.setStateEmotion(ID.S.State, value, false);
+		break;
+		case 32:
+			this.StateMinor[ID.M.Task] = value;
+		break;
+		case 33:
+			this.StateMinor[ID.M.TaskSide] = value;
 		break;
 		}
 		

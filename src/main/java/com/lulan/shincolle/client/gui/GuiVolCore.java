@@ -36,12 +36,6 @@ public class GuiVolCore extends GuiContainer
 		tile = par2;
 		xSize = 176;
 		ySize = 166;
-	}
-	
-	@Override
-	public void initGui()
-	{
-		super.initGui();
 		
 		//string
 		conName = I18n.format("tile.shincolle:BlockVolCore.name");

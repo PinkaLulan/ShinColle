@@ -62,6 +62,8 @@ public class CapaShipSavedValues
 		nbtExt_add0.setInteger("Crane", ship.getStateMinor(ID.M.CraneState));
 		nbtExt_add0.setInteger("WpStay", ship.getStateMinor(ID.M.WpStay));
 		nbtExt_add0.setInteger("AutoCR", ship.getStateMinor(ID.M.UseCombatRation));
+		nbtExt_add0.setInteger("Task", ship.getStateMinor(ID.M.Task));
+		nbtExt_add0.setInteger("Side", ship.getStateMinor(ID.M.TaskSide));
 		nbtExt_add0.setString("tagName", ship.getCustomNameTag());
 		
 		//save EntityState
@@ -156,6 +158,8 @@ public class CapaShipSavedValues
 		ship.setStateMinor(ID.M.CraneState, nbt_load.getInteger("Crane"));
 		ship.setStateMinor(ID.M.WpStay, nbt_load.getInteger("WpStay"));
 		ship.setStateMinor(ID.M.UseCombatRation, nbt_load.getInteger("AutoCR"));
+		ship.setStateMinor(ID.M.Task, nbt_load.getInteger("Task"));
+		ship.setStateMinor(ID.M.TaskSide, nbt_load.getInteger("Side"));
 		ship.setNameTag(nbt_load.getString("tagName"));
 		
 		//load display state

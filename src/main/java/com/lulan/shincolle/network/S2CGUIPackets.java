@@ -82,6 +82,7 @@ public class S2CGUIPackets implements IMessage
 		public static final byte TileCrane = 16;
 		public static final byte SyncPlayerProp_Misc = 17;
 		public static final byte SyncPlayerProp_UnitName = 18;
+		public static final byte TileTask = 19;
 	}
 	
 	

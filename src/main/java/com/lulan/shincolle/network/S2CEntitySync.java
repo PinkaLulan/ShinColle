@@ -140,7 +140,7 @@ public class S2CEntitySync implements IMessage
 		switch (this.packetType)
 		{
 		case PID.SyncShip_AllMisc:	//sync all misc states
-			this.valueInt1 = PacketHelper.readIntArray(buf, 1+31+5);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 1+33+5);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 18);
 		break;
 		case PID.SyncShip_Attrs:	//sync all attrs
@@ -307,7 +307,8 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateTimer(ID.T.CraneTime));
 			buf.writeInt(entity.getStateMinor(ID.M.SensBody));
 			buf.writeInt(entity.getStateMinor(ID.M.NumState));
-			
+			buf.writeInt(entity.getStateMinor(ID.M.Task));
+			buf.writeInt(entity.getStateMinor(ID.M.TaskSide));
 			buf.writeInt(entity.getStateEmotion(ID.S.State));
 			buf.writeInt(entity.getStateEmotion(ID.S.HPState));
 			buf.writeInt(entity.getStateEmotion(ID.S.Emotion));
@@ -784,12 +785,13 @@ public class S2CEntitySync implements IMessage
 				ship.setStateTimer(ID.T.CraneTime, msg.valueInt1[29]);
 				ship.setStateMinor(ID.M.SensBody, msg.valueInt1[30]);
 				ship.setStateMinor(ID.M.NumState, msg.valueInt1[31]);
-				
-				ship.setStateEmotion(ID.S.State, msg.valueInt1[32], false);
-				ship.setStateEmotion(ID.S.HPState, msg.valueInt1[33], false);
-				ship.setStateEmotion(ID.S.Emotion, msg.valueInt1[34], false);
-				ship.setStateEmotion(ID.S.Emotion4, msg.valueInt1[35], false);
-				ship.setStateEmotion(ID.S.Phase, msg.valueInt1[36], false);
+				ship.setStateMinor(ID.M.Task, msg.valueInt1[32]);
+				ship.setStateMinor(ID.M.TaskSide, msg.valueInt1[33]);
+				ship.setStateEmotion(ID.S.State, msg.valueInt1[34], false);
+				ship.setStateEmotion(ID.S.HPState, msg.valueInt1[35], false);
+				ship.setStateEmotion(ID.S.Emotion, msg.valueInt1[36], false);
+				ship.setStateEmotion(ID.S.Emotion4, msg.valueInt1[37], false);
+				ship.setStateEmotion(ID.S.Phase, msg.valueInt1[38], false);
 
 				ship.setStateFlag(ID.F.CanFloatUp, msg.valueBoolean1[0]);
 				ship.setStateFlag(ID.F.IsMarried, msg.valueBoolean1[1]);

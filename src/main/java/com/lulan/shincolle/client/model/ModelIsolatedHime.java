@@ -6,6 +6,7 @@ import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -818,6 +819,8 @@ public class ModelIsolatedHime extends ShipModelBaseAdv
 		this.LegRight02a.offsetX = 0F;
 		this.LegRight02a.offsetY = 0F;
 		this.LegRight02a.offsetZ = 0F;
+		//equip
+		this.EquipRdL01.isHidden = true;
 		
 		//奔跑動作
 	    if (ent.getIsSprinting() || f1 > 0.9F)

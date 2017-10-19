@@ -1,9 +1,9 @@
 package com.lulan.shincolle.reference.unitclass;
 
+import java.util.Arrays;
+
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.FormationHelper;
-
-import scala.actors.threadpool.Arrays;
 
 /**
  * ship basic attributes + equip, potion, formation and morale buffs

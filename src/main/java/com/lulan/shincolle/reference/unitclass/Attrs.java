@@ -1,12 +1,11 @@
 package com.lulan.shincolle.reference.unitclass;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-
-import scala.actors.threadpool.Arrays;
 
 /**
  * ship basic attributes + equip and potion buffs

@@ -4,7 +4,7 @@ import com.lulan.shincolle.entity.IShipOwner;
 
 import net.minecraft.util.math.BlockPos;
 
-public interface ITileWaypoint extends IShipOwner
+public interface ITileWaypoint extends IShipOwner, ITileGuardPoint
 {
 	
 	

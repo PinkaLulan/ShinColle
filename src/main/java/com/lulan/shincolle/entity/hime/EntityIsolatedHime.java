@@ -33,7 +33,7 @@ public class EntityIsolatedHime extends BasicEntityShipCV
 		this.launchHeight = this.height * 0.7F;
 		
 		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = true;
+		this.StateFlag[ID.F.HaveRingEffect] = false; //TODO NYI
 		
 		//misc
 		this.setFoodSaturationMax(18);

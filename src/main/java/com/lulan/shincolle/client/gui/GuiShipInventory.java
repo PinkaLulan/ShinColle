@@ -22,6 +22,7 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.GuiHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -55,7 +56,8 @@ public class GuiShipInventory extends GuiContainer
 	  strMiAmmoH, strMiGrudge, canMelee, canLATK, canHATK, canALATK, canAHATK, auraEffect,
 	  followMin, followMax, fleeHP, tarAI, strOnSight, strPVP, strAA, strASM, strTimeKeep,
 	  strPick, strWpStay, strAttrModern, strAttrXP, strAttrGrudge, strAttrAmmo, strAttrHPRES,
-	  strShowHeld, strAutoCR, strAutoPump, strAttrKB, strAttrHP, strAppear;
+	  strShowHeld, strAutoCR, strAutoPump, strAttrKB, strAttrHP, strAppear, strMeta, strDict,
+	  strNbt, strInput, strOutput, strFuel, strCook, strFish, strMine, strCraft;
 	private static String[] strMorale;
 	private static int widthHoveringText1, widthHoveringText2, widthHoveringText3;
 	
@@ -81,13 +83,7 @@ public class GuiShipInventory extends GuiContainer
 		this.player = invPlayer;
 		this.xSize = 256;
 		this.ySize = 214;
-	}
-	
-	@Override
-    public void initGui()
-    {
-    	super.initGui();
-    	
+		
     	this.mouseoverList = new ArrayList();			
 		this.showPage = 1;			//show page 1
 		this.showPageAI = 1;		//show AI control page 1
@@ -213,6 +209,23 @@ public class GuiShipInventory extends GuiContainer
 		strAutoCR = I18n.format("gui.shincolle:autocombatration");
 		strAutoPump = I18n.format("gui.shincolle:autopump");
 		strAppear = I18n.format("gui.shincolle:appearance");
+		strMeta = I18n.format("gui.shincolle:crane.usemeta");
+		strDict = I18n.format("gui.shincolle:crane.useoredict");
+		strNbt = I18n.format("gui.shincolle:crane.usenbt");
+		strInput = I18n.format("gui.shincolle:ai.inputside");
+		strOutput = I18n.format("gui.shincolle:ai.outputside");
+		strFuel = I18n.format("gui.shincolle:ai.fuelside");
+		strCook = I18n.format("gui.shincolle:ai.cooking");
+		strFish = I18n.format("gui.shincolle:ai.fishing");
+		strMine = I18n.format("gui.shincolle:ai.mining");
+		strCraft = I18n.format("gui.shincolle:ai.crafting");
+	}
+	
+	//有用到fontRendererObj的必須放在此init
+	@Override
+	public void initGui()
+    {
+		super.initGui();
 		
 		//get max string width for hovering text drawing
 		int temp = this.fontRendererObj.getStringWidth(strAttrATK);
@@ -370,7 +383,7 @@ public class GuiShipInventory extends GuiContainer
             this.switchPage1b[5] = this.entity.getStateFlag(ID.F.HaveRingEffect);
             
             //draw button
-            int iconY = 132;
+            int iconY = 131;
             
             for (int i = 0; i < 6; i++)
             {
@@ -386,7 +399,7 @@ public class GuiShipInventory extends GuiContainer
                 	}
             	}
             	
-            	iconY += 12;
+            	iconY += 13;
             }
             
             break;
@@ -394,7 +407,7 @@ public class GuiShipInventory extends GuiContainer
         case 2:
         {	//page 2
         	this.pageIndicator = 239;
-        	this.pageIndicatorAI = 157;
+        	this.pageIndicatorAI = 144;
         	
         	//get button value
         	fMinPos = (int)(((entity.getStateMinor(ID.M.FollowMin) - 1) / 30F) * 42F);
@@ -430,7 +443,7 @@ public class GuiShipInventory extends GuiContainer
         case 3:
         {	//page 3
         	this.pageIndicator = 239;
-    		this.pageIndicatorAI = 183;
+    		this.pageIndicatorAI = 157;
     		
     		//get button value
     		this.switchPage3[0] = this.entity.getStateFlag(ID.F.PassiveAI);
@@ -441,7 +454,7 @@ public class GuiShipInventory extends GuiContainer
     		this.switchPage3[5] = this.entity.getStateFlag(ID.F.TimeKeeper);
     		
             //draw button
-            int iconY = 132;
+            int iconY = 131;
             
             for (boolean b : this.switchPage3)
             {
@@ -454,15 +467,15 @@ public class GuiShipInventory extends GuiContainer
             		drawTexturedModalRect(guiLeft + 174, guiTop + iconY, 11, 214, 11, 11);
             	}
             	
-            	iconY += 12;
+            	iconY += 13;
             }
   
     		break;
     	}
         case 4:
         {	//page 4
-        	this.pageIndicator = 246;
-    		this.pageIndicatorAI = 131;
+        	this.pageIndicator = 239;
+    		this.pageIndicatorAI = 170;
     		
     		//get button value
     		this.switchPage4[0] = this.entity.getStateFlag(ID.F.PickItem);
@@ -473,11 +486,11 @@ public class GuiShipInventory extends GuiContainer
             {
             	if (this.switchPage4[0])
                 {
-                	drawTexturedModalRect(guiLeft+174, guiTop+132, 0, 214, 11, 11);
+                	drawTexturedModalRect(guiLeft+174, guiTop+131, 0, 214, 11, 11);
                 }
                 else
                 {
-                	drawTexturedModalRect(guiLeft+174, guiTop+132, 11, 214, 11, 11);
+                	drawTexturedModalRect(guiLeft+174, guiTop+131, 11, 214, 11, 11);
                 }
             }
             
@@ -494,18 +507,16 @@ public class GuiShipInventory extends GuiContainer
         }
         case 5:
         {	//page 5
-        	this.pageIndicator = 246;
-        	this.pageIndicatorAI = 157;
+        	this.pageIndicator = 239;
+        	this.pageIndicatorAI = 183;
         	
         	//get button value
         	wpStayPos = (int)(entity.getStateMinor(ID.M.WpStay) * 0.0625F * 42F);
         	autoCRPos = (int)((entity.getStateMinor(ID.M.UseCombatRation) - 1) * 14F);
-//        	fleeHPPos = (int)(aaa * 42F);
         	
         	//draw range bar
         	drawTexturedModalRect(guiLeft+191, guiTop+148, 31, 214, 43, 3);
         	drawTexturedModalRect(guiLeft+191, guiTop+172, 31, 214, 43, 3);
-//        	drawTexturedModalRect(guiLeft+191, guiTop+196, 31, 214, 43, 3);
         	
         	//draw range indicator by mouse focus target
         	switch (this.mousePressBar)
@@ -516,13 +527,9 @@ public class GuiShipInventory extends GuiContainer
         	case 4:
         		drawTexturedModalRect(guiLeft+187+barPos, guiTop+169, 22, 214, 9, 9);
         		break;
-//        	case 5:
-//        		drawTexturedModalRect(guiLeft+187+barPos, guiTop+193, 22, 214, 9, 9);
-//        		break;
         	default:
         		drawTexturedModalRect(guiLeft+187+wpStayPos, guiTop+145, 22, 214, 9, 9);
         		drawTexturedModalRect(guiLeft+187+autoCRPos, guiTop+169, 22, 214, 9, 9);
-//        		drawTexturedModalRect(guiLeft+187+, guiTop+193, 22, 214, 9, 9);
         		break;
         	}
 
@@ -530,8 +537,8 @@ public class GuiShipInventory extends GuiContainer
         }
         case 6:
         {	//page 6
-        	this.pageIndicator = 246;
-    		this.pageIndicatorAI = 183;
+        	this.pageIndicator = 239;
+    		this.pageIndicatorAI = 196;
     		
     		//get button value
     		this.switchPage6[0] = this.entity.getStateFlag(ID.F.ShowHeldItem);
@@ -547,11 +554,11 @@ public class GuiShipInventory extends GuiContainer
             //draw button 0
     		if (this.switchPage6[0])
         	{
-        		drawTexturedModalRect(guiLeft + 174, guiTop + 132, 0, 214, 11, 11);
+        		drawTexturedModalRect(guiLeft + 174, guiTop + 131, 0, 214, 11, 11);
         	}
         	else
         	{
-        		drawTexturedModalRect(guiLeft + 174, guiTop + 132, 11, 214, 11, 11);
+        		drawTexturedModalRect(guiLeft + 174, guiTop + 131, 11, 214, 11, 11);
         	}
     		
     		//draw button 1~16
@@ -569,21 +576,125 @@ public class GuiShipInventory extends GuiContainer
             		
             		if (this.switchPage6[i * 4 + j + 1])
                 	{
-                		drawTexturedModalRect(guiLeft + 176 + j * 16, guiTop + 156 + i * 12, 0, 214, 11, 11);
+                		drawTexturedModalRect(guiLeft + 176 + j * 16, guiTop + 157 + i * 13, 0, 214, 11, 11);
                 	}
                 	else
                 	{
-                		drawTexturedModalRect(guiLeft + 176 + j * 16, guiTop + 156 + i * 12, 11, 214, 11, 11);
+                		drawTexturedModalRect(guiLeft + 176 + j * 16, guiTop + 157 + i * 13, 11, 214, 11, 11);
                 	}
                 }
             }
     		
     		break;
         }
+        case 7:  //page 7
+        {
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 131;
+    		
+    		//get button value
+    		int tside = this.entity.getStateMinor(ID.M.TaskSide);
+    		
+    		//draw button: task icon
+    		drawTexturedModalRect(guiLeft + 174, guiTop + 136, 87, 214, 64, 16);
+    		
+    		switch (this.entity.getStateMinor(ID.M.Task))
+    		{
+    		case 1:  //cooking
+    			drawTexturedModalRect(guiLeft + 174, guiTop + 136, 87, 230, 16, 16);
+			break;
+    		case 2:  //fishing
+    			drawTexturedModalRect(guiLeft + 190, guiTop + 136, 103, 230, 16, 16);
+			break;
+    		case 3:  //mining
+    			drawTexturedModalRect(guiLeft + 206, guiTop + 136, 119, 230, 16, 16);
+			break;
+    		case 4:  //crafting
+    			drawTexturedModalRect(guiLeft + 222, guiTop + 136, 135, 230, 16, 16);
+			break;
+    		}
+    		
+    		//draw button: task setting
+    		if ((tside & Values.N.Pow2[18]) == Values.N.Pow2[18])
+    		{
+    			drawTexturedModalRect(guiLeft + 177, guiTop + 157, 0, 236, 11, 11);
+    		}
+    		else
+    		{
+    			drawTexturedModalRect(guiLeft + 177, guiTop + 157, 0, 225, 11, 11);
+    		}
+    		
+    		if ((tside & Values.N.Pow2[19]) == Values.N.Pow2[19])
+    		{
+    			drawTexturedModalRect(guiLeft + 177, guiTop + 170, 11, 236, 11, 11);
+    		}
+    		else
+    		{
+    			drawTexturedModalRect(guiLeft + 177, guiTop + 170, 11, 225, 11, 11);
+    		}
+    		
+    		if ((tside & Values.N.Pow2[20]) == Values.N.Pow2[20])
+    		{
+    			drawTexturedModalRect(guiLeft + 177, guiTop + 183, 22, 236, 11, 11);
+    		}
+    		else
+    		{
+    			drawTexturedModalRect(guiLeft + 177, guiTop + 183, 22, 225, 11, 11);
+    		}
+        }
+        break;
+        case 8:  //page 8
+        {
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 144;
+    		
+    		//get button value
+    		int tside = this.entity.getStateMinor(ID.M.TaskSide);
+    		
+    		//draw button
+    		drawTexturedModalRect(guiLeft + 173, guiTop + 144, 151, 214, 66, 11);
+    		drawTexturedModalRect(guiLeft + 173, guiTop + 170, 151, 214, 66, 11);
+    		drawTexturedModalRect(guiLeft + 173, guiTop + 196, 151, 214, 66, 11);
+    		
+    		for (int i = 0; i < 18; i++)
+    		{
+    			if ((tside & Values.N.Pow2[i]) == Values.N.Pow2[i])
+    			{
+    				int dx = i % 6 * 11;
+    				int dy = i / 6 * 26;
+    				drawTexturedModalRect(guiLeft + 173 + dx, guiTop + 144 + dy, 151 + dx, 225, 11, 11);
+    			}
+    		}
+        }
+        break;
+        case 9:  //page 9
+        {
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 157;
+        }
+        break;
+        case 10:  //page 10
+        {
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 170;
+        }
+        break;
+        case 11:  //page 11
+        {
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 183;
+        }
+        break;
+        case 12:  //page 12
+        {
+        	this.pageIndicator = 246;
+    		this.pageIndicatorAI = 196;
+        }
+        break;
         }//end AI page switch
         
         //draw AI page indicator
-        drawTexturedModalRect(guiLeft + this.pageIndicator, guiTop + this.pageIndicatorAI, 74, 214, 6, 24);
+        drawTexturedModalRect(guiLeft + this.pageIndicator, guiTop + this.pageIndicatorAI, 74, 214, 6, 11);
         
         //draw level, ship type/name icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
@@ -914,6 +1025,52 @@ public class GuiShipInventory extends GuiContainer
 				}//end formation
 			}//end page 3
 		}
+		//AI tooltip
+		else if (xMouse >= 173+guiLeft && xMouse < 239+guiLeft && yMouse >= 131+guiTop && yMouse < 207+guiTop)
+		{
+			//AI page 7
+			if (this.showPageAI == 7)
+			{
+				mouseoverList.clear();
+				
+				if (yMouse <= 157+guiTop)
+				{
+					if (xMouse <= 189+guiLeft)
+					{
+						mouseoverList.add(strCook);
+					}
+					else if (xMouse <= 205+guiLeft)
+					{
+						mouseoverList.add(strFish);
+					}
+					else if (xMouse <= 221+guiLeft)
+					{
+						mouseoverList.add(strMine);
+					}
+					else
+					{
+						mouseoverList.add(strCraft);
+					}
+					
+					this.drawHoveringText(mouseoverList, 167, 170, this.fontRendererObj);
+				}
+				else if (yMouse <= 170+guiTop)
+				{
+					mouseoverList.add(strMeta);
+					this.drawHoveringText(mouseoverList, 145, 185, this.fontRendererObj);
+				}
+				else if (yMouse <= 183+guiTop)
+				{
+					mouseoverList.add(strDict);
+					this.drawHoveringText(mouseoverList, 145, 198, this.fontRendererObj);
+				}
+				else if (yMouse <= 196+guiTop)
+				{
+					mouseoverList.add(strNbt);
+					this.drawHoveringText(mouseoverList, 145, 211, this.fontRendererObj);
+				}
+			}//end AI page 7
+		}
 	}
 	
 	//get new mouseX,Y and draw gui
@@ -1202,17 +1359,17 @@ public class GuiShipInventory extends GuiContainer
 		case 1:
 		{	//AI page 1
 			//draw string
-			this.fontRendererObj.drawString(canMelee, 187, 134, 0);
+			this.fontRendererObj.drawString(canMelee, 187, 133, 0);
 			if (entity.getAttackType(ID.F.AtkType_Light))
 			this.fontRendererObj.drawString(canLATK, 187, 146, 0);
 			if (entity.getAttackType(ID.F.AtkType_Heavy))
-			this.fontRendererObj.drawString(canHATK, 187, 158, 0);
+			this.fontRendererObj.drawString(canHATK, 187, 159, 0);
 			if (entity.getAttackType(ID.F.AtkType_AirLight))
-			this.fontRendererObj.drawString(canALATK, 187, 170, 0);
+			this.fontRendererObj.drawString(canALATK, 187, 172, 0);
 			if (entity.getAttackType(ID.F.AtkType_AirHeavy))
-			this.fontRendererObj.drawString(canAHATK, 187, 182, 0);
+			this.fontRendererObj.drawString(canAHATK, 187, 185, 0);
 			if (entity.getAttackType(ID.F.HaveRingEffect))
-			this.fontRendererObj.drawString(auraEffect, 187, 194, 0);
+			this.fontRendererObj.drawString(auraEffect, 187, 198, 0);
 		}
 		break;
 		case 2:
@@ -1261,12 +1418,12 @@ public class GuiShipInventory extends GuiContainer
 		case 3:
 		{	//AI page 3
 			//draw string
-			this.fontRendererObj.drawString(tarAI, 187, 134, 0);
+			this.fontRendererObj.drawString(tarAI, 187, 133, 0);
 			this.fontRendererObj.drawString(strOnSight, 187, 146, 0);
-			this.fontRendererObj.drawString(strPVP, 187, 158, 0);
-			this.fontRendererObj.drawString(strAA, 187, 170, 0);
-			this.fontRendererObj.drawString(strASM, 187, 182, 0);
-			this.fontRendererObj.drawString(strTimeKeep, 187, 194, 0);
+			this.fontRendererObj.drawString(strPVP, 187, 159, 0);
+			this.fontRendererObj.drawString(strAA, 187, 172, 0);
+			this.fontRendererObj.drawString(strASM, 187, 185, 0);
+			this.fontRendererObj.drawString(strTimeKeep, 187, 198, 0);
 		}
 		break;
 		case 4:		//AI page 4
@@ -1280,7 +1437,6 @@ public class GuiShipInventory extends GuiContainer
 			//draw string
 			this.fontRendererObj.drawString(strWpStay, 174, 134, 0);
 			this.fontRendererObj.drawString(strAutoCR, 174, 158, 0);
-//			this.fontRendererObj.drawString(, 174, 182, 0);
 			
 			//draw value
 			strWpStayValue = CalcHelper.tick2SecOrMin(entity.wpStayTime2Ticks(entity.getStateMinor(ID.M.WpStay)));
@@ -1318,12 +1474,40 @@ public class GuiShipInventory extends GuiContainer
 		case 6:		//AI page 6
 		{	//AI page 6
 			//draw string
-			this.fontRendererObj.drawString(strShowHeld, 187, 134, 0);
-			this.fontRendererObj.drawString(strAppear, 187, 146, 0);
-//			this.fontRendererObj.drawString(, 187, 158, 0);
-//			this.fontRendererObj.drawString(, 187, 170, 0);
-//			this.fontRendererObj.drawString(, 187, 182, 0);
-//			this.fontRendererObj.drawString(, 187, 194, 0);
+			this.fontRendererObj.drawString(strShowHeld, 187, 133, 0);
+			this.fontRendererObj.drawString(strAppear, 177, 146, 0);
+		}
+		break;
+		case 7:		//AI page 7
+		{
+			//draw string
+			this.fontRendererObj.drawString(" Metadata", 187, 159, 0);
+			this.fontRendererObj.drawString(" Ore Dict", 187, 172, 0);
+			this.fontRendererObj.drawString(" NBT Tag", 187, 185, 0);
+		}
+		break;
+		case 8:		//AI page 8
+		{
+			//draw string
+			this.fontRendererObj.drawString(strInput, 177, 133, 0);
+			this.fontRendererObj.drawString(strOutput, 177, 159, 0);
+			this.fontRendererObj.drawString(strFuel, 177, 185, 0);
+		}
+		break;
+		case 9:		//AI page 9
+		{
+		}
+		break;
+		case 10:	//AI page 10
+		{
+		}
+		break;
+		case 11:	//AI page 11
+		{
+		}
+		break;
+		case 12:	//AI page 12
+		{
 		}
 		break;
 		}//end AI page switch
@@ -1470,6 +1654,31 @@ public class GuiShipInventory extends GuiContainer
         		this.switchPage6[0] = this.entity.getStateFlag(ID.F.ShowHeldItem);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ShowHeld, getInverseInt(this.switchPage6[0])));
     		break;
+        	case 7:		//page 7: change task
+        		int curTask = this.entity.getStateMinor(ID.M.Task);
+        		int newTask = 0;
+        		
+        		if (xClick < 191)
+        		{
+        			if (curTask != 1) newTask = 1;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        		else if (xClick < 207)
+        		{
+        			if (curTask != 2) newTask = 2;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        		else if (xClick < 223)
+        		{
+        			if (curTask != 3) newTask = 3;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        		else
+        		{
+        			if (curTask != 4) newTask = 4;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        	break;
         	}
         break;
         case 4:	//AI operation 1 
@@ -1487,6 +1696,43 @@ public class GuiShipInventory extends GuiContainer
         		this.switchPage4[1] = this.entity.getStateFlag(ID.F.AutoPump);
         		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_AutoPump, getInverseInt(this.switchPage4[1])));
     		break;
+        	case 7:		//page 7: change task
+        		int curTask = this.entity.getStateMinor(ID.M.Task);
+        		int newTask = 0;
+        		
+        		if (xClick < 191)
+        		{
+        			if (curTask != 1) newTask = 1;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        		else if (xClick < 207)
+        		{
+        			if (curTask != 2) newTask = 2;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        		else if (xClick < 223)
+        		{
+        			if (curTask != 3) newTask = 3;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        		else
+        		{
+        			if (curTask != 4) newTask = 4;
+        			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_Task, newTask));
+        		}
+        	break;
+        	case 8:		//page 8: change input side
+        		int clickid = 0;
+        		if (xClick < 185) { clickid = 0; }
+        		else if (xClick < 196) { clickid = 1; }
+    			else if (xClick < 207) { clickid = 2; }
+				else if (xClick < 218) { clickid = 3; }
+				else if (xClick < 229) { clickid = 4; }
+				else { clickid = 5; }
+        		
+        		int newValue = this.entity.getStateMinor(ID.M.TaskSide) ^ Values.N.Pow2[clickid];
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TaskSide, newValue));
+        	break;
         	}
         break;
         case 5:	//AI operation 2
@@ -1517,6 +1763,10 @@ public class GuiShipInventory extends GuiContainer
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState04, getInverseInt(this.switchPage6[4])));
         		}
+        	break;
+        	case 7:		//page 7: check metadata
+        		int newValue = this.entity.getStateMinor(ID.M.TaskSide) ^ Values.N.Pow2[18];
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TaskSide, newValue));
         	break;
         	}
         break;
@@ -1549,6 +1799,22 @@ public class GuiShipInventory extends GuiContainer
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState08, getInverseInt(this.switchPage6[8])));
         		}
         	break;
+        	case 7:		//page 7: check ore dict
+        		int newValue = this.entity.getStateMinor(ID.M.TaskSide) ^ Values.N.Pow2[19];
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TaskSide, newValue));
+        	break;
+        	case 8:		//page 8: change output side
+        		int clickid = 6;
+        		if (xClick < 185) { clickid = 6; }
+        		else if (xClick < 196) { clickid = 7; }
+    			else if (xClick < 207) { clickid = 8; }
+				else if (xClick < 218) { clickid = 9; }
+				else if (xClick < 229) { clickid = 10; }
+				else { clickid = 11; }
+        		
+        		int newValue2 = this.entity.getStateMinor(ID.M.TaskSide) ^ Values.N.Pow2[clickid];
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TaskSide, newValue2));
+        	break;
         	}
         break;
         case 7:	//AI operation 4
@@ -1579,6 +1845,10 @@ public class GuiShipInventory extends GuiContainer
         		{
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState12, getInverseInt(this.switchPage6[12])));
         		}
+        	break;
+        	case 7:		//page 7: check nbt tag
+        		int newValue = this.entity.getStateMinor(ID.M.TaskSide) ^ Values.N.Pow2[20];
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TaskSide, newValue));
         	break;
         	}
         break;
@@ -1611,6 +1881,18 @@ public class GuiShipInventory extends GuiContainer
         			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_ModelState16, getInverseInt(this.switchPage6[16])));
         		}
         	break;
+        	case 8:		//page 8: change fuel side
+        		int clickid = 12;
+        		if (xClick < 185) { clickid = 12; }
+        		else if (xClick < 196) { clickid = 13; }
+    			else if (xClick < 207) { clickid = 14; }
+				else if (xClick < 218) { clickid = 15; }
+				else if (xClick < 229) { clickid = 16; }
+				else { clickid = 17; }
+        		
+        		int newValue2 = this.entity.getStateMinor(ID.M.TaskSide) ^ Values.N.Pow2[clickid];
+    			CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_TaskSide, newValue2));
+        	break;
         	}
         break;
         case 9:		//AI page 1
@@ -1630,6 +1912,24 @@ public class GuiShipInventory extends GuiContainer
         break;
         case 14:	//AI page 6
         	this.showPageAI = 6;
+        break;
+        case 18:	//AI page 7
+        	this.showPageAI = 7;
+        break;
+        case 19:	//AI page 8
+        	this.showPageAI = 8;
+        break;
+        case 20:	//AI page 9
+        	this.showPageAI = 9;
+        break;
+        case 21:	//AI page 10
+        	this.showPageAI = 10;
+        break;
+        case 22:	//AI page 11
+        	this.showPageAI = 11;
+        break;
+        case 23:	//AI page 12
+        	this.showPageAI = 12;
         break;
         case 15:	//inventory page 0
         	CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.entity, C2SGUIPackets.PID.ShipBtn, ID.B.ShipInv_InvPage, 0));

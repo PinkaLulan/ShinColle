@@ -98,6 +98,8 @@ public class ID
 		public static final byte ShipInv_ModelState14 = 34;
 		public static final byte ShipInv_ModelState15 = 35;
 		public static final byte ShipInv_ModelState16 = 36;
+		public static final byte ShipInv_Task = 37;
+		public static final byte ShipInv_TaskSide = 38;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -355,7 +357,7 @@ public class ID
 		public static final int FORMATION = 5;
 		public static final int CRANE = 6;
 		public static final int VOLCORE = 7;
-
+		public static final int TASK = 8;
 	}
 	
 	/** icon id for book GUI */
@@ -460,7 +462,7 @@ public class ID
 		public static final byte FollowMin = 10;	//follow range min/max
 		public static final byte FollowMax = 11;	
 		public static final byte FleeHP = 12;		//flee hp%
-		public static final byte NumState = 13;	//total model state number
+		public static final byte NumState = 13;		//total model state number
 		public static final byte GuardX = 14;		//guard xyz pos
 		public static final byte GuardY = 15;
 		public static final byte GuardZ = 16;
@@ -487,8 +489,8 @@ public class ID
 		public static final byte LevelChunkLoader = 37;	//level of chunk loader
 		public static final byte LevelFlare = 38;		//level of flare
 		public static final byte LevelSearchlight = 39;	//level of searchlight
-		public static final byte NO_USE1 = 40;		//TODO
-		public static final byte NO_USE2 = 41;		//TODO
+		public static final byte Task = 40;			//doing task id
+		public static final byte TaskSide = 41;		//side setting for task
 		public static final byte NO_USE3 = 42;		//TODO
 		public static final byte CraneState = 43;	//crane state: 0:none 1:wait 2:craning
 		public static final byte WpStay = 44;		//waypoint stay setting

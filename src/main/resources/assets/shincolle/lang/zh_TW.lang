@@ -518,7 +518,7 @@ gui.shincolle:book.chap4.text22d0=
 gui.shincolle:book.chap4.text22d1=§9名稱：§0 重巡棲姬<br><br>§9艦種：§0 姬級 重巡洋艦<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 怨念彈 (2000)<br><br>§9特殊能力：§0 夜晚時跳躍/移動速度加成<br><br>§9其他能力：§0 夜晚時爆擊/二連/三連擊+10%%<br><br>深海雙尾喵中的公主，搔他肚子的話會彈出兩根尾巴。
 gui.shincolle:book.chap4.title23=
 gui.shincolle:book.chap4.text23d0=
-gui.shincolle:book.chap4.text23d1=§9名稱：§0 離島棲姬<br><br>§9艦種：§0 姬級 陸上基地<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 深海金屬 (2700)<br><br>§9特殊能力：§0 <br><br>§9其他能力：§0 <br><br>
+gui.shincolle:book.chap4.text23d1=§9名稱：§0 離島棲姬<br><br>§9艦種：§0 姬級 陸上基地<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 深海金屬 (2700)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>騎乘著新品種天藍怪的孤僻公主，因為朋友都被吃光了所以沒有朋友。
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表
@@ -730,6 +730,13 @@ gui.shincolle:showhelditem=顯示手持物品
 gui.shincolle:autocombatration=使用戰鬥糧食
 gui.shincolle:autopump=自動抽水
 gui.shincolle:appearance=外觀設定
+gui.shincolle:ai.cooking=烹飪
+gui.shincolle:ai.fishing=釣魚
+gui.shincolle:ai.mining=採礦
+gui.shincolle:ai.crafting=合成
+gui.shincolle:ai.inputside=材料輸入面
+gui.shincolle:ai.outputside=成品輸出面
+gui.shincolle:ai.fuelside=燃料輸入面
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=資材不足

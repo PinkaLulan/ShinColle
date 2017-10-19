@@ -153,25 +153,12 @@ public class GuiDesk extends GuiContainer
 		
 		this.type = type;
 		this.tile = tile;
+		this.player = player;
 		this.GuiScale = 1.25F;
 		this.GuiScaleInv = 1F / this.GuiScale;
 		this.xSize = (int) (256 * this.GuiScale);
 		this.ySize = (int) (192 * this.GuiScale);
-	}
-	
-	private void updateDeskValue()
-	{
-		this.guiFunc = this.tile.getField(0);
-  		this.book_chapNum = this.tile.getField(1);
-  		this.book_pageNum = this.tile.getField(2);
-  		this.radar_zoomLv = this.tile.getField(3);
-	}
-	
-	@Override
-	public void initGui()
-	{
-		super.initGui();
-
+		
 		this.lastXMouse = 0;
 		this.lastYMouse = 0;
 		this.tickGUI = 0;				//ticks in gui (not game tick)
@@ -216,15 +203,6 @@ public class GuiDesk extends GuiContainer
 		//ship model
 		setShipModel(this.book_chapNum, this.book_pageNum);
 		
-        //textField: font, x, y, width, height
-        this.textField = new GuiTextField(1, this.fontRendererObj, (int)((this.guiLeft+10)*this.GuiScale), (int)((this.guiTop+24)*this.GuiScale), 153, 12);
-        this.textField.setTextColor(-1);					//點選文字框時文字顏色
-        this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
-        this.textField.setEnableBackgroundDrawing(true);	//畫出文字框背景
-        this.textField.setMaxStringLength(64);				//接受最大文字長度
-        this.textField.setEnabled(false);
-        this.textField.setFocused(false);
-        
         //add text input field
         Keyboard.enableRepeatEvents(true);
         
@@ -248,7 +226,30 @@ public class GuiDesk extends GuiContainer
 		StrAllied = I18n.format("gui.shincolle:team.allied");
 		StrHostile = I18n.format("gui.shincolle:team.hostile");
 		StrRemove = I18n.format("gui.shincolle:target.remove");
+	}
+	
+	//有用到fontRendererObj的必須放在此init
+	@Override
+	public void initGui()
+    {
+		super.initGui();
 		
+        //textField: font, x, y, width, height
+        this.textField = new GuiTextField(1, this.fontRendererObj, (int)((this.guiLeft+10)*this.GuiScale), (int)((this.guiTop+24)*this.GuiScale), 153, 12);
+        this.textField.setTextColor(-1);					//點選文字框時文字顏色
+        this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
+        this.textField.setEnableBackgroundDrawing(true);	//畫出文字框背景
+        this.textField.setMaxStringLength(64);				//接受最大文字長度
+        this.textField.setEnabled(false);
+        this.textField.setFocused(false);
+    }
+	
+	private void updateDeskValue()
+	{
+		this.guiFunc = this.tile.getField(0);
+  		this.book_chapNum = this.tile.getField(1);
+  		this.book_pageNum = this.tile.getField(2);
+  		this.radar_zoomLv = this.tile.getField(3);
 	}
 	
 	//get new mouseX,Y and redraw gui

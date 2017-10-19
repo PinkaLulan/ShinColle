@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
-import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SGUIPackets;
@@ -76,12 +75,6 @@ public class GuiFormation extends GuiContainer
 		this.player = par1;
 		this.xSize = 256;
 		this.ySize = 192;
-	}
-	
-	@Override
-	public void initGui()
-	{
-		super.initGui();
 		
 		this.tickGUI = 0;				//ticks in gui (not game tick)
 		this.tickTooltip = 0;			//tooltip display time
@@ -130,16 +123,6 @@ public class GuiFormation extends GuiContainer
 		
 		this.mouseoverList = new ArrayList();
 		
-        //textField: font, x, y, width, height
-        this.textField = new GuiTextField(1, this.fontRendererObj, this.guiLeft + 100, this.guiTop + 180, 150, 12);
-        this.textField.setTextColor(Enums.EnumColors.YELLOW.getValue());					//點選文字框時文字顏色
-        this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
-        this.textField.setEnableBackgroundDrawing(true);	//畫出文字框背景
-        this.textField.setMaxStringLength(250);				//接受最大文字長度
-        this.textField.setEnabled(false);
-        this.textField.setFocused(false);
-        this.unitNameState = -1;
-		
 		//string
         attrHP = TextFormatting.YELLOW+I18n.format("gui.shincolle:hp");
 		attrATKL = TextFormatting.RED+I18n.format("gui.shincolle:firepower1");
@@ -168,6 +151,26 @@ public class GuiFormation extends GuiContainer
 		strRadar = I18n.format("gui.shincolle:radar.tname");
 		strNoSig = TextFormatting.DARK_RED+""+TextFormatting.OBFUSCATED+I18n.format("gui.shincolle:formation.nosignal");
 		
+		//update string value
+		updateString();
+	}
+	
+	//有用到fontRendererObj的必須放在此init
+	@Override
+	public void initGui()
+    {
+		super.initGui();
+		
+        //textField: font, x, y, width, height
+        this.textField = new GuiTextField(1, this.fontRendererObj, this.guiLeft + 100, this.guiTop + 180, 150, 12);
+        this.textField.setTextColor(Enums.EnumColors.YELLOW.getValue());					//點選文字框時文字顏色
+        this.textField.setDisabledTextColour(-1);			//無點選文字框時文字顏色
+        this.textField.setEnableBackgroundDrawing(true);	//畫出文字框背景
+        this.textField.setMaxStringLength(250);				//接受最大文字長度
+        this.textField.setEnabled(false);
+        this.textField.setFocused(false);
+        this.unitNameState = -1;
+        
 		//get max string length
 		strLen = fontRendererObj.getStringWidth(attrTotalFP);
 		int temp = fontRendererObj.getStringWidth(attrATKL);
@@ -182,10 +185,7 @@ public class GuiFormation extends GuiContainer
 		if(temp > strLen) strLen = temp;
 		temp = fontRendererObj.getStringWidth(attrASM);
 		if(temp > strLen) strLen = temp;
-		
-		//update string value
-		updateString();
-	}
+    }
 	
 	//get new mouseX,Y and redraw gui
 	@Override

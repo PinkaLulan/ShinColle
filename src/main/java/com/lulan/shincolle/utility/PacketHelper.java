@@ -586,6 +586,12 @@ public class PacketHelper
 			case ID.B.ShipInv_ModelState16:
 				entity.setStateEmotion(ID.S.State, entity.getStateEmotion(ID.S.State) ^ Values.N.Pow2[15], false);
 			break;
+			case ID.B.ShipInv_Task:
+				entity.setStateMinor(ID.M.Task, value);
+			break;
+			case ID.B.ShipInv_TaskSide:
+				entity.setStateMinor(ID.M.TaskSide, value);
+			break;
 			}
 		}
 		else

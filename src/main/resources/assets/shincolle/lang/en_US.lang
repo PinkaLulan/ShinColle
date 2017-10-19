@@ -518,7 +518,7 @@ gui.shincolle:book.chap4.text22d0=
 gui.shincolle:book.chap4.text22d1=§9Name:§0 Heavy Cruiser Princess<br><br>§9Class:§0 Princess Class CA<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Ammo (2000)<br><br>§9AuraEffect:§0 Increase move/jump in night<br><br>§9OtherEffect:§0 Cri/Double/Triple Hit +10%% in night<br><br>The two-tailed cat princess, the tails will pop up if scratch her belly.
 gui.shincolle:book.chap4.title23=
 gui.shincolle:book.chap4.text23d0=
-gui.shincolle:book.chap4.text23d1=§9Name:§0 Isolated Island Princess<br><br>§9Class:§0 Princess Class Installation<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Abyssium (2700)<br><br>§9AuraEffect:§0 <br><br>§9OtherEffect:§0 <br><br>
+gui.shincolle:book.chap4.text23d1=§9Name:§0 Isolated Island Princess<br><br>§9Class:§0 Princess Class Installation<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Abyssium (2700)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>The eccentric princess who rides a Cerulean has no friends, because all the friends have been eaten.
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List
@@ -730,6 +730,13 @@ gui.shincolle:showhelditem=Show Held Item
 gui.shincolle:autocombatration=Autouse CombatRation
 gui.shincolle:autopump=Auto Pump
 gui.shincolle:appearance=Appearance
+gui.shincolle:ai.cooking=Cooking
+gui.shincolle:ai.fishing=Fishing
+gui.shincolle:ai.mining=Mining
+gui.shincolle:ai.crafting=Crafting
+gui.shincolle:ai.inputside=Input Side
+gui.shincolle:ai.outputside=Output Side
+gui.shincolle:ai.fuelside=Fuel Side
 
 # GUI: Shipyard
 gui.shincolle:nomaterial=Not Enough Materials
