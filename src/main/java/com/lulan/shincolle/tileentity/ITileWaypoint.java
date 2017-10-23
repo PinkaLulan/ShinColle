@@ -20,5 +20,9 @@ public interface ITileWaypoint extends IShipOwner, ITileGuardPoint
 	public void setWpStayTime(int time);
 	public int getWpStayTime();
 	
+	/** paired chest */
+	public void setPairedChest(BlockPos pos);
+	public BlockPos getPairedChest();
+	
 	
 }

@@ -319,29 +319,29 @@ public class TileEntityHelper
 	/** pairing waypoints, called by C2S packet
 	 *  parms: pid: packet sender uid, posF: from pos, posT: to pos
 	 */
-	public static void pairingCraneAndChest(EntityPlayer player, int pid, World w, BlockPos posCrane, BlockPos posChest)
+	public static void pairingWaypointAndChest(EntityPlayer player, int pid, World w, BlockPos posWp, BlockPos posChest)
 	{
 		if (pid <= 0) return;
 		
-		TileEntity pos1 = w.getTileEntity(posCrane);
+		TileEntity pos1 = w.getTileEntity(posWp);
 		TileEntity pos2 = w.getTileEntity(posChest);
 		
-		if (pos1 instanceof TileEntityCrane && pos2 instanceof IInventory)
+		if (pos1 instanceof ITileWaypoint && pos2 instanceof IInventory)
 		{
-			TileEntityCrane crane = (TileEntityCrane) pos1;
+			ITileWaypoint wp = (ITileWaypoint) pos1;
 			IInventory chest = (IInventory) pos2;
 			
 			//check owner
-			if (crane.getPlayerUID() != pid)
+			if (wp.getPlayerUID() != pid)
 			{
 				//not the owner, return
 				player.sendMessage(new TextComponentTranslation("chat.shincolle:wrongowner")
-						.appendText(" "+crane.getPlayerUID()));
+						.appendText(" "+wp.getPlayerUID()));
 				return;
 			}
 			
 			//set chest
-			crane.setPairedChest(posChest, true);
+			wp.setPairedChest(posChest);
 			
 			//send msg
 			TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.setwp");
@@ -349,7 +349,7 @@ public class TileEntityHelper
 			player.sendMessage
 			(
 				text.appendText(" " + TextFormatting.GREEN +
-				posCrane.getX() + " " + posCrane.getY() + " " + posCrane.getZ() +
+				posWp.getX() + " " + posWp.getY() + " " + posWp.getZ() +
 	        	TextFormatting.AQUA + " & " + TextFormatting.GOLD +
 	        	posChest.getX() + " " + posChest.getY() + " " + posChest.getZ())
 			);

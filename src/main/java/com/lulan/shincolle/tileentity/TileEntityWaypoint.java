@@ -14,8 +14,10 @@ import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -25,7 +27,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 
 	//waypoint
 	private int tick, wpstay, playerUID;
-	private BlockPos lastPos, nextPos;
+	private BlockPos lastPos, nextPos, chestPos;
 	public EntityPlayer owner;
 	
 	
@@ -37,6 +39,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		this.playerUID = 0;
 		this.lastPos = BlockPos.ORIGIN;
 		this.nextPos = BlockPos.ORIGIN;
+		this.chestPos = BlockPos.ORIGIN;
 	}
 	
 	@Override
@@ -74,6 +77,10 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
         pos =  nbt.getIntArray("nextPos");
         if (pos == null || pos.length != 3) this.nextPos = BlockPos.ORIGIN;
         else this.nextPos = new BlockPos(pos[0], pos[1], pos[2]);
+        
+        pos =  nbt.getIntArray("chestPos");
+        if (pos == null || pos.length != 3) this.chestPos = BlockPos.ORIGIN;
+        else this.chestPos = new BlockPos(pos[0], pos[1], pos[2]);
     }
 	
 	//將資料寫進nbt
@@ -86,16 +93,14 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 		nbt.setInteger("pid", playerUID);
 		
         //save pos
-        if (this.lastPos != null && this.nextPos != null)
-        {
-        	nbt.setIntArray("lastPos", new int[] {this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()});
-        	nbt.setIntArray("nextPos", new int[] {this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()});
-        }
-        else
-        {
-        	nbt.setIntArray("lastPos", new int[] {0, 0, 0});
-        	nbt.setIntArray("nextPos", new int[] {0, 0, 0});
-        }
+		if (this.lastPos != null) nbt.setIntArray("lastPos", new int[] {this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()});
+		else nbt.setIntArray("lastPos", new int[] {0, 0, 0});
+		
+		if (this.nextPos != null) nbt.setIntArray("nextPos", new int[] {this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()});
+		else nbt.setIntArray("nextPos", new int[] {0, 0, 0});
+		
+		if (this.chestPos != null) nbt.setIntArray("chestPos", new int[] {this.chestPos.getX(), this.chestPos.getY(), this.chestPos.getZ()});
+		else nbt.setIntArray("chestPos", new int[] {0, 0, 0});
 		
 		return nbt;
 	}
@@ -145,18 +150,34 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 							ParticleHelper.spawnAttackParticleAt(this.pos.getX()+0.5D, this.pos.getY()+0.5D, this.pos.getZ()+0.5D, dx, dy, dz, (byte) 38);
 						}
 						
+						//paired chest mark
+						if (this.chestPos.getY() > 0)
+						{
+							double dx = this.chestPos.getX() - this.pos.getX();
+							double dy = this.chestPos.getY() - this.pos.getY();
+							double dz = this.chestPos.getZ() - this.pos.getZ();
+							dx *= 0.01D;
+							dy *= 0.01D;
+							dz *= 0.01D;
+
+							ParticleHelper.spawnAttackParticleAt(pos.getX()+0.5D, pos.getY()+0.5D, pos.getZ()+0.5D,
+																							dx, dy, dz, (byte) 39);
+						}
+						
 						//every 32 ticks
 						if ((this.tick & 31) == 0)
 						{
 							//draw point text
-							if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+							if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0 || this.chestPos.getY() > 0)
 							{
 								String name = "";
 								String postext1 = "";
 								String postext2 = "";
+								String postext3 = "";
 								int len0 = 0;
 								int len1 = 0;
 								int len2 = 0;
+								int len3 = 0;
 								
 								if (this.owner != null)
 								{
@@ -169,10 +190,13 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 								len1 = len1 > len0 ? len1 : len0;
 								postext2 = "T: " + TextFormatting.AQUA + this.nextPos.getX() + ", " + this.nextPos.getY() + ", " + this.nextPos.getZ();
 								len2 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext2);
-								postext1 = name + "\n" + TextFormatting.WHITE + postext1 + "\n" + TextFormatting.WHITE + postext2;
-								len1 = len1 > len2 ? len1 : len2;
+								if (len1 < len2) len1 = len2;
+								postext3 = "C: " + TextFormatting.YELLOW + this.chestPos.getX() + ", " + this.chestPos.getY() + ", " + this.chestPos.getZ();
+								len3 = ClientProxy.getMineraft().getRenderManager().getFontRenderer().getStringWidth(postext3);
+								if (len1 < len3) len1 = len3;
+								postext1 = name + "\n" + TextFormatting.WHITE + postext1 + "\n" + TextFormatting.WHITE + postext2 + "\n" + TextFormatting.WHITE + postext3;
 								
-								ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.7D, this.pos.getZ()+0.5D, (byte) 0, 3, len1+1);
+								ParticleHelper.spawnAttackParticleAt(postext1, this.pos.getX()+0.5D, this.pos.getY()+1.9D, this.pos.getZ()+0.5D, (byte) 0, 4, len1+1);
 							}
 							
 							//draw circle mark
@@ -192,7 +216,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 			}
 			
 			//sync waypoint
-			if (this.playerUID > 0 || this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+			if (this.playerUID > 0 || this.lastPos.getY() > 0 || this.nextPos.getY() > 0 || this.chestPos.getY() > 0)
 			{
 				if (this.tick > 128)
 				{
@@ -201,15 +225,6 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 				}
 			}
 		}//end server side
-	}
-	
-	public void setSyncData(int[] data)
-	{
-		if (data != null && data.length == 6)
-		{
-			this.lastPos = new BlockPos(data[0], data[1], data[2]);
-			this.nextPos = new BlockPos(data[3], data[4], data[5]);
-		}
 	}
 
 	@Override
@@ -288,6 +303,29 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 	public Entity getHostEntity()
 	{
 		return null;
+	}
+	
+	@Override
+	public void setPairedChest(BlockPos pos)
+	{
+		if (pos != null)
+		{
+			TileEntity tile = this.world.getTileEntity(pos);
+			
+			if (tile instanceof IInventory)
+			{
+				this.chestPos = pos;
+			}
+			
+			//sync to client
+			if (!this.world.isRemote) this.sendSyncPacket();
+		}
+	}
+
+	@Override
+	public BlockPos getPairedChest()
+	{
+		return this.chestPos;
 	}
 
 

@@ -415,7 +415,7 @@ public class EquipCalc
 		{
 			Map.Entry entry = (Map.Entry)iter.next();
 			int eid = (Integer) entry.getKey();
-			float[] val = (float[]) entry.getValue();
+			int[] val = (int[]) entry.getValue();
 			
 			if (val[ID.EquipMisc.RARE_TYPE] == type)
 			{
@@ -432,7 +432,7 @@ public class EquipCalc
 				}
 				
 				//get mean distance
-				meanDist = MathHelper.abs(totalMat - (int)val[ID.EquipMisc.RARE_MEAN]);
+				meanDist = MathHelper.abs(totalMat - val[ID.EquipMisc.RARE_MEAN]);
 				
 				//get prob by mean dist
 				prob = CalcHelper.getNormDist(meanDist);

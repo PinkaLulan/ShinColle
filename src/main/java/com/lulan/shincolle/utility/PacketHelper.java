@@ -1,11 +1,14 @@
 package com.lulan.shincolle.utility;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.annotation.Nullable;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -18,8 +21,17 @@ import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.handler.codec.EncoderException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTSizeTracker;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -740,6 +752,96 @@ public class PacketHelper
 			}
 		}
 	}
+	
+	/** send itemstack, copy from PacketBuffer.class */
+	public static void sendItemStack(ByteBuf buf, ItemStack stack)
+	{
+		if (stack == null)
+        {
+			buf.writeShort(-1);
+        }
+        else
+        {
+        	buf.writeShort(Item.getIdFromItem(stack.getItem()));
+        	buf.writeByte(stack.stackSize);
+        	buf.writeShort(stack.getMetadata());
+            NBTTagCompound nbttagcompound = null;
+
+            if (stack.getItem().isDamageable() || stack.getItem().getShareTag())
+            {
+                nbttagcompound = stack.getItem().getNBTShareTag(stack);
+            }
+            
+            writeCompoundTag(buf, nbttagcompound);
+        }
+	}
+	
+	/** read itemstack, copy from PacketBuffer.class */
+	public static ItemStack readItemStack(ByteBuf buf)
+    {
+        ItemStack itemstack = null;
+        int i = buf.readShort();
+
+        if (i >= 0)
+        {
+            int j = buf.readByte();
+            int k = buf.readShort();
+            itemstack = new ItemStack(Item.getItemById(i), j, k);
+            itemstack.setTagCompound(readCompoundTag(buf));
+        }
+
+        return itemstack;
+    }
+	
+    /** Writes a compressed NBTTagCompound to this buffer, copy from PacketBuffer.class */
+    public static void writeCompoundTag(ByteBuf buf, @Nullable NBTTagCompound nbt)
+    {
+        if (nbt == null)
+        {
+        	buf.writeByte(0);
+        }
+        else
+        {
+            try
+            {
+                CompressedStreamTools.write(nbt, new ByteBufOutputStream(buf));
+            }
+            catch (IOException e)
+            {
+            	LogHelper.info("EXCEPTION: NBT packet: send data fail: "+e);
+				e.printStackTrace();
+				return;
+            }
+        }
+    }
+
+    /** Reads a compressed NBTTagCompound from this buffer, copy from PacketBuffer.class */
+    @Nullable
+    public static NBTTagCompound readCompoundTag(ByteBuf buf)
+    {
+        int i = buf.readerIndex();
+        byte b0 = buf.readByte();
+
+        if (b0 == 0)
+        {
+            return null;
+        }
+        else
+        {
+        	buf.readerIndex(i);
+
+            try
+            {
+                return CompressedStreamTools.read(new ByteBufInputStream(buf), new NBTSizeTracker(2097152L));
+            }
+            catch (IOException e)
+            {
+            	LogHelper.info("EXCEPTION: NBT packet: get data fail: "+e);
+				e.printStackTrace();
+				return null;
+            }
+        }
+    }
 	
 	
 }

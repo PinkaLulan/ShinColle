@@ -95,7 +95,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
 		case PID.Request_WpSet:		//waypoint pairing packet
-		case PID.Request_ChestSet:	//chest and crane pairing packet
+		case PID.Request_ChestSet:	//chest and waypoint pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 		case PID.Request_UnitName:	//ship unit name
 		case PID.Request_Buffmap:	//buff map
@@ -135,7 +135,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_SyncModel:	//request model display sync
 		case PID.Request_Riding:	//request riding
 		case PID.Request_WpSet:		//waypoint pairing packet
-		case PID.Request_ChestSet:	//chest and crane pairing packet
+		case PID.Request_ChestSet:	//chest and waypoint pairing packet
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 		case PID.Request_UnitName:	//ship unit name
 		case PID.Request_Buffmap:	//buff map
@@ -310,11 +310,11 @@ public class C2SInputPackets implements IMessage
 				}
 			}
 			break;
-			case PID.Request_ChestSet:	//chest and crane pairing packet
+			case PID.Request_ChestSet:	//chest and waypoint pairing packet
 			{
 				/**
-				 * chest and crane pairing packet:
-				 * data: 0:playerUID, 1~3:crane xyz, 4~6:chest xyz
+				 * chest and waypoint pairing packet:
+				 * data: 0:playerUID, 1~3:waypoint xyz, 4~6:chest xyz
 				 */
 				EntityPlayer p = ctx.getServerHandler().playerEntity;
 				World w = null;
@@ -322,7 +322,7 @@ public class C2SInputPackets implements IMessage
 				
 				if (w != null)
 				{
-					TileEntityHelper.pairingCraneAndChest(p, msg.value3[0], w,
+					TileEntityHelper.pairingWaypointAndChest(p, msg.value3[0], w,
 							new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
 							new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
 				}

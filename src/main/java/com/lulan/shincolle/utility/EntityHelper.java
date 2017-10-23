@@ -1929,7 +1929,7 @@ public class EntityHelper
   		//try fill all container in inventory
   		for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < inv.getSizeInventoryPaged(); i++)
   		{
-  			stack = inv.getStackInSlotWithoutPaging(i);
+  			stack = inv.getStackInSlotWithPageCheck(i);
   			
   			//only for container with stackSize = 1
   			if (stack != null && stack.stackSize == 1)
@@ -1979,7 +1979,7 @@ public class EntityHelper
   		{
   			for (int i = minSlot; i < maxSlot; i++)
   			{
-  				ItemStack stack = inv.getStackInSlotWithoutPaging(i);
+  				ItemStack stack = inv.getStackInSlotWithPageCheck(i);
   				
   				if (stack != null && stack.getItem() == item && stack.getItemDamage() == meta)
 				{

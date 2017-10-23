@@ -25,6 +25,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -52,6 +53,7 @@ public class S2CEntitySync implements IMessage
 	private boolean[] valueBoolean1;
 	private List<String> valueString1;
 	private Map<Integer, Integer> valueMap1;
+	private ItemStack[] stacks;
 	
 	//packet id
 	public static final class PID
@@ -142,6 +144,10 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_AllMisc:	//sync all misc states
 			this.valueInt1 = PacketHelper.readIntArray(buf, 1+33+5);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 18);
+			
+			this.stacks = new ItemStack[2];
+			this.stacks[0] = PacketHelper.readItemStack(buf);
+			this.stacks[1] = PacketHelper.readItemStack(buf);
 		break;
 		case PID.SyncShip_Attrs:	//sync all attrs
 			boolean bonus = buf.readBoolean();
@@ -333,6 +339,8 @@ public class S2CEntitySync implements IMessage
 			buf.writeBoolean(entity.getStateFlag(ID.F.PickItem));
 			buf.writeBoolean(entity.getStateFlag(ID.F.CanPickItem));
 			buf.writeBoolean(entity.getStateFlag(ID.F.ShowHeldItem));
+			PacketHelper.sendItemStack(buf, entity.getHeldItemMainhand());
+			PacketHelper.sendItemStack(buf, entity.getHeldItemOffhand());
 		}
 		break;
 		case PID.SyncShip_Attrs:	//sync all attrs
@@ -811,6 +819,8 @@ public class S2CEntitySync implements IMessage
 				ship.setStateFlag(ID.F.PickItem, msg.valueBoolean1[15]);
 				ship.setStateFlag(ID.F.CanPickItem, msg.valueBoolean1[16]);
 				ship.setStateFlag(ID.F.ShowHeldItem, msg.valueBoolean1[17]);
+				ship.getCapaShipInventory().setStackInSlot(22, msg.stacks[0]);
+				ship.getCapaShipInventory().setStackInSlot(23, msg.stacks[1]);
 			}
 			break;
 			case PID.SyncShip_Attrs:	//sync all attrs

@@ -215,18 +215,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		this.tank.writeToNBT(nbt);
 
         //save pos
-        if (this.lastPos != null && this.nextPos != null && this.chestPos != null)
-        {
-        	nbt.setIntArray("chestPos", new int[] {this.chestPos.getX(), this.chestPos.getY(), this.chestPos.getZ()});
-        	nbt.setIntArray("lastPos", new int[] {this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()});
-        	nbt.setIntArray("nextPos", new int[] {this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()});
-        }
-        else
-        {
-        	nbt.setIntArray("chestPos", new int[] {0, 0, 0});
-        	nbt.setIntArray("lastPos", new int[] {0, 0, 0});
-        	nbt.setIntArray("nextPos", new int[] {0, 0, 0});
-        }
+		if (this.lastPos != null) nbt.setIntArray("lastPos", new int[] {this.lastPos.getX(), this.lastPos.getY(), this.lastPos.getZ()});
+		else nbt.setIntArray("lastPos", new int[] {0, 0, 0});
+		
+		if (this.nextPos != null) nbt.setIntArray("nextPos", new int[] {this.nextPos.getX(), this.nextPos.getY(), this.nextPos.getZ()});
+		else nbt.setIntArray("nextPos", new int[] {0, 0, 0});
+		
+		if (this.chestPos != null) nbt.setIntArray("chestPos", new int[] {this.chestPos.getX(), this.chestPos.getY(), this.chestPos.getZ()});
+		else nbt.setIntArray("chestPos", new int[] {0, 0, 0});
         
         return nbt;
 	}
@@ -266,24 +262,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		return false;
 	}
 	
-	//set paired chest
-	public void setPairedChest(BlockPos pos, boolean sendPacket)
-	{
-		TileEntity tile = this.world.getTileEntity(pos);
-		
-		if (tile instanceof IInventory)
-		{
-			this.chestPos = pos;
-			this.isPaired = true;
-			this.chest = (IInventory) tile;
-		}
-		
-		if (!this.world.isRemote && sendPacket)
-		{
-			this.sendSyncPacket();
-		}
-	}
-	
 	//get paired chest
 	public void checkPairedChest()
 	{
@@ -317,17 +295,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		this.chest = null;
 		this.isPaired = false;
 		this.chestPos = BlockPos.ORIGIN;
-	}
-	
-	//set data from packet data
-	public void setSyncData(int[] data)
-	{
-		if (data != null)
-		{
-			this.lastPos = new BlockPos(data[0], data[1], data[2]);
-			this.nextPos = new BlockPos(data[3], data[4], data[5]);
-			setPairedChest(new BlockPos(data[6], data[7], data[8]), false);
-		}
 	}
 	
 	@Override
@@ -364,19 +331,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	public BlockPos getLastWaypoint()
 	{
 		return this.lastPos;
-	}
-	
-	public void setChestWaypoint(BlockPos pos)
-	{
-		if (pos != null)
-		{
-			this.chestPos = pos;
-		}
-	}
-
-	public BlockPos getChestWaypoint()
-	{
-		return this.chestPos;
 	}
 	
 	@Override
@@ -599,7 +553,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 					if ((this.tick & 31) == 0)
 					{
 						//draw point text
-						if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0)
+						if (this.lastPos.getY() > 0 || this.nextPos.getY() > 0 || this.chestPos.getY() > 0)
 						{
 							String name = "";
 							String postext1 = "";
@@ -1039,7 +993,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		//fill all container in inventory
 		for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < inv.getSizeInventoryPaged(); i++)
 		{
-			stack = inv.getStackInSlotWithoutPaging(i);
+			stack = inv.getStackInSlotWithPageCheck(i);
 			
 			//only for container with stackSize = 1
 			if (stack != null && stack.stackSize == 1)
@@ -1082,7 +1036,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		//fill all container in inventory
 		for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < inv.getSizeInventoryPaged(); i++)
 		{
-			stack = inv.getStackInSlotWithoutPaging(i);
+			stack = inv.getStackInSlotWithPageCheck(i);
 			drainTemp = null;
 			
 			if (stack != null && stack.stackSize == 1)
@@ -1237,14 +1191,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 				if (canMove && slotid >= 0)
 				{
 					//move item
-					if (invFrom instanceof CapaShipInventory) moveitem = ((CapaShipInventory) invFrom).getStackInSlotWithoutPaging(slotid);
+					if (invFrom instanceof CapaShipInventory) moveitem = ((CapaShipInventory) invFrom).getStackInSlotWithPageCheck(slotid);
 					else moveitem = invFrom.getStackInSlot(slotid);
-					moved = moveItemstackToInv(invTo, moveitem);
+					moved = InventoryHelper.moveItemstackToInv(invTo, moveitem, null);
 					
 					//check item size
 					if (moved && moveitem.stackSize <= 0)
 					{
-						if (invFrom instanceof CapaShipInventory) ((CapaShipInventory) invFrom).setInventorySlotWithoutPaging(slotid, null);
+						if (invFrom instanceof CapaShipInventory) ((CapaShipInventory) invFrom).setInventorySlotWithPageCheck(slotid, null);
 						else invFrom.setInventorySlotContents(slotid, null);
 					}
 					
@@ -1275,63 +1229,20 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 					if (slotid >= 0)
 					{
 						//move item
-						if (invFrom instanceof CapaShipInventory) moveitem = ((CapaShipInventory) invFrom).getStackInSlotWithoutPaging(slotid);
+						if (invFrom instanceof CapaShipInventory) moveitem = ((CapaShipInventory) invFrom).getStackInSlotWithPageCheck(slotid);
 						else moveitem = invFrom.getStackInSlot(slotid);
-						moved = moveItemstackToInv(invTo, moveitem);
+						moved = InventoryHelper.moveItemstackToInv(invTo, moveitem, null);
 						
 						//check item size
 						if (moved && moveitem.stackSize <= 0)
 						{
-							if (invFrom instanceof CapaShipInventory) ((CapaShipInventory) invFrom).setInventorySlotWithoutPaging(slotid, null);
+							if (invFrom instanceof CapaShipInventory) ((CapaShipInventory) invFrom).setInventorySlotWithPageCheck(slotid, null);
 							else invFrom.setInventorySlotContents(slotid, null);
 						}
 					}
 				}
 			}//end temp is null
 		}//end all temp slots
-		
-		return moved;
-	}
-	
-	//move itemstack to inv with inv type checking, return true = item moved
-	private boolean moveItemstackToInv(IInventory inv, ItemStack moveitem)
-	{
-		boolean moved = false;
-		
-		//move item to inv
-		if (moveitem != null)
-		{
-			//invTo is ship inv
-			if (inv instanceof CapaShipInventory)
-			{
-				moved = mergeItemStack(inv, moveitem);
-			}
-			//invTo is vanilla chest
-			else if (inv instanceof TileEntityChest)
-			{
-				TileEntityChest chest = (TileEntityChest) inv;
-				TileEntityChest chest2 = null;
-				
-				//move to main chest
-				moved = mergeItemStack(chest, moveitem);
-				
-				//move fail, check adj chest
-				if (!moved)
-				{
-					//get adj chest
-					chest2 = TileEntityHelper.getAdjChest(chest);
-					
-					//move to adj chest
-					if (chest2 != null) moved = mergeItemStack(chest2, moveitem);
-				}//end move to adj chest
-			}
-			//other normal inv
-			else
-			{
-				moved = mergeItemStack(inv, moveitem);
-			}
-			
-		}//end move item
 		
 		return moved;
 	}
@@ -1371,93 +1282,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		}
 	}
 	
-	//merge itemstack to slot
-	private boolean mergeItemStack(IInventory inv, ItemStack itemstack)
-	{
-		ItemStack slotstack;
-		boolean movedItem = false;
-        int k = 0;
-        int startid = 0;
-        int maxSize = inv.getSizeInventory();
-
-        //init slots for ship inventory
-        if(inv instanceof CapaShipInventory)
-        {
-        	//start at inv slots
-        	startid = ContainerShipInventory.SLOTS_SHIPINV;
-        	
-        	//get slot size by pages
-        	maxSize = ((CapaShipInventory) inv).getSizeInventoryPaged();
-        }
-
-        //is stackable item
-        if (itemstack.isStackable())
-        {
-        	k = startid;
-        	
-        	//loop all slots until stacksize = 0
-            while (itemstack.stackSize > 0 && k < maxSize)
-            {
-				if (inv instanceof CapaShipInventory) slotstack = ((CapaShipInventory) inv).getStackInSlotWithoutPaging(k);
-				else slotstack = inv.getStackInSlot(k);
-
-                //is same item, merge to slot
-                if (slotstack != null && slotstack.getItem() == itemstack.getItem() &&
-                	(!itemstack.getHasSubtypes() || itemstack.getItemDamage() == slotstack.getItemDamage()) &&
-                   ItemStack.areItemStackTagsEqual(itemstack, slotstack))
-                {
-                    int l = slotstack.stackSize + itemstack.stackSize;
-
-                    //merge: total size < max size
-                    if (l <= itemstack.getMaxStackSize())
-                    {
-                        itemstack.stackSize = 0;
-                        slotstack.stackSize = l;
-                        movedItem = true;
-                    }
-                    //merge: move item to slot stack
-                    else if (slotstack.stackSize < itemstack.getMaxStackSize())
-                    {
-                        itemstack.stackSize -= itemstack.getMaxStackSize() - slotstack.stackSize;
-                        slotstack.stackSize = itemstack.getMaxStackSize();
-                        movedItem = true;
-                    }
-                }
-
-                //next slot
-                ++k;
-            }//end loop all slots
-        }//end is stackable
-
-        //no stack can merge, find empty slot
-        if (itemstack.stackSize > 0)
-        {
-        	k = startid;
-
-        	//loop all slots to find empty slot
-            while (k < maxSize)
-            {
-				if (inv instanceof CapaShipInventory) slotstack = ((CapaShipInventory) inv).getStackInSlotWithoutPaging(k);
-				else slotstack = inv.getStackInSlot(k);
-
-                //find empty slot
-                if (slotstack == null)
-                {
-					if (inv instanceof CapaShipInventory) ((CapaShipInventory) inv).setInventorySlotWithoutPaging(k, itemstack.copy());
-					else inv.setInventorySlotContents(k, itemstack.copy());
-                    itemstack.stackSize = 0;
-                    movedItem = true;
-                    break;
-                }
-
-                //next slot
-                ++k;
-            }//end loop all slots
-        }
-
-        return movedItem;
-    }
-	
 	//get slot id in inventory that match target item
 	private int matchTempItem(IInventory inv, ItemStack target)
 	{
@@ -1482,7 +1306,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			//check slots
 			for (slotid = startid; slotid < maxSize; slotid++)
 			{
-				if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithoutPaging(slotid);
+				if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(slotid);
 				else getitem = inv.getStackInSlot(slotid);
 				
 				if (getitem != null)
@@ -1534,7 +1358,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		{
 			for (slotid = startid; slotid < maxSize; slotid++)
 			{
-				if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithoutPaging(slotid);
+				if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(slotid);
 				else getitem = inv.getStackInSlot(slotid);
 				
 				if (getitem != null)
@@ -1567,7 +1391,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         
 		for (slotid = startid; slotid < maxSize; slotid++)
 		{
-			if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithoutPaging(slotid);
+			if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(slotid);
 			else getitem = inv.getStackInSlot(slotid);
 			
 			if (getitem != null)
@@ -1726,7 +1550,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		//check equip slots
 		for (int i = 0; i < 6; i++)
 		{
-			ItemStack stack = inv.getStackInSlotWithoutPaging(i);
+			ItemStack stack = inv.getStackInSlotWithPageCheck(i);
 			
 			if (stack != null && stack.getItem() == ModItems.EquipDrum)
 			{
@@ -1972,6 +1796,31 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		}
 		
 		return false;
+	}
+
+	@Override
+	public void setPairedChest(BlockPos pos)
+	{
+		if (pos != null)
+		{
+			TileEntity tile = this.world.getTileEntity(pos);
+			
+			if (tile instanceof IInventory)
+			{
+				this.chestPos = pos;
+				this.isPaired = true;
+				this.chest = (IInventory) tile;
+			}
+			
+			//sync to client
+			if (!this.world.isRemote) this.sendSyncPacket();
+		}
+	}
+
+	@Override
+	public BlockPos getPairedChest()
+	{
+		return this.chestPos;
 	}
 
 	

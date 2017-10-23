@@ -190,7 +190,7 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
 		break;
 		case PID.TileWaypoint:	//sync tile waypoint
-			this.valueInt1 = PacketHelper.readIntArray(buf, 11);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 14);
 		break;
 		case PID.TileCrane:		//sync tile crane
 			this.valueInt1 = PacketHelper.readIntArray(buf, 16);
@@ -443,9 +443,9 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getNextWaypoint().getX());
 			buf.writeInt(tile2.getNextWaypoint().getY());
 			buf.writeInt(tile2.getNextWaypoint().getZ());
-			buf.writeInt(tile2.getChestWaypoint().getX());
-			buf.writeInt(tile2.getChestWaypoint().getY());
-			buf.writeInt(tile2.getChestWaypoint().getZ());
+			buf.writeInt(tile2.getPairedChest().getX());
+			buf.writeInt(tile2.getPairedChest().getY());
+			buf.writeInt(tile2.getPairedChest().getZ());
 			
 			if (tile2.getShip() != null)
 			{
@@ -487,6 +487,9 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getNextWaypoint().getX());
 			buf.writeInt(tile2.getNextWaypoint().getY());
 			buf.writeInt(tile2.getNextWaypoint().getZ());
+			buf.writeInt(tile2.getPairedChest().getX());
+			buf.writeInt(tile2.getPairedChest().getY());
+			buf.writeInt(tile2.getPairedChest().getZ());
 			buf.writeInt(tile2.getPlayerUID());
 			
 			if (tile2.owner != null)
@@ -826,9 +829,11 @@ public class S2CGUIPackets implements IMessage
 			
 			if (tile instanceof TileEntityVolCore)
 			{
-				((TileEntityVolCore) tile).setPowerRemained(msg.valueInt1[3]);
-				((TileEntityVolCore) tile).setField(0, msg.valueInt1[4]);
-				((TileEntityVolCore) tile).setPlayerUID(msg.valueInt1[5]);
+				TileEntityVolCore tile2 = (TileEntityVolCore) tile;
+				
+				tile2.setPowerRemained(msg.valueInt1[3]);
+				tile2.setField(0, msg.valueInt1[4]);
+				tile2.setPlayerUID(msg.valueInt1[5]);
 			}
 		}
 		break;
@@ -840,15 +845,13 @@ public class S2CGUIPackets implements IMessage
 			
 			if (tile instanceof TileEntityWaypoint)
 			{
-				int[] data = new int[6];
-				for (int i = 0; i < 6; i++)
-				{
-					data[i] = msg.valueInt1[i + 3];
-				}
+				TileEntityWaypoint tile2 = (TileEntityWaypoint) tile;
 				
-				((TileEntityWaypoint) tile).setSyncData(data);
-				((TileEntityWaypoint) tile).setPlayerUID(msg.valueInt1[9]);
-				((TileEntityWaypoint) tile).owner = EntityHelper.getEntityPlayerByID(msg.valueInt1[10], 0, true);
+				tile2.setLastWaypoint(new BlockPos(msg.valueInt1[3], msg.valueInt1[4], msg.valueInt1[5]));
+				tile2.setNextWaypoint(new BlockPos(msg.valueInt1[6], msg.valueInt1[7], msg.valueInt1[8]));
+				tile2.setPairedChest(new BlockPos(msg.valueInt1[9], msg.valueInt1[10], msg.valueInt1[11]));
+				tile2.setPlayerUID(msg.valueInt1[12]);
+				tile2.owner = EntityHelper.getEntityPlayerByID(msg.valueInt1[13], 0, true);
 			}
 		}
 		break;
@@ -864,14 +867,10 @@ public class S2CGUIPackets implements IMessage
 			if (tile instanceof TileEntityCrane)
 			{
 				TileEntityCrane tile2 = (TileEntityCrane) tile;
-				int[] data = new int[9];
-				
-				for (int i = 0; i < 9; i++)
-				{
-					data[i] = msg.valueInt1[i + 3];
-				}
-				
-				tile2.setSyncData(data);
+
+				tile2.setLastWaypoint(new BlockPos(msg.valueInt1[3], msg.valueInt1[4], msg.valueInt1[5]));
+				tile2.setNextWaypoint(new BlockPos(msg.valueInt1[6], msg.valueInt1[7], msg.valueInt1[8]));
+				tile2.setPairedChest(new BlockPos(msg.valueInt1[9], msg.valueInt1[10], msg.valueInt1[11]));
 				tile2.setField(2, msg.valueByte1[0]);
 				tile2.setField(3, msg.valueByte1[1]);
 				tile2.setField(4, msg.valueByte1[2]);

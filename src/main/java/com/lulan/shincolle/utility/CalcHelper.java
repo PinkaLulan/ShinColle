@@ -199,6 +199,26 @@ public class CalcHelper
     	return result;
     }
     
+    /** Set<Integer> to int[] */
+    public static int[] intSetToArray(Set<Integer> iset)
+    {
+    	if (iset != null && iset.size() > 0)
+    	{
+    		int[] iarray = new int[iset.size()];
+    		int id = 0;
+    		
+    		for (int i : iset)
+    		{
+    			iarray[id] = i;
+    			id++;
+    		}
+    		
+    		return iarray;
+    	}
+    	
+    	return new int[] {};
+    }
+    
     /** int[] to List<Integer> */
     public static ArrayList<Integer> intArrayToList(int[] iarray)
     {
@@ -514,6 +534,52 @@ public class CalcHelper
 		newPos[1] *= scale;
 		
 		return newPos;
+	}
+	
+	/** check number is NOT in array */
+	public static boolean checkIntNotInArray(int target, int[] host)
+	{
+		if (host == null || host.length <= 0) return true;
+		
+		for (int i : host)
+		{
+			if (target == i) return false;
+		}
+		
+		return true;
+	}
+	
+	/** check number is in array */
+	public static boolean checkIntInArray(int target, int[] host)
+	{
+		if (host == null || host.length <= 0) return false;
+		
+		for (int i : host)
+		{
+			if (target == i) return true;
+		}
+		
+		return false;
+	}
+	
+	/** remove all B element in A */
+	public static int[] arrayRemoveAll(int[] a, int[] b)
+	{
+		if (a == null || b == null) return new int[] {};
+		
+		Set<Integer> sa = new HashSet<Integer>();
+		
+		for (int ia : a)
+		{
+			sa.add(ia);
+		}
+		
+		for (int ib : b)
+		{
+			sa.remove(ib);
+		}
+		
+		return intSetToArray(sa);
 	}
 	
     

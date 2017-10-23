@@ -1,9 +1,14 @@
 package com.lulan.shincolle.utility;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
+import com.lulan.shincolle.reference.Values;
 
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
@@ -114,13 +119,13 @@ public class InventoryHelper
 				//check all slots are full
 				if (checkFull)
 				{
-					if (!checkFluidContainer(shipInv.getStackInSlotWithoutPaging(i), targetFluid, true))
+					if (!checkFluidContainer(shipInv.getStackInSlotWithPageCheck(i), targetFluid, true))
 						return false;
 				}
 				//check all slots are empty
 				else
 				{
-					if (!checkFluidContainer(shipInv.getStackInSlotWithoutPaging(i), targetFluid, false))
+					if (!checkFluidContainer(shipInv.getStackInSlotWithPageCheck(i), targetFluid, false))
 						return false;
 				}
 			}
@@ -253,7 +258,7 @@ public class InventoryHelper
 			//get any empty slot = false
 			for (i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
 			{
-				if (shipInv.getStackInSlotWithoutPaging(i) == null) return false;
+				if (shipInv.getStackInSlotWithPageCheck(i) == null) return false;
 			}
 		}
 		//inventory is vanilla chest
@@ -350,7 +355,7 @@ public class InventoryHelper
 			//get any empty slot = false
 			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
 			{
-				if (shipInv.getStackInSlotWithoutPaging(i) != null) return false;
+				if (shipInv.getStackInSlotWithPageCheck(i) != null) return false;
 			}
 		}
 		//inventory is vanilla chest
@@ -402,7 +407,7 @@ public class InventoryHelper
 			//get any empty slot = false
 			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
 			{
-				if (matchTargetItem(shipInv.getStackInSlotWithoutPaging(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
+				if (matchTargetItem(shipInv.getStackInSlotWithPageCheck(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
 			}
 		}
 		//inventory is vanilla chest
@@ -450,7 +455,7 @@ public class InventoryHelper
 			//get any empty slot = false
 			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
 			{
-				if (matchTargetItem(shipInv.getStackInSlotWithoutPaging(i), temp, checkMetadata, checkNbt, checkOredict)) return true;
+				if (matchTargetItem(shipInv.getStackInSlotWithPageCheck(i), temp, checkMetadata, checkNbt, checkOredict)) return true;
 			}
 		}
 		//inventory is vanilla chest
@@ -483,6 +488,70 @@ public class InventoryHelper
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * check target stack in inventory except xx slots
+	 * exceptSlots: int[] {5, 7, 8} = dont check slot 5, 7, 8
+	 * return slot id, -1 if itemstack not found
+	 */
+	public static int matchTargetItemExceptSlots(IInventory inv, ItemStack temp, boolean checkMetadata, boolean checkNbt, boolean checkOredict, int[] exceptSlots)
+	{
+		if (exceptSlots == null || temp == null) return -1;
+		
+		//inventory is ship inv
+		if(inv instanceof CapaShipInventory)
+		{
+			CapaShipInventory shipInv = (CapaShipInventory) inv;
+			
+			//get any empty slot = false
+			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
+			{
+				if (CalcHelper.checkIntNotInArray(i, exceptSlots))
+				{
+					if (matchTargetItem(shipInv.getStackInSlotWithPageCheck(i), temp, checkMetadata, checkNbt, checkOredict)) return i;
+				}
+			}
+		}
+		//inventory is vanilla chest
+		else if (inv instanceof TileEntityChest)
+		{
+			//check main chest
+			for (int i = 0; i < inv.getSizeInventory(); i++)
+			{
+				if (CalcHelper.checkIntNotInArray(i, exceptSlots))
+				{
+					if (matchTargetItem(inv.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) return i;
+				}
+			}
+			
+			//check adj chest
+			TileEntityChest chest2 = TileEntityHelper.getAdjChest((TileEntityChest) inv);
+			
+			if (chest2 != null)
+			{
+				for (int i = 0; i < chest2.getSizeInventory(); i++)
+				{
+					if (CalcHelper.checkIntNotInArray(i, exceptSlots))
+					{
+						if (matchTargetItem(chest2.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) return i;
+					}
+				}
+			}
+		}
+		//other inventory
+		else
+		{
+			for (int i = 0; i < inv.getSizeInventory(); i++)
+			{
+				if (CalcHelper.checkIntNotInArray(i, exceptSlots))
+				{
+					if (matchTargetItem(inv.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) return i;
+				}
+			}
+		}
+		
+		return -1;
 	}
 	
 	/**
@@ -570,6 +639,237 @@ public class InventoryHelper
 		
 		return stackMode;
 	}
+	
+	/**
+	 * get slots by insert side, item stack and ship's side setting
+	 * 
+	 * stack: target item, null = ignore item
+	 * 
+	 * side: TaskSide from ship
+	 *       0~5 bit for input side: Down, Up, N, S, W, E
+	 *       6~11 bit for output side
+	 *       12~17 bit for fuel side
+	 *       18~20 bit for metadata, ore dict, nbt tag check
+	 *       
+	 * type: 0:input, 1:output, 2:fuel
+	 * 
+	 * return available slots, all slots from each side will be combined to one array
+	 */
+	public static int[] getSlotsFromSide(ISidedInventory te, ItemStack stack, int side, int type)
+	{
+		//null check
+		if (te == null) return new int[] {};
+		
+		//get side
+		int padbit = type * 6;
+		int tarbit = 0;
+		int[] slotstemp = null;
+		Set<Integer> slots = new HashSet<Integer>();
+		
+		//loop all sides
+		for (int i = 0; i < 6; i++)
+		{
+			EnumFacing face = EnumFacing.getFront(i);  //id: D U N S W E
+			tarbit = i + padbit;
+			
+			//if side must be checked
+			if ((side & Values.N.Pow2[tarbit]) == Values.N.Pow2[tarbit])
+			{
+				//get slots by side
+				slotstemp = te.getSlotsForFace(face);
+				
+				//no slot for that side, skip
+				if (slotstemp == null || slotstemp.length <= 0) continue;
+				
+				//get slots, check stack can be inserted into slot
+				for (int j = 0; j < slotstemp.length; j++)
+				{
+					//check input or fuel
+					if (type != 1)
+					{
+						if (stack == null || te.canInsertItem(slotstemp[j], stack, face))
+						{
+							slots.add(slotstemp[j]);
+						}
+					}
+					//check output
+					else
+					{
+						if (stack == null || te.canExtractItem(slotstemp[j], stack, face))
+						{
+							slots.add(slotstemp[j]);
+						}
+					}
+				}
+			}
+		}
+		
+		//return int array
+		if (slots.size() > 0)
+		{
+			return CalcHelper.intSetToArray(slots);
+		}
+		else
+		{
+			return new int[] {};
+		}
+	}
+	
+	/**
+	 * move itemstack to inv with inv type checking and specified slots
+	 * slots: specified slots, if null = all slots
+	 * return true if item moved
+	 */
+	public static boolean moveItemstackToInv(IInventory inv, ItemStack moveitem, int[] slots)
+	{
+		boolean moved = false;
+		
+		//move item to inv
+		if (moveitem != null)
+		{
+			//invTo is ship inv
+			if (inv instanceof CapaShipInventory)
+			{
+				moved = mergeItemStack(inv, moveitem, slots);
+			}
+			//invTo is vanilla chest
+			else if (inv instanceof TileEntityChest)
+			{
+				TileEntityChest chest = (TileEntityChest) inv;
+				TileEntityChest chest2 = null;
+				
+				//move to main chest
+				moved = mergeItemStack(chest, moveitem, slots);
+				
+				//move fail, check adj chest
+				if (!moved)
+				{
+					//get adj chest
+					chest2 = TileEntityHelper.getAdjChest(chest);
+					
+					//move to adj chest
+					if (chest2 != null) moved = mergeItemStack(chest2, moveitem, slots);
+				}//end move to adj chest
+			}
+			//other normal inv
+			else
+			{
+				moved = mergeItemStack(inv, moveitem, slots);
+			}
+			
+		}//end move item
+		
+		return moved;
+	}
+	
+	/**
+	 * merge itemstack to slots
+	 * slots: specified slots, if null = all slots
+	 */
+	public static boolean mergeItemStack(IInventory inv, ItemStack itemstack, int[] slots)
+	{
+		ItemStack slotstack;
+		boolean movedItem = false;
+        int k = 0;
+        int j = 0;
+        int startid = 0;
+        int maxSize = inv.getSizeInventory();
+
+        //init slots id
+        if (slots == null)
+        {
+        	if(inv instanceof CapaShipInventory)
+            {
+            	//start at inv slots
+            	startid = ContainerShipInventory.SLOTS_SHIPINV;
+            	
+            	//get slot size by pages
+            	maxSize = ((CapaShipInventory) inv).getSizeInventoryPaged();
+            }
+        }
+        else
+        {
+        	startid = 0;
+        	maxSize = slots.length;
+        }
+
+        //is stackable item
+        if (itemstack.isStackable())
+        {
+        	k = startid;
+        	
+        	//loop all slots until stacksize = 0
+            while (itemstack.stackSize > 0 && k < maxSize)
+            {
+            	//calc slot id
+            	if (slots != null) j = slots[k];
+            	else j = k;
+            	
+            	//get stack in slot
+				if (inv instanceof CapaShipInventory) slotstack = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(j);
+				else slotstack = inv.getStackInSlot(j);
+
+                //if same item, merge to slot
+                if (slotstack != null && slotstack.getItem() == itemstack.getItem() &&
+                	(!itemstack.getHasSubtypes() || itemstack.getItemDamage() == slotstack.getItemDamage()) &&
+                   ItemStack.areItemStackTagsEqual(itemstack, slotstack))
+                {
+                    int l = slotstack.stackSize + itemstack.stackSize;
+
+                    //merge: total size < max size
+                    if (l <= itemstack.getMaxStackSize())
+                    {
+                        itemstack.stackSize = 0;
+                        slotstack.stackSize = l;
+                        movedItem = true;
+                    }
+                    //merge: move item to slot stack
+                    else if (slotstack.stackSize < itemstack.getMaxStackSize())
+                    {
+                        itemstack.stackSize -= itemstack.getMaxStackSize() - slotstack.stackSize;
+                        slotstack.stackSize = itemstack.getMaxStackSize();
+                        movedItem = true;
+                    }
+                }
+
+                //next slot
+                ++k;
+            }//end loop all slots
+        }//end is stackable
+
+        //no stack can merge, find empty slot
+        if (itemstack.stackSize > 0)
+        {
+        	k = startid;
+
+        	//loop all slots to find empty slot
+            while (k < maxSize)
+            {
+            	//calc slot id
+            	if (slots != null) j = slots[k];
+            	else j = k;
+            	
+            	//get stack in slot
+				if (inv instanceof CapaShipInventory) slotstack = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(j);
+				else slotstack = inv.getStackInSlot(j);
+
+                //find empty slot
+                if (slotstack == null)
+                {
+					if (inv instanceof CapaShipInventory) ((CapaShipInventory) inv).setInventorySlotWithPageCheck(j, itemstack.copy());
+					else inv.setInventorySlotContents(j, itemstack.copy());
+                    itemstack.stackSize = 0;
+                    movedItem = true;
+                    break;
+                }
+
+                //next slot
+                ++k;
+            }//end loop all slots
+        }
+
+        return movedItem;
+    }
 	
 	
 }

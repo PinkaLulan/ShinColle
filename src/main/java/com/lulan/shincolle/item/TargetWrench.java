@@ -237,31 +237,31 @@ public class TargetWrench extends BasicItem
 			return false;
 		}
 
-		//chest and crane pairing
-		if (tiles[0] instanceof IInventory && !(tiles[0] instanceof TileEntityCrane) && tiles[1] instanceof TileEntityCrane ||
-			tiles[1] instanceof IInventory && !(tiles[1] instanceof TileEntityCrane) && tiles[0] instanceof TileEntityCrane)
+		//chest and waypoint pairing
+		if (tiles[0] instanceof IInventory && !(tiles[0] instanceof ITileWaypoint) && tiles[1] instanceof ITileWaypoint ||
+			tiles[1] instanceof IInventory && !(tiles[1] instanceof ITileWaypoint) && tiles[0] instanceof ITileWaypoint)
 		{
 			//check dist < ~6 blocks
 			if (dist < 40)
 			{
-				BlockPos cranePos = null;
+				BlockPos wpPos = null;
 				BlockPos chestPos = null;
 				
 				//set chest pair
-				if (tiles[0] instanceof TileEntityCrane)
+				if (tiles[0] instanceof ITileWaypoint)
 				{
-					cranePos = tilePoint[0];
+					wpPos = tilePoint[0];
 					chestPos = tilePoint[1];
 				}
 				else
 				{
-					cranePos = tilePoint[1];
+					wpPos = tilePoint[1];
 					chestPos = tilePoint[0];
 				}
 				
 				//send pairing request packet
 				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_ChestSet,
-					uid, cranePos.getX(), cranePos.getY(), cranePos.getZ(),
+					uid, wpPos.getX(), wpPos.getY(), wpPos.getZ(),
 					chestPos.getX(), chestPos.getY(), chestPos.getZ()));
 				
 				//clear data

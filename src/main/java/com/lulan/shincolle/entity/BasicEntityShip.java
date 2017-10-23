@@ -1515,8 +1515,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.setUpdateFlag(ID.FlagUpdate.AttrsFormation, true);
 		this.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, true);
 		
-		sendSyncPacket(S2CEntitySync.PID.SyncShip_AllMisc, false);
-		sendSyncPacket(S2CEntitySync.PID.SyncShip_Attrs, false);
+		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_AllMisc, false);
+		this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Attrs, false);
 	}
 	
 	/** send sync packet: attrs */
@@ -2509,10 +2509,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public void onLivingUpdate()
 	{
-		if (this.ticksExisted == 8)
+		if (this.ticksExisted == 5)
 		{
 			//reseed random
 			this.rand.setSeed((this.getShipUID() << 4) + System.currentTimeMillis());
+			
+			//reset flag
+			this.initAI = false;
+			this.initWaitAI = false;
 		}
 		
         /** server side */
@@ -2560,7 +2564,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		setAIList();
             		setAITargetList();
             		decrGrudgeNum(0);			//check grudge
-            		sendSyncPacketAll();
             		updateChunkLoader();
             		
             		this.initAI = true;
@@ -2655,6 +2658,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                         		{
                         			//request formation buff update
                         			setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
+                        			sendSyncPacketAll();
                         			
                         			this.initWaitAI = true;
                         		}

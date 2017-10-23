@@ -114,7 +114,8 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		return stacks[i];
 	}
 	
-	public ItemStack getStackInSlotWithoutPaging(int i)
+	/** get itemstack in slot with page limit check */
+	public ItemStack getStackInSlotWithPageCheck(int i)
 	{
 		if (i < 0 || i >= this.getSizeInventoryPaged() || i >= stacks.length)
             throw new RuntimeException("Slot " + i + " not in valid range - [0," + stacks.length + ")");
@@ -181,8 +182,8 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		}
 	}
 	
-	//set slots item without paging
-	public void setInventorySlotWithoutPaging(int i, ItemStack stack)
+	/** set itemstack to slot with page limit check */
+	public void setInventorySlotWithPageCheck(int i, ItemStack stack)
 	{
 		//check slot id
 		if (i < 0 || i >= this.getSizeInventoryPaged() || i >= stacks.length)
