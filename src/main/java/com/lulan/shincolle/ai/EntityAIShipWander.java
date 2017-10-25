@@ -1,5 +1,7 @@
 package com.lulan.shincolle.ai;
 
+import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
@@ -53,6 +55,17 @@ public class EntityAIShipWander extends EntityAIBase
         }
         else
         {
+        	//check fishing
+        	if (host instanceof BasicEntityShip)
+        	{
+        		if (((BasicEntityShip) host).fishHook != null) return false;
+        	}
+        	else if (host instanceof BasicEntityMount)
+        	{
+        		if (((BasicEntityMount) host).getHostEntity() != null &&
+        			((BasicEntityShip)((BasicEntityMount) host).getHostEntity()).fishHook != null) return false;
+        	}
+        	
         	//get random position
             Vec3d vec3 = RandomPositionGenerator.findRandomTarget(this.host2, ranXZ, ranY);
 

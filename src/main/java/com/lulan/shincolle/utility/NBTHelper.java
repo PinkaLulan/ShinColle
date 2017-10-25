@@ -64,6 +64,7 @@ public class NBTHelper
 			
 	    	for (String name : strs)
 	    	{
+	    		if (name == null || name.length() <= 0) name = " ";  //empty string not allowed!
 	    		tagList.appendTag(new NBTTagString(name));
 	    	}
 			

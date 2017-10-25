@@ -167,6 +167,24 @@ public class BlockHelper
 		return false;
 	}
 	
+	/** check block is liquid and check liquid level */
+	public static boolean checkBlockIsLiquid(IBlockState state, int level)
+	{
+	    if (state != null)
+    	{
+	    	if (state instanceof BlockLiquid)
+	    	{
+	    		if (((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == level) return true;
+	    		else return false;
+	    	}
+	    	
+	    	if (state instanceof IFluidBlock ||
+	    		state.getMaterial().isLiquid()) return true;
+    	}
+	    
+		return false;
+	}
+	
 	/** check nearby block has at least one liquid block */
 	public static boolean checkBlockNearbyIsLiquid(World world, int x, int y, int z, int range)
 	{
@@ -602,20 +620,67 @@ public class BlockHelper
 		return false;
 	}
 	
-	//get nearby liquid block (area 3x3, host position last), return null if no liquid
-	public static BlockPos getNearbyLiquid(Entity host)
+	/**
+	 * get nearby liquid block, return null if no liquid
+	 * 
+	 * checkHostPos: check block under host
+	 * rad: radius (rectangle)
+	 * depth: check liquid depth, disable if depth <= 0 
+	 */
+	public static BlockPos getNearbyLiquid(Entity host, boolean checkHostPos, boolean getRandom, int rad, int depth)
 	{
 		if (host == null) return null;
 		
-  		BlockPos pos;
-  		IBlockState state;
+  		BlockPos pos = null;
+  		IBlockState state = null;
   		
   		//check around
-  		for (int y = 1; y > -2; y--)
+  		for (int y = 1; y > -3; y--)
   		{
-			for (int x = -3; x < 4; x++)
+  			//get random liquid block
+  			if (getRandom)
+  			{
+  				int maxtry = (int) (0.5F * rad * rad);
+  				
+  				for (int j = 0; j < maxtry; j++)
+  				{
+  					int x = rand.nextInt(rad + 1) * 2 - rad;
+  					int z = rand.nextInt(rad + 1) * 2 - rad;
+  					
+  					pos = new BlockPos(host.posX + x, host.posY + y, host.posZ + z);
+	  				state = host.world.getBlockState(pos);
+	  				
+	  				if (checkBlockIsLiquid(state, 0))
+	  				{
+	  					if (depth <= 0)
+		  				{
+		  					return pos;
+		  				}
+		  				else
+		  				{
+		  					boolean passDepthCheck = true;
+		  					
+		  					for (int dy = 0; dy > -depth; dy--)
+		  					{
+		  						if (dy == 0) continue;
+		  						
+		  						state = host.world.getBlockState(pos.add(0, dy, 0));
+		  						if (!checkBlockIsLiquid(state, 0))
+		  						{
+		  							passDepthCheck = false;
+		  							break;
+		  						}
+		  					}
+		  					
+		  					if (passDepthCheck) return pos;
+		  				}
+	  				}//end block is liquid
+  				}
+  			}//end get random liquid
+  			
+			for (int x = -rad; x < rad + 1; x++)
 	  		{
-	  			for (int z = -3; z < 4; z++)
+	  			for (int z = -rad; z < rad + 1; z++)
 	  			{
 	  				//skip host position
 	  				if (x == 0 && z == 0) continue;
@@ -623,24 +688,69 @@ public class BlockHelper
 	  				pos = new BlockPos(host.posX + x, host.posY + y, host.posZ + z);
 	  				state = host.world.getBlockState(pos);
 	  				
-  					if (state.getBlock() instanceof BlockLiquid &&
-  						((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0 ||
-  						state.getBlock() instanceof IFluidBlock)
-  						return pos;
-				}
-			}
+	  				if (checkBlockIsLiquid(state, 0))
+	  				{
+	  					if (depth <= 0)
+		  				{
+		  					return pos;
+		  				}
+		  				else
+		  				{
+		  					boolean passDepthCheck = true;
+		  					
+		  					for (int dy = 0; dy > -depth; dy--)
+		  					{
+		  						if (dy == 0) continue;
+		  						
+		  						state = host.world.getBlockState(pos.add(0, dy, 0));
+		  						if (!checkBlockIsLiquid(state, 0))
+		  						{
+		  							passDepthCheck = false;
+		  							break;
+		  						}
+		  					}
+		  					
+		  					if (passDepthCheck) return pos;
+		  				}
+	  				}//end block is liquid
+				}//end for z
+			}//end for x
   		}
 		
-		//check host position Y = +1 ~ +0
-  		for (int y = 1; y > -2; y--)
+  		//check host position Y = +1 ~ +0
+  		if (checkHostPos)
   		{
-  			pos = new BlockPos(host.posX, host.posY + y, host.posZ);
-			state = host.world.getBlockState(pos);
-			
-			if (state.getBlock() instanceof BlockLiquid &&
-				((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0 ||
-				state.getBlock() instanceof IFluidBlock)
-				return pos;
+  	  		for (int y = 1; y > -2; y--)
+  	  		{
+  	  			pos = new BlockPos(host.posX, host.posY + y, host.posZ);
+  				state = host.world.getBlockState(pos);
+  				
+  				if (checkBlockIsLiquid(state, 0))
+  				{
+  					if (depth <= 0)
+	  				{
+	  					return pos;
+	  				}
+	  				else
+	  				{
+	  					boolean passDepthCheck = true;
+	  					
+	  					for (int dy = 0; dy > -depth; dy--)
+	  					{
+	  						if (dy == 0) continue;
+	  						
+	  						state = host.world.getBlockState(pos.add(0, dy, 0));
+	  						if (!checkBlockIsLiquid(state, 0))
+	  						{
+	  							passDepthCheck = false;
+	  							break;
+	  						}
+	  					}
+	  					
+	  					if (passDepthCheck) return pos;
+	  				}
+  				}//end block is liquid
+  	  		}
   		}
   		
   		return null;

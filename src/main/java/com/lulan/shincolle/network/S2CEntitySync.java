@@ -12,6 +12,7 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
@@ -78,6 +79,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncSystem_Config = 17;
 		public static final byte SyncShip_UnitName = 18;
 		public static final byte SyncShip_Attrs = 19;
+		public static final byte SyncEntity_Host = 20;
 	}
 
 	
@@ -254,6 +256,9 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncShip_Buffmap:	//sync buff map
 			this.valueMap1 = PacketHelper.readMapInt(buf);
+		break;
+		case PID.SyncEntity_Host:	//sync host
+			this.valueInt = buf.readInt();
 		break;
 		}//end switch
 		
@@ -700,6 +705,21 @@ public class S2CEntitySync implements IMessage
 			}
 		}
 		break;
+		case PID.SyncEntity_Host:	//sync host
+		{
+			if (this.entity instanceof EntityShipFishingHook)
+			{
+				if (((EntityShipFishingHook)entity).host != null)
+				{
+					buf.writeInt(((EntityShipFishingHook)entity).host.getEntityId());
+				}
+				else
+				{
+					buf.writeInt(-1);
+				}
+			}
+		}
+		break;
 		}
 	}
 	
@@ -744,6 +764,7 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncEntity_PosRot: //entity position, rotation, motion sync
 		case PID.SyncEntity_Rot:
 		case PID.SyncEntity_Motion:
+		case PID.SyncEntity_Host:	//sync host
 			if (entity != null) getTarget = true;
 		break;
 		case PID.SyncEntity_PlayerUID:	//player uid sync
@@ -1136,6 +1157,18 @@ public class S2CEntitySync implements IMessage
 			{
 				ship = (BasicEntityShip) entity;
 				ship.setBuffMap((HashMap<Integer, Integer>) msg.valueMap1);
+			}
+			break;
+			case PID.SyncEntity_Host:	//sync host
+			{
+				Entity ent = EntityHelper.getEntityByID(msg.valueInt, 0, true);
+				if (ent != null)
+				{
+					if (entity instanceof EntityShipFishingHook && ent instanceof EntityLivingBase)
+					{
+						((EntityShipFishingHook) entity).host = (EntityLivingBase) ent;
+					}
+				}
 			}
 			break;
 			}//end switch

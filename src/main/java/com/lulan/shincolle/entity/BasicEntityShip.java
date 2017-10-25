@@ -32,6 +32,7 @@ import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
@@ -124,6 +125,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	protected Entity guardedEntity;				//guarding target
 	protected Entity atkTarget;					//attack target
 	protected Entity rvgTarget;					//revenge target
+	public EntityShipFishingHook fishHook;		//fishing hook
 	
 	//for AI calc
 	protected double ShipDepth;			//水深, 用於水中高度判定
@@ -4174,7 +4176,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** normal emotes for head caress */
-  	protected void reactionNormal()
+  	public void reactionNormal()
   	{
   		Random ran = new Random();
   		int m = this.getMorale();
@@ -4538,7 +4540,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** stranger (not owner) emotes */
-  	protected void reactionStranger()
+  	public void reactionStranger()
   	{
   		int body = EntityHelper.getHitBodyID(this);
   		LogHelper.debug("DEBUG: hit ship: BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody()); 		
@@ -4651,7 +4653,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** damaged emotes */
-  	protected void reactionAttack()
+  	public void reactionAttack()
   	{
   		//show emotes by morale level
 		switch (EntityHelper.getMoraleLevel(this.getMorale()))
@@ -4709,7 +4711,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** damaged emotes */
-  	protected void reactionDamaged()
+  	public void reactionDamaged()
   	{
   		int body = EntityHelper.getHitBodyID(this);
   		
@@ -4805,7 +4807,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** idle emotes */
-  	protected void reactionIdle()
+  	public void reactionIdle()
   	{
   		//show emotes by morale level
 		switch (EntityHelper.getMoraleLevel(this.getMorale()))
@@ -4930,7 +4932,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** command emotes */
-  	protected void reactionCommand()
+  	public void reactionCommand()
   	{
   		//show emotes by morale level
 		switch (EntityHelper.getMoraleLevel(this.getMorale()))
@@ -4984,7 +4986,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	}
   	
   	/** shock emotes */
-  	protected void reactionShock()
+  	public void reactionShock()
   	{
 		switch (this.rand.nextInt(8))
 		{

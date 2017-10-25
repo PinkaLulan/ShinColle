@@ -1846,7 +1846,7 @@ public class EntityHelper
   	  		 *   3. try pump fluid
   	  		 */
   	  		//check fluid block
-  	  		BlockPos pos = BlockHelper.getNearbyLiquid(ship);
+  	  		BlockPos pos = BlockHelper.getNearbyLiquid(ship, true, false, 3, 0);
   	  		
   	  		if (pos != null)
   	  		{

@@ -535,6 +535,18 @@ public class ParticleHelper
 			}
 		}
 		break;
+		case 48:	//water bubble
+		{
+			for (int i = 0; i < 14; i++)
+			{
+				ran1 = (rand.nextFloat() - 0.5F) * lookY;
+				ran2 = (rand.nextFloat() - 0.5F) * lookX;
+				ran3 = (rand.nextFloat() - 0.5F) * lookZ;
+				world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, posX+ran2, posY+ran1, posZ+ran3, 0D, 0D, 0D, new int[0]);
+				world.spawnParticle(EnumParticleTypes.WATER_WAKE, posX+ran2, posY+ran1, posZ+ran3, 0D, 0D, 0D, new int[0]);
+			}
+		}
+		break;
 		default:
 		break;
 		}

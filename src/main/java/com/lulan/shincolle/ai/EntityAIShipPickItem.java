@@ -65,6 +65,9 @@ public class EntityAIShipPickItem extends EntityAIBase
     	//ship類
     	if (this.hostShip != null)
     	{
+    		//check fishing
+    		if (hostShip.fishHook != null) return false;
+    		
     		//騎乘中, 坐下, 沒開啟特殊能力: 禁止AI
     		if (hostShip.isRiding() || hostShip.isSitting() || !hostShip.getStateFlag(ID.F.PickItem) ||
     			hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel))
@@ -78,6 +81,10 @@ public class EntityAIShipPickItem extends EntityAIBase
     	//mount類
     	else if (this.hostMount != null && this.hostShip != null)
     	{
+    		//check fishing
+    		if (((BasicEntityMount) hostMount).getHostEntity() != null &&
+        		((BasicEntityShip)((BasicEntityMount) hostMount).getHostEntity()).fishHook != null) return false;
+    		
 			//ship坐下, 沒開啟特殊能力: 禁止AI
 			if (hostShip.isSitting() || !hostShip.getStateFlag(ID.F.PickItem) ||
 				hostShip.getStateMinor(ID.M.CraneState) > 0 || hostShip.getStateFlag(ID.F.NoFuel))

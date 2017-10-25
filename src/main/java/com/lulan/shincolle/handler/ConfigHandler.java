@@ -67,10 +67,10 @@ public class ConfigHandler
 	//array data
 	private static Property propShip, propLimitShipAttrs, propMobSpawn,
 						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
-						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp,
+						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp, propExpTask,
 						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
 						   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
-						   propInfLiquid, propShipTeleport;
+						   propInfLiquid, propShipTeleport, propFishing, propMining;
 	
 	//SHIP SETTING
 	//                                                    HP, ATK_L, ATK_H, ATK_AL, ATK_AH
@@ -103,6 +103,12 @@ public class ConfigHandler
 	public static int[] fixedAttackDelay = new int[] {0,     20,   50,   35,  35};
 	//exp gain                               melee, LAtk, HAtk, LAir, HAir, move/b, pick
 	public static int[] expGain = new int[] {2,     4,    12,   8,    24,   1,      2};
+	//exp gain by task                           cook fish mine craft
+	public static int[] expGainTask = new int[] {2,   20,  10,  1};
+	//fishing time                               base, random
+	public static int[] tickFishing = new int[] {200,  800};
+	//mining time                                base, random
+	public static int[] tickMining = new int[]  {200,  800};
 	//mob spawn                               Max, Prob, GroupNum, MinPS, MaxPS
 	public static int[] mobSpawn = new int[] {50,  10,   1,        1,     1};
 	//marriage ring ability                      breath, fly, dig, fog, immune fire
@@ -120,7 +126,7 @@ public class ConfigHandler
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
 	public static int modernLimit = 3;	//ship attrs upgrade level limit
 	public static int searchlightCD = 4;
-	
+	public static int maxLevel = 150;   //TODO not configurable now
 	public static boolean timeKeeping = true;
 	public static boolean canFlare = true;
 	public static boolean canSearchlight = true;
@@ -254,10 +260,13 @@ public class ConfigHandler
 		propAtkSpd = config.get(CATE_SHIP, "Attack_Base_Speed", baseAttackSpeed, "Base attack speed for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propAtkDly = config.get(CATE_SHIP, "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get(CATE_SHIP, "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
+		propExpTask = config.get(CATE_SHIP, "Exp_Gain_Task", expGainTask, "Exp gain for task: Cooking, Fishing, Mining, Crafting");
 		propMobSpawn = config.get(CATE_SHIP, "Limit_MobSpawnNumber", mobSpawn, "Mob ship spawn MAX number in the world, Spawn prob (roll once per player every 128 ticks), #groups each spawn, #min each group, #max each group");
 		propHeldItem = config.get(CATE_SHIP, "Held_Item", scaleHeldItem, "Ship held item scaling: scale, offset X, offset Y, offset Z");
 		propDrumLiquid = config.get(CATE_SHIP, "Drum_Liquid", drumLiquid, "liquid transport rate: base transfer rate (mB/t), additional rate per enchantment (mB/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate * #TotalPumps + EnchantRate * #TotalEnchantments)");
 		propShipTeleport = config.get("ship setting", "ship_teleport", shipTeleport, "Ship teleport when following and guarding: cooldown (ticks), distance (blocks^2)");
+		propFishing = config.get(CATE_SHIP, "Tick_Fishing", tickFishing, "Fishing time setting: base, random (ticks)");
+		propMining = config.get(CATE_SHIP, "Tick_Mining", tickMining, "Mining time setting: base, random (ticks)");
 		
 		propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", tileShipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
 		propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", tileShipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
@@ -289,6 +298,7 @@ public class ConfigHandler
 		baseAttackSpeed = getIntArrayFromConfig(baseAttackSpeed, propAtkSpd);
 		fixedAttackDelay = getIntArrayFromConfig(fixedAttackDelay, propAtkDly);
 		expGain = getIntArrayFromConfig(expGain, propExp);
+		expGainTask = getIntArrayFromConfig(expGainTask, propExpTask);
 		mobSpawn = getIntArrayFromConfig(mobSpawn, propMobSpawn);
 		tileShipyardSmall = getDoubleArrayFromConfig(tileShipyardSmall, propShipyardSmall);
 		tileShipyardLarge = getDoubleArrayFromConfig(tileShipyardLarge, propShipyardLarge);
@@ -299,6 +309,8 @@ public class ConfigHandler
 		drumLiquid = getIntArrayFromConfig(drumLiquid, propDrumLiquid);
 		drumEU = getIntArrayFromConfig(drumEU, propDrumEU);
 		shipTeleport = getIntArrayFromConfig(shipTeleport, propShipTeleport);
+		tickFishing = getIntArrayFromConfig(tickFishing, propFishing);
+		tickMining = getIntArrayFromConfig(tickMining, propMining);
 		
 		checkChange(config);
 	}
