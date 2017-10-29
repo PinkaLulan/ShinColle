@@ -444,7 +444,19 @@ gui.shincolle:book.chap3.text14d1=§9怨念、食物道具：§0<br>提高情緒
 gui.shincolle:book.chap3.title15=撫摸
 gui.shincolle:book.chap3.text15d0=主人可以藉由撫摸來獎勵或者單純騷擾深海棲艦，正確專業的撫摸可以有效§9提高棲艦的情緒狀態§0，相反的如果撫摸錯誤的話可能會吃上幾發魚雷。<br><br>§9撫摸方式§0：<br>手持§dヲ級指揮權杖§0並按下§9玩家列表(預設TAB)§0就會轉為撫摸模式，對棲艦按住§9右鍵§0就會撫摸該棲艦。
 gui.shincolle:book.chap3.text15d1=依照十字游標所指到的棲艦§9高度位置§0跟§9前後左右角度§0，會撫摸到的部位分為：頭頂、頭、臉、脖子、歐派、肚子、下腹部、腳、手、屁股、背後。<br><br>不同棲艦個體會有不同的敏感部位，請撫摸時小心注意其反應。
- 
+gui.shincolle:book.chap3.title16=烹飪
+gui.shincolle:book.chap3.text16d0=船艦們現在可以幫主人完成燒製物品的工作：<br>1. 在船艦的AI選項中點選生肉圖示<br>2. 在船艦的物品欄主手位置(第一頁最中下格)放置欲燒製材料<br>3. 在船艦的物品欄副手位置(第一頁最右下格)放置燃料或不放任合物品<br>4. 烹飪圖示下面可設定是否判定物品的meta值/是否參考forge礦石字典/是否核對NBT值相同<br>5. 指定船艦移動到一個深海路徑點<br>6. 使用扳手將深海路徑點連結到目標熔爐方塊
+gui.shincolle:book.chap3.text16d1=7. 船艦的AI選項中需要設定熔爐的輸入/輸出/燃料的操作方向(B:底部 T:頂端 N:北面 S:南面 W:西面 E:東面)<br>8. 以上全部設置好後就會開始燒製除了主副手欄位以外的目標物品<br><br>烹飪是一件有相當難度的工作，經驗較低的船艦可能會燒出某些黑色物質-.-
+gui.shincolle:book.chap3.title17=釣魚
+gui.shincolle:book.chap3.text17d0=船艦們現在可以幫主人出海捕撈食物以補貼家計：<br>1. 在船艦的AI選項中點選釣竿圖示<br>2. 在船艦的物品欄主手位置(第一頁最中下格)放置釣竿<br>3. 將船艦指定移動到在水深達到3格以上的水池附近<br>4. 以上全部設置好後就會開始釣魚
+gui.shincolle:book.chap3.text17d1=釣竿的"海洋的祝福"附魔以及對船艦使用幸運藥水可以提高稀有漁獲的數量。
+gui.shincolle:book.chap3.title18=採礦
+gui.shincolle:book.chap3.text18d0=船艦們現在可以幫忙採礦以養活懶惰的主人：<br>1. 在船艦的AI選項中點選採礦鎬圖示<br>2. 在船艦的物品欄主手位置(第一頁最中下格)放置採礦鎬<br>3. 將船艦放置在充滿石頭等固體方塊的環境中<br>4. 以上全部設置好後就會開始採礦
+gui.shincolle:book.chap3.text18d1=船艦不會破壞方塊就能採到礦石。<br><br>採礦鎬的"幸運"附魔以及對船艦使用幸運藥水可以提高稀有礦石的獲得量。<br><br>採到的礦石種類跟船艦所在的世界/生態系/所在Y高度/船艦等級/採礦鎬等級有關
+gui.shincolle:book.chap3.title19=合成
+gui.shincolle:book.chap3.text19d0=(NYI)
+gui.shincolle:book.chap3.text19d1=
+
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=深海棲艦列表
 gui.shincolle:book.chap4.title0=深海棲艦

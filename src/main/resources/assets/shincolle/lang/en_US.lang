@@ -444,6 +444,18 @@ gui.shincolle:book.chap3.text14d1=§9Grudge, Food:§0<br>Increase grudge, morale
 gui.shincolle:book.chap3.title15=Caress
 gui.shincolle:book.chap3.text15d0=The owner can caress ship to reward or simply harass her. A correct caress can §9improve the shop's morale§0 effectively.<br><br>To caress ship, hold §dWo-Class Command Scepter§0 and press §9List Players (default: TAB)§0 to change to caress mode, and §9Right Click§0 on the ship.
 gui.shincolle:book.chap3.text15d1=Caress target is determined by the cross and the relative face angle between owner and ship.<br><br>The target are: top, head, face, neck, chest, belly, under belly, leg, arm, back.<br><br>Different individuals have different sensitive part, be careful of the reaction when caressing.
+gui.shincolle:book.chap3.title16=Cooking
+gui.shincolle:book.chap3.text16d0=Ship can help the owner to cook item:<br>1. Click the raw beef icon in AI options<br>2. Put the item to be cooked to mainhand slot (the most middle and lower slot in the first page)<br>3. Put the fuel item to offhand slot (option)<br>4. check metadata/forge ore dict./nbt tag in the same AI page (option)<br>5. move ship to an Abyssal Waypoint<br>6. link the waypoint and furnace block by Target Wrench 
+gui.shincolle:book.chap3.text16d1=7. set the input/output/fuel side of the furnace in AI option (B:Bottom T:Top N:North S:South W:West E:East)<br>8. ship will start cooking the target item except main/offhand slot<br><br>Cooking is a difficult job, less experienced ship sometimes produce some dark matter in cooking.  
+gui.shincolle:book.chap3.title17=Fishing
+gui.shincolle:book.chap3.text17d0=Ship can go fishing to feed the owner:<br>1. Click the fishing rod icon in AI options<br>2. Put the fishing rod to mainhand slot<br>3. move the ship to the pool with depth >= 3 blocks
+gui.shincolle:book.chap3.text17d1="Luck of the Sea" enchantment on the fishing rod and luck potion can increase the rate of rare drop from fishing. 
+gui.shincolle:book.chap3.title18=Mining
+gui.shincolle:book.chap3.text18d0=Ship can go mining to feed the lazy owner:<br>1. Click the pickaxe icon in AI options<br>2. Put the pickaxe to mainhand slot<br>3. move the ship to the mine with a lot of solid blocks
+gui.shincolle:book.chap3.text18d1=Ship can get ores without breaking blocks.<br><br>"Fortune" enchantment on the pickaxe and luck potion can increase the number of rare drop from mining.<br><br>The mining result is related to world, biome, y level, ship level and pickaxe type.
+gui.shincolle:book.chap3.title19=Crafting
+gui.shincolle:book.chap3.text19d0=(NYI)
+gui.shincolle:book.chap3.text19d1=
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List

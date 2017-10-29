@@ -104,19 +104,24 @@ public class TaskHelper
 		ItemStack pickaxe = host.getHeldItemMainhand();
 		if (pickaxe == null || !isToolEffective(pickaxe, 0, 0)) return;
 		
-		//random move
-		if ((host.getTickExisted() & 63) == 0)
-		{
-			host.getShipNavigate().tryMoveToXYZ(host.posX + host.getRNG().nextInt(9) - 4,
-					host.posY + host.getRNG().nextInt(5) - 2,
-					host.posZ + host.getRNG().nextInt(9) - 4, 1D);
-			return;
-		}
-		
 		//check not in moving
 		if (MathHelper.abs((float) host.motionX) > 0.1F ||
 			MathHelper.abs((float) host.motionZ) > 0.1F ||
-			host.motionY > 0.1F) return;
+			host.motionY > 0.1F)
+		{
+			return;
+		}
+		else
+		{
+			//random move
+			if ((host.getTickExisted() & 63) == 0)
+			{
+				host.getShipNavigate().tryMoveToXYZ(host.posX + host.getRNG().nextInt(9) - 4,
+						host.posY + host.getRNG().nextInt(5) - 2,
+						host.posZ + host.getRNG().nextInt(9) - 4, 1D);
+				return;
+			}
+		}
 		
 		//swing arm and emotes
 		if (host.getRNG().nextInt(5) > 2)
