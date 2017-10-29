@@ -38,8 +38,10 @@ public class RenderShipFishing extends Render<EntityShipFishingHook>
      */
     public void doRender(EntityShipFishingHook entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
+    	float y2 = MathHelper.cos((entity.ticksExisted + partialTicks) * 0.15F) * 0.05F - 0.25F;
+    	float y3 = (float)y + y2;
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float)x, (float)y, (float)z);
+        GlStateManager.translate((float)x, y3 + 0.25F, (float)z);
         GlStateManager.enableRescaleNormal();
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
         this.bindEntityTexture(entity);
@@ -94,7 +96,7 @@ public class RenderShipFishing extends Render<EntityShipFishingHook>
             double d6 = entity.host.prevPosZ + (entity.host.posZ - entity.host.prevPosZ) * (double)partialTicks - d0 * d2 + d1 * 0.8D;
             double d7 = entity.host.isSneaking() ? -0.1875D : 0.0D;
             double d13 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
-            double d8 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + 0.25D;
+            double d8 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + 0.55D + y2;
             double d9 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
             double d10 = (double)((float)(d4 - d13));
             double d11 = (double)((float)(d5 - d8)) + d7;
@@ -109,7 +111,7 @@ public class RenderShipFishing extends Render<EntityShipFishingHook>
             for (int i1 = 0; i1 <= 16; ++i1)
             {
                 float f10 = (float)i1 / 16.0F;
-                vertexbuffer.pos(x + d10 * (double)f10, y + d11 * (double)(f10 * f10 + f10) * 0.5D + 0.25D, z + d12 * (double)f10).color(0, 0, 0, 255).endVertex();
+                vertexbuffer.pos(x + d10 * (double)f10, y3 + d11 * (double)(f10 * f10 + f10) * 0.5D + 0.25D, z + d12 * (double)f10).color(200, 200, 200, 255).endVertex();
             }
 
             tessellator.draw();

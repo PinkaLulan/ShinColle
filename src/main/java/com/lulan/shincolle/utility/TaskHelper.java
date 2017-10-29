@@ -1,20 +1,30 @@
 package com.lulan.shincolle.utility;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.config.ConfigMining;
+import com.lulan.shincolle.config.ConfigMining.ItemEntry;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.item.BasicItem;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntity;
@@ -22,6 +32,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTableList;
 
@@ -52,16 +63,16 @@ public class TaskHelper
 		switch (taskid)
 		{
 		case 1:  //cooking
-			onUpdateCooking(host);
+			if (ConfigHandler.enableTask[0]) onUpdateCooking(host);
 		break;
 		case 2:  //fishing
-			onUpdateFishing(host);
+			if (ConfigHandler.enableTask[1]) onUpdateFishing(host);
 		break;
 		case 3:  //mining
-			onUpdateMining(host);
+			if (ConfigHandler.enableTask[2]) onUpdateMining(host);
 		break;
 		case 4:  //crafting
-			onUpdateCrafting(host);
+			if (ConfigHandler.enableTask[3]) onUpdateCrafting(host);
 		break;
 		}
 	}
@@ -81,13 +92,124 @@ public class TaskHelper
 	/**
 	 * mining task:
 	 * put pickaxe in mainhand (slot 22)
+	 * generate ores per X ticks
+	 * pos.Y and ship level determine mining result (configurable)
 	 */
 	public static void onUpdateMining(BasicEntityShip host)
 	{
 		//null check
 		if (host == null) return;
+		
+		//check held item is pickaxe
+		ItemStack pickaxe = host.getHeldItemMainhand();
+		if (pickaxe == null || !isToolEffective(pickaxe, 0, 0)) return;
+		
+		//random move
+		if ((host.getTickExisted() & 63) == 0)
+		{
+			host.getShipNavigate().tryMoveToXYZ(host.posX + host.getRNG().nextInt(9) - 4,
+					host.posY + host.getRNG().nextInt(5) - 2,
+					host.posZ + host.getRNG().nextInt(9) - 4, 1D);
+			return;
+		}
+		
+		//check not in moving
+		if (MathHelper.abs((float) host.motionX) > 0.1F ||
+			MathHelper.abs((float) host.motionZ) > 0.1F ||
+			host.motionY > 0.1F) return;
+		
+		//swing arm and emotes
+		if (host.getRNG().nextInt(5) > 2)
+		{
+			//swing arm
+			host.swingArm(EnumHand.MAIN_HAND);
+			
+			if (host.getRNG().nextInt(10) > 8)
+			{
+				//apply emote
+				switch (host.getRNG().nextInt(5))
+				{
+				case 2:
+					host.applyParticleEmotion(11);  //find
+				break;
+				case 3:
+					host.applyParticleEmotion(5);   //...
+				break;
+				case 4:
+					host.applyParticleEmotion(30);  //pif
+				break;
+				default:
+					host.applyParticleEmotion(0);   //sweat
+				break;
+				}
+			}
+		}
+		
+		//finish mining
+		if ((host.ticksExisted & 31) == 0 && host.ticksExisted - host.getStateTimer(ID.T.TaskTime) > ConfigHandler.tickMining[0] + host.getRNG().nextInt(ConfigHandler.tickMining[1]))
+		{
+			int stone = 0;
+			boolean canMine = false;
+			BlockPos pos = null;
+			IBlockState state = null;
+			
+			//check nearby solid block > N
+			for (int dy = -3; dy < 5; dy++)
+			{
+				for (int dx = -3; dx < 4; dx++)
+				{
+					for (int dz = -3; dz < 4; dz++)
+					{
+						pos = new BlockPos(host.posX + dx, host.posY + dy, host.posZ + dz);
+						state = host.world.getBlockState(pos);
+						
+						if (state.getMaterial() == Material.ROCK) stone++;
+						if (stone > 120) canMine = true;
+					}
+					
+					if (canMine) break;
+				}
 				
-		//TODO
+				if (canMine) break;
+			}//end for all blocks around
+			
+			//check can mine
+			if (!canMine) return;
+			
+			//generate mining result
+			generateMiningResult(host);
+			
+			//add exp and consume grudge
+			host.addShipExp(ConfigHandler.expGainTask[2]);
+			host.decrGrudgeNum(ConfigHandler.consumeGrudgeTask[2]);
+			host.addMorale(-200);
+			
+			//apply emote
+			switch (host.getRNG().nextInt(5))
+			{
+			case 1:
+				host.applyParticleEmotion(11);  //find
+			break;
+			case 2:
+				host.applyParticleEmotion(14);  //+_+
+			break;
+			case 3:
+				host.applyParticleEmotion(4);   //!
+			break;
+			case 4:
+				host.applyParticleEmotion(30);  //pif
+			break;
+			default:
+				host.applyParticleEmotion(0);   //sweat
+			break;
+			}
+			
+			//swing arm
+			host.swingArm(EnumHand.MAIN_HAND);
+			
+			//set timer
+			host.setStateTimer(ID.T.TaskTime, host.ticksExisted);
+		}
 	}
 	
 	/**
@@ -136,9 +258,6 @@ public class TaskHelper
 			//swing arm
 			host.swingArm(EnumHand.MAIN_HAND);
 			
-			//change data value
-			rod.setItemDamage(1);
-			
 			//put fishing hook
 			EntityShipFishingHook hook = new EntityShipFishingHook(host.world, host);
 			hook.setPosition(pos.getX() + 0.1D + host.getRNG().nextDouble() * 0.8D,
@@ -179,7 +298,7 @@ public class TaskHelper
 				
 				//add exp and consume grudge
 				host.addShipExp(ConfigHandler.expGainTask[1]);
-				host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move] * 10);
+				host.decrGrudgeNum(ConfigHandler.consumeGrudgeTask[1]);
 				host.addMorale(300);
 				
 				//apply emote
@@ -366,7 +485,7 @@ public class TaskHelper
 					
 					//add exp and consume grudge
 					host.addShipExp(ConfigHandler.expGainTask[0]);
-					host.decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move]);
+					host.decrGrudgeNum(ConfigHandler.consumeGrudgeTask[0]);
 					host.addMorale(100);
 					
 					//generate coal by level and apply emotion
@@ -433,6 +552,141 @@ public class TaskHelper
         }
     }
 	
+	/** get loot list by world id, biome id, ship level, height and tool level */
+	public static List<ItemEntry> getMiningLootList(int worldid, int biomeid, int lvShip, int lvHeight, int lvTool)
+	{
+		//get loot map
+		HashMap<Integer, ArrayList<ItemEntry>> map1 = ConfigMining.MININGMAP.get(worldid);
+		HashMap<Integer, ArrayList<ItemEntry>> map2 = ConfigMining.MININGMAP.get(ConfigMining.GeneralWorldID);
+		ArrayList<ItemEntry> tempList = new ArrayList<ItemEntry>();
+		ArrayList<ItemEntry> resultList = new ArrayList<ItemEntry>();
+		
+		//get loot list
+		if (map1 != null)
+		{
+			ArrayList<ItemEntry> list1 = map1.get(biomeid);
+			ArrayList<ItemEntry> list2 = map1.get(ConfigMining.GeneralBiomeID);
+			
+			if (list1 != null) tempList.addAll(list1);
+			if (list2 != null) tempList.addAll(list2);
+		}
+		
+		if (map2 != null)
+		{
+			ArrayList<ItemEntry> list1 = map2.get(biomeid);
+			ArrayList<ItemEntry> list2 = map2.get(ConfigMining.GeneralBiomeID);
+			
+			if (list1 != null) tempList.addAll(list1);
+			if (list2 != null) tempList.addAll(list2);
+		}
+		
+		//check ship level, height and tool level
+		for (ItemEntry item : tempList)
+		{
+			if (lvShip >= item.lvShip && lvHeight <= item.lvHeight && lvTool >= item.lvTool)
+			{
+				resultList.add(item);
+			}
+		}
+		
+		return resultList;
+	}
+	
+	/** generate mining result, put itemstacks into inventory or on ground */
+	public static void generateMiningResult(EntityLivingBase host)
+	{
+		//check host type
+		if (host instanceof BasicEntityShip)
+		{
+			BasicEntityShip ship = (BasicEntityShip) host;
+			ItemStack pickaxe = ship.getHeldItemMainhand();
+			if (pickaxe == null) return;
+			
+			//get mining loot map
+			List<ItemEntry> list1 = getMiningLootList(ship.world.provider.getDimension(),
+					Biome.getIdForBiome(ship.world.getBiome(ship.getPosition())), ship.getLevel(),
+					(int)ship.posY, pickaxe.getItem().getHarvestLevel(pickaxe, "pickaxe", null, null));
+
+			if (list1 == null || list1.size() <= 0) return;
+
+			//create cumulative value list
+			List<Integer> list2 = new ArrayList<Integer>();
+			list2.add(list1.get(0).weight);
+			
+			for (int i = 1; i < list1.size(); i++)
+			{
+//				LogHelper.debug("DDDDD "+i+" "+list2.get(i - 1)+" "+list1.get(i).itemName+" "+list1.get(i).itemMeta+" "
+//						+list1.get(i).min+" "+list1.get(i).max+" "
+//						+list1.get(i).enchant+" ");
+				list2.add(list2.get(i - 1) + list1.get(i).weight);
+			}
+			
+			//roll mining result
+			int roll = ship.getRNG().nextInt(list2.get(list2.size() - 1));
+			int result = 0;
+			
+			for (int i = 0; i < list2.size(); i++)
+			{
+				if (roll <= list2.get(i))
+				{
+					result = i;
+					break;
+				}
+			}
+			
+			//get item
+			ItemEntry ie = list1.get(result);
+			Item item = Item.getByNameOrId(ie.itemName);
+			if (item == null) return;
+			
+			//specific item meta value
+			int metadata = ie.itemMeta;
+			
+			if (ie.itemMeta <= 0)
+			{
+				if (item instanceof BasicItem)
+				{
+					metadata = ship.getRNG().nextInt(((BasicItem) item).getTypes());
+				}
+				else
+				{
+					metadata = 0;
+				}
+			}
+			
+			//random stacksize
+			int stacksize = ie.min;
+			int fortlv = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, pickaxe);
+			int lucklv = BuffHelper.getPotionLevel(host, 26);
+			
+			if (ie.max > ie.min)
+			{
+				stacksize = ie.min + ship.getRNG().nextInt(ie.max - ie.min + 1);
+			}
+			
+			if (ie.enchant > 0F)
+			{
+				stacksize = (int) (stacksize * (1 + (fortlv + lucklv) * ie.enchant));
+			}
+			
+			//create itemstack
+			ItemStack stack = new ItemStack(item, stacksize, metadata);
+			
+			//put stack into ship's inventory
+			boolean moved = InventoryHelper.moveItemstackToInv(ship.getCapaShipInventory(), stack, null);
+        	
+			//put stack on ground
+        	if (!moved || stack.stackSize > 0)
+        	{
+        		EntityItem entityitem = new EntityItem(ship.world, ship.posX, ship.posY, ship.posZ, stack);
+        		entityitem.motionX = host.getRNG().nextGaussian() * 0.08D;
+	            entityitem.motionY = host.getRNG().nextGaussian() * 0.05D + 0.2D;
+	            entityitem.motionZ = host.getRNG().nextGaussian() * 0.08D;
+	            ship.world.spawnEntity(entityitem);
+        	}
+		}//end host is ship
+	}
+	
 	/** generate fishing result, put itemstacks into inventory or on ground */
 	public static void generateFishingResult(EntityLivingBase host)
 	{
@@ -491,6 +745,33 @@ public class TaskHelper
                 world.spawnEntity(entityitem);
         	}
         }
+	}
+	
+	/**
+	 * check tool is suitable for target
+	 * 
+	 * tool: tool type string
+	 * targetType: 0:pickaxe, 1:shovel, 2:axe
+	 * targetLevel: 0:wood/gold, 1:stone, 2:iron, 3:diamond
+	 * 
+	 */
+	public static boolean isToolEffective(ItemStack stack, int targetType, int targetLevel)
+	{
+		if (stack == null) return false;
+		
+		String type = "pickaxe";
+		
+		switch (targetType)
+		{
+		case 1:
+			type = "shovel";
+		break;
+		case 2:
+			type = "axe";
+		break;
+		}
+		
+		return stack.getItem().getHarvestLevel(stack, type, null, null) >= targetLevel;
 	}
 	
 	

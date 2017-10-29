@@ -2031,7 +2031,11 @@ public class EntityHelper
 				if (nbt != null)
 				{
 					ship.readFromNBT(nbt);
+					
 					if (ship.getHealth() < 1F) ship.setHealth(1F);
+					ship.setStateFlag(ID.F.CanDrop, true);
+					ship.isDead = false;
+					ship.deathTime = 0;
 				}
 				
                 //update ship cache

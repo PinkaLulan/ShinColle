@@ -719,6 +719,7 @@ public class ID
 		public static final byte AttackTime = 12;		//CLIENT: attack time for model display
 		public static final byte AttackTime2 = 13;		//CLIENT: attack time 2 for model display
 		public static final byte AttackTime3 = 14;		//SERVER: attack time 3 for skill AI
+		public static final byte TaskTime = 15;			//SERVER: task start time
 	}
 	
 	/** Update Flag */

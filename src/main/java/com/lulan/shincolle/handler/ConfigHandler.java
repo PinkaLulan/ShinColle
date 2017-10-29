@@ -3,6 +3,7 @@ package com.lulan.shincolle.handler;
 import java.io.File;
 
 import com.lulan.shincolle.config.ConfigLoot;
+import com.lulan.shincolle.config.ConfigMining;
 import com.lulan.shincolle.config.ConfigSound;
 import com.lulan.shincolle.reference.Reference;
 
@@ -27,6 +28,7 @@ public class ConfigHandler
 	public static Configuration config;		//main config
 	public static ConfigSound configSound;	//sound config
 	public static ConfigLoot configLoot;	//loot config
+	public static ConfigMining configMining;//mining config
 	
 	//GENERAL
 	public static boolean debugMode = false;
@@ -70,7 +72,8 @@ public class ConfigHandler
 						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp, propExpTask,
 						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
 						   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
-						   propInfLiquid, propShipTeleport, propFishing, propMining;
+						   propInfLiquid, propShipTeleport, propFishing, propMining, propTask,
+						   propGrudgeTask;
 	
 	//SHIP SETTING
 	//                                                    HP, ATK_L, ATK_H, ATK_AL, ATK_AH
@@ -98,6 +101,8 @@ public class ConfigHandler
 	public static int[] consumeGrudgeShip = new int[] {5, 7, 8, 9,  8,  11, 12,15,14, 4, 3};
 	//grudge consumption:                                LAtk, HAtk, LAir, HAir, moving
 	public static int[] consumeGrudgeAction = new int[] {4,    8,    6,    12,   3};
+	//grudge consumption:                              cook fish mine craft
+	public static int[] consumeGrudgeTask = new int[] {3,   30,  300, 2};
 	//attack speed                                    melee, Latk, Hatk, CV,  Air
 	public static int[] baseAttackSpeed = new int[] { 80,    80,   120,  100, 100};
 	public static int[] fixedAttackDelay = new int[] {0,     20,   50,   35,  35};
@@ -106,9 +111,9 @@ public class ConfigHandler
 	//exp gain by task                           cook fish mine craft
 	public static int[] expGainTask = new int[] {2,   20,  10,  1};
 	//fishing time                               base, random
-	public static int[] tickFishing = new int[] {200,  800};
+	public static int[] tickFishing = new int[] {400,  600};
 	//mining time                                base, random
-	public static int[] tickMining = new int[]  {200,  800};
+	public static int[] tickMining = new int[]  {100,  200};
 	//mob spawn                               Max, Prob, GroupNum, MinPS, MaxPS
 	public static int[] mobSpawn = new int[] {50,  10,   1,        1,     1};
 	//marriage ring ability                      breath, fly, dig, fog, immune fire
@@ -121,6 +126,8 @@ public class ConfigHandler
 	public static int[] infLiquid = new int[] {12,              8};
 	//ship teleport AI setting                    cooldown(ticks), distance(blocks^2)
 	public static int[] shipTeleport = new int[] {200,             256};
+	//task enable setting                               cook  fish  mine  craft
+	public static boolean[] enableTask = new boolean[] {true, true, true, true};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
@@ -257,6 +264,7 @@ public class ConfigHandler
 		propAmmoShip = config.get(CATE_SHIP, "Consume_Ammo", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
 		propGrudgeShip = config.get(CATE_SHIP, "Consume_Grudge_Idle", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
 		propGrudgeAction = config.get(CATE_SHIP, "Consume_Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
+		propGrudgeTask = config.get(CATE_SHIP, "Consume_Grudge_Task", consumeGrudgeTask, "Grudge consumption for task: cooking, fishing, mining, crafting");
 		propAtkSpd = config.get(CATE_SHIP, "Attack_Base_Speed", baseAttackSpeed, "Base attack speed for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propAtkDly = config.get(CATE_SHIP, "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
 		propExp = config.get(CATE_SHIP, "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
@@ -267,6 +275,7 @@ public class ConfigHandler
 		propShipTeleport = config.get("ship setting", "ship_teleport", shipTeleport, "Ship teleport when following and guarding: cooldown (ticks), distance (blocks^2)");
 		propFishing = config.get(CATE_SHIP, "Tick_Fishing", tickFishing, "Fishing time setting: base, random (ticks)");
 		propMining = config.get(CATE_SHIP, "Tick_Mining", tickMining, "Mining time setting: base, random (ticks)");
+		propTask = config.get(CATE_SHIP, "Task_Enable", enableTask, "set true to enable the task: cooking, fishing, mining, crafting");
 		
 		propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", tileShipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
 		propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", tileShipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
@@ -295,6 +304,7 @@ public class ConfigHandler
 		consumeAmmoShip = getIntArrayFromConfig(consumeAmmoShip, propAmmoShip);
 		consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);
 		consumeGrudgeAction = getIntArrayFromConfig(consumeGrudgeAction, propGrudgeAction);
+		consumeGrudgeTask = getIntArrayFromConfig(consumeGrudgeTask, propGrudgeTask);
 		baseAttackSpeed = getIntArrayFromConfig(baseAttackSpeed, propAtkSpd);
 		fixedAttackDelay = getIntArrayFromConfig(fixedAttackDelay, propAtkDly);
 		expGain = getIntArrayFromConfig(expGain, propExp);
@@ -311,6 +321,7 @@ public class ConfigHandler
 		shipTeleport = getIntArrayFromConfig(shipTeleport, propShipTeleport);
 		tickFishing = getIntArrayFromConfig(tickFishing, propFishing);
 		tickMining = getIntArrayFromConfig(tickMining, propMining);
+		enableTask = getBooleanArrayFromConfig(enableTask, propTask);
 		
 		checkChange(config);
 	}
@@ -326,15 +337,18 @@ public class ConfigHandler
 			File fileMainConfig = new File(configRootLoc + Reference.MOD_ID + ".cfg");
 			File fileSounds = new File(configRootLoc + "sounds.cfg");
 			File fileLootTable = new File(configRootLoc + "loottable.cfg");
+			File fileMining = new File(configRootLoc + "mining.cfg");
 			
 			config = new Configuration(fileMainConfig);
 			configSound = new ConfigSound(fileSounds);
 			configLoot = new ConfigLoot(fileLootTable);
+			configMining = new ConfigMining(fileMining);
 			
 			/** BOTH SIDE CONFIG */
 			loadConfiguration();
-			configLoot.runConfig();
 			configSound.runConfig();
+			configLoot.runConfig();
+			configMining.runConfig();
 			
 //			/** CLIENT SIDE CONFIG */ no use for now
 //			if (event.getSide().isClient())

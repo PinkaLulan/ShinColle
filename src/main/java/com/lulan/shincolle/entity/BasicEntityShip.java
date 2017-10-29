@@ -214,7 +214,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, 0,  0,  0,  0,
 				                     -1, -1, -1, 0,  0
 				                    };
-		this.StateTimer = new int[15];
+		this.StateTimer = new int[16];
 		this.StateEmotion = new int[8];
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,

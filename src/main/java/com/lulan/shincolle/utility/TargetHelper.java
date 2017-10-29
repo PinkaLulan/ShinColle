@@ -18,12 +18,18 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAreaEffectCloud;
+import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityFireball;
+import net.minecraft.entity.projectile.EntityFishHook;
 
 /** some targeting class/method
  * 
@@ -201,6 +207,12 @@ public class TargetHelper
         		return true;
         	}
         	
+        	//dont attack these entity
+        	if (isEntitySpecialCase_Invulnerable(target2))
+        	{
+        		return false;
+        	}
+        	
         	return false;
         }
 
@@ -275,6 +287,12 @@ public class TargetHelper
 				return true;
 			}
 			
+			//dont attack these entity
+        	if (isEntitySpecialCase_Invulnerable(target2))
+        	{
+        		return false;
+        	}
+			
         	//check faction
     		if (!TeamHelper.checkSameOwner(host, target2))
     		{
@@ -333,7 +351,7 @@ public class TargetHelper
 	        	}
 				
 				//if target is ship or summons, check owner
-    			if (target2 instanceof IShipOwner || target2 instanceof EntityAbyssMissile)
+    			if (target2 instanceof IShipOwner)
     			{
     				//do not attack ally
     				if (TeamHelper.checkSameOwner(host, target2))
@@ -344,6 +362,12 @@ public class TargetHelper
     				return true;
     			}
 			}
+			
+			//dont attack these entity
+        	if (isEntitySpecialCase_Invulnerable(target2))
+        	{
+        		return false;
+        	}
     		
         	return false;
         }
@@ -397,7 +421,7 @@ public class TargetHelper
 	        	}
 				
 				//if target is summons, check owner
-    			if (target2 instanceof IShipOwner || target2 instanceof EntityAbyssMissile)
+    			if (target2 instanceof IShipOwner)
     			{
     				//do not attack ally
     				if (TeamHelper.checkSameOwner(host, target2))
@@ -407,7 +431,13 @@ public class TargetHelper
     				
     				return true;
     			}
-
+    			
+    			//dont attack these entity
+            	if (isEntitySpecialCase_Invulnerable(target2))
+            	{
+            		return false;
+            	}
+    			
         		//check faction
         		if (!TeamHelper.checkSameOwner(host, target2))
         		{
@@ -571,6 +601,22 @@ public class TargetHelper
 				}
 			}
 		}
+	}
+	
+	/** invulnerable entity special case */
+	public static boolean isEntitySpecialCase_Invulnerable(Entity target)
+	{
+		if (target instanceof IProjectile ||
+			target instanceof EntityFireball ||
+			target instanceof EntityFireworkRocket ||
+			target instanceof EntityFishHook ||
+			target instanceof EntityHanging ||
+			target instanceof EntityAreaEffectCloud)
+    	{
+    		return true;
+    	}
+		
+		return false;
 	}
 	
 	
