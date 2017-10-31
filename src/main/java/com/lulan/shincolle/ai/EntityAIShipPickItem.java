@@ -167,7 +167,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     					
     					//add exp
     					this.hostShip.addShipExp(ConfigHandler.expGain[6]);
-
+    					
     					//clear entity item if no leftover item
     	                if (itemstack.stackSize <= 0)
     	                {

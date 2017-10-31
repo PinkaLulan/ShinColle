@@ -33,6 +33,7 @@ import com.lulan.shincolle.client.model.ModelHarbourHime;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserNe;
 import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
 import com.lulan.shincolle.client.model.ModelIsolatedHime;
+import com.lulan.shincolle.client.model.ModelMidwayHime;
 import com.lulan.shincolle.client.model.ModelNorthernHime;
 import com.lulan.shincolle.client.model.ModelSubmKa;
 import com.lulan.shincolle.client.model.ModelSubmRo500;
@@ -104,6 +105,8 @@ public class RenderShipEntity extends RenderBasic
 	private static final ModelBase MD_Hime_Harbour = new ModelHarbourHime();
 	private static final ResourceLocation TEX_Hime_Isolated = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityIsolatedHime.png");
 	private static final ModelBase MD_Hime_Isolated = new ModelIsolatedHime();
+	private static final ResourceLocation TEX_Hime_Midway = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMidwayHime.png");
+	private static final ModelBase MD_Hime_Midway = new ModelMidwayHime();
 	private static final ResourceLocation TEX_Hime_Northern = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
 	private static final ModelBase MD_Hime_Northern = new ModelNorthernHime();
 	//SS
@@ -212,6 +215,8 @@ public class RenderShipEntity extends RenderBasic
 			return TEX_Hime_Harbour;
 		case ID.ShipClass.IsolatedHime:
 			return TEX_Hime_Isolated;
+		case ID.ShipClass.MidwayHime:
+			return TEX_Hime_Midway;
 		case ID.ShipClass.NorthernHime:
 			return TEX_Hime_Northern;
 		//SS
@@ -332,6 +337,9 @@ public class RenderShipEntity extends RenderBasic
 		case ID.ShipClass.IsolatedHime:
 			this.mainModel = MD_Hime_Isolated;
 		break;
+		case ID.ShipClass.MidwayHime:
+			this.mainModel = MD_Hime_Midway;
+		break;
 		case ID.ShipClass.NorthernHime:
 			this.mainModel = MD_Hime_Northern;
 		break;
@@ -432,6 +440,7 @@ public class RenderShipEntity extends RenderBasic
 			this.shadowSize = 0.6F;
 		break;
 		case ID.ShipClass.HarbourHime:
+		case ID.ShipClass.MidwayHime:
 			this.shadowSize = 0.8F;
 		break;
 		case ID.ShipClass.DestroyerI:

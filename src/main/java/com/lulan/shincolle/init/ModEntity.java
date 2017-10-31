@@ -45,6 +45,7 @@ import com.lulan.shincolle.entity.hime.EntityCarrierWD;
 import com.lulan.shincolle.entity.hime.EntityDestroyerHime;
 import com.lulan.shincolle.entity.hime.EntityHarbourHime;
 import com.lulan.shincolle.entity.hime.EntityIsolatedHime;
+import com.lulan.shincolle.entity.hime.EntityMidwayHime;
 import com.lulan.shincolle.entity.hime.EntityNorthernHime;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.entity.mounts.EntityMountBaH;
@@ -148,6 +149,7 @@ public class ModEntity
 		createEntity(EntityDestroyerShimakazeMob.class, "EntityDestroyerShimakazeMob", modEntityID++);
 		createEntity(EntityHarbourHime.class, "EntityHarbourHime", modEntityID++);
 		createEntity(EntityIsolatedHime.class, "EntityIsolatedHime", modEntityID++);
+		createEntity(EntityMidwayHime.class, "EntityMidwayHime", modEntityID++);
 		createEntity(EntityCARi.class, "EntityHeavyCruiserRi", modEntityID++);
 		createEntity(EntityCANe.class, "EntityHeavyCruiserNe", modEntityID++);
 		createEntity(EntityNorthernHime.class, "EntityNorthernHime", modEntityID++);

@@ -157,6 +157,7 @@ item.shincolle:shipegg28.name=戰艦棲姬
 item.shincolle:shipegg29.name=驅逐棲姬
 item.shincolle:shipegg30.name=港灣棲姬
 item.shincolle:shipegg31.name=離島棲姬
+item.shincolle:shipegg32.name=中間棲姬
 item.shincolle:shipegg33.name=北方棲姬
 item.shincolle:shipegg35.name=空母水鬼
 item.shincolle:shipegg38.name=驅逐艦 島風
@@ -259,6 +260,7 @@ entity.shincolle.EntityHarbourHime.name=港灣棲姬
 entity.shincolle.EntityHeavyCruiserNe.name=重巡ネ級
 entity.shincolle.EntityHeavyCruiserRi.name=重巡リ級
 entity.shincolle.EntityIsolatedHime.name=離島棲姬
+entity.shincolle.EntityMidwayHime.name=中間棲姬
 entity.shincolle.EntityMountAfH.name=空軍基地
 entity.shincolle.EntityMountBaH.name=三連裝砲
 entity.shincolle.EntityMountCaH.name=深海航空母艦
@@ -531,6 +533,9 @@ gui.shincolle:book.chap4.text22d1=§9名稱：§0 重巡棲姬<br><br>§9艦種�
 gui.shincolle:book.chap4.title23=
 gui.shincolle:book.chap4.text23d0=
 gui.shincolle:book.chap4.text23d1=§9名稱：§0 離島棲姬<br><br>§9艦種：§0 姬級 陸上基地<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 深海金屬 (2700)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>騎乘著新品種天藍怪的孤僻公主，因為朋友都被吃光了所以沒有朋友。
+gui.shincolle:book.chap4.title24=
+gui.shincolle:book.chap4.text24d0=
+gui.shincolle:book.chap4.text24d1=§9名稱：§0 中間棲姬<br><br>§9艦種：§0 姬級 陸上基地<br><br>§9建造所：§0 超深海熱漩<br><br>§9建造加成：§0 深海金屬 (4800)<br><br>§9特殊能力：§0 無<br><br>§9其他能力：§0 無<br><br>是誰住在深海的大泡芙裡？
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=敵艦列表

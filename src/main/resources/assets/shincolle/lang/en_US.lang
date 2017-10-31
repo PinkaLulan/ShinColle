@@ -157,6 +157,7 @@ item.shincolle:shipegg28.name=Battleship Princess
 item.shincolle:shipegg29.name=Destroyer Princess
 item.shincolle:shipegg30.name=Harbour Princess
 item.shincolle:shipegg31.name=Isolated Island Princess
+item.shincolle:shipegg32.name=Midway Princess
 item.shincolle:shipegg33.name=Northern Princess
 item.shincolle:shipegg35.name=Aircraft Carrier Water Demon
 item.shincolle:shipegg38.name=Destroyer Shimakaze
@@ -259,6 +260,7 @@ entity.shincolle.EntityHarbourHime.name=Harbour Princess
 entity.shincolle.EntityHeavyCruiserNe.name=Heavy Cruiser Ne-Class
 entity.shincolle.EntityHeavyCruiserRi.name=Heavy Cruiser Ri-Class
 entity.shincolle.EntityIsolatedHime.name=Isolated Island Princess
+entity.shincolle.EntityMidwayHime.name=Midway Princess
 entity.shincolle.EntityMountAfH.name=Airbase
 entity.shincolle.EntityMountBaH.name=Sanrensouhou
 entity.shincolle.EntityMountCaH.name=Abyssal Aircraft Carrier
@@ -531,6 +533,9 @@ gui.shincolle:book.chap4.text22d1=§9Name:§0 Heavy Cruiser Princess<br><br>§9C
 gui.shincolle:book.chap4.title23=
 gui.shincolle:book.chap4.text23d0=
 gui.shincolle:book.chap4.text23d1=§9Name:§0 Isolated Island Princess<br><br>§9Class:§0 Princess Class Installation<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Abyssium (2700)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>The eccentric princess who rides a Cerulean has no friends, because all the friends have been eaten.
+gui.shincolle:book.chap4.title24=
+gui.shincolle:book.chap4.text24d0=
+gui.shincolle:book.chap4.text24d1=§9Name:§0 Midway Princess<br><br>§9Class:§0 Princess Class Installation<br><br>§9Factory:§0 Hadal Vortex<br><br>§9Factor:§0 Abyssium (4800)<br><br>§9AuraEffect:§0 none<br><br>§9OtherEffect:§0 none<br><br>Who lives in an abyssal puff under the sea?
 
 # GUI: Book Text Chap 5
 gui.shincolle:book.chap5.title=Enemy List

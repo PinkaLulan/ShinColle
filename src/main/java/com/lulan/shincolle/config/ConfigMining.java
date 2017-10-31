@@ -173,13 +173,16 @@ public class ConfigMining extends BasicShipConfig
 		strs.add("0,-999999,minecraft:coal,0,500,1,3,1,100,1,150"+NEW_LINE);
 		strs.add("0,-999999,minecraft:redstone,0,500,1,3,20,15,2,150"+NEW_LINE);
 		strs.add("0,-999999,minecraft:iron_ore,0,350,1,2,1,64,2,100"+NEW_LINE);
+		strs.add("0,-999999,shincolle:AbyssMetal,1,350,1,3,1,64,2,100"+NEW_LINE);
 		strs.add("0,-999999,minecraft:gold_ore,0,100,1,1,30,32,2,100"+NEW_LINE);
 		strs.add("0,-999999,minecraft:dye,4,200,1,3,30,30,2,150"+NEW_LINE);
 		strs.add("0,-999999,minecraft:diamond,0,50,1,1,60,16,3,100"+NEW_LINE);
 		strs.add("0,-999999,minecraft:emerald,0,80,1,1,40,32,3,100"+NEW_LINE);
+		strs.add("0,-999999,shincolle:MarriageRing,0,25,1,1,1,16,3,0"+NEW_LINE);
 		//overworld with biome
 		strs.add("0,0,minecraft:prismarine_shard,0,500,1,4,30,128,0,0"+NEW_LINE);
 		strs.add("0,0,minecraft:prismarine_crystals,0,200,1,3,60,128,2,100"+NEW_LINE);
+		strs.add("0,0,shincolle:AbyssMetal,1,500,1,3,1,64,2,100"+NEW_LINE);
 		strs.add("0,0,minecraft:sponge,0,200,1,1,80,128,0,100"+NEW_LINE);
 		strs.add("0,6,minecraft:clay_ball,0,500,1,4,30,128,0,0"+NEW_LINE);
 		strs.add("0,6,minecraft:mycelium,0,500,1,1,50,128,0,0"+NEW_LINE);
@@ -187,6 +190,7 @@ public class ConfigMining extends BasicShipConfig
 		strs.add("0,7,minecraft:mycelium,0,500,1,1,50,128,0,0"+NEW_LINE);
 		strs.add("0,10,minecraft:prismarine_shard,0,500,1,4,30,128,0,0"+NEW_LINE);
 		strs.add("0,10,minecraft:prismarine_crystals,0,200,1,3,60,128,2,100"+NEW_LINE);
+		strs.add("0,10,shincolle:AbyssMetal,1,500,1,3,1,64,2,100"+NEW_LINE);
 		strs.add("0,10,minecraft:sponge,0,200,1,1,80,128,0,100"+NEW_LINE);
 		strs.add("0,10,minecraft:packed_ice,0,1000,1,4,1,256,2,0"+NEW_LINE);
 		strs.add("0,11,minecraft:clay_ball,0,500,1,4,30,128,0,0"+NEW_LINE);
@@ -198,6 +202,7 @@ public class ConfigMining extends BasicShipConfig
 		strs.add("0,16,minecraft:mycelium,0,500,1,1,50,128,0,0"+NEW_LINE);
 		strs.add("0,24,minecraft:prismarine_shard,0,500,1,4,30,128,0,0"+NEW_LINE);
 		strs.add("0,24,minecraft:prismarine_crystals,0,200,1,3,60,128,2,100"+NEW_LINE);
+		strs.add("0,24,shincolle:AbyssMetal,1,500,1,3,1,64,2,100"+NEW_LINE);
 		strs.add("0,24,minecraft:sponge,0,200,1,1,80,128,0,100"+NEW_LINE);
 		strs.add("0,25,minecraft:clay_ball,0,500,1,4,30,128,0,0"+NEW_LINE);
 		strs.add("0,25,minecraft:mycelium,0,500,1,1,50,128,0,0"+NEW_LINE);
@@ -217,6 +222,7 @@ public class ConfigMining extends BasicShipConfig
 		strs.add("-1,-999999,minecraft:gravel,0,1000,1,1,1,256,0,0"+NEW_LINE);
 		strs.add("-1,-999999,minecraft:magma,0,500,1,1,40,256,3,0"+NEW_LINE);
 		strs.add("-1,-999999,minecraft:flint,0,500,1,1,1,256,0,0"+NEW_LINE);
+		strs.add("-1,-999999,shincolle:MarriageRing,0,50,1,1,1,256,3,0"+NEW_LINE);
 		//nether ore
 		strs.add("-1,-999999,minecraft:quartz,0,1000,1,3,1,256,2,150"+NEW_LINE);
 		strs.add("-1,-999999,minecraft:glowstone,0,500,1,2,1,256,0,100"+NEW_LINE);
@@ -227,6 +233,7 @@ public class ConfigMining extends BasicShipConfig
 		//end ores
 		strs.add("1,-999999,minecraft:ender_pearl,0,200,1,1,40,256,3,100"+NEW_LINE);
 		strs.add("1,-999999,minecraft:chorus_fruit,0,200,1,3,60,256,3,100"+NEW_LINE);
+		strs.add("-1,-999999,shincolle:MarriageRing,0,25,1,1,1,256,3,0"+NEW_LINE);
 		
 		return strs;
 	}
