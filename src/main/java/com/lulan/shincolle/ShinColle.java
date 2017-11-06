@@ -109,7 +109,7 @@ public class ShinColle
 		//check config changed
         ConfigHandler.checkChange(ConfigHandler.config);
 		
-		//add forestry bees
+		//inter-mod
         CommonProxy.checkModLoaded();
 		
 //		//DEBUG

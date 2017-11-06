@@ -85,36 +85,6 @@ public abstract class CommonProxy implements IProxy
 			activeBaubles = true;
 		}
 		
-		//forestry
-//		if (Loader.isModLoaded(Reference.MOD_ID_Forestry) && ConfigHandler.enableForestry)
-//		{
-//			LogHelper.info("INFO : Enable mod support: "+Reference.MOD_ID_Forestry);
-//			activeForestry = true;
-//			ShinBees.init();
-//			
-//			//TODO debug
-////			AlleleManager.alleleRegistry.getRegisteredAlleles().forEach((k, v) ->
-////			{
-////				LogHelper.info("AAAAAAAA "+k);
-////			});
-////			Iterator iter = EntityList.classToStringMapping.entrySet().iterator();
-////			Iterator iter = AlleleManager.alleleRegistry.getSpeciesRoot("rootBees").getGenomeTemplates().entrySet().iterator();
-////			while (iter.hasNext())
-////			{
-////				Map.Entry entry = (Map.Entry)iter.next();
-////			    Object key = entry.getKey();
-////			    Object val = entry.getValue();
-////			    LogHelper.info("AAAAAA:  "+key+" , "+val);
-////			    
-////			    IAllele[] data = (IAllele[]) val;
-////			    
-////			    for (IAllele d : data)
-////			    {
-////			    	LogHelper.info("            BBBB:  "+d);
-////			    }
-////			}
-//		}
-		
 		//IC2
 		if (Loader.isModLoaded(Reference.MOD_ID_IC2) && ConfigHandler.enableIC2)
 		{
