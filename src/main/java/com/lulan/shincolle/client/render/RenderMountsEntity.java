@@ -8,6 +8,7 @@ import com.lulan.shincolle.client.model.ModelMountCaH;
 import com.lulan.shincolle.client.model.ModelMountCaWD;
 import com.lulan.shincolle.client.model.ModelMountHbH;
 import com.lulan.shincolle.client.model.ModelMountIsH;
+import com.lulan.shincolle.client.model.ModelMountMiH;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 
@@ -22,18 +23,20 @@ public class RenderMountsEntity extends RenderShipEntity
 {
 
 	//textures
-	private static final ResourceLocation TEX_AirfieldMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountAfH.png");
-	private static final ModelBase MD_AirfieldMount = new ModelMountAfH();
-	private static final ResourceLocation TEX_BattleshipMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountBaH.png");
-	private static final ModelBase MD_BattleshipMount = new ModelMountBaH();
-	private static final ResourceLocation TEX_CarrierMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountCaH.png");
-	private static final ModelBase MD_CarrierMount = new ModelMountCaH();
-	private static final ResourceLocation TEX_CarrierWDMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountCaWD.png");
-	private static final ModelBase MD_CarrierWDMount = new ModelMountCaWD();
-	private static final ResourceLocation TEX_HarbourMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountHbH.png");
-	private static final ModelBase MD_HarbourMount = new ModelMountHbH();
-	private static final ResourceLocation TEX_IsloatedMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountIsH.png");
-	private static final ModelBase MD_IsloatedMount = new ModelMountIsH();
+	public static final ResourceLocation TEX_AirfieldMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountAfH.png");
+	public static final ModelBase MD_AirfieldMount = new ModelMountAfH();
+	public static final ResourceLocation TEX_BattleshipMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountBaH.png");
+	public static final ModelBase MD_BattleshipMount = new ModelMountBaH();
+	public static final ResourceLocation TEX_CarrierMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountCaH.png");
+	public static final ModelBase MD_CarrierMount = new ModelMountCaH();
+	public static final ResourceLocation TEX_CarrierWDMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountCaWD.png");
+	public static final ModelBase MD_CarrierWDMount = new ModelMountCaWD();
+	public static final ResourceLocation TEX_HarbourMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountHbH.png");
+	public static final ModelBase MD_HarbourMount = new ModelMountHbH();
+	public static final ResourceLocation TEX_IsloatedMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountIsH.png");
+	public static final ModelBase MD_IsloatedMount = new ModelMountIsH();
+	public static final ResourceLocation TEX_MidwayMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountMiH.png");
+	public static final ModelBase MD_MidwayMount = new ModelMountMiH();
 	
 	//factory
 	public static final FactoryDefault FACTORY_MOUNT = new FactoryDefault();
@@ -62,6 +65,8 @@ public class RenderMountsEntity extends RenderShipEntity
 			return TEX_HarbourMount;
 		case ID.ShipMisc.IsloatedMount:
 			return TEX_IsloatedMount;
+		case ID.ShipMisc.MidwayMount:
+			return TEX_MidwayMount;
 		default:	//default texture
 			return TEX_AirfieldMount;
 		}//end switch
@@ -93,6 +98,9 @@ public class RenderMountsEntity extends RenderShipEntity
 		case ID.ShipMisc.IsloatedMount:
 			this.mainModel = MD_IsloatedMount;
 		break;
+		case ID.ShipMisc.MidwayMount:
+			this.mainModel = MD_MidwayMount;
+		break;
 		default:	//default model
 			this.mainModel = MD_AirfieldMount;
 		break;
@@ -122,6 +130,8 @@ public class RenderMountsEntity extends RenderShipEntity
 		case ID.ShipMisc.HarbourMount:
 			return new float[] {0F, 0.5F, 0.5F, 0.5F, 0.6F};
 		case ID.ShipMisc.IsloatedMount:
+			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
+		case ID.ShipMisc.MidwayMount:
 			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
 		default:
 			return new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F};

@@ -356,6 +356,7 @@ public class Values
 		add((int)ID.ShipClass.DestroyerHime);
 		add((int)ID.ShipClass.HeavyCruiserHime);
 		add((int)ID.ShipClass.IsolatedHime);
+		add((int)ID.ShipClass.MidwayHime);
 	}});
 	
 	/**ENEMY LIST for guidebook

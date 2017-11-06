@@ -3640,7 +3640,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//true if host can summon mounts
 	public boolean canSummonMounts()
 	{
-		return (this.getStateEmotion(ID.S.State) & 1) == 1;
+		return (this.getStateEmotion(ID.S.State) & 1) == 1 && !this.getStateFlag(ID.F.NoFuel);
 	}
 	
 	public BasicEntityMount summonMountEntity()

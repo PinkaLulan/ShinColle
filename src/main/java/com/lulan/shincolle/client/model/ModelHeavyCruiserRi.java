@@ -520,9 +520,9 @@ public class ModelHeavyCruiserRi extends ShipModelBaseAdv
   			{
   				GlStateManager.translate(0F, 0.45F, 0F);
   				this.ArmLeft.rotateAngleX = -0.6F;
+  	  			this.ArmLeft.rotateAngleZ = 0.3F;
   	  			this.ArmRight.rotateAngleX = -0.6F;
-  	  			this.ArmLeft.rotateAngleZ = 0.5F;
-  	  			this.ArmRight.rotateAngleZ = -0.5F;
+  	  			this.ArmRight.rotateAngleZ = -0.3F;
   				this.BodyMain.rotateAngleX = 0.3F;
   				this.Head.rotateAngleX -= 0.35F;
   				addk1 = -2F;

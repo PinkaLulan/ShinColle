@@ -138,7 +138,7 @@ public class ModelTakoyaki extends ModelBase
     	this.GlowBodyMain.rotateAngleY = f3 / 57F;
     	this.GlowBodyMain.rotateAngleX = f4 / 57F;
     	this.JawMain.rotateAngleZ = 0F;
-    	this.JawMain.rotateAngleX = MathHelper.cos(f2*0.125F) * 0.2F + 1.1F;
+    	this.JawMain.rotateAngleX = MathHelper.cos(entity.ticksExisted * 0.125F) * 0.2F + 1.1F;
     }
     
     

@@ -809,7 +809,7 @@ public class GuiDesk extends GuiContainer
             		break;
             		case 2:  //run
             			this.shipModel.setSprinting(!this.shipModel.isSprinting());
-            			if (this.shipMount != null) this.shipMount.setSprinting(!this.shipMount.isSprinting());
+            			if (this.shipMount != null) this.shipMount.setSprinting(this.shipModel.isSprinting());
             		break;
             		case 3:  //attack
             			this.shipModel.setAttackTick(50);

@@ -4,7 +4,7 @@ import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
-import com.lulan.shincolle.entity.mounts.EntityMountIsH;
+import com.lulan.shincolle.entity.mounts.EntityMountMiH;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 /**
  * model state:
- *   0:mounts, 1:hat, 2:horn, 3:bowtie, 4:shawl, 5:hand, 6:leg, 7:leg armor
+ *   0:mounts, 1:collar
  */
 public class EntityMidwayHime extends BasicEntityShipCV
 {
@@ -22,11 +22,11 @@ public class EntityMidwayHime extends BasicEntityShipCV
 	public EntityMidwayHime(World world)
 	{
 		super(world);
-		this.setSize(0.6F, 1.6F);
+		this.setSize(0.7F, 2.0F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.MidwayHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
-		this.setStateMinor(ID.M.NumState, 8);
+		this.setStateMinor(ID.M.NumState, 2);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
@@ -171,13 +171,13 @@ public class EntityMidwayHime extends BasicEntityShipCV
   	@Override
   	public boolean hasShipMounts()
   	{
-  		return false;  //TODO
+  		return true;
   	}
   	
   	@Override
   	public BasicEntityMount summonMountEntity()
   	{
-		return new EntityMountIsH(this.world); //TODO
+		return new EntityMountMiH(this.world);
 	}
   	
   	@Override

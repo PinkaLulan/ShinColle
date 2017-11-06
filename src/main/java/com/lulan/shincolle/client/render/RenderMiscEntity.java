@@ -18,8 +18,8 @@ public class RenderMiscEntity extends Render<Entity>
 {
 
 	//texture & model
-	private static final ResourceLocation TEX_AM = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAbyssMissile.png");
-	private static final ModelBase MD_AM = new ModelAbyssMissile();
+	public static final ResourceLocation TEX_AM = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAbyssMissile.png");
+	public static final ModelBase MD_AM = new ModelAbyssMissile();
 	
 	//factory
 	public static final FactoryDefault FACTORY_MISC = new FactoryDefault();

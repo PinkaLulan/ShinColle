@@ -23,20 +23,20 @@ public class RenderSummonEntity extends RenderBasic
 {
 
 	//textures
-	private static final ResourceLocation TEX_Airplane = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAircraft.png");
-	private static ModelBase MD_Airplane = new ModelAirplane();
-	private static final ResourceLocation TEX_AirplaneT = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAirplaneT.png");
-	private static ModelBase MD_AirplaneT = new ModelAirplaneT();
-	private static final ResourceLocation TEX_AirplaneTako = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAircraftTakoyaki.png");
-	private static ModelBase MD_AirplaneTako = new ModelTakoyaki();
-	private static final ResourceLocation TEX_AirplaneZero = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAirplaneZero.png");
-	private static ModelBase MD_AirplaneZero = new ModelAirplaneZero();
-	private static final ResourceLocation TEX_FloatingFort = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityFloatingFort.png");
-	private static ModelBase MD_FloatingFort = new ModelFloatingFort();
-	private static final ResourceLocation TEX_Rensouhou = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityRensouhou.png");
-	private static ModelBase MD_Rensouhou = new ModelRensouhou();
-	private static final ResourceLocation TEX_RensouhouS = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityRensouhouS.png");
-	private static ModelBase MD_RensouhouS = new ModelRensouhouS();
+	public static final ResourceLocation TEX_Airplane = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAircraft.png");
+	public static ModelBase MD_Airplane = new ModelAirplane();
+	public static final ResourceLocation TEX_AirplaneT = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAirplaneT.png");
+	public static ModelBase MD_AirplaneT = new ModelAirplaneT();
+	public static final ResourceLocation TEX_AirplaneTako = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAircraftTakoyaki.png");
+	public static ModelBase MD_AirplaneTako = new ModelTakoyaki();
+	public static final ResourceLocation TEX_AirplaneZero = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityAirplaneZero.png");
+	public static ModelBase MD_AirplaneZero = new ModelAirplaneZero();
+	public static final ResourceLocation TEX_FloatingFort = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityFloatingFort.png");
+	public static ModelBase MD_FloatingFort = new ModelFloatingFort();
+	public static final ResourceLocation TEX_Rensouhou = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityRensouhou.png");
+	public static ModelBase MD_Rensouhou = new ModelRensouhou();
+	public static final ResourceLocation TEX_RensouhouS = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityRensouhouS.png");
+	public static ModelBase MD_RensouhouS = new ModelRensouhouS();
 
 	//factory
 	public static final FactoryDefault FACTORY_SUMMON = new FactoryDefault();
@@ -106,6 +106,9 @@ public class RenderSummonEntity extends RenderBasic
 		break;
 		}//end switch
     }
+    
+    @Override
+    protected void setMiscModel() {}
     
     /** set shadow size */
     @Override

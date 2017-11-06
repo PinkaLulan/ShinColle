@@ -547,6 +547,11 @@ public class ParticleHelper
 			}
 		}
 		break;
+		case 49:	//drip lava
+			ran1 = rand.nextFloat() * 0.7D - 0.35D;
+			ran2 = rand.nextFloat() * 0.7D - 0.35D;
+			world.spawnParticle(EnumParticleTypes.DRIP_LAVA, posX+ran1, posY, posZ+ran2, lookX, lookY, lookZ, new int[0]);
+		break;
 		default:
 		break;
 		}

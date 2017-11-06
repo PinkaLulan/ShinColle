@@ -430,6 +430,12 @@ public class ModelCarrierWDemon extends ShipModelBaseAdv
     	this.GlowBodyMain2.render(f5);
     	GlStateManager.enableLighting();
     	
+    	//reset light
+    	int j = entity.getBrightnessForRender(f5);
+        int k = j % 65536;
+        int l = j / 65536;
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k, (float)l);
+    	
     	GlStateManager.disableBlend();
     	GlStateManager.popMatrix();
     }

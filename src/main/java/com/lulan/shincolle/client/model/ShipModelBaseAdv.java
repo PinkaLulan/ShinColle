@@ -40,9 +40,7 @@ abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotio
     protected ModelRenderer[] armOff;
     
 	
-	public ShipModelBaseAdv()
-	{
-	}
+	public ShipModelBaseAdv() {}
 	
 	//add default face box
 	protected void setDefaultFaceModel()
@@ -607,6 +605,11 @@ abstract public class ShipModelBaseAdv extends ModelBase implements IModelEmotio
 	public float getField(int id)
 	{
 		return 0;
+	}
+	
+	public boolean shouldRenderMiscModel(int miscID)
+	{
+		return false;
 	}
 	
 	

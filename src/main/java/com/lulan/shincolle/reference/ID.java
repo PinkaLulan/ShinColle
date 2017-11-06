@@ -647,6 +647,7 @@ public class ID
 		public static final short HarbourMount = 11;
 		public static final short CarrierMount = 12;
 		public static final short IsloatedMount = 13;
+		public static final short MidwayMount = 14;
 	}
 	
 	/** ship type for damage calc */
