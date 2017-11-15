@@ -81,7 +81,7 @@ public class Values
 		put((int)ID.ShipClass.CarrierHime,        new float[] {180F, 40F, 0.28F,  1.0F, 0.45F, 22F, 0.85F, 0.75F, 0.26F, 0.62F, 0.85F, 0.7F});
 		put((int)ID.ShipClass.DestroyerHime,      new float[] {90F,  22F, 0.20F,  1.0F, 0.5F,  12F, 0.55F, 0.5F,  0.22F, 0.6F,  1F,    0.5F});
 		put((int)ID.ShipClass.HarbourHime,        new float[] {260F, 14F, 0.36F,  0.8F, 0.2F,  24F, 1.35F, 0.4F,  0.3F,  0.6F,  0.4F,  0.8F});
-//		put((int)ID.ShipClass.MidwayHime,         new float[] {350F, 22F, 0.45F,  0.8F, 0.25F, 30F, 1.5F,  0.5F,  0.34F, 0.6F,  0.4F,  0.8F});
+		put((int)ID.ShipClass.MidwayHime,         new float[] {350F, 22F, 0.45F,  0.8F, 0.25F, 30F, 1.5F,  0.5F,  0.34F, 0.6F,  0.4F,  0.8F});
 		put((int)ID.ShipClass.NorthernHime,       new float[] {210F, 13F, 0.30F,  0.8F, 0.32F, 22F, 1.15F, 0.35F, 0.27F, 0.6F,  0.64F, 0.8F});
 //		put((int)ID.ShipClass.SeaplaneHime,       new float[] {170F, 24F, 0.25F,  1.0F, 0.45F, 18F, 1F,    0.6F,  0.25F, 0.63F, 0.9F,  0.65F});
 //		put((int)ID.ShipClass.SouthernHime,       new float[] {170F, 35F, 0.34F,  1.0F, 0.3F,  20F, 1F,    0.73F, 0.29F, 0.63F, 0.6F,  0.7F});
@@ -199,7 +199,7 @@ public class Values
 		put((int)ID.ShipClass.DestroyerHime,	new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.35F});
 		put((int)ID.ShipClass.HarbourHime,		new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
 		put((int)ID.ShipClass.IsolatedHime,	    new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.35F});
-//		put((int)ID.Ship.MidwayHime,			new float[] {});
+		put((int)ID.ShipClass.MidwayHime,		new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
 		put((int)ID.ShipClass.NorthernHime,		new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.5F});
 //		put((int)ID.Ship.SouthernHime,		new float[] {});
 //		put((int)ID.Ship.SeaplaneHime,		new float[] {});

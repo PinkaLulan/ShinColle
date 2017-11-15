@@ -1,15 +1,11 @@
 package com.lulan.shincolle.handler;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Random;
-
-import javax.annotation.Nullable;
 
 import org.lwjgl.input.Keyboard;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
-import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
@@ -23,28 +19,24 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.InventoryHelper;
 import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.RenderHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 import com.lulan.shincolle.worldgen.ChestLootTable;
 
-import baubles.api.cap.BaublesCapabilities;
-import baubles.api.cap.IBaublesItemHandler;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.FogMode;
-import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGolem;
@@ -57,19 +49,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogDensity;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
-import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
@@ -81,7 +67,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -110,17 +95,21 @@ public class EventHandler
 	//keys
 	public static int rideKeys = 0;			//CLIENT SIDE ONLY
 	public static int openGUI = 0;			//CLIENT SIDE ONLY
-	public static int keyCooldown = 0;		//CLIENT SIDE ONLY, press key cooldown
+	public static int keyMountCD = 0;		//CLIENT SIDE ONLY, key CD for mount movement
+	public static int keyMountSkillCD = 0;	//CLIENT SIDE ONLY, key CD for mount skill
 	
 	//render view change
 	public static boolean isViewChanged = false;	//CLIENT SIDE ONLY
-	public static boolean isViewPlayer = false;	//CLIENT SIDE ONLY
+	public static boolean isViewPlayer = false;		//CLIENT SIDE ONLY
 	
 	//for debug usage
 	public static int debugCooldown = 0;	//CLIENT SIDE ONLY
 	public static float field1 = 0F;		//CLIENT SIDE ONLY
 	public static float field2 = 0F;		//CLIENT SIDE ONLY
 	public static float field3 = 0F;		//CLIENT SIDE ONLY
+	public static float field4 = 0F;		//CLIENT SIDE ONLY
+	public static float field5 = 0F;		//CLIENT SIDE ONLY
+	public static float field6 = 0F;		//CLIENT SIDE ONLY
 	
 
 	//change vanilla mob drop (add grudge), this is SERVER event
@@ -613,7 +602,7 @@ public class EventHandler
 					if (event.player.ticksExisted == 64)
 					{
 						ServerProxy.updatePlayerID(event.player);
-						updateTeamList(event.player, capa);
+						TeamHelper.updateTeamList(event.player, capa);
 						syncTeamList = true;
 					}
 					
@@ -621,7 +610,7 @@ public class EventHandler
 					if ((event.player.ticksExisted & 127) == 0)
 					{
 						//spawn mob ship
-						spawnMobShip(event.player, capa);
+						EntityHelper.spawnMobShip(event.player, capa);
 						
 						//sync unit names
 						capa.sendSyncPacket(8);
@@ -630,14 +619,14 @@ public class EventHandler
 						if ((event.player.ticksExisted & 255) == 0)
 						{
 							//update team list
-							updateTeamList(event.player, capa);
+							TeamHelper.updateTeamList(event.player, capa);
 							syncTeamList = true;
 						}//end every 256 ticks
 					}//end every 128 ticks
 				}//end every 32 ticks
 				
 				//spawn boss ticking
-				spawnBossShip(event.player, capa);
+				EntityHelper.spawnBossShip(event.player, capa);
 				
 				//ally cooldown--
 				int allycd = capa.getPlayerTeamCooldown();
@@ -665,7 +654,8 @@ public class EventHandler
 			else if (event.player.world.isRemote)
 			{
 				//cd--
-				if (this.keyCooldown > 0) this.keyCooldown--;
+				if (this.keyMountCD > 0) this.keyMountCD--;
+				if (this.keyMountSkillCD > 0) this.keyMountSkillCD--;
 				if (this.debugCooldown > 0) this.debugCooldown--;
 				
 //				//DEBUG TODO
@@ -701,7 +691,7 @@ public class EventHandler
 				//check ring with Baubles slots
 				if (!hasRing && Loader.isModLoaded(Reference.MOD_ID_Baubles))
 				{
-					hasRing = checkRingInBaubles(event.player);
+					hasRing = InventoryHelper.checkRingInBaubles(event.player);
 				}
 				
 				if (capa != null)
@@ -724,336 +714,6 @@ public class EventHandler
 		}//end player tick phase: START
 	}//end onPlayerTick
 	
-	@Optional.Method(modid = Reference.MOD_ID_Baubles)
-	private static boolean checkRingInBaubles(EntityPlayer player)
-	{
-		IBaublesItemHandler bb = (IBaublesItemHandler) player.getCapability(BaublesCapabilities.CAPABILITY_BAUBLES, null);
-	
-		if (bb != null)
-		{
-			for (int i = 0; i < bb.getSlots(); i++)
-			{
-				ItemStack stack = bb.getStackInSlot(i);
-				if (stack != null && stack.getItem() == ModItems.MarriageRing) return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	/** update team list of pointer item */
-	private static void updateTeamList(EntityPlayer player, CapaTeitoku capa)
-	{
-		/** update ships in pointer team list */
-		//check entity is alive
-		BasicEntityShip getent = null;
-		
-		for (int i = 0; i < 6; i++)
-		{
-			//get ship by UID
-			getent = EntityHelper.getShipByUID(capa.getSIDCurrentTeam(i));
-
-			//get ship
-			if (getent != null)
-			{
-				if (TeamHelper.checkSameOwner(getent, player))
-				{
-					//update ship entity
-					capa.addShipEntityToCurrentTeam(i, getent);
-				}
-				else
-				{
-					//owner changed, remove ship
-					capa.addShipEntityToCurrentTeam(i, null);
-				}
-			}
-			//ship lost
-			else
-			{
-				//clear slot if no ship UID (ship UID invalid)
-				if (capa.getSIDCurrentTeam(i) <= 0)
-				{
-					capa.addShipEntityToCurrentTeam(i, null);
-				}
-			}	
-		}
-	}
-	
-	/** spawn mob ticking
-	 * 
-	 *  ConfigHandler.mobSpawn[]
-	 *  0: Max number in the world
-	 *  1: Spawn prob every X ticks
-	 *  2: #groups each spawn
-	 *  3: #min each group
-	 *  4: #max each group
-	 */
-	private static void spawnMobShip(EntityPlayer player, CapaTeitoku capa)
-	{
-		//null check
-		if (player == null || capa == null || player.world.getDifficulty() == EnumDifficulty.PEACEFUL)
-		{
-			return;
-		}
-		
-		boolean canSpawn = false;
-		int blockX = (int) player.posX;
-		int blockZ = (int) player.posZ;
-		int spawnX, spawnY, spawnZ = 0;
-		Biome biome = player.world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
-		World w = player.world;
-		Random rng = player.getRNG();
-		
-		//check ring
-		if (ConfigHandler.checkRing)
-		{
-			if (capa.hasRing()) canSpawn = true;
-		}
-		else
-		{
-			canSpawn = true;
-		}
-		
-		//check biome
-		if (canSpawn)
-		{
-			if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
-				BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH)) {}
-			else
-			{
-				canSpawn = false;
-			}
-		}
-
-		//apply spawn
-		if (canSpawn)
-		{
-			int entNum = EntityHelper.getEntityNumber(0, w);
-			
-			//check ship number in the world
-			if (entNum <= ConfigHandler.mobSpawn[0])
-			{
-				//roll spawn
-				if (rng.nextInt(100) <= ConfigHandler.mobSpawn[1])
-				{
-					//get spawn position
-					int groups = ConfigHandler.mobSpawn[2];
-					int loop = 30 + groups * 30;
-					
-					while (groups > 0 && loop > 0)
-					{
-						int offX = rng.nextInt(30) + 20;
-						int offZ = rng.nextInt(30) + 20;
-						
-						switch (rng.nextInt(4))
-						{
-						case 1:
-							spawnX = blockX - offX;
-							spawnZ = blockZ - offZ;
-							break;
-						case 2:
-							spawnX = blockX + offX;
-							spawnZ = blockZ - offZ;
-							break;
-						case 3:
-							spawnX = blockX - offX;
-							spawnZ = blockZ + offZ;
-							break;
-						default:
-							spawnX = blockX + offX;
-							spawnZ = blockZ + offZ;
-							break;
-						}
-
-						IBlockState blockY = w.getBlockState(new BlockPos(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ));
-						LogHelper.debug("DEBUG: spawn mob ship: group: "+groups+
-								" get block: "+blockY.getBlock().getLocalizedName()+" "+spawnX+
-								" "+(w.provider.getAverageGroundLevel()-2)+" "+spawnZ);
-						
-						//spawn on water
-						if (blockY.getMaterial() == Material.WATER)
-						{
-							groups--;
-							
-							//get top water block
-							spawnY = BlockHelper.getToppestWaterHeight(w, spawnX, w.provider.getAverageGroundLevel() - 3, spawnZ);
-							
-							//get spawn number
-							int shipNum = Math.max(1, ConfigHandler.mobSpawn[3]);
-							int ranMax = ConfigHandler.mobSpawn[4] - ConfigHandler.mobSpawn[3];
-							
-							if (ranMax > 0)
-							{
-								shipNum = ConfigHandler.mobSpawn[3] + rng.nextInt(ranMax + 1);
-							}
-							
-							//spawn mob
-							for (int i = 0; i < shipNum; i++)
-							{
-								//get random mob
-				            	Entity mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
-				            	
-				            	//spawn mob
-				            	if (mobToSpawn instanceof BasicEntityShipHostile)
-				            	{
-				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(10) > 7 ? 1 : 0);
-				            		mobToSpawn.setPosition(spawnX + rng.nextDouble(), spawnY + 0.5D, spawnZ + rng.nextDouble());
-									w.spawnEntity(mobToSpawn);
-				            	}
-							}
-						}//end get water block
-						
-						loop--;
-					}//end spawn while
-				}//end roll spawn
-			}//end check mob number
-		}//end can spawn
-			
-	}
-	
-	/** spawn boss ticking */
-	private static void spawnBossShip(EntityPlayer player, CapaTeitoku capa)
-	{
-		//null check
-		if (player == null || capa == null || player.world.getDifficulty() == EnumDifficulty.PEACEFUL)
-		{
-			return;
-		}
-				
-		int blockX = (int) player.posX;
-		int blockZ = (int) player.posZ;
-		int spawnX, spawnY, spawnZ = 0;
-		Biome biome = player.world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
-		
-		//boss cooldown--
-		if ((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
-			 BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH)) && capa.hasRing())
-		{
-			capa.setBossCooldown(capa.getBossCooldown() - 1);
-		}
-		
-		//cooldown = 0, roll spawn
-		if (capa.getBossCooldown() <= 0)
-		{
-			World w = player.world;
-			Random rng = player.getRNG();
-			
-			capa.setBossCooldown(ConfigHandler.bossCooldown);
-			
-			int rolli = rng.nextInt(4);
-			LogHelper.debug("DEBUG: spawn boss: roll spawn "+rolli);
-			if (rolli == 0)
-			{
-				//尋找20次地點, 找到一個可生成地點即生成後跳出loop
-				int i;
-				for (i = 0; i < 20; i++)
-				{
-					int offX = rng.nextInt(32) + 32;
-					int offZ = rng.nextInt(32) + 32;
-					
-					switch (rng.nextInt(4))
-					{
-					case 1:
-						spawnX = blockX - offX;
-						spawnZ = blockZ - offZ;
-						break;
-					case 2:
-						spawnX = blockX + offX;
-						spawnZ = blockZ - offZ;
-						break;
-					case 3:
-						spawnX = blockX - offX;
-						spawnZ = blockZ + offZ;
-						break;
-					default:
-						spawnX = blockX + offX;
-						spawnZ = blockZ + offZ;
-						break;		
-					}
-					
-					IBlockState blockY = w.getBlockState(new BlockPos(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ));
-					
-					LogHelper.debug("DEBUG: spawn boss: check block: "+blockY.getBlock().getLocalizedName()+
-							" "+spawnX+" "+(w.provider.getAverageGroundLevel() - 2)+" "+spawnZ);
-					//生成在水面
-					if (blockY.getMaterial() == Material.WATER)
-					{
-						//get top water block
-						spawnY = BlockHelper.getToppestWaterHeight(w, spawnX, 63, spawnZ);
-						
-						//check 64x64 range
-						AxisAlignedBB aabb = new AxisAlignedBB(spawnX-48D, spawnY-48D, spawnZ-48D, spawnX+48D, spawnY+48D, spawnZ+48D);
-						List<BasicEntityShipHostile> listBoss = w.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
-						int bossNum = 0;
-						
-						//check boss in list
-						for(BasicEntityShipHostile mob : listBoss)
-						{
-							if (!mob.isNonBoss())
-							{
-								bossNum++;
-							}
-						}
-						LogHelper.debug("DEBUG: spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
-						
-						//若範圍內不到2隻boss, 則可以再生成新boss
-			            if (bossNum < 2)
-			            {
-			            	//roll生成mob
-			            	Entity mobToSpawn;
-			            	
-			            	//roll boss ship
-			            	int j;
-			            	for (j = 0; j < ConfigHandler.spawnBossNum; j++)
-			            	{
-			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
-			            		
-				            	//spawn mob
-				            	if (mobToSpawn instanceof BasicEntityShipHostile)
-				            	{
-				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(100) > 65 ? 3 : 2);
-				            		mobToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
-				            		w.spawnEntity(mobToSpawn);
-				            	}
-			            	}
-			            	
-			            	//roll small ship
-			            	for (j = 0; j < ConfigHandler.spawnMobNum; j++)
-			            	{
-			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
-			            		
-				            	//spawn mob
-				            	if (mobToSpawn instanceof BasicEntityShipHostile)
-				            	{
-				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(2));
-				            		mobToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
-				            		w.spawnEntity(mobToSpawn);
-				            	}
-			            	}
-			            	
-			            	//發出spawn msg
-			            	TextComponentTranslation spawnText = null;
-			            	if (rng.nextInt(2) == 0)
-			            	{
-			            		spawnText = new TextComponentTranslation("chat.shincolle:bossspawn1");
-			            	}
-			            	else
-			            	{
-			            		spawnText = new TextComponentTranslation("chat.shincolle:bossspawn2");
-			            	}
-			            	
-			            	ServerProxy.getServer().sendMessage(new TextComponentString(""+TextFormatting.YELLOW+spawnText+
-			            			TextFormatting.AQUA+" "+spawnX+" "+spawnY+" "+spawnZ));
-			            	
-			            	LogHelper.debug("DEBUG: spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
-							break;
-			            }//end if nearby boss < 2	
-					}//end get water block
-				}//end roll 20 times
-			}//end roll spawn boss
-		}//end boss cooldown <= 0
-	}
-	
 	/**
 	 * input event, key按下+放開都會發出一次, 且每個按鍵分開發出, CLIENT SIDE ONLY
 	 * isKeyDown = 該按鍵是否按著, isKeyPressed = 這次event是否為該按鍵
@@ -1068,69 +728,147 @@ public class EventHandler
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		this.keySet = ClientProxy.getGameSetting();
 		
-		//for debug usage
+		/** for debug usage */
 		if (this.debugCooldown <= 0 && ConfigHandler.debugMode)
 		{
 			float ctrl = 0F;
+			boolean shift = false;
 			
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
 			{
 				ctrl = 0.09F;
 			}
 			
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+			{
+				shift = true;
+			}
+			
 			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4))
 			{
-				this.field1 += 0.01F + ctrl;
-				this.debugCooldown = 2;
-				player.sendMessage(new TextComponentString
-				(
-					"f1 "+String.format("%.2f", this.field1)
-				));
+				if (shift)
+				{
+					this.field4 += 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f1 "+String.format("%.2f", this.field4)
+					));
+				}
+				else
+				{
+					this.field1 += 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f1 "+String.format("%.2f", this.field1)
+					));
+				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))
 			{
-				this.field1 -= 0.01F + ctrl;
-				this.debugCooldown = 2;
-				player.sendMessage(new TextComponentString
-				(
-					"f1 "+String.format("%.2f", this.field1)
-				));
+				if (shift)
+				{
+					this.field4 -= 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f1 "+String.format("%.2f", this.field4)
+					));
+				}
+				else
+				{
+					this.field1 -= 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f1 "+String.format("%.2f", this.field1)
+					));
+				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD5))
 			{
-				this.field2 += 0.01F + ctrl;
-				this.debugCooldown = 2;
-				player.sendMessage(new TextComponentString
-				(
-					"f2 "+String.format("%.2f", this.field2)
-				));
+				if (shift)
+				{
+					this.field5 += 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f2 "+String.format("%.2f", this.field5)
+					));
+				}
+				else
+				{
+					this.field2 += 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f2 "+String.format("%.2f", this.field2)
+					));
+				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
 			{
-				this.field2 -= 0.01F + ctrl;
-				this.debugCooldown = 2;
-				player.sendMessage(new TextComponentString
-				(
-					"f2 "+String.format("%.2f", this.field2)
-				));
+				if (shift)
+				{
+					this.field5 -= 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f2 "+String.format("%.2f", this.field5)
+					));
+				}
+				else
+				{
+					this.field2 -= 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f2 "+String.format("%.2f", this.field2)
+					));
+				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))
 			{
-				this.field3 += 0.01F + ctrl;
-				this.debugCooldown = 2;
-				player.sendMessage(new TextComponentString
-				(
-					"f3 "+String.format("%.2f", this.field3)
-				));
+				if (shift)
+				{
+					this.field6 += 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f3 "+String.format("%.2f", this.field6)
+					));
+				}
+				else
+				{
+					this.field3 += 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f3 "+String.format("%.2f", this.field3)
+					));
+				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD3))
 			{
-				this.field3 -= 0.01F + ctrl;
-				this.debugCooldown = 2;
-				player.sendMessage(new TextComponentString
-				(
-					"f3 "+String.format("%.2f", this.field3)
-				));
+				if (shift)
+				{
+					this.field6 -= 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f3 "+String.format("%.2f", this.field6)
+					));
+				}
+				else
+				{
+					this.field3 -= 0.01F + ctrl;
+					this.debugCooldown = 2;
+					player.sendMessage(new TextComponentString
+					(
+						"f3 "+String.format("%.2f", this.field3)
+					));
+				}
 			}
 		}
 		
@@ -1200,56 +938,150 @@ public class EventHandler
 			}
 		}
 		
-		//riding control
-		if (this.keyCooldown <= 0 && player.getRidingEntity() instanceof BasicEntityMount)
+		//ship mounts control
+		if (player.getRidingEntity() instanceof BasicEntityMount)
 		{
-			//open ship GUI while riding, NO SUPPORT FOR MOUSE!
-			if (keySet.keyBindInventory.isPressed())
-			{
-				LogHelper.debug("DEBUG: key event: open ship GUI");
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountGUI));
-				return;
-			}
-			
-			//change renderer viewer, support for mouse keys
-			if (keySet.keyBindPickBlock.isPressed() || keySet.keyBindPickBlock.isKeyDown())
-			{
-				LogHelper.debug("DEBUG: key event: player view "+this.isViewPlayer);
-				this.keyCooldown = 8;
-				this.isViewPlayer = !this.isViewPlayer;
-				return;
-			}
-			
-			//持續偵測所有移動按鍵是否按住
 			BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
-			int newKeys = 0;
 			
-			//forward
-			if (keySet.keyBindForward.isKeyDown()) newKeys = newKeys | 1;
-			//back
-			if (keySet.keyBindBack.isKeyDown()) newKeys = newKeys | 2;
-			//left
-			if (keySet.keyBindLeft.isKeyDown()) newKeys = newKeys | 4;
-			//right
-			if (keySet.keyBindRight.isKeyDown()) newKeys = newKeys | 8;
-			//jump
-			if (keySet.keyBindJump.isKeyDown() && (mount.onGround || EntityHelper.checkEntityIsInLiquid(mount))) newKeys = newKeys | 16;
-			
-			if (newKeys > 0)
+			//keys for movement
+			if (this.keyMountCD <= 0)
 			{
-				//set key for packet
-				this.rideKeys = newKeys;
-				this.keyCooldown = 2;
+				//open ship GUI while riding, NO SUPPORT FOR MOUSE!
+				if (keySet.keyBindInventory.isPressed())
+				{
+					LogHelper.debug("DEBUG: key event: open ship GUI");
+					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountGUI));
+					return;
+				}
 				
-				//server跟client必須同時設定移動狀態, 移動顯示才會順暢, 只靠server設定移動會不連續
-				mount.keyPressed = newKeys;		//set client moving key
-				mount.keyTick = 10;				//continue moving for 10 ticks
+				//change renderer viewer, support for mouse keys
+				if (keySet.keyBindPickBlock.isPressed() || keySet.keyBindPickBlock.isKeyDown())
+				{
+					LogHelper.debug("DEBUG: key event: player view "+this.isViewPlayer);
+					this.keyMountCD = 8;
+					this.isViewPlayer = !this.isViewPlayer;
+					return;
+				}
 				
-				//send mounts move key packet
-				LogHelper.debug("DEBUG: key event: mounts move key: "+Integer.toBinaryString(newKeys));
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountMove, this.rideKeys));
+				//持續偵測所有移動按鍵是否按住
+				int newKeys = 0;
+				//forward
+				if (keySet.keyBindForward.isKeyDown()) newKeys = newKeys | 1;
+				//back
+				if (keySet.keyBindBack.isKeyDown()) newKeys = newKeys | 2;
+				//left
+				if (keySet.keyBindLeft.isKeyDown()) newKeys = newKeys | 4;
+				//right
+				if (keySet.keyBindRight.isKeyDown()) newKeys = newKeys | 8;
+				//jump
+				if (keySet.keyBindJump.isKeyDown() && (mount.onGround || EntityHelper.checkEntityIsInLiquid(mount))) newKeys = newKeys | 16;
+				
+				if (newKeys > 0)
+				{
+					//set key for packet
+					this.rideKeys = newKeys;
+					this.keyMountCD = 2;
+					
+					//server跟client必須同時設定移動狀態, 移動顯示才會順暢, 只靠server設定移動會不連續
+					mount.keyPressed = newKeys;		//set client moving key
+					mount.keyTick = 10;				//continue moving for 10 ticks
+					
+					//send mounts move key packet
+					LogHelper.debug("DEBUG: key event: mounts move key: "+Integer.toBinaryString(newKeys));
+					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountMove, this.rideKeys));
+				}
+			}//end keys for movement
+			
+			//keys for movement
+			if (this.keyMountSkillCD <= 0 && mount.getAttrs() != null)
+			{
+				int getKey = -1;
+				
+				if (keySet.keyBindsHotbar[0].isPressed()) getKey = 0;
+				else if (keySet.keyBindsHotbar[1].isPressed()) getKey = 1;
+				else if (keySet.keyBindsHotbar[2].isPressed()) getKey = 2;
+				else if (keySet.keyBindsHotbar[3].isPressed()) getKey = 3;
+				
+				if (getKey < 0) return;
+				
+				float range = mount.getAttrs().getAttackRange();
+				this.keyMountSkillCD = 2;
+				
+				//get skill target
+				ArrayList<Entity> exlist = new ArrayList<Entity>();
+				exlist.add(player);
+				exlist.add(mount);
+				exlist.add(mount.getHostEntity());
+				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(range, 1F, exlist);
+				Entity target = null;
+				int[] targetPos = null;
+				
+				//get skill target: entity
+				if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.ENTITY)
+				{
+					target = hitObj.entityHit;
+					//在目標上畫出標記
+					ParticleHelper.spawnAttackParticleAtEntity(target, 0.3D, 5D, 0D, (byte)2);
+				}
+				
+				//get skill target: block
+				if (target == null) 
+				{
+					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
+					
+					if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.BLOCK)
+					{
+						targetPos = new int[] {hitObj.getBlockPos().getX(), hitObj.getBlockPos().getY(), hitObj.getBlockPos().getZ()};
+						//在目標上畫出標記
+						ParticleHelper.spawnAttackParticleAt(targetPos[0]+0.5D, targetPos[1], targetPos[2]+0.5D, 0.3D, 4D, 0D, (byte)25);
+					}
+				}
+				
+				//fire only 1 key at a time
+				if (getKey == 0)
+				{
+					//hit entity only
+					if (target != null)
+					{
+						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 0, target.getEntityId(), -1, -1));
+					}
+				}
+				else if (getKey == 1)
+				{
+					//hit entity
+					if (target != null)
+					{
+						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 1, target.getEntityId(), -1, -1));
+					}
+					//hit block
+					else if (targetPos != null)
+					{
+						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 1, targetPos[0], targetPos[1], targetPos[2]));
+					}
+				}
+				else if (getKey == 2)
+				{
+					//hit entity only
+					if (target != null)
+					{
+						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 2, target.getEntityId(), -1, -1));
+					}
+				}
+				else if (getKey == 3)
+				{
+					//hit entity
+					if (target != null)
+					{
+						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 3, target.getEntityId(), -1, -1));
+					}
+					//hit block
+					else if (targetPos != null)
+					{
+						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 3, targetPos[0], targetPos[1], targetPos[2]));
+					}
+				}
 			}
-		}//end is riding
+		}//end riding ship mounts
 	}
 	
 	/**
@@ -1298,7 +1130,7 @@ public class EventHandler
 			event.setCanceled(true);
 			
 			//use custom hand renderer
-			renderItemInFirstPerson((AbstractClientPlayer) ClientProxy.getClientPlayer(), event.getPartialTicks(),
+			RenderHelper.renderItemInFirstPerson((AbstractClientPlayer) ClientProxy.getClientPlayer(), event.getPartialTicks(),
 					event.getInterpolatedPitch(), event.getHand(), event.getSwingProgress(),
 					event.getItemStack(), event.getEquipProgress());
 		}
@@ -1444,71 +1276,19 @@ public class EventHandler
 		}//end get equip and book
 	}
 	
-	//custom main hand renderer
+	/**
+	 * render something on HUD
+	 */
 	@SideOnly(Side.CLIENT)
-    public static void renderItemInFirstPerson(AbstractClientPlayer player, float ptick, float pitch, EnumHand hand, float swing, @Nullable ItemStack stack, float equip)
-    {
-        EnumHandSide enumhandside = player.getPrimaryHand();
-        
-        if (!player.isInvisible())
-        {
-            boolean flag = enumhandside != EnumHandSide.LEFT;
-            float f = flag ? 1.0F : -1.0F;
-            
-            //get player skin
-            ClientProxy.getMineraft().getTextureManager().bindTexture(player.getLocationSkin());
-            
-            //draw hand
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(f * 0.64000005F, -0.6F, -0.71999997F);
-            GlStateManager.rotate(f * 45.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translate(f * -1.0F, 3.6F, 3.5F);
-            GlStateManager.rotate(f * 120.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.rotate(200.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(f * -135.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.translate(f * 5.6F, 0.0F, 0.0F);
-            
-            if (ClientProxy.getGameSetting().keyBindUseItem.isKeyDown())
-            {
-            	switch (stack.getMetadata())
-            	{
-            	case 3:
-                	GlStateManager.translate(1.3F, 4F, 0.0F);
-                	GlStateManager.scale(3F, 3F, 3F);
-                	GlStateManager.rotate(MathHelper.cos((player.ticksExisted + ptick) * 0.125F) * -20F - 60F, 0F, 0F, 1F);
-        		break;
-	            case 4:
-	            	GlStateManager.rotate(70F, 0F, 1F, 0F);
-	            	GlStateManager.rotate(-20F, 0F, 0F, 1F);
-	            	GlStateManager.translate(-2F, 16F, 10F);
-					GlStateManager.scale(12F, 12F, 12F);
-					GlStateManager.rotate(MathHelper.cos((player.ticksExisted + ptick) * 0.1F) * -15F + 20F, 1F, 0F, 0F);
-        		break;
-        		default:
-        			GlStateManager.translate(13.5F, 12.5F, 2.5F);
-    				GlStateManager.scale(9F, 9F, 9F);
-    				GlStateManager.rotate(MathHelper.cos((player.ticksExisted + ptick) * 0.2F) * -15F - 20F, 1F, 1F, 0F);
-    			break;
-            	}
-            }
-            
-            RenderPlayer renderplayer = (RenderPlayer)ClientProxy.getMineraft().getRenderManager().getEntityRenderObject(player);
-            
-            GlStateManager.disableCull();
-
-            if (flag)
-            {
-                renderplayer.renderRightArm(player);
-            }
-            else
-            {
-                renderplayer.renderLeftArm(player);
-            }
-
-            GlStateManager.enableCull();
-            GlStateManager.popMatrix();
-        }
-    }
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event)
+	{
+		//render something after hotbar
+		if (event.getType() == ElementType.HOTBAR)
+		{
+			RenderHelper.drawMountSkillIcon(event);
+		}
+	}
 
 	
 }

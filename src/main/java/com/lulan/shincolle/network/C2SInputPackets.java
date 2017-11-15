@@ -3,12 +3,14 @@ package com.lulan.shincolle.network;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.ShipTank;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
@@ -57,6 +59,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte Request_ChestSet = 9;
 		public static final byte Request_UnitName = 10;
 		public static final byte Request_Buffmap = 11;
+		public static final byte MountSkill = 12;
 	}
 	
 	
@@ -87,8 +90,9 @@ public class C2SInputPackets implements IMessage
 		//get data
 		switch (this.packetID)
 		{
-		case PID.MountMove:			//mount move key input
-		case PID.MountGUI:			//mount GUI input
+		case PID.MountMove:			//mount move key
+		case PID.MountGUI:			//mount GUI key
+		case PID.MountSkill:		//mount skill  key
 		case PID.SyncHandheld:		//sync current item
 		case PID.CmdChOwner:    	//command: change owner
 		case PID.CmdShipAttr:   	//command: set ship attrs
@@ -127,8 +131,9 @@ public class C2SInputPackets implements IMessage
 		
 		switch (this.packetID)
 		{
-		case PID.MountMove:		//mount move key input
-		case PID.MountGUI:		//mount GUI input
+		case PID.MountMove:		//mount move key
+		case PID.MountGUI:		//mount GUI key
+		case PID.MountSkill:	//mount skill key
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
@@ -197,6 +202,101 @@ public class C2SInputPackets implements IMessage
 					{
 						//open ship GUI
 						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, mount.getHostEntity().getEntityId(), 0, 0);
+					}
+				}
+			break;
+			case PID.MountSkill://mounts skill key input packet
+				//set player's mount movement
+				if (player.isRiding() && player.getRidingEntity() instanceof BasicEntityMount)
+				{
+					BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
+					BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
+					
+					//check ship owner is player
+					if (ship != null && TeamHelper.checkSameOwner(player, ship))
+					{
+						int skill = 0;
+						
+						switch (msg.value3[0])
+						{
+						case 1:
+							skill = ID.T.MountSkillCD2;
+						break;
+						case 2:
+							skill = ID.T.MountSkillCD3;
+						break;
+						case 3:
+							skill = ID.T.MountSkillCD4;
+						break;
+						default:
+							skill = ID.T.MountSkillCD1;
+						break;
+						}
+						
+						//check skill cd
+						if (ship.getStateTimer(skill) > 0) return;
+						
+						//check target exist
+						Entity target = null;
+						BlockPos targetPos = null;
+						
+						if (msg.value3[2] < 0)
+						{
+							target = EntityHelper.getEntityByID(msg.value3[1], ship.world.provider.getDimension(), false);
+							
+							if (target != null && ship.getDistanceSqToEntity(target) > ship.getAttrs().getAttackRange())
+							{
+								target = null;
+							}
+						}
+						else
+						{
+							targetPos = new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]);
+							
+							if (ship.getDistanceSqToCenter(targetPos) > ship.getAttrs().getAttackRange())
+							{
+								targetPos = null;
+							}
+						}
+						
+						//check ammo and attack target
+						switch (msg.value3[0])
+						{
+						case 0:  //light attack
+							if (target != null)
+							{
+								ship.attackEntityWithAmmo(target);
+								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 1));
+								ship.sendSyncPacketTimer(1);
+							}
+						break;
+						case 1:   //heavy attack
+							if (target != null) ship.attackEntityWithHeavyAmmo(target);
+							else if (targetPos != null) ship.attackEntityWithHeavyAmmo(targetPos);
+							
+							if (target != null || targetPos != null)
+							{
+								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 2));
+								ship.sendSyncPacketTimer(1);
+							}
+						break;
+						case 2:   //light air attack
+							if (ship instanceof BasicEntityShipCV && target != null)
+							{
+								((BasicEntityShipCV) ship).attackEntityWithAircraft(target);
+								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3));
+								ship.sendSyncPacketTimer(1);
+							}
+						break;
+						case 3:   //heavy air attack
+							if (ship instanceof BasicEntityShipCV && target != null)
+							{
+								((BasicEntityShipCV) ship).attackEntityWithHeavyAircraft(target);
+								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4));
+								ship.sendSyncPacketTimer(1);
+							}
+						break;
+						}
 					}
 				}
 			break;

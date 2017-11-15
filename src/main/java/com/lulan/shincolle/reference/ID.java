@@ -706,7 +706,7 @@ public class ID
 	public static final class T
 	{
 		public static final byte RevengeTime = 0;		//SERVER: revenge target time
-		public static final byte CraneTime = 1;			//BOTH: craning time
+		public static final byte CraneTime = 1;			//BOTH:   craning time
 		public static final byte ImmuneTime = 2;		//SERVER: immune time
 		public static final byte CrandDelay = 3;		//SERVER: crane state changing delay
 		public static final byte WpStayTime = 4;		//SERVER: waypoint stay timer
@@ -721,6 +721,10 @@ public class ID
 		public static final byte AttackTime2 = 13;		//CLIENT: attack time 2 for model display
 		public static final byte AttackTime3 = 14;		//SERVER: attack time 3 for skill AI
 		public static final byte TaskTime = 15;			//SERVER: task start time
+		public static final byte MountSkillCD1 = 16;	//BOTH:   mount skill cooldwon 1~4
+		public static final byte MountSkillCD2 = 17;
+		public static final byte MountSkillCD3 = 18;
+		public static final byte MountSkillCD4 = 19;
 	}
 	
 	/** Update Flag */

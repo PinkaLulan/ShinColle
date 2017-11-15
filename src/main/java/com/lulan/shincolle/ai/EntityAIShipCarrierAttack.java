@@ -4,8 +4,8 @@ import java.util.Random;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -141,8 +141,15 @@ public class EntityAIShipCarrierAttack extends EntityAIBase
     		//get update attributes
         	if (this.host2.ticksExisted % 64 == 0)
         	{	
-        		this.launchDelayMax = (int)(ConfigHandler.baseAttackSpeed[3] / (this.host.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[3];
-                this.range = this.host.getAttrs().getAttackRange();
+        		if (this.launchType)
+        		{
+        			this.launchDelayMax = CombatHelper.getAttackDelay(this.host.getAttrs().getAttackSpeed(), 3);
+        		}
+        		else
+        		{
+        			this.launchDelayMax = CombatHelper.getAttackDelay(this.host.getAttrs().getAttackSpeed(), 4);
+        		}
+        		this.range = this.host.getAttrs().getAttackRange();
                 this.rangeSq = this.range * this.range;
         	}
 

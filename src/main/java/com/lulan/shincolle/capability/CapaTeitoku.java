@@ -31,6 +31,8 @@ import net.minecraft.nbt.NBTTagString;
  * tut: http://www.planetminecraft.com/blog/forge-tutorial-capability-system/
  *
  * capability data本體
+ * 
+ * TODO: remove this capa, move to ServerProxy world data
  */
 public class CapaTeitoku implements ICapaTeitoku
 {

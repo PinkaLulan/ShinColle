@@ -2,8 +2,8 @@ package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -224,8 +224,8 @@ public class EntityAIShipRangeAttack extends EntityAIBase
     
     private void updateAttackParms()
     {
-    	this.maxDelayLight = (int)(ConfigHandler.baseAttackSpeed[1] / (this.host.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[1];
-    	this.maxDelayHeavy = (int)(ConfigHandler.baseAttackSpeed[2] / (this.host.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[2];
+    	this.maxDelayLight = CombatHelper.getAttackDelay(this.host.getAttrs().getAttackSpeed(), 1);
+    	this.maxDelayHeavy = CombatHelper.getAttackDelay(this.host.getAttrs().getAttackSpeed(), 2);
     	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
     	
     	this.range = this.host.getAttrs().getAttackRange();

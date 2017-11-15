@@ -40,7 +40,6 @@ public abstract class CommonProxy implements IProxy
 
 	public static boolean isMultiplayer = false;	//the world is MP or SP
 	public static boolean activeBaubles = false;	//mod Baubles active flag
-	public static boolean activeForestry = false;	//mod Forestry active flag
 	public static boolean activeIC2 = false;		//mod IC2 active flag
 	
 	

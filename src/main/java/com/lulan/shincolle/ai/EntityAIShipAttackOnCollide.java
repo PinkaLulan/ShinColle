@@ -1,7 +1,7 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -94,8 +94,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase
         	//update attrs
             if (this.host != null)
             {
-            	this.delayMax = (int)(ConfigHandler.baseAttackSpeed[0] / this.host.getAttrs().getAttackSpeed()) + ConfigHandler.fixedAttackDelay[0];
-            	this.delayMax = (int)(this.delayMax + this.host2.getRNG().nextInt(this.delayMax) * 0.5F);
+            	this.delayMax = CombatHelper.getAttackDelay(this.host.getAttrs().getAttackSpeed(), 0);
             }
             
             //move to target

@@ -7,7 +7,7 @@ public class Reference
 	//peth, modid
 	public static final String MOD_ID = "shincolle";
 	public static final String MOD_NAME = "Shinkeiseikan Collection";
-	public static final String MOD_VERSION = "1.10.2.5.0";
+	public static final String MOD_VERSION = "1.10.2.6.0";
 	public static final String CLIENT_PROXY = "com.lulan.shincolle.proxy.ClientProxy";
 	public static final String SERVER_PROXY = "com.lulan.shincolle.proxy.ServerProxy";
 	public static final String GUI_FACTORY = "com.lulan.shincolle.client.gui.GuiFactory";
@@ -20,8 +20,8 @@ public class Reference
 	
 	//inter mod
 	public static final String MOD_ID_Baubles = "Baubles";
-	public static final String MOD_ID_Forestry = "forestry";
 	public static final String MOD_ID_IC2 = "IC2";
+	public static final String MOD_ID_Optifine = "optifine";
 	
 	
 }

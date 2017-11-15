@@ -214,7 +214,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, 0,  0,  0,  0,
 				                     -1, -1, -1, 0,  0
 				                    };
-		this.StateTimer = new int[16];
+		this.StateTimer = new int[20];
 		this.StateEmotion = new int[8];
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
@@ -1582,10 +1582,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 	}
 	
-	/** sync data for timer display */
-	public void sendSyncPacketTimer()
+	/**
+	 * sync data for timer display
+	 * 
+	 * type:
+	 *   0: crane time
+	 *   1: mount skill time
+	 */
+	public void sendSyncPacketTimer(int type)
 	{
-		sendSyncPacket(S2CEntitySync.PID.SyncShip_Timer, true);
+		switch (type)
+		{
+		case 0:
+			sendSyncPacket(S2CEntitySync.PID.SyncShip_Timer, true);
+		break;
+		case 1:
+			sendSyncPacket(S2CEntitySync.PID.SyncShip_MountSkillTimer, false);
+		break;
+		}
 	}
 	
 	/** sync data for emotion display */
@@ -2920,6 +2934,82 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 
 	    return isTargetHurt;
 	}
+	
+	/**
+	 * attack a position with missile, NOTE: SHIP MOUNTS REQUIRED
+	 */
+	public boolean attackEntityWithHeavyAmmo(BlockPos target)
+	{
+		//ammo--
+        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
+        
+		//experience++
+		addShipExp(ConfigHandler.expGain[2]);
+		
+		//grudge--
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+		
+  		//morale--
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
+	
+		//get attack value
+		float atk = getAttackBaseDamage(2, this);
+		float kbValue = 0.15F;
+		
+		//飛彈是否採用直射
+		boolean isDirect = false;
+		float launchPos = (float) posY + height * 0.75F;
+		
+        //calc dist to target
+        Dist4d distVec = EntityHelper.getDistanceFromA2B(this.getPosition(), target);
+        
+        //水中 or 近距離, 採用直射
+        if (distVec.distance < 5D)
+        {
+        	isDirect = true;
+        }
+        
+        if (getShipDepth() > 0D)
+        {
+        	isDirect = true;
+        	launchPos = (float) posY + height * 0.3F;
+        }
+        
+        //play sound and particle
+        applySoundAtAttacker(2, this);
+	    applyParticleAtAttacker(2, this, distVec);
+		
+	    float tarX = (float) target.getX();
+	    float tarY = (float) target.getY();
+	    float tarZ = (float) target.getZ();
+	    
+	    //if miss
+        if (CombatHelper.applyCombatRateToDamage(this, null, false, (float)distVec.distance, atk) <= 0F)
+        {
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
+        	
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
+        }
+        
+        //spawn missile
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
+        		tarX, tarY+0.5F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        this.world.spawnEntity(missile);
+        
+        //play target effect
+        applySoundAtTarget(2, this);
+        applyParticleAtTarget(2, this, distVec);
+        applyEmotesReaction(3);
+        
+        if (ConfigHandler.canFlare) flareTarget(target);
+        
+        applyAttackPostMotion(2, this, true, atk);
+        
+        return true;
+	}
 
 	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
 	@Override
@@ -4084,6 +4174,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	/** update both side timer */
   	protected void updateBothSideTimer()
   	{
+  		//mount skill cd
+  		if (this.StateTimer[ID.T.MountSkillCD1] > 0) this.StateTimer[ID.T.MountSkillCD1]--;
+  		if (this.StateTimer[ID.T.MountSkillCD2] > 0) this.StateTimer[ID.T.MountSkillCD2]--;
+  		if (this.StateTimer[ID.T.MountSkillCD3] > 0) this.StateTimer[ID.T.MountSkillCD3]--;
+  		if (this.StateTimer[ID.T.MountSkillCD4] > 0) this.StateTimer[ID.T.MountSkillCD4]--;
   	}
   	
   	/** update rotate */
@@ -5242,9 +5337,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		{
   	  		if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
   	  		{
-  	  			BlockPos pos = new BlockPos(target);
+  	  			this.flareTarget(target.getPosition());
+  	  		}
+  		}
+  	}
+  	
+  	public void flareTarget(BlockPos target)
+  	{
+  		//server side, send flare packet
+  		if (!this.world.isRemote)
+  		{
+  	  		if (target != null)
+  	  		{
 				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-				CommonProxy.channelI.sendToAllAround(new S2CReactPackets(S2CReactPackets.PID.FlareEffect, pos.getX(), pos.getY(), pos.getZ()), point);
+				CommonProxy.channelI.sendToAllAround(new S2CReactPackets(S2CReactPackets.PID.FlareEffect, target.getX(), target.getY(), target.getZ()), point);
   	  		}
   		}
   	}

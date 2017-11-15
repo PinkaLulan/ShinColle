@@ -454,6 +454,21 @@ public class BlockHelper
 	    return player.world.rayTraceBlocks(vec3, vec32, true, false, false);
 	}
 	
+	/** ray trace for block, no liquid block
+	 */
+	@SideOnly(Side.CLIENT)
+	public static RayTraceResult getPlayerMouseOverBlockThroughWater(double dist, float duringTicks)
+	{
+	    EntityPlayer player = ClientProxy.getClientPlayer();
+		
+		Vec3d vec3 = player.getPositionEyes(duringTicks);
+	    Vec3d vec31 = player.getLook(duringTicks);
+	    Vec3d vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
+	    
+	    //參數: entity位置, entity視線最遠位置, 停止在液體方塊上, 忽略沒有AABB的方塊, 回傳距離內最遠的不可碰撞方塊
+	    return player.world.rayTraceBlocks(vec3, vec32, false, true, true);
+	}
+	
 	/** place light block */
 	public static void placeLightBlock(World world, BlockPos pos)
 	{

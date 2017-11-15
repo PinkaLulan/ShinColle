@@ -14,6 +14,7 @@ import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -142,6 +143,13 @@ public class EntityCarrierWD extends BasicEntityShipCV
 	        }
 		break;
   		}//end switch
+  	}
+    
+	//attack a position with missile
+    @Override
+  	public boolean attackEntityWithHeavyAmmo(BlockPos target)
+  	{
+    	return false;
   	}
   	
   	//禁用重型攻擊

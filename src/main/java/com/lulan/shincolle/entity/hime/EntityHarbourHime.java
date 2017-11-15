@@ -22,6 +22,7 @@ import com.lulan.shincolle.utility.TeamHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -146,6 +147,13 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		default: //melee
 			return this.shipAttrs.getAttackDamage();
   		}
+  	}
+	
+	//attack a position with missile
+    @Override
+  	public boolean attackEntityWithHeavyAmmo(BlockPos target)
+  	{
+    	return false;	//TODO
   	}
 
 	/**RAILGUN

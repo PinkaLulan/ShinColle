@@ -274,6 +274,37 @@ public class CombatHelper
   		
   		return newDmg;
     }
+    
+    /**
+     * calc attack delay
+     * 
+     * type:
+     *   0: melee
+     *   1: light
+     *   2: heavy
+     *   3: air light
+     *   4: air heavy
+     */
+    public static int getAttackDelay(float aspd, int type)
+    {
+    	if (aspd < 0.01F) aspd = 0.01F;
+    	
+    	switch (type)
+    	{
+    	case 0:
+    		return (int)(ConfigHandler.baseAttackSpeed[0] / aspd) + ConfigHandler.fixedAttackDelay[0];
+    	case 1:
+    		return (int)(ConfigHandler.baseAttackSpeed[1] / aspd) + ConfigHandler.fixedAttackDelay[1];
+    	case 2:
+    		return (int)(ConfigHandler.baseAttackSpeed[2] / aspd) + ConfigHandler.fixedAttackDelay[2];
+    	case 3:
+    		return (int)(ConfigHandler.baseAttackSpeed[3] / aspd) + ConfigHandler.fixedAttackDelay[3];
+    	case 4:
+    		return (int)(ConfigHandler.baseAttackSpeed[4] / aspd) + ConfigHandler.fixedAttackDelay[4];
+    	}
+    	
+    	return 40;
+    }
 	
 	
 }

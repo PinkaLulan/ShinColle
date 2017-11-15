@@ -105,7 +105,7 @@ public class ContainerCrane extends Container
                 		this.tile.sendSyncPacket();
                 	break;
                 	case 1:
-                		if (this.tile.getShip() != null) this.tile.getShip().sendSyncPacketTimer();
+                		if (this.tile.getShip() != null) this.tile.getShip().sendSyncPacketTimer(0);
                 	break;
             		default:	//使用官方方法更新
                     	listener.sendProgressBarUpdate(this, j, temp);

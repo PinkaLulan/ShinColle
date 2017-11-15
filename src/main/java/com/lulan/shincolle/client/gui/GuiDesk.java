@@ -1075,7 +1075,6 @@ public class GuiDesk extends GuiContainer
 			List<Integer> ships = capa.getShipEIDList();
 			
 			//icon setting
-			GlStateManager.pushAttrib();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 			
@@ -1197,7 +1196,6 @@ public class GuiDesk extends GuiContainer
 			}//end for all ship
 			
 			GlStateManager.disableBlend();
-			GlStateManager.popAttrib();
 		}//end get player
 		
 	}//end draw radar icon

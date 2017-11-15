@@ -84,21 +84,40 @@ import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEntityItem;
+import com.lulan.shincolle.reference.Reference;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy
 {
-
 	
-	public ClientProxy() {}
+	//textures
+	public static final ResourceLocation TextureGuiHUD = new ResourceLocation(Reference.TEXTURES_GUI+"GuiHUD.png");
+	//keys
+	public static int keyGCD;			//key global cooldown
+	public static int[] skillCD;		//mount skill cooldown
+	public static boolean[] skillON;	//mount skill switch
 	
-	//client world會隨玩家所在位置持續改變, 但是dim id永遠都是0不變, 無法反推dim id?
+	
+	public ClientProxy()
+	{
+		resetKeys();
+	}
+	
+	public static void resetKeys()
+	{
+		keyGCD = 0;
+		skillCD = new int[] {0, 0, 0, 0};
+		skillON = new boolean[] {false, false, false, false};
+	}
+	
+	//client world
 	public static World getClientWorld()
 	{
 		return Minecraft.getMinecraft().world;
@@ -110,7 +129,7 @@ public class ClientProxy extends CommonProxy
 		return Minecraft.getMinecraft().player;
 	}
 	
-	//client minecraft
+	//client game setting
 	public static GameSettings getGameSetting()
 	{
 		return Minecraft.getMinecraft().gameSettings;

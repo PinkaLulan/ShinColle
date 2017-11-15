@@ -2,6 +2,8 @@ package com.lulan.shincolle.utility;
 
 import java.util.List;
 
+import com.lulan.shincolle.capability.CapaTeitoku;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ServerProxy;
@@ -206,6 +208,44 @@ public class TeamHelper
 		}
 		
 		return false;
+	}
+	
+	/** update team list of pointer item */
+	public static void updateTeamList(EntityPlayer player, CapaTeitoku capa)
+	{
+		/** update ships in pointer team list */
+		//check entity is alive
+		BasicEntityShip getent = null;
+		
+		for (int i = 0; i < 6; i++)
+		{
+			//get ship by UID
+			getent = EntityHelper.getShipByUID(capa.getSIDCurrentTeam(i));
+
+			//get ship
+			if (getent != null)
+			{
+				if (TeamHelper.checkSameOwner(getent, player))
+				{
+					//update ship entity
+					capa.addShipEntityToCurrentTeam(i, getent);
+				}
+				else
+				{
+					//owner changed, remove ship
+					capa.addShipEntityToCurrentTeam(i, null);
+				}
+			}
+			//ship lost
+			else
+			{
+				//clear slot if no ship UID (ship UID invalid)
+				if (capa.getSIDCurrentTeam(i) <= 0)
+				{
+					capa.addShipEntityToCurrentTeam(i, null);
+				}
+			}	
+		}
 	}
 	
 	

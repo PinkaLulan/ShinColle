@@ -5,8 +5,13 @@ import java.util.Set;
 
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 
+import baubles.api.cap.BaublesCapabilities;
+import baubles.api.cap.IBaublesItemHandler;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -16,6 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
@@ -870,6 +876,23 @@ public class InventoryHelper
 
         return movedItem;
     }
+	
+	@Optional.Method(modid = Reference.MOD_ID_Baubles)
+	public static boolean checkRingInBaubles(EntityPlayer player)
+	{
+		IBaublesItemHandler bb = (IBaublesItemHandler) player.getCapability(BaublesCapabilities.CAPABILITY_BAUBLES, null);
+	
+		if (bb != null)
+		{
+			for (int i = 0; i < bb.getSlots(); i++)
+			{
+				ItemStack stack = bb.getStackInSlot(i);
+				if (stack != null && stack.getItem() == ModItems.MarriageRing) return true;
+			}
+		}
+		
+		return false;
+	}
 	
 	
 }

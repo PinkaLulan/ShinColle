@@ -57,7 +57,6 @@ public class ConfigHandler
 	public static int deathMaxTick = 400;
 	
 	//INTER-MOD
-	public static boolean enableForestry = true;
 	public static boolean enableIC2 = true;
 	
 	//BUFF DEBUFF
@@ -104,7 +103,7 @@ public class ConfigHandler
 	//grudge consumption:                              cook fish mine craft
 	public static int[] consumeGrudgeTask = new int[] {3,   30,  300, 2};
 	//attack speed                                    melee, Latk, Hatk, CV,  Air
-	public static int[] baseAttackSpeed = new int[] { 80,    80,   120,  100, 100};
+	public static int[] baseAttackSpeed = new int[] { 40,    80,   120,  100, 100};
 	public static int[] fixedAttackDelay = new int[] {0,     20,   50,   35,  35};
 	//exp gain                               melee, LAtk, HAtk, LAir, HAir, move/b, pick
 	public static int[] expGain = new int[] {2,     4,    12,   8,    24,   1,      2};
@@ -237,7 +236,6 @@ public class ConfigHandler
 //		buffSaturation = config.getInt("Saturation", CATE_BUFF, 20, 0, 5000, "add X grudge value to ship every 32 ticks");
 		
 		//是否開啟林業支援
-		enableForestry = config.getBoolean("Mod_Forestry", CATE_INTERMOD, true, "Enable Forestry module if mod existed: add bees and comb.");
 		enableIC2 = config.getBoolean("Mod_IC2", CATE_INTERMOD, true, "Enable IC2 module if mod existed: add EU related function.");
 		propDrumEU = config.get(CATE_INTERMOD, "Drum_EU", drumEU, "EU transport rate: base transfer rate (EU/t), additional rate per enchantment (EU/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate * #TotalTransformers + EnchantRate * #TotalEnchantments)");
 		

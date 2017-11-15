@@ -21,10 +21,8 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
-import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -76,9 +74,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
@@ -714,10 +717,19 @@ public class EntityHelper
 		}
 	}
 	
+	/**
+	 * get mouseover entity with exclude entity list
+	 */
+	@SideOnly(Side.CLIENT)
+	public static RayTraceResult getMouseOverEntityWithExcludeList(double dist, float parTick, List<Entity> exlist)
+	{
+		
+	}
+	
 	@SideOnly(Side.CLIENT)
 	public static RayTraceResult getPlayerMouseOverEntity(double dist, float duringTicks)
 	{
-		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks);
+		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, null);
 	}
 
 	/**
@@ -731,7 +743,7 @@ public class EntityHelper
 	 * 修改自: EntityRenderer.getMouseOver
 	 */
 	@SideOnly(Side.CLIENT)
-	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick)
+	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick, List<Entity> exlist)
 	{
 		RayTraceResult lookBlock = null;
 		
@@ -1561,6 +1573,36 @@ public class EntityHelper
     
     /**
      * get distance vector from host A to target B (B-A)
+     * NOTE: using BlockPos is less precise than entity position
+     * 
+     * parms: host A, target B
+     * return: "normalized" distance vector [x, y, z, distance]
+     */
+    public static Dist4d getDistanceFromA2B(BlockPos host, BlockPos target)
+    {
+    	if (host != null && target != null)
+    	{
+    		double x = target.getX() - host.getX();
+    		double y = target.getY() - host.getY();
+    		double z = target.getZ() - host.getZ();
+    		double dist = MathHelper.sqrt(x * x + y * y + z * z);
+    		
+    		//避免sqrt過小時, 算出的xyz過大
+    		if (dist > 1.0E-4D)
+            {
+                x = x / dist;
+                y = y / dist;
+                z = z / dist;
+            }
+    		
+    		return new Dist4d(x, y, z, dist);
+    	}
+    	
+    	return Dist4d.ONE;
+    }
+    
+    /**
+     * get distance vector from host A to target B (B-A)
      * parms: host A, target B
      * return: "normalized" distance vector [x, y, z, distance]
      */
@@ -2280,6 +2322,281 @@ public class EntityHelper
     	
     	return nbt;
 	}
-  	
+	
+	/** spawn mob ticking
+	 * 
+	 *  ConfigHandler.mobSpawn[]
+	 *  0: Max number in the world
+	 *  1: Spawn prob every X ticks
+	 *  2: #groups each spawn
+	 *  3: #min each group
+	 *  4: #max each group
+	 */
+	public static void spawnMobShip(EntityPlayer player, CapaTeitoku capa)
+	{
+		//null check
+		if (player == null || capa == null || player.world.getDifficulty() == EnumDifficulty.PEACEFUL)
+		{
+			return;
+		}
+		
+		boolean canSpawn = false;
+		int blockX = (int) player.posX;
+		int blockZ = (int) player.posZ;
+		int spawnX, spawnY, spawnZ = 0;
+		Biome biome = player.world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
+		World w = player.world;
+		Random rng = player.getRNG();
+		
+		//check ring
+		if (ConfigHandler.checkRing)
+		{
+			if (capa.hasRing()) canSpawn = true;
+		}
+		else
+		{
+			canSpawn = true;
+		}
+		
+		//check biome
+		if (canSpawn)
+		{
+			if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
+				BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH)) {}
+			else
+			{
+				canSpawn = false;
+			}
+		}
+
+		//apply spawn
+		if (canSpawn)
+		{
+			int entNum = EntityHelper.getEntityNumber(0, w);
+			
+			//check ship number in the world
+			if (entNum <= ConfigHandler.mobSpawn[0])
+			{
+				//roll spawn
+				if (rng.nextInt(100) <= ConfigHandler.mobSpawn[1])
+				{
+					//get spawn position
+					int groups = ConfigHandler.mobSpawn[2];
+					int loop = 30 + groups * 30;
+					
+					while (groups > 0 && loop > 0)
+					{
+						int offX = rng.nextInt(30) + 20;
+						int offZ = rng.nextInt(30) + 20;
+						
+						switch (rng.nextInt(4))
+						{
+						case 1:
+							spawnX = blockX - offX;
+							spawnZ = blockZ - offZ;
+							break;
+						case 2:
+							spawnX = blockX + offX;
+							spawnZ = blockZ - offZ;
+							break;
+						case 3:
+							spawnX = blockX - offX;
+							spawnZ = blockZ + offZ;
+							break;
+						default:
+							spawnX = blockX + offX;
+							spawnZ = blockZ + offZ;
+							break;
+						}
+
+						IBlockState blockY = w.getBlockState(new BlockPos(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ));
+						LogHelper.debug("DEBUG: spawn mob ship: group: "+groups+
+								" get block: "+blockY.getBlock().getLocalizedName()+" "+spawnX+
+								" "+(w.provider.getAverageGroundLevel()-2)+" "+spawnZ);
+						
+						//spawn on water
+						if (blockY.getMaterial() == Material.WATER)
+						{
+							groups--;
+							
+							//get top water block
+							spawnY = BlockHelper.getToppestWaterHeight(w, spawnX, w.provider.getAverageGroundLevel() - 3, spawnZ);
+							
+							//get spawn number
+							int shipNum = Math.max(1, ConfigHandler.mobSpawn[3]);
+							int ranMax = ConfigHandler.mobSpawn[4] - ConfigHandler.mobSpawn[3];
+							
+							if (ranMax > 0)
+							{
+								shipNum = ConfigHandler.mobSpawn[3] + rng.nextInt(ranMax + 1);
+							}
+							
+							//spawn mob
+							for (int i = 0; i < shipNum; i++)
+							{
+								//get random mob
+				            	Entity mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+				            	
+				            	//spawn mob
+				            	if (mobToSpawn instanceof BasicEntityShipHostile)
+				            	{
+				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(10) > 7 ? 1 : 0);
+				            		mobToSpawn.setPosition(spawnX + rng.nextDouble(), spawnY + 0.5D, spawnZ + rng.nextDouble());
+									w.spawnEntity(mobToSpawn);
+				            	}
+							}
+						}//end get water block
+						
+						loop--;
+					}//end spawn while
+				}//end roll spawn
+			}//end check mob number
+		}//end can spawn
+			
+	}
+	
+	/** spawn boss ticking */
+	public static void spawnBossShip(EntityPlayer player, CapaTeitoku capa)
+	{
+		//null check
+		if (player == null || capa == null || player.world.getDifficulty() == EnumDifficulty.PEACEFUL)
+		{
+			return;
+		}
+				
+		int blockX = (int) player.posX;
+		int blockZ = (int) player.posZ;
+		int spawnX, spawnY, spawnZ = 0;
+		Biome biome = player.world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
+		
+		//boss cooldown--
+		if ((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
+			 BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH)) && capa.hasRing())
+		{
+			capa.setBossCooldown(capa.getBossCooldown() - 1);
+		}
+		
+		//cooldown = 0, roll spawn
+		if (capa.getBossCooldown() <= 0)
+		{
+			World w = player.world;
+			Random rng = player.getRNG();
+			
+			capa.setBossCooldown(ConfigHandler.bossCooldown);
+			
+			int rolli = rng.nextInt(4);
+			LogHelper.debug("DEBUG: spawn boss: roll spawn "+rolli);
+			if (rolli == 0)
+			{
+				//尋找20次地點, 找到一個可生成地點即生成後跳出loop
+				int i;
+				for (i = 0; i < 20; i++)
+				{
+					int offX = rng.nextInt(32) + 32;
+					int offZ = rng.nextInt(32) + 32;
+					
+					switch (rng.nextInt(4))
+					{
+					case 1:
+						spawnX = blockX - offX;
+						spawnZ = blockZ - offZ;
+						break;
+					case 2:
+						spawnX = blockX + offX;
+						spawnZ = blockZ - offZ;
+						break;
+					case 3:
+						spawnX = blockX - offX;
+						spawnZ = blockZ + offZ;
+						break;
+					default:
+						spawnX = blockX + offX;
+						spawnZ = blockZ + offZ;
+						break;		
+					}
+					
+					IBlockState blockY = w.getBlockState(new BlockPos(spawnX, w.provider.getAverageGroundLevel() - 2, spawnZ));
+					
+					LogHelper.debug("DEBUG: spawn boss: check block: "+blockY.getBlock().getLocalizedName()+
+							" "+spawnX+" "+(w.provider.getAverageGroundLevel() - 2)+" "+spawnZ);
+					//生成在水面
+					if (blockY.getMaterial() == Material.WATER)
+					{
+						//get top water block
+						spawnY = BlockHelper.getToppestWaterHeight(w, spawnX, 63, spawnZ);
+						
+						//check 64x64 range
+						AxisAlignedBB aabb = new AxisAlignedBB(spawnX-48D, spawnY-48D, spawnZ-48D, spawnX+48D, spawnY+48D, spawnZ+48D);
+						List<BasicEntityShipHostile> listBoss = w.getEntitiesWithinAABB(BasicEntityShipHostile.class, aabb);
+						int bossNum = 0;
+						
+						//check boss in list
+						for(BasicEntityShipHostile mob : listBoss)
+						{
+							if (!mob.isNonBoss())
+							{
+								bossNum++;
+							}
+						}
+						LogHelper.debug("DEBUG: spawn boss: check existed boss: "+bossNum+" all mob: "+listBoss.size());
+						
+						//若範圍內不到2隻boss, 則可以再生成新boss
+			            if (bossNum < 2)
+			            {
+			            	//roll生成mob
+			            	Entity mobToSpawn;
+			            	
+			            	//roll boss ship
+			            	int j;
+			            	for (j = 0; j < ConfigHandler.spawnBossNum; j++)
+			            	{
+			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+			            		
+				            	//spawn mob
+				            	if (mobToSpawn instanceof BasicEntityShipHostile)
+				            	{
+				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(100) > 65 ? 3 : 2);
+				            		mobToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
+				            		w.spawnEntity(mobToSpawn);
+				            	}
+			            	}
+			            	
+			            	//roll small ship
+			            	for (j = 0; j < ConfigHandler.spawnMobNum; j++)
+			            	{
+			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+			            		
+				            	//spawn mob
+				            	if (mobToSpawn instanceof BasicEntityShipHostile)
+				            	{
+				            		((BasicEntityShipHostile) mobToSpawn).initAttrs(rng.nextInt(2));
+				            		mobToSpawn.setPosition(spawnX + rng.nextInt(3), spawnY + 0.5D, spawnZ + rng.nextInt(3));
+				            		w.spawnEntity(mobToSpawn);
+				            	}
+			            	}
+			            	
+			            	//發出spawn msg
+			            	TextComponentTranslation spawnText = null;
+			            	if (rng.nextInt(2) == 0)
+			            	{
+			            		spawnText = new TextComponentTranslation("chat.shincolle:bossspawn1");
+			            	}
+			            	else
+			            	{
+			            		spawnText = new TextComponentTranslation("chat.shincolle:bossspawn2");
+			            	}
+			            	
+			            	ServerProxy.getServer().sendMessage(new TextComponentString(""+TextFormatting.YELLOW+spawnText+
+			            			TextFormatting.AQUA+" "+spawnX+" "+spawnY+" "+spawnZ));
+			            	
+			            	LogHelper.debug("DEBUG: spawn fleet "+spawnX+" "+spawnY+" "+spawnZ);
+							break;
+			            }//end if nearby boss < 2	
+					}//end get water block
+				}//end roll 20 times
+			}//end roll spawn boss
+		}//end boss cooldown <= 0
+	}
+	
   	
 }

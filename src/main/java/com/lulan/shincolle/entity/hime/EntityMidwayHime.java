@@ -10,6 +10,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -100,6 +101,13 @@ public class EntityMidwayHime extends BasicEntityShipCV
 		default: //melee
 			return this.shipAttrs.getAttackDamage();
   		}
+  	}
+	
+	//attack a position with missile
+    @Override
+  	public boolean attackEntityWithHeavyAmmo(BlockPos target)
+  	{
+    	return false;	//TODO
   	}
 
 	/**

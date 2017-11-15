@@ -80,6 +80,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncShip_UnitName = 18;
 		public static final byte SyncShip_Attrs = 19;
 		public static final byte SyncEntity_Host = 20;
+		public static final byte SyncShip_MountSkillTimer = 21;
 	}
 
 	
@@ -217,6 +218,9 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncShip_Timer: //ship timer only
 			this.valueInt = buf.readInt();
+		break;
+		case PID.SyncShip_MountSkillTimer: //ship timer only
+			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.SyncEntity_Emo: //IShipEmotion sync emtion
 			this.valueInt1 = PacketHelper.readIntArray(buf, 5);
@@ -536,6 +540,16 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateTimer(ID.T.CraneTime));
 		}
 		break;
+		case PID.SyncShip_MountSkillTimer:	//sync mount skill timer only
+		{
+			BasicEntityShip entity = (BasicEntityShip) this.entity;
+			
+			buf.writeInt(entity.getStateTimer(ID.T.MountSkillCD1));
+			buf.writeInt(entity.getStateTimer(ID.T.MountSkillCD2));
+			buf.writeInt(entity.getStateTimer(ID.T.MountSkillCD3));
+			buf.writeInt(entity.getStateTimer(ID.T.MountSkillCD4));
+		}
+		break;
 		case PID.SyncShip_Riders:		//sync rider list
 		{
 			List<Entity> list = this.entity.getPassengers();
@@ -748,6 +762,7 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_Guard:
 		case PID.SyncShip_ID:
 		case PID.SyncShip_Timer:
+		case PID.SyncShip_MountSkillTimer:
 		case PID.SyncShip_Scale:
 		case PID.SyncShip_UnitName:
 		case PID.SyncShip_Buffmap:
@@ -981,6 +996,16 @@ public class S2CEntitySync implements IMessage
 				ship = (BasicEntityShip) entity;
 				
 				ship.setStateTimer(ID.T.CraneTime, msg.valueInt);
+			}
+			break;
+			case PID.SyncShip_MountSkillTimer: //ship timer only
+			{
+				ship = (BasicEntityShip) entity;
+				
+				ship.setStateTimer(ID.T.MountSkillCD1, msg.valueInt1[0]);
+				ship.setStateTimer(ID.T.MountSkillCD2, msg.valueInt1[1]);
+				ship.setStateTimer(ID.T.MountSkillCD3, msg.valueInt1[2]);
+				ship.setStateTimer(ID.T.MountSkillCD4, msg.valueInt1[3]);
 			}
 			break;
 			case PID.SyncShip_Scale:
