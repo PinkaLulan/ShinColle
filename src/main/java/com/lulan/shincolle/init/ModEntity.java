@@ -63,6 +63,7 @@ import com.lulan.shincolle.entity.other.EntityAirplaneZero;
 import com.lulan.shincolle.entity.other.EntityAirplaneZeroMob;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.entity.other.EntityProjectileStatic;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouMob;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
@@ -178,6 +179,7 @@ public class ModEntity
 		//register misc entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
 		createProjectileEntity(EntityProjectileBeam.class, "EntityProjectileBeam", modEntityID++);
+		createProjectileEntity(EntityProjectileStatic.class, "EntityProjectileStatic", modEntityID++);
 		createProjectileEntity(EntityShipFishingHook.class, "EntityShipFishingHook", modEntityID++);
 		
 		//register summons entity

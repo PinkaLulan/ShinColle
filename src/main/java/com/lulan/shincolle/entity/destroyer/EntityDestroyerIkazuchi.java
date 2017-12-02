@@ -10,12 +10,14 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
@@ -113,15 +115,12 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
   				
   				if (this.ticksExisted % 128 == 0)
   	  			{
-  	  				//add aura to master every 128 ticks
-  	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  				
+  					EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  	  					getStateMinor(ID.M.NumGrudge) > 0 && getStateMinor(ID.M.CraneState) == 0 &&
-  	  					player != null && getDistanceSqToEntity(player) < 256D)
+  	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
   	  				{
   	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 300, getStateMinor(ID.M.ShipLevel) / 50));
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.STRENGTH , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 50, false, false));
   	  				}
   	  				
   	  				//try gattai
@@ -341,6 +340,24 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 	{
 		this.ridingState = state;
 	}
+	
+	@Override
+	public float getAttackBaseDamage(int type, Entity target)
+	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+  		case 2:  //heavy cannon
+  			return this.shipAttrs.getAttackDamageHeavy();
+  		case 3:  //light aircraft
+  			return this.shipAttrs.getAttackDamageAir();
+  		case 4:  //heavy aircraft
+  			return this.shipAttrs.getAttackDamageAirHeavy();
+		default: //melee
+			return this.shipAttrs.getAttackDamage();
+  		}
+  	}
   	
-
+	
 }

@@ -17,11 +17,11 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
 	
 	private Random rand = new Random();
     private BasicEntityAirplane host;  	//entity with AI
-    private Entity target;  //entity of target
-    private int atkDelay = 0;		//attack delay (attack when time <= 0)
-    private int maxDelay = 0;	    //attack max delay (calc from attack speed)  
-    private float attackRange = 4F;	//attack range
-    private float rangeSq;			//attack range square
+    private Entity target;  			//entity of target
+    private int atkDelay = 0;			//attack delay (attack when time <= 0)
+    private int maxDelay = 0;			//attack max delay (calc from attack speed)  
+    private float attackRange = 16F;	//attack range
+    private float rangeSq;				//attack range square
     private double[] randPos = new double[3];		//random position
     
     //直線前進用餐數
@@ -67,7 +67,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
     public void startExecuting()
     {
     	this.maxDelay = (int)(ConfigHandler.baseAttackSpeed[4] / (this.host.getAttrs().getAttackSpeed())) + ConfigHandler.fixedAttackDelay[4];
-        this.attackRange = 7.5F;
+        this.attackRange = this.host.useAmmoHeavy() ? 16F : 6F;
         this.rangeSq = this.attackRange * this.attackRange;
         distSq = distX = distY = distZ = motX = motY = motZ = 0D;
         
@@ -95,7 +95,15 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
         this.target = null;
         
         //keep moving, do not stop in air
-        randPos = BlockHelper.findRandomPosition(this.host, this.host, 5D, 2D, 2);
+        if (this.host.useAmmoHeavy())
+        {
+        	this.randPos = BlockHelper.findRandomPosition(this.host, this.host, 12D, 4D, 2);
+        }
+        else
+        {
+        	this.randPos = BlockHelper.findRandomPosition(this.host, this.host, 4.5D, 1.5D, 2);
+        }
+        
         this.host.getShipNavigate().tryMoveToXYZ(randPos[0], randPos[1], randPos[2], 1D);
     }
 
@@ -115,10 +123,18 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
     		this.distZ = this.target.posZ - this.host.posZ;	
     		this.distSq = distX*distX + distY*distY + distZ*distZ;
 
-        	if (this.host.ticksExisted % 16 == 0)
+        	if ((this.host.ticksExisted & 15) == 0)
         	{
-	        	randPos = BlockHelper.findRandomPosition(this.host, this.target, 5D, 2D, 0);
-//	        	LogHelper.info("DEBUG : rand pos: "+this.host+" "+randPos[0]+" "+randPos[1]+" "+randPos[2]);
+        		//keep moving
+                if (this.host.useAmmoHeavy())
+                {
+                	this.randPos = BlockHelper.findRandomPosition(this.host, this.target, 12D, 4D, 2);
+                }
+                else
+                {
+                	this.randPos = BlockHelper.findRandomPosition(this.host, this.target, 4.5D, 1.5D, 2);
+                }
+                
 	        	//目標在射程外, 則100%速度前進
 	        	if (this.distSq > this.rangeSq)
 	        	{
@@ -137,17 +153,17 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
 	        onSight = this.host.getEntitySenses().canSee(this.target);
 
 	        //若attack delay倒數完了且瞄準時間夠久, 則開始攻擊
-	        if (this.atkDelay <= 0 && onSight)
+	        if (this.atkDelay <= 0 && onSight && this.distSq < this.rangeSq)
 	        {
 	        	//由於艦載機只會輕 or 重其中一種攻擊, 因此AI這邊共用cooldown
-	        	if (this.distSq < this.rangeSq && this.host.hasAmmoLight() && this.host.useAmmoLight())
+	        	if (this.host.useAmmoLight() && this.host.hasAmmoLight())
 	        	{
 		            //attack method
 		            this.host.attackEntityWithAmmo(this.target);
 		            this.atkDelay = this.maxDelay;
 	        	}
 	        	
-	        	if (this.distSq < this.rangeSq && this.host.hasAmmoHeavy() && this.host.useAmmoHeavy())
+	        	if (this.host.useAmmoHeavy() && this.host.hasAmmoHeavy())
 	        	{
 		            //attack method
 		            this.host.attackEntityWithHeavyAmmo(this.target);

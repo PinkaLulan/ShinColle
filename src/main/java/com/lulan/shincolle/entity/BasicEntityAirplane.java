@@ -15,9 +15,10 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -378,10 +379,10 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 	    applyParticleAtAttacker(1, target, Dist4d.ONE);
 	    
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 	    
 	    //roll miss, cri, dhit, thit
-	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
   		
   		//damage limit on player target
 	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
@@ -395,6 +396,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 	    //if attack success
 	    if (isTargetHurt)
 	    {
+	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(0, target, Dist4d.ONE);
 	        
@@ -413,9 +415,10 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 		//get attack value
 		float atk = getAttackBaseDamage(2, target);
 		float kbValue = 0.15F;
+		int moveType = CombatHelper.calcMissileMoveTypeForAirplane(this, target, 4);
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 
         //play sound and particle
         applySoundAtAttacker(2, target);
@@ -425,8 +428,8 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 	    float tarY = (float) target.posY;
 	    float tarZ = (float) target.posZ;
 	    
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
+	    //calc miss rate
+        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
@@ -436,8 +439,9 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
         }
         
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, (float)(this.posY-0.8F), atk, kbValue, true, -1F);
+        MissileData md = this.getMissileData(4);
+        float[] data = new float[] {atk, kbValue, (float)(this.posY-0.8F), tarX, tarY+target.height*0.2F, tarZ, 160, 0F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
         this.world.spawnEntity(missile);
         
         //play target effect

@@ -12,10 +12,12 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEquip;
+import com.lulan.shincolle.item.IShipEffectItem;
 import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EnchantHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -46,10 +48,11 @@ public class EquipCalc
 		//small build
 		EquipSmall.add(new int[] {ID.EquipType.ARMOR_LO,      80,   1});
 		EquipSmall.add(new int[] {ID.EquipType.FLARE_LO,      80,   2});
-		EquipSmall.add(new int[] {ID.EquipType.SEARCHLIGHT_LO,80,  0});
+		EquipSmall.add(new int[] {ID.EquipType.SEARCHLIGHT_LO,80,   0});
 		EquipSmall.add(new int[] {ID.EquipType.COMPASS_LO,    90,   0});
 		EquipSmall.add(new int[] {ID.EquipType.GUN_LO,        100,  2});
 		EquipSmall.add(new int[] {ID.EquipType.DRUM_LO,       120,  1});
+		EquipSmall.add(new int[] {ID.EquipType.AMMO_LO,       120,  2});
 		EquipSmall.add(new int[] {ID.EquipType.CANNON_SI,     128,  2});
 		EquipSmall.add(new int[] {ID.EquipType.TORPEDO_LO,    160,  2});
 		EquipSmall.add(new int[] {ID.EquipType.RADAR_LO,      200,  0});
@@ -59,6 +62,7 @@ public class EquipCalc
 		//large build
 		EquipLarge.add(new int[] {ID.EquipType.ARMOR_HI,      500,  1});
 		EquipLarge.add(new int[] {ID.EquipType.GUN_HI,        800,  2});
+		EquipLarge.add(new int[] {ID.EquipType.AMMO_HI,       1000, 2});
 		EquipLarge.add(new int[] {ID.EquipType.AIR_R_HI,      1000, 3});
 		EquipLarge.add(new int[] {ID.EquipType.TORPEDO_HI,    1200, 2});
 		EquipLarge.add(new int[] {ID.EquipType.TURBINE_LO,    1400, 0});
@@ -83,7 +87,9 @@ public class EquipCalc
 		Attrs attrs = ship.getAttrs();
 		
 		//reset equips attrs
-		attrs.resetAttrsEquip();
+		attrs.resetAttrsEquip();				//reset equip values
+		ship.resetMissileData();				//reset missile data
+		ship.calcShipAttributesAddEffect();		//reset attack effect map
 		ship.setStateMinor(ID.M.DrumState, 0);
 		ship.setStateMinor(ID.M.LevelChunkLoader, 0);
 		ship.setStateMinor(ID.M.LevelFlare, 0);
@@ -137,6 +143,73 @@ public class EquipCalc
 			ship.setStateMinor(ID.M.LevelFlare, ship.getStateMinor(ID.M.LevelFlare) + getMisc[2]);
 			ship.setStateMinor(ID.M.LevelSearchlight, ship.getStateMinor(ID.M.LevelSearchlight) + getMisc[3]);
 		}
+		
+		//apply item effect of missile
+		if (equip != null)
+		{
+			if (equip.getItem() instanceof IShipEffectItem)
+			{
+				int meta = equip.getMetadata();
+				IShipEffectItem eitem = (IShipEffectItem) equip.getItem();
+				
+				//apply effect on attack
+				Map<Integer, int[]> emap = eitem.getEffectOnAttack(meta);
+				
+				if (emap != null && emap.size() > 0)
+				{
+					BuffHelper.addEffectToAttackEffectMap(ship, emap);
+				}
+				
+				//apply type of missile
+				int type = eitem.getMissileType(meta);
+				
+				if (type > 0)
+				{
+					ship.getMissileData(0).type = type;
+					ship.getMissileData(1).type = type;
+					ship.getMissileData(2).type = type;
+					ship.getMissileData(3).type = type;
+					ship.getMissileData(4).type = type;
+				}
+				
+				//apply move type of missile
+				type = eitem.getMissileMoveType(meta);
+				
+				if (type >= 0)
+				{
+					ship.getMissileData(0).movetype = type;
+					ship.getMissileData(1).movetype = type;
+					ship.getMissileData(2).movetype = type;
+					ship.getMissileData(3).movetype = type;
+					ship.getMissileData(4).movetype = type;
+				}
+				
+				//apply speed of missile
+				type = eitem.getMissileSpeedLevel(meta);
+				
+				if (type != 0)
+				{
+					float addSpeed = type * 0.025F;
+					ship.getMissileData(0).vel0 += addSpeed;
+					ship.getMissileData(1).vel0 += addSpeed;
+					ship.getMissileData(2).vel0 += addSpeed;
+					ship.getMissileData(3).vel0 += addSpeed;
+					ship.getMissileData(4).vel0 += addSpeed;
+					
+					addSpeed = type * 0.004F;
+					ship.getMissileData(0).accY1 += addSpeed;
+					ship.getMissileData(1).accY1 += addSpeed;
+					ship.getMissileData(2).accY1 += addSpeed;
+					ship.getMissileData(3).accY1 += addSpeed;
+					ship.getMissileData(4).accY1 += addSpeed;
+					ship.getMissileData(0).accY2 = ship.getMissileData(0).accY1;
+					ship.getMissileData(1).accY2 = ship.getMissileData(1).accY1;
+					ship.getMissileData(2).accY2 = ship.getMissileData(2).accY1;
+					ship.getMissileData(3).accY2 = ship.getMissileData(3).accY1;
+					ship.getMissileData(4).accY2 = ship.getMissileData(4).accY1;
+				}
+			}//end effect item
+		}//end special effect
 	}
 	
 	/** get equip attributes from {@link Values.EquipAttrsMain} */
@@ -602,6 +675,12 @@ public class EquipCalc
 		case ID.EquipType.SEARCHLIGHT_LO:
 			item = new ItemStack(ModItems.EquipSearchlight);
 			enchType = 2;
+		break;
+		//ammo
+		case ID.EquipType.AMMO_LO:
+		case ID.EquipType.AMMO_HI:
+			item = new ItemStack(ModItems.EquipAmmo);
+			enchType = 0;
 		break;
 		default:
 			item = null;

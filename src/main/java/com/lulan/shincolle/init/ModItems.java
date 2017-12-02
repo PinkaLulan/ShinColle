@@ -12,6 +12,7 @@ import com.lulan.shincolle.item.CombatRation;
 import com.lulan.shincolle.item.DeskItemBook;
 import com.lulan.shincolle.item.DeskItemRadar;
 import com.lulan.shincolle.item.EquipAirplane;
+import com.lulan.shincolle.item.EquipAmmo;
 import com.lulan.shincolle.item.EquipArmor;
 import com.lulan.shincolle.item.EquipCannon;
 import com.lulan.shincolle.item.EquipCatapult;
@@ -53,6 +54,7 @@ public class ModItems
 	public static BasicItem Grudge;
 	//equip	
 	public static BasicItem EquipAirplane;
+	public static BasicItem EquipAmmo;
 	public static BasicItem EquipArmor;
 	public static BasicItem EquipCannon;
 	public static BasicItem EquipCatapult;
@@ -102,6 +104,7 @@ public class ModItems
 		
 		//equip	
 		EquipAirplane = initItems(EquipAirplane.class);
+		EquipAmmo = initItems(EquipAmmo.class);
 		EquipArmor = initItems(EquipArmor.class);
 		EquipCannon = initItems(EquipCannon.class);
 		EquipCatapult = initItems(EquipCatapult.class);
@@ -162,7 +165,6 @@ public class ModItems
 			i.initModel();
 		}
     }
-	
 	
 	
 }

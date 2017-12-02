@@ -17,9 +17,9 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -317,7 +317,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
   	{
         //calc dist to target
   		float launchPos = (float)posY + height;
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 		
         if (getShipDepth() > 0D) launchPos += 0.2D;
 		

@@ -12,7 +12,7 @@ import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
@@ -102,16 +102,13 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   				
   				if (this.ticksExisted % 128 == 0)
   	  			{
-  	  				//add aura to master every 128 ticks
-  	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  				
-  	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null &&
-  	  					getDistanceSqToEntity(player) < 256D)
-  	  				{
-  	  					//potion effect: id, time, level
-  	  					player.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
-  	  				}
+	  				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+	  				{
+	  					//potion effect: id, time, level
+	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 45 + 1, false, false));
+	  				}
   	  			}//end 128 ticks
   			}//end 32 ticks
   		}

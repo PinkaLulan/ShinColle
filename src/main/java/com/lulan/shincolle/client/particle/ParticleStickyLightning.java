@@ -118,6 +118,23 @@ public class ParticleStickyLightning extends Particle
         	this.posY = this.host.posY + host.height * 0.5D + rand.nextFloat() * 0.25F - 0.125F;
             this.posZ = this.host.posZ + rand.nextFloat() * 0.25F - 0.125F;
         break;
+        case 5:  //black hole
+        	this.particleRed = 0F;
+            this.particleGreen = 0F;
+            this.particleBlue = 0F;
+            this.particleAlpha = 0F;
+            this.particleMaxAge = life;
+            this.numStem = 4;
+            this.scaleX = this.particleScale;
+            this.scaleY = this.particleScale;
+            this.scaleZ = this.particleScale;
+            this.stemWidth = 0.1F;
+            
+            //random position
+            this.posX = this.host.posX + rand.nextFloat() * 0.25F - 0.125F;
+        	this.posY = this.host.posY + host.height * 0.5D + rand.nextFloat() * 0.25F - 0.125F;
+            this.posZ = this.host.posZ + rand.nextFloat() * 0.25F - 0.125F;
+        break;
         default:
         	this.particleRed = 1F;
             this.particleGreen = 0.5F;
@@ -281,6 +298,20 @@ public class ParticleStickyLightning extends Particle
         	
         	this.particleGreen = 0.6F + rand.nextFloat() * 0.6F;
         	this.particleRed = this.particleGreen - 0.3F;
+        break;
+        case 5:   //black hole
+        	if (this.particleMaxAge - this.particleAge < 10 )
+        	{
+        		this.particleAlpha = (this.particleMaxAge - this.particleAge) * 0.015F + 0.018F;
+        	}
+        	else
+        	{
+        		this.particleAlpha = 0.35F;
+        	}
+        	
+        	this.particleGreen = 0F + rand.nextFloat() * 0.1F;
+        	this.particleRed = this.particleGreen + rand.nextFloat() * 0.15F;
+        	this.particleBlue = this.particleRed + rand.nextFloat() * 0.15F;
         break;
         case 1:   //yamato cannon charge lightning
         case 2:   //yamato cannon charging in

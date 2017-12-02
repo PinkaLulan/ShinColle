@@ -2,6 +2,9 @@ package com.lulan.shincolle.entity;
 
 import java.util.HashMap;
 
+import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+
 import net.minecraft.entity.Entity;
 
 /**SHIP ATTACK BASE
@@ -41,6 +44,15 @@ public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwne
 	/** buffs map, map<buff id, buff level> */
 	public HashMap<Integer ,Integer> getBuffMap();
 	public void setBuffMap(HashMap<Integer, Integer> map);
-	
 
+	/** attack effect map, map<potion id, potion data[ampLevel, ticks, chance(0~100)]> */
+	public HashMap<Integer, int[]> getAttackEffectMap();
+	public void setAttackEffectMap(HashMap<Integer, int[]> map);
+	
+	/** missile data
+	 *  type: 0:melee, 1:light, 2:heavy, 3:air-light, 4:air-heavy */
+	public MissileData getMissileData(int type);
+	public void setMissileData(int type, MissileData data);
+	
+	
 }

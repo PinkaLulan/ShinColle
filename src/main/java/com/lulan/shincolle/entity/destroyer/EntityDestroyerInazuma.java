@@ -16,7 +16,7 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
@@ -121,15 +121,12 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   				
   				if (this.ticksExisted % 128 == 0)
   	  			{
-  	  				//add aura to master every 128 ticks
-  	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  				
+  					EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  	  					getStateMinor(ID.M.NumGrudge) > 0 && getStateMinor(ID.M.CraneState) == 0 &&
-  	  					player != null && getDistanceSqToEntity(player) < 256D)
+  	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
   	  				{
   	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.SPEED, 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.SPEED , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 45, false, false));
   	  				}
   	  				
   	  				//try gattai

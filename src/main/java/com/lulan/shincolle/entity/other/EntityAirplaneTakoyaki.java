@@ -60,7 +60,7 @@ public class EntityAirplaneTakoyaki extends BasicEntityAirplane
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.DEF, ship.getAttrs().getDefense() * 0.5F);
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.SPD, ship.getAttrs().getAttackSpeed() * 2.5F);
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.MOV, ship.getAttrs().getMoveSpeed() * 0.1F + 0.23F);
-    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HIT, 7F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HIT, 16F);
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.DODGE, this.shipAttrs.getAttrsBuffed(ID.Attrs.DODGE) + 0.2F);
     		
     		//apply attrs to entity

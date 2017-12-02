@@ -1,9 +1,15 @@
 package com.lulan.shincolle.entity.cruiser;
 
+import java.util.HashMap;
+
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
@@ -67,6 +73,36 @@ public class EntityCAAtagoMob extends BasicEntityShipHostile
 	public int getDamageType()
 	{
 		return ID.ShipDmgType.CRUISER;
+	}
+	
+	//slow attacker
+	@Override
+    public boolean attackEntityFrom(DamageSource source, float atk)
+	{
+		boolean attack = super.attackEntityFrom(source, atk);
+		
+		if (attack)
+		{
+			//slow attacker
+			((EntityLivingBase) source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100+this.getScaleLevel()*50, this.getScaleLevel() / 3, false, false));
+		}
+		
+		return attack;
+	}
+	
+	@Override
+	public void initAttrsServerPost()
+	{
+		super.initAttrsServerPost();
+		
+		//add attack effects
+		if (this.AttackEffectMap == null) this.AttackEffectMap = new HashMap<Integer, int[]>();
+		this.AttackEffectMap.put(2, new int[] {(int)(this.getScaleLevel() / 2), 100+this.getScaleLevel()*50, 25+this.getScaleLevel()*25});
+	
+		if (this.getScaleLevel() >= 2)
+		{
+			this.getMissileData(2).type = 5;
+		}
 	}
 	
 

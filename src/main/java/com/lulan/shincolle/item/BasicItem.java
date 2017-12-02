@@ -2,6 +2,10 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import com.lulan.shincolle.block.ICustomModels;
+import com.lulan.shincolle.creativetab.CreativeTabSC;
+import com.lulan.shincolle.reference.Reference;
+
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -10,10 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.block.ICustomModels;
-import com.lulan.shincolle.creativetab.CreativeTabSC;
-import com.lulan.shincolle.reference.Reference;
 
 
 /** 基本item class

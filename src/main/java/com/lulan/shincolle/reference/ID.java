@@ -211,6 +211,8 @@ public class ID
 		public static final byte COMPASS_LO = 25;		//low level compass
 		public static final byte FLARE_LO = 26;			//low level flare
 		public static final byte SEARCHLIGHT_LO = 27;	//low level searchlight
+		public static final byte AMMO_LO = 28;			//low level ammo
+		public static final byte AMMO_HI = 29;          //high level ammo
 	}
 	
 	/** Equip Sub ID = item meta value
@@ -235,6 +237,8 @@ public class ID
 		public static final byte CANNON_FG_15 = 11;
 		public static final byte CANNON_CG_5 = 12;
 		public static final byte CANNON_TWIN_8 = 13;
+		public static final byte CANNON_QUAD_15 = 14;
+		public static final byte CANNON_TRI_12 = 15;
 		//torpedo
 		public static final byte TORPEDO_21MK1 = 0;
 		public static final byte TORPEDO_21MK2 = 1;
@@ -242,6 +246,7 @@ public class ID
 		public static final byte TORPEDO_CUTTLEFISH = 3;
 		public static final byte TORPEDO_HIGHSPEED = 4;
 		public static final byte TORPEDO_HIGHSPEED2 = 5;
+		public static final byte TORPEDO_AMB = 6;
 		//aircraft
 		public static final byte AIRCRAFT_TMK1 = 0;
 		public static final byte AIRCRAFT_TMK2 = 1;
@@ -312,6 +317,15 @@ public class ID
 		public static final byte FLARE = 0;
 		//searchlight
 		public static final byte SEARCHLIGHT = 0;
+		//ammo
+		public static final byte AMMO_T91 = 0;
+		public static final byte AMMO_T1 = 1;
+		public static final byte AMMO_AA = 2;
+		public static final byte AMMO_T3 = 3;
+		public static final byte AMMO_DU = 4;
+		public static final byte AMMO_G = 5;
+		public static final byte AMMO_AG = 6;
+		public static final byte AMMO_E = 6;
 	}
 	
 	/** entity flag index */
@@ -491,7 +505,7 @@ public class ID
 		public static final byte LevelSearchlight = 39;	//level of searchlight
 		public static final byte Task = 40;			//doing task id
 		public static final byte TaskSide = 41;		//side setting for task
-		public static final byte NO_USE3 = 42;		//TODO
+		public static final byte NO_USE = 42;		//NO_USE
 		public static final byte CraneState = 43;	//crane state: 0:none 1:wait 2:craning
 		public static final byte WpStay = 44;		//waypoint stay setting
 	}
@@ -714,7 +728,7 @@ public class ID
 		public static final byte SoundTime = 6;			//SERVER: sound event cooldown
 		public static final byte FaceTime = 7;			//CLIENT: face emotion time
 		public static final byte HeadTilt = 8;			//CLIENT: head tilt time
-		public static final byte MoraleTime = 9;		//SERVER: morale delay time
+		public static final byte NO_USE = 9;			//no use
 		public static final byte EmoteDelay = 10;		//SERVER: emote reaction delay
 		public static final byte LastCombat = 11;		//SERVER: last combat time
 		public static final byte AttackTime = 12;		//CLIENT: attack time for model display

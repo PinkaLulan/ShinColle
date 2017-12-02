@@ -461,7 +461,6 @@ public class ModelCruiserTatsuta extends ShipModelBaseAdv
     	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light, light);
     	this.GlowBodyMain2.render(f5);
     	
-    	OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
     	GlStateManager.disableCull();
     	GlStateManager.enableLighting();
     	

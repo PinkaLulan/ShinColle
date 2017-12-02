@@ -28,6 +28,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
@@ -348,12 +349,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 				//caress head mode: morale +5
 				if (stack.getItem() == ModItems.PointerItem && stack.getItemDamage() > 2)
 				{
-					//add little morale to host
-					int t = this.host.ticksExisted - this.host.getMoraleTick();
-					
-					if (t > 3 && this.host.getMorale() < (int)(ID.Morale.L_Excited * 1.3F))
-					{	//if caress > 3 ticks
-						this.host.setMoraleTick(this.ticksExisted);
+					if (this.host.getMorale() < (int)(ID.Morale.L_Excited * 1.3F))
+					{
 						this.host.addMorale(ConfigHandler.baseCaressMorale);
 					}
 					
@@ -672,8 +669,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		if ((keyPressed & 16) > 0)	//jump (bit 5)
 		{
 			this.jumpHelper.setJumping();
-//			this.motionY += movSpeed * 0.5F;
-//			if (motionY > 1F) motionY = 1F;
+			
+			//if in water, add motionY
+			if (this.getShipDepth() > 0D)
+			{
+				this.motionY += movSpeed * 0.1F;
+				if (motionY > 1F) motionY = 1F;
+			}
 		}
 		
 		//apply moving
@@ -1045,7 +1047,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   		this.host.setCombatTick(this.ticksExisted);
   		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
   		
   		//entity attack effect
 	    applySoundAtAttacker(0, target);
@@ -1058,6 +1060,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	    //if attack success
   	    if (isTargetHurt)
   	    {
+  	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
   	    	applySoundAtTarget(0, target);
 	        applyParticleAtTarget(0, target, distVec);
 			this.host.applyEmotesReaction(3);
@@ -1088,14 +1091,14 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		float atk = getAttackBaseDamage(1, target);
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 		
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
 	    applyParticleAtAttacker(1, target, distVec);
 	    
 	    //roll miss, cri, dhit, thit
-	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
   		
   		//damage limit on player target
 	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
@@ -1109,6 +1112,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	    //if attack success
 	    if (isTargetHurt)
 	    {
+	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        this.host.applyEmotesReaction(3);
@@ -1138,24 +1142,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		float atk = getAttackBaseDamage(2, target);
 		float kbValue = 0.15F;
 
-		//飛彈是否採用直射
-		boolean isDirect = false;
-		float launchPos = (float) posY + height * 0.75F;
+		//missile type
+		float launchPos = (float) posY + height * 0.5F;
+		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 2);
+		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-				
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec.distance < 7D)
-        {
-        	isDirect = true;
-        }
-		
-        if (getShipDepth() > 0D)
-        {
-        	isDirect = true;
-        	launchPos = (float) posY;
-        }
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
         
         //play sound and particle
         applySoundAtAttacker(2, target);
@@ -1165,8 +1158,8 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	    float tarY = (float) target.posY;
 	    float tarZ = (float) target.posZ;
         
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
+	    //calc miss rate
+        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
@@ -1176,8 +1169,9 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         }
 
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this.host, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        MissileData md = this.getMissileData(2);
+        float[] data = new float[] {atk, kbValue, launchPos, tarX, tarY+target.height*0.2F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
         this.world.spawnEntity(missile);
   		
         //play target effect
@@ -1343,7 +1337,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		switch (type)
 		{
 		case 1:
-			return 0D;
+			return this.shipDepth;
 		case 2:
 			if (this.host != null)
 			{
@@ -1351,7 +1345,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			}
 			else
 			{
-				return 0D;
+				return this.shipDepth;
 			}
 		default:
 			return this.shipDepth;
@@ -1823,6 +1817,26 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	{
 		return false;
 	}
+	
+	@Override
+	public HashMap<Integer, int[]> getAttackEffectMap()
+	{
+		if (this.host != null) return this.host.getAttackEffectMap();
+		return new HashMap<Integer, int[]>();
+	}
+
+	@Override
+	public void setAttackEffectMap(HashMap<Integer, int[]> map) {}
+	
+	@Override
+	public MissileData getMissileData(int type)
+	{
+		if (this.host != null) return this.host.getMissileData(type);
+		return new MissileData();
+	}
+	
+	@Override
+	public void setMissileData(int type, MissileData data) {}
 	
 	
 }

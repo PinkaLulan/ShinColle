@@ -26,6 +26,7 @@ import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -35,7 +36,6 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.server.CacheDataPlayer;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
@@ -717,13 +717,10 @@ public class EntityHelper
 		}
 	}
 	
-	/**
-	 * get mouseover entity with exclude entity list
-	 */
 	@SideOnly(Side.CLIENT)
-	public static RayTraceResult getMouseOverEntityWithExcludeList(double dist, float parTick, List<Entity> exlist)
+	public static RayTraceResult getPlayerMouseOverEntity(double dist, float duringTicks, List<Entity> exlist)
 	{
-		
+		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, exlist);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -743,14 +740,34 @@ public class EntityHelper
 	 * 修改自: EntityRenderer.getMouseOver
 	 */
 	@SideOnly(Side.CLIENT)
-	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick, List<Entity> exlist)
+	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick, @Nullable List<Entity> exlist)
 	{
 		RayTraceResult lookBlock = null;
 		
         if (viewer != null && viewer.world != null)
         {
-            lookBlock = viewer.rayTrace(dist, parTick);
-            Vec3d vec3 = viewer.getPositionEyes(parTick);
+            Vec3d vec3 = null;
+            
+            //change viewer if on ship's mounts
+            if (viewer.getRidingEntity() instanceof BasicEntityMount && !EventHandler.isViewPlayer)
+            {
+            	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
+            	
+            	if (ship != null)
+            	{
+            		viewer = ship;
+            		vec3 = ship.getPositionEyes(parTick);
+            		lookBlock = ship.rayTrace(dist, parTick);
+            	}
+            }
+            else
+            {
+            	lookBlock = viewer.rayTrace(dist, parTick);
+                vec3 = viewer.getPositionEyes(parTick);
+            }
+            
+            //if view fail, return
+            if (vec3 == null) return null;
 
             //若有抓到方塊, 則d1改為抓到方塊的距離
             double d1 = dist;
@@ -776,6 +793,29 @@ public class EntityHelper
             //檢查抓到的entity, 是否在玩家~目標方塊的視線上
             for (Entity entity : list)
             {
+            	//check target in exlist
+            	if (exlist != null && exlist.size() > 0)
+            	{
+            		boolean exequal = false;
+            		
+            		for (Entity ex : exlist)
+            		{
+            			if (entity != null && entity.equals(ex))
+            			{
+            				exequal = true;
+            				break;
+            			}
+            		}
+            		
+            		if (exequal) continue;
+            	}
+            	
+            	//check projectile entity
+            	if (TargetHelper.isEntitySpecialCase_Invulnerable(entity)) continue;
+            	
+            	//check invisible
+            	if (entity.isInvisible()) continue;
+            	
                 if (entity.canBeCollidedWith())
                 {
                 	//檢查entity大小是否在視線上碰撞到
@@ -1570,64 +1610,6 @@ public class EntityHelper
 		
 		return true;
 	}
-    
-    /**
-     * get distance vector from host A to target B (B-A)
-     * NOTE: using BlockPos is less precise than entity position
-     * 
-     * parms: host A, target B
-     * return: "normalized" distance vector [x, y, z, distance]
-     */
-    public static Dist4d getDistanceFromA2B(BlockPos host, BlockPos target)
-    {
-    	if (host != null && target != null)
-    	{
-    		double x = target.getX() - host.getX();
-    		double y = target.getY() - host.getY();
-    		double z = target.getZ() - host.getZ();
-    		double dist = MathHelper.sqrt(x * x + y * y + z * z);
-    		
-    		//避免sqrt過小時, 算出的xyz過大
-    		if (dist > 1.0E-4D)
-            {
-                x = x / dist;
-                y = y / dist;
-                z = z / dist;
-            }
-    		
-    		return new Dist4d(x, y, z, dist);
-    	}
-    	
-    	return Dist4d.ONE;
-    }
-    
-    /**
-     * get distance vector from host A to target B (B-A)
-     * parms: host A, target B
-     * return: "normalized" distance vector [x, y, z, distance]
-     */
-    public static Dist4d getDistanceFromA2B(Entity host, Entity target)
-    {
-    	if (host != null && target != null)
-    	{
-    		double x = target.posX - host.posX;
-    		double y = target.posY - host.posY;
-    		double z = target.posZ - host.posZ;
-    		double dist = MathHelper.sqrt(x * x + y * y + z * z);
-    		
-    		//避免sqrt過小時, 算出的xyz過大
-    		if (dist > 1.0E-4D)
-            {
-                x = x / dist;
-                y = y / dist;
-                z = z / dist;
-            }
-    		
-    		return new Dist4d(x, y, z, dist);
-    	}
-    	
-    	return Dist4d.ONE;
-    }
     
   	/** morale level
   	 *  0:excited, 1:happy, 2:normal, 3:tired, 4:exhausted

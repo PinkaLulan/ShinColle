@@ -14,4 +14,5 @@ public interface IShipFloating extends IShipFlags
 	
 	abstract public void setShipFloatingDepth(double par1);
 	
+	
 }

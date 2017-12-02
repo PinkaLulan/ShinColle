@@ -1,5 +1,6 @@
 package com.lulan.shincolle.item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
@@ -167,9 +168,22 @@ public class PointerItem extends BasicItem
 			//玩家左鍵使用此武器時 (client side only)
 			if (entity.world.isRemote)
 			{
+				//create exlist
+				ArrayList<Entity> exlist = new ArrayList<Entity>();
+				exlist.add(player);
+				if (player.isRiding())
+				{
+					exlist.add(player.getRidingEntity());
+					
+					if (player.getRidingEntity() instanceof BasicEntityMount)
+					{
+						exlist.add(((BasicEntityMount)player.getRidingEntity()).getHostEntity());
+					}
+				}
+				
 				GameSettings keySet = ClientProxy.getGameSetting();
 				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
+				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F, exlist);
 				
 				//hit entity
 				if (hitObj != null)
@@ -200,14 +214,8 @@ public class PointerItem extends BasicItem
 						if (hitObj.entityHit instanceof BasicEntityShip)
 						{
 							ship = (BasicEntityShip)hitObj.entityHit;
-							
-							int hitHeight = CalcHelper.getEntityHitHeightByClientPlayer(ship);
-							int hitAngle = CalcHelper.getEntityHitSideByClientPlayer(ship);
-							
-							//send hit height packet
-							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.HitHeight, ship.getEntityId(), hitHeight, hitAngle));
 						}
-						else
+						else if (hitObj.entityHit instanceof BasicEntityMount)
 						{
 							ship = (BasicEntityShip) ((BasicEntityMount)hitObj.entityHit).getHostEntity();
 						}
@@ -402,9 +410,22 @@ public class PointerItem extends BasicItem
 		//client side
 		if (world.isRemote)
 		{
+			//create exlist
+			ArrayList<Entity> exlist = new ArrayList<Entity>();
+			exlist.add(player);
+			if (player.isRiding())
+			{
+				exlist.add(player.getRidingEntity());
+				
+				if (player.getRidingEntity() instanceof BasicEntityMount)
+				{
+					exlist.add(((BasicEntityMount)player.getRidingEntity()).getHostEntity());
+				}
+			}
+			
 			GameSettings keySet = ClientProxy.getGameSetting();  //get pressed key
 			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-			RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
+			RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F, exlist);
 			
 			//get entity
 			if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.ENTITY)
@@ -525,7 +546,7 @@ public class PointerItem extends BasicItem
 					return new ActionResult(EnumActionResult.SUCCESS, stack);
 				}
 	    			
-				RayTraceResult hitObj2 = BlockHelper.getPlayerMouseOverBlock(64D, 1F);
+				RayTraceResult hitObj2 = BlockHelper.getPlayerMouseOverBlockOnWater(64D, 1F);
 
 				if (hitObj2 != null)
 				{

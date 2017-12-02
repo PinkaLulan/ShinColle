@@ -1,6 +1,9 @@
 package com.lulan.shincolle.entity.battleship;
 
+import java.util.List;
+
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -13,10 +16,12 @@ import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -67,6 +72,13 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
+	
+	@Override
+	public void calcShipAttributesAddEffect()
+	{
+		super.calcShipAttributesAddEffect();
+		this.AttackEffectMap.put(4, new int[] {(int)(this.getLevel() / 70), 100+this.getLevel(), this.getLevel()});
+	}
     
     //check entity state every tick
   	@Override
@@ -96,6 +108,32 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   	  				}
   	  			}//end 16 ticks
   			}//end 4 ticks
+  		}
+  		else
+  		{
+  			//every 128 ticks
+  			if (this.ticksExisted % 128 == 0)
+  			{
+  				//married effect: apply str buff to nearby ships
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0)
+  				{
+  					List<BasicEntityShip> shiplist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(16D, 16D, 16D));
+  	  	  			
+  					if (shiplist != null && shiplist.size() > 0)
+  					{
+  						for (BasicEntityShip s : shiplist)
+  						{
+  							if (TeamHelper.checkSameOwner(this, s))
+  							{
+  								//potion effect: id, time, level
+  								s.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 70, false, false));
+  								s.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 70, false, false));
+  	  						}
+  						}
+  					}
+  				}//end married buff
+  			}//end every 128 ticks
   		}
   	}
   	
@@ -136,7 +174,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
         if (getStateEmotion(ID.S.Phase) > 0)
         {	//spawn beam particle & entity
             //calc dist to target
-            Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+            Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
             
         	//shot sound
         	this.playSound(ModSounds.SHIP_YAMATO_SHOT, ConfigHandler.volumeFire, 1F);

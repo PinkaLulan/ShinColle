@@ -23,7 +23,10 @@ import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -123,6 +126,23 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 		//server side
 		else
 		{
+			//every 128 ticks
+        	if ((this.ticksExisted & 127) == 0)
+        	{
+        		//married effect
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0)
+  				{
+  					//apply buff to owner
+  					EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+  	  				{
+  	  					//potion effect: id, time, level
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION , 100+getStateMinor(ID.M.ShipLevel), 0, false, false));
+					}
+  				}//end married buff
+        	}
+        	
 			//apply skill effect
 			this.updateSkillEffect();
 		}
@@ -567,17 +587,18 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 	@Override
   	public float getAttackBaseDamage(int type, Entity target)
   	{
-  		switch (type)
-  		{
-  		case 1:  //light attack
-  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
-  	  	case 2:  //heavy attack: horizontal
-  			return this.shipAttrs.getAttackDamageHeavy() * 0.5F;
-  		case 3:  //heavy attack: final
-  			return this.shipAttrs.getAttackDamageHeavy() * 1.5F;
-		default: //melee
-			return this.shipAttrs.getAttackDamage();
-  		}
+		return 0;
+//  		switch (type)
+//  		{
+//  		case 1:  //light attack
+//  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+//  	  	case 2:  //heavy attack: horizontal
+//  			return this.shipAttrs.getAttackDamageHeavy() * 0.5F;
+//  		case 3:  //heavy attack: final
+//  			return this.shipAttrs.getAttackDamageHeavy() * 1.5F;
+//		default: //melee
+//			return this.shipAttrs.getAttackDamage() * 2F;
+//  		}
   	}
 	
 	@Override

@@ -11,6 +11,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -201,7 +202,10 @@ public class EntityFloatingFort extends BasicEntityAirplane
         			if (!TeamHelper.doFriendlyFire(this.host, ent)) atk = 0F;
             		
             		//對entity造成傷害
-                	ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), atk);
+                	if (ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), atk))
+                	{
+                		BuffHelper.applyBuffOnTarget(ent, this.getAttackEffectMap());
+                	}
             	}//end can be collided with
       		}//end is attackable
         }//end hit target list for loop

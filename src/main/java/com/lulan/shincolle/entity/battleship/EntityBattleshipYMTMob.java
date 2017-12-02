@@ -1,5 +1,7 @@
 package com.lulan.shincolle.entity.battleship;
 
+import java.util.HashMap;
+
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
@@ -12,7 +14,6 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
@@ -88,6 +89,16 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));
 	}
 	
+	@Override
+	public void initAttrsServerPost()
+	{
+		super.initAttrsServerPost();
+		
+		//add attack effects
+		if (this.AttackEffectMap == null) this.AttackEffectMap = new HashMap<Integer, int[]>();
+		this.AttackEffectMap.put(4, new int[] {(int)(this.getScaleLevel() / 1.5), 100+this.getScaleLevel()*50, 25+this.getScaleLevel()*25});
+	}
+	
 	//num rensouhou++
 	@Override
   	public void onLivingUpdate()
@@ -134,7 +145,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
         if (getStateEmotion(ID.S.Phase) > 0)
         {	//spawn beam particle & entity
             //calc dist to target
-            Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+            Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
             
         	//shot sound
         	this.playSound(ModSounds.SHIP_YAMATO_SHOT, ConfigHandler.volumeFire, 1F);

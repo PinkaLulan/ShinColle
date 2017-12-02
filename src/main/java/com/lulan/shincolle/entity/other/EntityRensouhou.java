@@ -12,8 +12,9 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.BuffHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -167,14 +168,14 @@ public class EntityRensouhou extends BasicEntitySummon
   		float atk = getAttackBaseDamage(1, target);
   		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
   		
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
 	    applyParticleAtAttacker(1, target, distVec);
 
 	    //roll miss, cri, dhit, thit
-	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
   		
   		//damage limit on player target
 	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
@@ -188,6 +189,7 @@ public class EntityRensouhou extends BasicEntitySummon
 	    //if attack success
 	    if (isTargetHurt)
 	    {
+	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        

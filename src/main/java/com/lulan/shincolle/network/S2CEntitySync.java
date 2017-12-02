@@ -10,8 +10,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipOwner;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.entity.IShipProjectile;
 import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -63,55 +62,38 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncShip_Emo = 1;
 		public static final byte SyncShip_Flag = 2;
 		public static final byte SyncShip_Minor = 3;
-		public static final byte SyncEntity_Emo = 4;
-		public static final byte SyncShip_Riders = 5;
-		public static final byte SyncShip_Scale = 6;
-		public static final byte SyncEntity_PlayerUID = 7;
-		public static final byte SyncProjectile = 8;
-		public static final byte SyncEntity_PosRot = 9;
-		public static final byte SyncEntity_Rot = 10;
-		public static final byte SyncShip_Formation = 11;
-		public static final byte SyncShip_Buffmap = 12;
-		public static final byte SyncEntity_Motion = 13;
-		public static final byte SyncShip_Timer = 14;
-		public static final byte SyncShip_Guard = 15;
-		public static final byte SyncShip_ID = 16;
-		public static final byte SyncSystem_Config = 17;
-		public static final byte SyncShip_UnitName = 18;
-		public static final byte SyncShip_Attrs = 19;
-		public static final byte SyncEntity_Host = 20;
-		public static final byte SyncShip_MountSkillTimer = 21;
+		public static final byte SyncShip_Riders = 4;
+		public static final byte SyncShip_Scale = 5;
+		public static final byte SyncShip_Formation = 6;
+		public static final byte SyncShip_Buffmap = 7;
+		public static final byte SyncShip_Timer = 8;
+		public static final byte SyncShip_Guard = 9;
+		public static final byte SyncShip_ID = 10;
+		public static final byte SyncShip_UnitName = 11;
+		public static final byte SyncShip_Attrs = 12;
+		public static final byte SyncShip_MountSkillTimer = 13;
+		
+		public static final byte SyncEntity_Emo = 50;
+		public static final byte SyncEntity_PlayerUID = 51;
+		public static final byte SyncEntity_PosRot = 52;
+		public static final byte SyncEntity_Rot = 53;
+		public static final byte SyncEntity_Motion = 54;
+		public static final byte SyncEntity_Host = 55;
+		public static final byte SyncEntity_CustomData = 56;
+		
+		public static final byte SyncProjectile = 80;
+		public static final byte SyncSystem_Config = 81;
 	}
 
 	
 	public S2CEntitySync() {}	//必須要有空參數constructor, forge才能使用此class
 	
-	/**entity sync: 
-	 * type 0: all attribute
-	 * type 1: entity emotion only
-	 * type 2: entity flag only
-	 * type 3: entity minor only
-	 * type 4: all emotion
-	 * type 5: riders sync packet
-	 * type 11:ship formation data
-	 * type 12:ship unbuff data
-	 * type 14:ship timer only
-	 * type 15:ship guard target only
-	 * type 16:ship UID only
-	 * type 17:server config sync
-	 */
 	public S2CEntitySync(Entity entity, byte type)
 	{
         this.entity = entity;
         this.packetType = type;
     }
 
-	/**for mount seat sync
-	 * type 8:  projectile type sync
-	 * type 9:  entity pos sync (for teleport)
-	 * type 10: entity rot sync (for looking update)
-	 * type 13: entity motion sync (for knockback)
-	 */
 	public S2CEntitySync(Entity entity, int value, byte type)
 	{
 		this.entity = entity;
@@ -119,9 +101,13 @@ public class S2CEntitySync implements IMessage
         this.valueInt = value;
     }
 	
-	/**for entity sync
-	 * type 7:  entity player UID sync
-	 */
+	public S2CEntitySync(Entity entity, byte type, float[] data)
+	{
+        this.entity = entity;
+        this.packetType = type;
+        this.valueFloat1 = data;
+    }
+	
 	public S2CEntitySync(Object host, byte type)
 	{
 		this.host = null;
@@ -236,20 +222,23 @@ public class S2CEntitySync implements IMessage
 				this.valueInt1 = PacketHelper.readIntArray(buf, 2);
 			}
 		break;
-		case PID.SyncProjectile:	//missile type sync
+		case PID.SyncProjectile:	//missile type
 			this.valueInt = buf.readInt();
 		break;
-		case PID.SyncEntity_PosRot:	//entity position sync
+		case PID.SyncEntity_PosRot:	//entity position
 			this.valueDouble1 = PacketHelper.readDoubleArray(buf, 3);
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 4);
 		break;
-		case PID.SyncEntity_Rot:	//entity rotation sync
+		case PID.SyncEntity_Rot:	//entity rotation
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 3);
 		break;
-		case PID.SyncEntity_Motion:	//entity motion sync
+		case PID.SyncEntity_Motion:	//entity motion
 			this.valueFloat1 = PacketHelper.readFloatArray(buf, 3);
 		break;
-		case PID.SyncEntity_PlayerUID:	//player uid sync
+		case PID.SyncEntity_CustomData:	//entity custom data
+			this.valueFloat1 = PacketHelper.readFloatArray(buf);
+		break;
+		case PID.SyncEntity_PlayerUID:	//player uid
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.SyncSystem_Config:	//server config sync to client
@@ -655,6 +644,11 @@ public class S2CEntitySync implements IMessage
 			buf.writeFloat((float) entity.motionZ);
 		}
 		break;
+		case PID.SyncEntity_CustomData:	//entity custom data
+		{
+			PacketHelper.sendArrayFloat(buf, this.valueFloat1);
+		}
+		break;
 		case PID.SyncEntity_PlayerUID:	//player UID sync
 		{
 			boolean sendFail = true;
@@ -775,15 +769,16 @@ public class S2CEntitySync implements IMessage
 			}
 		break;
 		case PID.SyncShip_Riders:
-		case PID.SyncProjectile:	//missile sync
-		case PID.SyncEntity_PosRot: //entity position, rotation, motion sync
+		case PID.SyncProjectile:
+		case PID.SyncEntity_PosRot:
 		case PID.SyncEntity_Rot:
 		case PID.SyncEntity_Motion:
-		case PID.SyncEntity_Host:	//sync host
+		case PID.SyncEntity_Host:
+		case PID.SyncEntity_CustomData:
 			if (entity != null) getTarget = true;
 		break;
-		case PID.SyncEntity_PlayerUID:	//player uid sync
-		case PID.SyncSystem_Config:		//server config sync
+		case PID.SyncEntity_PlayerUID:
+		case PID.SyncSystem_Config:
 			getTarget = true;
 		break;
 		}
@@ -1075,13 +1070,9 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncProjectile:	//missile type sync
 			{
-				if (entity instanceof EntityAbyssMissile)
+				if (entity instanceof IShipProjectile)
 				{
-					((EntityAbyssMissile)entity).setMissileType(msg.valueInt);
-				}
-				else if (entity instanceof EntityProjectileBeam)
-				{
-					((EntityProjectileBeam)entity).setProjectileType(msg.valueInt);
+					((IShipProjectile) entity).setProjectileType(msg.valueInt);
 				}
 			}
 			break;
@@ -1138,6 +1129,11 @@ public class S2CEntitySync implements IMessage
 			case PID.SyncEntity_Motion:	//entity motion sync
 			{
 				entity.setVelocity(msg.valueFloat1[0], msg.valueFloat1[1], msg.valueFloat1[2]);
+			}
+			break;
+			case PID.SyncEntity_CustomData:	//entity custom data
+			{
+				PacketHelper.setEntityByCustomData(entity, msg.valueFloat1);
 			}
 			break;
 			case PID.SyncEntity_PlayerUID:	//player uid sync

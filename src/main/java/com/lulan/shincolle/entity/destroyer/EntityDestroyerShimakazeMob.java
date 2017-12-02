@@ -10,8 +10,8 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
@@ -139,18 +139,12 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		float atkHeavy = this.getAttackBaseDamage(2, target) * 0.9F;
 		float kbValue = 0.08F;
 		
-		//飛彈是否採用直射
-		boolean isDirect = false;
-		float launchPos = (float)posY + height * 0.45F;
+		//missile type
+		float launchPos = (float) posY + height * 0.7F;
+		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 2);
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-        
-        //水中 or 近距離, 採用直射
-        if (distVec.distance < (6D + this.getScaleLevel()) || this.getShipDepth() > 0D)
-        {
-        	isDirect = true;
-        }
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
         
 		//play attack sound
         this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
@@ -168,15 +162,15 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 	    float tarZ = (float) target.posZ;
 	    
 	    //if too close, extend target position
-	    if (distVec.distance < (6D + this.getScaleLevel()) && isDirect)
+	    if (distVec.d < 6D)
 	    {
-	    	tarX += distVec.x * 6D;
-	    	tarY += (distVec.y + (target.height - this.height)) * 1D;
-	    	tarZ += distVec.z * 6D;
+	    	tarX += distVec.x * (6D - distVec.d);
+	    	tarY += distVec.y * (6D - distVec.d);
+	    	tarZ += distVec.z * (6D - distVec.d);
 	    }
 	    
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atkHeavy) <= 0F)
+	    //calc miss rate
+        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
@@ -192,17 +186,17 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		float spread = 3F + this.scaleLevel * 0.5F;
 		
         //spawn missile
-        EntityAbyssMissile missile1 = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atkHeavy, kbValue, isDirect, -1F);
-        EntityAbyssMissile missile2 = new EntityAbyssMissile(this.world, this, 
-        		tarX+spread, tarY+target.height*0.2F, tarZ+spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
-        EntityAbyssMissile missile3 = new EntityAbyssMissile(this.world, this, 
-        		tarX+spread, tarY+target.height*0.2F, tarZ-spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
-        EntityAbyssMissile missile4 = new EntityAbyssMissile(this.world, this, 
-        		tarX-spread, tarY+target.height*0.2F, tarZ+spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
-        EntityAbyssMissile missile5 = new EntityAbyssMissile(this.world, this, 
-        		tarX-spread, tarY+target.height*0.2F, tarZ-spread, launchPos, atkHeavy, kbValue, isDirect, -1F);
-        
+		float[] data = new float[] {atkHeavy, kbValue, launchPos, tarX, tarY+target.height*0.1F, tarZ, 160, 0.25F, 0.5F, 1.04F, 1.04F};
+		EntityAbyssMissile missile1 = new EntityAbyssMissile(this.world, this, 0, moveType, data);
+		data = new float[] {atkHeavy, kbValue, launchPos, tarX+spread, tarY+target.height*0.1F, tarZ+spread, 160, 0.25F, 0.5F, 1.04F, 1.04F};
+		EntityAbyssMissile missile2 = new EntityAbyssMissile(this.world, this, 0, moveType, data);
+		data = new float[] {atkHeavy, kbValue, launchPos, tarX+spread, tarY+target.height*0.1F, tarZ-spread, 160, 0.25F, 0.5F, 1.04F, 1.04F};
+		EntityAbyssMissile missile3 = new EntityAbyssMissile(this.world, this, 0, moveType, data);
+		data = new float[] {atkHeavy, kbValue, launchPos, tarX-spread, tarY+target.height*0.1F, tarZ+spread, 160, 0.25F, 0.5F, 1.04F, 1.04F};
+		EntityAbyssMissile missile4 = new EntityAbyssMissile(this.world, this, 0, moveType, data);
+		data = new float[] {atkHeavy, kbValue, launchPos, tarX-spread, tarY+target.height*0.1F, tarZ-spread, 160, 0.25F, 0.5F, 1.04F, 1.04F};
+		EntityAbyssMissile missile5 = new EntityAbyssMissile(this.world, this, 0, moveType, data);
+
         this.world.spawnEntity(missile1);
         this.world.spawnEntity(missile2);
         this.world.spawnEntity(missile3);

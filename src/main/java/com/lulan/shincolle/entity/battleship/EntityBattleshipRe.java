@@ -14,11 +14,15 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -51,6 +55,8 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.ModelPos = new float[] {-6F, 25F, 0F, 40F};
 		this.launchHeight = this.height * 0.8F;
 		
+		this.StateFlag[ID.F.HaveRingEffect] = true;
+		
 		this.postInit();
 	}
 
@@ -70,24 +76,24 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.tasks.addTask(11, new EntityAIShipCarrierAttack(this));
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
-
-	//增加艦載機數量計算
-	@Override
-	public void calcShipAttributesAdd()
-	{
-		super.calcShipAttributesAdd();
-		
-		this.maxAircraftLight += this.getLevel() * 0.1F;
-		this.maxAircraftHeavy += this.getLevel() * 0.05F;
-	}
 	
 	@Override
 	public void calcShipAttributesAddRaw()
 	{
 		super.calcShipAttributesAddRaw();
 		
+		this.maxAircraftLight += this.getLevel() * 0.1F;
+		this.maxAircraftHeavy += this.getLevel() * 0.05F;
+		
 		this.getAttrs().setAttrsRaw(ID.Attrs.DHIT, this.getAttrs().getAttrsRaw(ID.Attrs.DHIT) + 0.1F);
 		this.getAttrs().setAttrsRaw(ID.Attrs.THIT, this.getAttrs().getAttrsRaw(ID.Attrs.THIT) + 0.1F);
+	}
+	
+	@Override
+	public void calcShipAttributesAddEffect()
+	{
+		super.calcShipAttributesAddEffect();
+		this.AttackEffectMap.put(4, new int[] {(int)(this.getLevel() / 100), 100+this.getLevel(), this.getLevel()});
 	}
 	
 	@Override
@@ -96,16 +102,31 @@ public class EntityBattleshipRe extends BasicEntityShipCV
     	//check server side
     	if (!this.world.isRemote)
     	{
-        	//push other people every 256 ticks
-        	if (this.ticksExisted % 256 == 0)
-        	{
-        		if (this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
-        			!this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed())
-        		{
-        			//find target
-        			this.findTargetPush();
-        		}
-        	}
+
+  			//every 128 ticks
+  			if ((this.ticksExisted & 127) == 0)
+  			{
+  				//add aura to master
+  				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  				{
+  					//potion effect: id, time, level
+  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 50, false, false));
+  				}
+  				
+  				//every 256 ticks
+  	        	if ((this.ticksExisted & 255) == 0)
+  	        	{
+  	        		//push other people
+  	        		if (this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
+  	        			!this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed())
+  	        		{
+  	        			//find target
+  	        			this.findTargetPush();
+  	        		}
+  	        	}//end every 256 ticks
+  			}//end every 128 ticks
     		
     		//若要找騎乘目標
         	if (this.isPushing)

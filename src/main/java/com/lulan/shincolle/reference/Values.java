@@ -460,8 +460,10 @@ public class Values
 		put((int)ID.EquipType.CANNON_TW_HI + (int)ID.EquipSubID.CANNON_TWIN_20 * 100,   new float[]{0F,  15F, 0F,  0F,  0F,  0F,   0.2F, -0.30F, 2.5F, 0F,    0.10F, 0F,    0F,    0F,  0F,  0F,   0F,   0F,   0.2F, 0F,   0F});
 		//triple cannon
 		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_8 * 100,        new float[]{0F,  9F,  0F,  0F,  0F,  0F,   0.4F, -0.25F, 1.5F, 0F,    0.06F, 0.06F, 0F,    0F,  0F,  0F,   0F,   0F,   0.3F, 0F,   0F});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_12 * 100,       new float[]{0F,  12F, 0F,  0F,  0F,  0F,   0.4F, -0.28F, 1.5F, 0F,    0.07F, 0.07F, 0F,    0F,  0F,  0F,   0F,   0F,   0.3F, 0F,   0F});
 		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_16 * 100,       new float[]{0F,  15F, 0F,  0F,  0F,  0F,   0.4F, -0.32F, 2F,   0F,    0.08F, 0.08F, 0F,    0F,  0F,  0F,   0F,   0F,   0.3F, 0F,   0F});
 		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_FG_15 * 100,        new float[]{140F,6F,  0F,  0F,  0F,  0.06F,0.2F, -0.32F, 1.5F, 0F,    0.04F, 0.04F, 0F,    0F,  0F,  0F,   0F,   0F,   0.3F, 0F,   0F});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_QUAD_15 * 100,      new float[]{0F,  18F, 0F,  0F,  0F,  0F,   0.6F, -0.4F,  2F,   0F,    0.1F,  0.1F,  0F,    0F,  0F,  0F,   0F,   0F,   0.4F, 0F,   0F});
 		//machine gun
 		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_HA_3 * 100,          		new float[]{0F,  1F,  0F,  0F,  0F,  0F,   0F,   -0.02F, 0F,   0F,    0F,    0F,    0F,    8F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_HA_5 * 100,          		new float[]{0F,  2F,  0F,  0F,  0F,  0F,   0F,   -0.02F, 0F,   0F,    0F,    0F,    0F,    12F, 0F,  0F,   0F,   0F,   0F,   0F,   0F});
@@ -475,8 +477,9 @@ public class Values
 		put((int)ID.EquipType.TORPEDO_LO + (int)ID.EquipSubID.TORPEDO_21MK2 * 100,      new float[]{0F,  0F,  12F, 0F,  0F,  0F,   0F,   -0.12F, 0.5F, 0.05F, 0F,    0F,    0F,    0F,  12F, 0F,   0F,   0F,   0.1F, 0F,   0F});
 		put((int)ID.EquipType.TORPEDO_LO + (int)ID.EquipSubID.TORPEDO_22MK1 * 100,      new float[]{0F,  0F,  18F, 0F,  0F,  0F,   0.1F, -0.16F, 0.5F, 0.07F, 0F,    0F,    0F,    0F,  18F, 0F,   0F,   0F,   0.15F,0F,   0F});
 		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_CUTTLEFISH * 100, new float[]{0F,  0F,  25F, 0F,  0F,  0F,   0.1F, -0.20F, 1F,   0.09F, 0F,    0F,    0F,    0F,  24F, 0F,   0F,   0F,   0.2F, 0F,   0F});
-		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED * 100,  new float[]{0F,  0F,  35F, 0F,  0F,  0F,   0.15F,-0.25F, 1.3F, 0.11F, 0F,    0F,    0F,    0F,  32F, 0F,   0F,   0F,   0.25F,0F,   0F});
-		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED2 * 100, new float[]{0F,  0F,  48F, 0F,  0F,  0F,   0.2F, -0.30F, 1.6F, 0.15F, 0F,    0F,    0.06F, 0F,  45F, 0F,   0F,   0F,   0,3F, 0F,   0F});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED * 100,  new float[]{0F,  0F,  32F, 0F,  0F,  0F,   0.14F,-0.25F, 1.3F, 0.11F, 0F,    0F,    0F,    0F,  32F, 0F,   0F,   0F,   0.25F,0F,   0F});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED2 * 100, new float[]{0F,  0F,  40F, 0F,  0F,  0F,   0.18F,-0.30F, 1.6F, 0.15F, 0F,    0F,    0.06F, 0F,  45F, 0F,   0F,   0F,   0.3F, 0F,   0F});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_AMB * 100,        new float[]{0F,  0F,  48F, 0F,  0F,  0F,   0.2F, -0.35F, 2F,   0.2F,  0F,    0F,    0.06F, 0F,  60F, 0F,   0F,   0F,   0.35F,0F,   0F});
 		//Torpedo aircraft
 		put((int)ID.EquipType.AIR_T_LO + (int)ID.EquipSubID.AIRCRAFT_TMK1 * 100,      	new float[]{0F,  0F,  0F,  2F,  14F, 0F,   0F,   -0.10F, 2F,   0F,    0F,    0F,    0F,    3F,  12F, 0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AIR_T_LO + (int)ID.EquipSubID.AIRCRAFT_TMK2 * 100,      	new float[]{0F,  0F,  0F,  5F,  20F, 0F,   0F,   -0.14F, 2F,   0F,    0F,    0F,    0F,    6F,  18F, 0F,   0F,   0F,   0F,   0F,   0F});
@@ -496,7 +499,7 @@ public class Values
 		put((int)ID.EquipType.AIR_B_LO + (int)ID.EquipSubID.AIRCRAFT_BMK1 * 100,      	new float[]{0F,  0F,  0F,  2F,  8F,  0F,   0F,   -0.14F, 1.5F, 0.04F, 0F,    0F,    0F,    2F,  2F,  0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AIR_B_LO + (int)ID.EquipSubID.AIRCRAFT_BMK2 * 100,      	new float[]{0F,  0F,  0F,  5F,  10F, 0F,   0F,   -0.18F, 2F,   0.05F, 0F,    0F,    0F,    3F,  4F,  0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BFLYFISH * 100,  	new float[]{0F,  0F,  0F,  7F,  12F, 0F,   0F,   -0.22F, 2F,   0.06F, 0F,    0F,    0F,    4F,  8F,  0F,   0F,   0F,   0F,   0F,   0F});
-		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BHELL * 100,     	new float[]{0F,  0F,  0F,  5F,  14F, 0F,   0F,   -0.25F,  2.5F, 0.08F, 0F,    0F,    0F,    6F,  12F, 0F,   0F,   0F,   0F,   0F,   0F});
+		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BHELL * 100,     	new float[]{0F,  0F,  0F,  5F,  14F, 0F,   0F,   -0.25F, 2.5F, 0.08F, 0F,    0F,    0F,    6F,  12F, 0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BHELLK * 100,    	new float[]{0F,  0F,  0F,  7F,  16F, 0F,   0.05F,-0.30F, 2.5F, 0.12F, 0F,    0F,    0F,    8F,  16F, 0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BLAND * 100,    	new float[]{0F,  0F,  0F,  8F,  18F, 0F,   0.06F,-0.35F, 3F,   0.14F, 0F,    0F,    0F,    10F, 20F, 0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AIR_B_HI + (int)ID.EquipSubID.AIRCRAFT_BLANDA * 100,    	new float[]{0F,  0F,  0F,  9F,  20F, 0F,   0.08F,-0.38F, 3.5F, 0.16F, 0F,    0F,    0F,    12F, 24F, 0F,   0F,   0F,   0F,   0F,   0F});
@@ -542,7 +545,15 @@ public class Values
 		put((int)ID.EquipType.FLARE_LO + (int)ID.EquipSubID.FLARE * 100,                new float[]{0,   1F,  0F,  2F,  0F,  0F,   0F,   -0.02F, 2F,   0.04F, 0F,    0F,    0.05F, 0F,  5F,  0F,   0F,   0F,   0F,   0F,   0F}); 
 		//searchlight                                                                               HP   LA   HA   LAA  HAA  DEF   SPD   MOV     RNG   CRI    DHit   THit   Miss   AA   ASM  Dodge XP    GRUD  AMMO  HPRES KB      
 		put((int)ID.EquipType.SEARCHLIGHT_LO + (int)ID.EquipSubID.SEARCHLIGHT * 100,    new float[]{0,   0F,  0F,  0F,  0F,  -0.06F,0F,  -0.02F, 2F,   0.06F, 0F,    0F,    0.1F,  0F,  10F, -0.10F,0F,  0F,   0F,   0F,   0F});
-		
+		//ammo
+		put((int)ID.EquipType.AMMO_LO + (int)ID.EquipSubID.AMMO_T91 * 100,      		new float[]{0F,  6F,  0F,  6F,  0F,  0F,   0F,   -0.02F, 2F,   0.03F, 0.02F, 0.02F, 0.02F, 0F,  0F,  0F,   0F,   0F,   0.1F, 0F,   0F});
+		put((int)ID.EquipType.AMMO_LO + (int)ID.EquipSubID.AMMO_AA * 100,        		new float[]{0F,  2F,  0F,  2F,  0F,  0F,   0F,   -0.02F, 4F,   0F,    0F,    0F,    0.06F, 20F, 0F,  0F,   0F,   0F,   0.1F, 0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T1 * 100,      			new float[]{0F,  8F,  0F,  8F,  0F,  0F,   0F,   -0.04F, 2F,   0.06F, 0.04F, 0.04F, 0.04F, 0F,  0F,  0F,   0F,   0F,   0.15F,0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T3 * 100,        		new float[]{0F,  4F,  0F,  4F,  0F,  0F,   0F,   -0.04F, 4F,   0F,    0F,    0F,    0.1F,  60F, 0F,  0F,   0F,   0F,   0.15F,0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_DU * 100,      			new float[]{0F,  12F, 0F,  12F, 0F,  0F,   0F,   -0.06F, 3F,   0.09F, 0.06F, 0.06F, 0.06F, 0F,  0F,  0F,   0F,   0F,   0.2F, 0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_G * 100,        		new float[]{0F,  2F,  0F,  2F,  0F,  0F,   -0.1F,-0.06F, -2F,  0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_AG * 100,      			new float[]{0F,  2F,  0F,  2F,  0F,  0F,   -0.1F,-0.02F, 2F,   0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_E * 100,        		new float[]{0F,  0F,  0F,  0F,  0F,  0F,   -0.2F,-0.01F, 1F,   0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
 	}});
 	
 	/**
@@ -553,7 +564,7 @@ public class Values
 	 * equip type:
 	 * 	   0:unused
 	 *     1:cannon, torpedo
-	 *     2:aircraft-R, engine, armor, radar
+	 *     2:aircraft-R, engine, armor, radar, ammo
 	 *     3:aircraft-T/F/B
 	 */
 	public static final Map<Integer, int[]> EquipAttrsMisc = Collections.unmodifiableMap(new HashMap<Integer, int[]>()
@@ -573,8 +584,10 @@ public class Values
 		put((int)ID.EquipType.CANNON_TW_HI + (int)ID.EquipSubID.CANNON_TWIN_20 * 100,   new int[]{1,   ID.EquipType.CANNON_TW_HI,   4000, 1600, 2,  1});
 		//triple cannon
 		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_8 * 100,        new int[]{1,   ID.EquipType.CANNON_TR,      1000, 4400, 2,  1});
-		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_16 * 100,       new int[]{1,   ID.EquipType.CANNON_TR,      2400, 4400, 2,  1});
-		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_FG_15 * 100,        new int[]{1,   ID.EquipType.CANNON_TR,      4000, 4400, 2,  1});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_12 * 100,       new int[]{1,   ID.EquipType.CANNON_TR,      2200, 4400, 2,  1});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_TRI_16 * 100,       new int[]{1,   ID.EquipType.CANNON_TR,      3500, 4400, 2,  1});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_FG_15 * 100,        new int[]{1,   ID.EquipType.CANNON_TR,      2500, 4400, 2,  1});
+		put((int)ID.EquipType.CANNON_TR + (int)ID.EquipSubID.CANNON_QUAD_15 * 100,      new int[]{1,   ID.EquipType.CANNON_TR,      4000, 4400, 2,  1});
 		//machine gun
 		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_HA_3 * 100,          		new int[]{2,   ID.EquipType.GUN_LO,         1000, 100,  2,  1});
 		put((int)ID.EquipType.GUN_LO + (int)ID.EquipSubID.GUN_HA_5 * 100,          		new int[]{2,   ID.EquipType.GUN_LO,         2000, 100,  2,  1});
@@ -588,8 +601,9 @@ public class Values
 		put((int)ID.EquipType.TORPEDO_LO + (int)ID.EquipSubID.TORPEDO_21MK2 * 100,      new int[]{1,   ID.EquipType.TORPEDO_LO,     2400, 160,  2,  1});
 		put((int)ID.EquipType.TORPEDO_LO + (int)ID.EquipSubID.TORPEDO_22MK1 * 100,      new int[]{1,   ID.EquipType.TORPEDO_LO,     4000, 160,  2,  1});
 		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_CUTTLEFISH * 100, new int[]{1,   ID.EquipType.TORPEDO_HI,     1000, 1200, 2,  1});
-		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED * 100,  new int[]{1,   ID.EquipType.TORPEDO_HI,     3300, 1200, 2,  1});
-		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED2 * 100, new int[]{1,   ID.EquipType.TORPEDO_HI,     4000, 1200, 2,  1});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED * 100,  new int[]{1,   ID.EquipType.TORPEDO_HI,     2500, 1200, 2,  1});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_HIGHSPEED2 * 100, new int[]{1,   ID.EquipType.TORPEDO_HI,     3600, 1200, 2,  1});
+		put((int)ID.EquipType.TORPEDO_HI + (int)ID.EquipSubID.TORPEDO_AMB * 100,        new int[]{1,   ID.EquipType.TORPEDO_HI,     4000, 1200, 2,  1});
 		//Torpedo aircraft
 		put((int)ID.EquipType.AIR_T_LO + (int)ID.EquipSubID.AIRCRAFT_TMK1 * 100,      	new int[]{3,   ID.EquipType.AIR_T_LO,       1000, 2400, 3,  1});
 		put((int)ID.EquipType.AIR_T_LO + (int)ID.EquipSubID.AIRCRAFT_TMK2 * 100,      	new int[]{3,   ID.EquipType.AIR_T_LO,       2400, 2400, 3,  1});
@@ -655,7 +669,15 @@ public class Values
 		put((int)ID.EquipType.FLARE_LO + (int)ID.EquipSubID.FLARE * 100,        		new int[]{1,   ID.EquipType.FLARE_LO,       2000, 80,   2,  3});
 		//searchlight                                                                             Type Rare Type/Mean                     MatsType, EnchType
 		put((int)ID.EquipType.SEARCHLIGHT_LO + (int)ID.EquipSubID.SEARCHLIGHT * 100,    new int[]{2,   ID.EquipType.SEARCHLIGHT_LO, 2000, 80,   0,  3});
-					
+		//ammo
+		put((int)ID.EquipType.AMMO_LO + (int)ID.EquipSubID.AMMO_T91 * 100,      		new int[]{2,   ID.EquipType.AMMO_LO,        2000, 120,  2,  1});
+		put((int)ID.EquipType.AMMO_LO + (int)ID.EquipSubID.AMMO_AA * 100,        		new int[]{2,   ID.EquipType.AMMO_LO,        2000, 120,  2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T1 * 100,      			new int[]{2,   ID.EquipType.AMMO_HI,        1000, 1000, 2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T3 * 100,        		new int[]{2,   ID.EquipType.AMMO_HI,        2000, 1000, 2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_DU * 100,      			new int[]{2,   ID.EquipType.AMMO_HI,        4000, 1000, 2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_G * 100,        		new int[]{2,   ID.EquipType.AMMO_HI,        3000, 1000, 2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_AG * 100,      			new int[]{2,   ID.EquipType.AMMO_HI,        3000, 1000, 2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_E * 100,        		new int[]{2,   ID.EquipType.AMMO_HI,        3500, 1000, 2,  1});
 	}});
 
 	

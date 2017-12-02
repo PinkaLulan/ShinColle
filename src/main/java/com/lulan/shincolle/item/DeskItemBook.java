@@ -42,5 +42,3 @@ public class DeskItemBook extends BasicItem
 	
 	
 }
-
-

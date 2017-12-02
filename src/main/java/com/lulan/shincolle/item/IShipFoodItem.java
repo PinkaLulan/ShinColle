@@ -5,7 +5,8 @@ package com.lulan.shincolle.item;
  */
 public interface IShipFoodItem
 {
-
+	
+	
 	/** get resource value */
 	public float getFoodValue(int meta);
 	

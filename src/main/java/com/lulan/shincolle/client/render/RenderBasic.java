@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -209,7 +208,7 @@ abstract public class RenderBasic extends RenderLiving<EntityLiving>
 
             GlStateManager.depthMask(true);
             
-            if (entity instanceof EntityLiving && !((EntityPlayer)entity).isSpectator())
+            if (entity instanceof EntityLiving)
             {
                 this.renderLayers((EntityLiving) entity, f6, f5, parTick, f8, f2, f7, f4);
             }

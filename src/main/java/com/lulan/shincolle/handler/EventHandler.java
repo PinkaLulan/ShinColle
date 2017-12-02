@@ -997,21 +997,23 @@ public class EventHandler
 			{
 				int getKey = -1;
 				
-				if (keySet.keyBindsHotbar[0].isPressed()) getKey = 0;
-				else if (keySet.keyBindsHotbar[1].isPressed()) getKey = 1;
-				else if (keySet.keyBindsHotbar[2].isPressed()) getKey = 2;
-				else if (keySet.keyBindsHotbar[3].isPressed()) getKey = 3;
+				if (keySet.keyBindsHotbar[0].isKeyDown()) getKey = 0;
+				else if (keySet.keyBindsHotbar[1].isKeyDown()) getKey = 1;
+				else if (keySet.keyBindsHotbar[2].isKeyDown()) getKey = 2;
+				else if (keySet.keyBindsHotbar[3].isKeyDown()) getKey = 3;
 				
 				if (getKey < 0) return;
 				
 				float range = mount.getAttrs().getAttackRange();
 				this.keyMountSkillCD = 2;
 				
-				//get skill target
+				//create exclude entity list
 				ArrayList<Entity> exlist = new ArrayList<Entity>();
 				exlist.add(player);
 				exlist.add(mount);
 				exlist.add(mount.getHostEntity());
+				
+				//get skill target
 				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(range, 1F, exlist);
 				Entity target = null;
 				int[] targetPos = null;
@@ -1027,13 +1029,20 @@ public class EventHandler
 				//get skill target: block
 				if (target == null) 
 				{
-					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
+					if (mount.getShipDepth() >= 3D)
+					{
+						hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
+					}
+					else
+					{
+						hitObj = BlockHelper.getPlayerMouseOverBlockOnWater(range, 1F);
+					}
 					
 					if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.BLOCK)
 					{
 						targetPos = new int[] {hitObj.getBlockPos().getX(), hitObj.getBlockPos().getY(), hitObj.getBlockPos().getZ()};
 						//在目標上畫出標記
-						ParticleHelper.spawnAttackParticleAt(targetPos[0]+0.5D, targetPos[1], targetPos[2]+0.5D, 0.3D, 4D, 0D, (byte)25);
+						ParticleHelper.spawnAttackParticleAt(targetPos[0]+0.5D, targetPos[1], targetPos[2]+0.5D, 0.3D, 5D, 0D, (byte)25);
 					}
 				}
 				
@@ -1074,11 +1083,11 @@ public class EventHandler
 					{
 						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 3, target.getEntityId(), -1, -1));
 					}
-					//hit block
-					else if (targetPos != null)
-					{
-						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 3, targetPos[0], targetPos[1], targetPos[2]));
-					}
+//					//hit block
+//					else if (targetPos != null)
+//					{
+//						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 3, targetPos[0], targetPos[1], targetPos[2]));
+//					}
 				}
 			}
 		}//end riding ship mounts

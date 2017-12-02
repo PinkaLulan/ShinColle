@@ -4,8 +4,8 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
-import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -40,7 +40,7 @@ public class EntityAIShipFloating extends EntityAIBase
     		this.hostMount = (BasicEntityMount) entity;
     	}
     	
-        this.setMutexBits(7);
+        this.setMutexBits(8);
     }
 
     @Override
@@ -49,107 +49,82 @@ public class EntityAIShipFloating extends EntityAIBase
     	//ship類: 檢查host坐下
     	if (hostShip != null)
     	{
-    		//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
-    		if (hostShip.isRiding() || hostShip.isSitting() || hostShip.getStateMinor(ID.M.CraneState) > 0 ||
-    			!hostShip.getShipNavigate().noPath() || isInGuardPosition(hostShip))
+    		if (hostShip.getStateFlag(ID.F.CanFloatUp) && hostShip.getShipDepth() > hostShip.getShipFloatingDepth())
     		{
-    			return false;
+    			//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
+        		if (hostShip.isRiding() || hostShip.isSitting() || hostShip.getStateMinor(ID.M.CraneState) > 0 ||
+        			!hostShip.getShipNavigate().noPath() || isInGuardPosition(hostShip))
+        		{
+        			return false;
+        		}
+        		
+        		//其他情況
+        		return true;
     		}
     		
-    		//其他情況
-    		return hostShip.getStateFlag(ID.F.CanFloatUp) && hostShip.getShipDepth() > hostShip.getShipFloatingDepth();
+    		return false;
     	}
     	//mount類: 檢查mount水深 & host坐下
     	else if (hostMount != null && hostMount.getHostEntity() != null)
     	{
-    		BasicEntityShip host = (BasicEntityShip) hostMount.getHostEntity();
-			
-			//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
-    		if (host.isSitting() || host.getStateMinor(ID.M.CraneState) > 0 ||
-    			!host.getShipNavigate().noPath() || isInGuardPosition(host))
+    		if (hostMount.getShipDepth() > hostMount.getShipFloatingDepth())
     		{
-    			return false;
+    			BasicEntityShip host = (BasicEntityShip) hostMount.getHostEntity();
+    			
+    			//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
+        		if (host.isSitting() || host.getStateMinor(ID.M.CraneState) > 0 ||
+        			!host.getShipNavigate().noPath() || isInGuardPosition(host))
+        		{
+        			return false;
+        		}
+    			
+    			//騎乘中, 守衛中, 移動中: 禁止上浮
+    			if (!hostMount.getShipNavigate().noPath() || isInGuardPosition(hostMount))
+    			{
+        			return false;
+        		}
+    			
+    			return true;
     		}
-			
-			//騎乘中, 守衛中, 移動中: 禁止上浮
-			if (!hostMount.getShipNavigate().noPath() || isInGuardPosition(hostMount))
-			{
-    			return false;
-    		}
-			
-			return hostMount.getShipDepth() > hostMount.getShipFloatingDepth();
+    		
+    		return false;
 		}
-//    	//其他類
-//    	else
-//    	{
-    		return host.getShipDepth() > host.getShipFloatingDepth();
-//    	}
+    	
+    	return host.getShipDepth() > host.getShipFloatingDepth();
     }
 
     @Override
 	public void updateTask()
     {
-    	//submarine
-    	if (host instanceof IShipInvisible)
+    	if (this.host.getShipDepth() > 4D)
     	{
-    		if (this.host.getShipDepth() > 4D)
-        	{
-        		this.hostLiving.motionY += 0.025D;
-        		return;
-        	}
-        	
-        	if (this.host.getShipDepth() > 2D)
-        	{
-        		this.hostLiving.motionY += 0.015D;
-        		return;
-        	}
-        	
-        	if (this.host.getShipDepth() > 1.3D)
-        	{
-        		this.hostLiving.motionY += 0.007D;
-        		return;
-        	}
-        	
-        	if (this.host.getShipDepth() > 1.1D)
-        	{
-        		this.hostLiving.motionY += 0.003D;
-        		return;
-        	}
+    		this.hostLiving.motionY += 0.025D;
+    		return;
     	}
-    	//other ship
-    	else
+    	
+    	if (this.host.getShipDepth() > 2D)
     	{
-        	if (this.host.getShipDepth() > 4D)
-        	{
-        		this.hostLiving.motionY += 0.025D;
-        		return;
-        	}
-        	
-        	if (this.host.getShipDepth() > 1D)
-        	{
-        		this.hostLiving.motionY += 0.015D;
-        		return;
-        	}
-        	
-        	if (this.host.getShipDepth() > 0.7D)
-        	{
-        		this.hostLiving.motionY += 0.007D;
-        		return;
-        	}
-        	
-        	if (this.host.getShipDepth() > 0.47D)
-        	{
-        		this.hostLiving.motionY += 0.003D;
-        		return;
-        	}
-        	
-        	if (this.host.getShipDepth() > 0.15D)
-        	{
-        		this.hostLiving.motionY += 0.0015D;
-        		return;
-        	}
+    		this.hostLiving.motionY += 0.015D;
+    		return;
     	}
-    	   	
+    	
+    	if (this.host.getShipDepth() > 1.3D)
+    	{
+    		this.hostLiving.motionY += 0.007D;
+    		return;
+    	}
+    	
+    	if (this.host.getShipDepth() > 0.47D)
+    	{
+    		this.hostLiving.motionY += 0.003D;
+    		return;
+    	}
+    	
+    	if (this.host.getShipDepth() > 0.15D)
+    	{
+    		this.hostLiving.motionY += 0.0015D;
+    		return;
+    	}
     }
     
     //check is in guard position
@@ -180,6 +155,17 @@ public class EntityAIShipFloating extends EntityAIBase
 			{
 				double distSq = ((Entity)host).getDistanceSq(host.getStateMinor(ID.M.GuardX), host.getStateMinor(ID.M.GuardY), host.getStateMinor(ID.M.GuardZ));
 				if (distSq < fMin && ((Entity)host).posY >= host.getStateMinor(ID.M.GuardY)) return true;
+			}
+		}
+		//若跟隨主人中, 則檢查跟隨距離
+		else
+		{
+			float fMax = host.getStateMinor(ID.M.FollowMax) + ((Entity)host).width * 0.5F;
+			fMax = fMax * fMax;
+			
+			if (host.getHostEntity() != null)
+			{
+				if (host.getHostEntity().getDistanceSqToEntity((Entity)host) <= fMax) return true;
 			}
 		}
 		

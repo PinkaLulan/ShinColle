@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
@@ -20,6 +21,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -186,16 +188,15 @@ public class RenderHelper
 		try
 		{
 			//get window size
+			GameSettings keySet = mc.gameSettings;
 			ScaledResolution sr = new ScaledResolution(mc);
 	        int i = sr.getScaledWidth();
 	        int j = sr.getScaledHeight();
-	        int px = (int) (i * 0.5F);
-	        int py = (int) (j * 0.7F);
+	        int px = (int) (i * ConfigHandler.posHUD[0]);
+	        int py = (int) (j * ConfigHandler.posHUD[1]);
 	        
 	        //start drawing
 	        GlStateManager.pushMatrix();
-	        GlStateManager.enableBlend();
-	        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
 	        //draw mount skill buttons
 	        for (int k = 0; k < 4; k++)
@@ -205,7 +206,9 @@ public class RenderHelper
 	        		//set color and texture before every drawTexturedModalRect()
 	        		GlStateManager.color(1F, 1F, 1F, 1F);
 	        		mc.getTextureManager().bindTexture(ClientProxy.TextureGuiHUD);
-	    	        
+	        		GlStateManager.enableBlend();
+	    	        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
 	    	        int px2 = px-40+k*21;
 	        		int len = (int)((float)drawCD[k] / (float)drawCDMax[k] * 18F);
 	        		//draw button icon
@@ -214,6 +217,8 @@ public class RenderHelper
 	        		RenderHelper.drawTexturedModalRect(px2, py+18-len, 0, 36-len, 18, len, 0);
 	        		//draw button cooldown text
 	        		if (len > 0) fr.drawStringWithShadow(String.format("%.1f", (float)drawCD[k] * 0.05F), px2+5, py+18, Enums.EnumColors.YELLOW.getValue());
+	        		//draw click effect
+	        		if (keySet.keyBindsHotbar[k].isKeyDown()) Gui.drawRect(px2, py, px2+18, py+18, 1073741823);
 	        	}
 	        }
 	        

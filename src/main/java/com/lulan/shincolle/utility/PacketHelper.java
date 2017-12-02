@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.other.EntityAbyssMissile;
+import com.lulan.shincolle.entity.other.EntityProjectileStatic;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
@@ -23,7 +25,7 @@ import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
-import io.netty.handler.codec.EncoderException;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -31,7 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -609,6 +610,52 @@ public class PacketHelper
 		else
 		{
 			LogHelper.debug("DEBUG: set entity by GUI fail, entity null");
+		}
+	}
+	
+	/** process custom data packet */
+	public static void setEntityByCustomData(Entity entity, float[] value)
+	{
+		if (value == null || value.length <= 0) return;
+		
+		switch ((int) value[0])
+		{
+		case 0:   //abyss missile
+		{
+			EntityAbyssMissile ent = (EntityAbyssMissile) entity;
+			ent.setProjectileType((int) value[1]);
+			ent.moveType = (int) value[2];
+			ent.velX = value[3];
+			ent.velY = value[4];
+			ent.velZ = value[5];
+			ent.vel0 = value[6];
+			ent.accY1 = value[7];
+			ent.accY2 = value[8];
+		}
+		break;
+		case 1:   //static
+		{
+			EntityProjectileStatic ent = (EntityProjectileStatic) entity;
+			ent.setProjectileType((int) value[1]);
+			ent.lifeLength = (int) value[2];
+			ent.pullForce = value[3];
+			ent.range = value[4];
+		}
+		break;
+		case 2:   //torpedo move
+		{
+			EntityAbyssMissile ent = (EntityAbyssMissile) entity;
+			ent.setProjectileType((int) value[1]);
+			ent.moveType = (int) value[2];
+			ent.velX = value[3];
+			ent.velY = value[4];
+			ent.velZ = value[5];
+			ent.startMove = value[6] > 0F ? true : false;
+			ent.vel0 = value[7];
+			ent.accY1 = value[8];
+			ent.accY2 = value[9];
+		}
+		break;
 		}
 	}
 	

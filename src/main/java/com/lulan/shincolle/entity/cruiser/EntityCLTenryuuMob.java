@@ -147,7 +147,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		if (this.stateEmotion[ID.S.Phase] > 1)
 		{
 			//clear attacked target list
-			if (this.attackTime3 == 7)
+			if (this.attackTime3 == 6)
 			{
 				this.damagedTarget.clear();
 				
@@ -170,7 +170,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 				}
 			}
 			
-			if (this.attackTime3 <= 7 && this.attackTime3 >= 0)
+			if (this.attackTime3 <= 12 && this.attackTime3 >= 0)
 			{
 				//apply motion
 				this.motionX = this.skillMotion.xCoord;
@@ -346,8 +346,8 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		double dist = this.getDistanceSqToCenter(pos);
 		
 		//calc motion
-		this.skillMotion = CalcHelper.calcVecToTarget(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
-		this.skillMotion.scale(dist * 0.15D);
+		this.skillMotion = CalcHelper.getUnitVectorFromA2B(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
+		this.skillMotion = this.skillMotion.scale(-1.25D);
 		
 		//calc rotation
 		float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
@@ -359,7 +359,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.attackTime3 = 9;
+		this.attackTime3 = 7;
 		this.setStateEmotion(ID.S.Phase, 2, true);
 		this.sendSyncPacket(3);
 	}
@@ -372,14 +372,14 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		double dist = this.getDistanceSqToCenter(pos);
 		
 		//calc motion
-		this.skillMotion = new Vec3d(0D, Math.abs(vecpos.yCoord - target.posY) * -0.14D, 0D);
+		this.skillMotion = new Vec3d(0D, Math.abs(vecpos.yCoord - target.posY) * -0.25D, 0D);
 		
 		//apply teleport
 		EntityHelper.applyTeleport(this, dist, vecpos);
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.attackTime3 = 12;
+		this.attackTime3 = 9;
 		this.setStateEmotion(ID.S.Phase, 3, true);
 		this.sendSyncPacket(3);
 	}

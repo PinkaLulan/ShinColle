@@ -1,15 +1,23 @@
 package com.lulan.shincolle.entity.hime;
 
+import java.util.List;
+
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.mounts.EntityMountMiH;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -65,20 +73,41 @@ public class EntityMidwayHime extends BasicEntityShipCV
   		//server side
   		if (!this.world.isRemote)
   		{
-  			//heal effect
-        	if (this.ticksExisted % 128 == 0)
+  			//every 128 ticks
+        	if ((this.ticksExisted & 127) == 0)
         	{
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())
         		{
-        			this.heal(this.getMaxHealth() * 0.06F + 1F);//TODO
+        			this.heal(this.getMaxHealth() * 0.09F + 1F);
         		}
         		
-        		//2: 結婚後, 
-				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 50)
-				{
-					//TODO
-				}//end heal ability
+        		//married effect
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0)
+  				{
+  					//apply buff to nearby ships
+  					List<BasicEntityShip> shiplist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(16D, 16D, 16D));
+  					if (shiplist != null && shiplist.size() > 0)
+  					{
+  						for (BasicEntityShip s : shiplist)
+  						{
+  							if (TeamHelper.checkSameOwner(this, s))
+  							{
+  								//potion effect: id, time, level
+  								s.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 50, false, false));
+  							}
+  						}
+  					}
+  					
+  					//apply buff to owner
+  					EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+  	  				{
+  	  					//potion effect: id, time, level
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 50, false, false));
+					}
+  				}//end married buff
         	}
   		}//end server side
   			
@@ -107,7 +136,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
     @Override
   	public boolean attackEntityWithHeavyAmmo(BlockPos target)
   	{
-    	return false;	//TODO
+    	return super.attackEntityWithHeavyAmmo(target);	//TODO
   	}
 
 	/**
@@ -151,8 +180,8 @@ public class EntityMidwayHime extends BasicEntityShipCV
 //	    float tarZ = (float) target.posZ;
 //	    
 //	    //if miss
-//        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
-//        {
+//		if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
+//	    {
 //        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
 //        	tarY = tarY + this.rand.nextFloat() * 5F;
 //        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;

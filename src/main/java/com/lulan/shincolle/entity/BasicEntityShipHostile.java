@@ -29,9 +29,12 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.BuffHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -66,8 +69,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//attributes
 	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
     protected double ShipDepth;			//水深, 用於水中高度判定
-	/** buffs map : BuffMap<potion id, potion level>*/
 	protected HashMap<Integer, Integer> BuffMap;
+	protected HashMap<Integer, int[]> AttackEffectMap;
+	protected MissileData MissileData;
 	/**
 	 * ship attributes: hp, def, atk, ...
 	 */
@@ -113,6 +117,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         this.initScale = false;
         this.BuffMap = new HashMap<Integer, Integer>();
 		this.shipAttrs = new Attrs();
+		this.MissileData = new MissileData();
         
 		//model display
         this.soundHurtDelay = 0;
@@ -331,10 +336,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			this.setAIList();
 			this.setAITargetList();
 			
+			//set something at server side
+			this.initAttrsServerPost();
+			
 			//set drop
 			this.dropItem = new ItemStack(ModItems.ShipSpawnEgg, 1, getStateMinor(ID.M.ShipClass)+2);
 		}
 	}
+	
+	/** init misc attrs like AttackEffectMap */
+	protected void initAttrsServerPost() {};
 	
 	@Override
 	public void setScaleLevel(int par1)
@@ -524,7 +535,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			{
 				return false;
 			}
-			
+			LogHelper.debug("GGGGGG ");
 			//進行def計算
 			float reducedAtk = atk;
 			
@@ -552,7 +563,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	  		{
 				applyEmotesReaction(2);
 	  		}
-   
+	  		
             return super.attackEntityFrom(source, reducedAtk);
         }
 		
@@ -566,14 +577,14 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   		float atk = getAttackBaseDamage(1, target);
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
       
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
 	    applyParticleAtAttacker(1, target, distVec);
 	    
 	    //roll miss, cri, dhit, thit
-	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
   		
   		//damage limit on player target
 	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
@@ -587,6 +598,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	    //if attack success
 	    if (isTargetHurt)
 	    {
+	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        applyEmotesReaction(3);
@@ -602,24 +614,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		float atk = getAttackBaseDamage(2, target);
 		float kbValue = 0.15F;
 		
-		//飛彈是否採用直射
-		boolean isDirect = false;
-		float launchPos = (float) posY + height * 0.75F;
+		//missile type
+		float launchPos = (float) posY + height * 0.5F;
+		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 2);
+		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-		
-        //超過一定距離/水中 , 則採用拋物線,  在水中時發射高度較低
-        if (distVec.distance < 5D)
-        {
-        	isDirect = true;
-        }
-        
-        if (getShipDepth() > 0D)
-        {
-        	isDirect = true;
-        	launchPos = (float) posY + height * 0.15F;
-        }
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 		
 		//play attack effect
         applySoundAtAttacker(2, target);
@@ -629,8 +630,8 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	    float tarY = (float) target.posY;
 	    float tarZ = (float) target.posZ;
 	    
-	    //calc miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
+	    //calc miss rate
+        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
@@ -640,8 +641,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         }
         
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.1F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        MissileData md = this.getMissileData(2);
+        float[] data = new float[] {atk, kbValue, launchPos, tarX, tarY+target.height*0.1F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
         this.world.spawnEntity(missile);
         
         //play target effect
@@ -877,6 +879,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         		{
                 	//update potion buff
             		BuffHelper.convertPotionToBuffMap(this);
+            		this.calcShipAttributes(8);
         		}
 
             	//check every 32 ticks
@@ -1785,6 +1788,28 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	{
 		return false;
 	}
+	
+	@Override
+	public HashMap<Integer, int[]> getAttackEffectMap()
+	{
+		if (this.AttackEffectMap != null) return this.AttackEffectMap;
+		return new HashMap<Integer, int[]>();
+	}
+
+	@Override
+	public void setAttackEffectMap(HashMap<Integer, int[]> map)
+	{
+		this.AttackEffectMap = map;
+	}
+	
+	@Override
+	public MissileData getMissileData(int type)
+	{
+		return this.MissileData;
+	}
+	
+	@Override
+	public void setMissileData(int type, MissileData data) {}
   	
 	
 }

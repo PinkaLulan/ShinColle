@@ -7,9 +7,11 @@ import java.util.Set;
 
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
@@ -137,28 +139,6 @@ public class CalcHelper
     	float s6 = (float)Math.exp(s4 / s5);
     	
     	return s2 * s6;
-    }
-    
-    /**
-     * 計算到達目標的單位向量
-     * FIX: 加入最小值限制以免DBZ error
-     */
-    public static Vec3d calcVecToTarget(Vec3d target, Vec3d host)
-    {
-		float[] mov = new float[4];
-		
-		mov[0] = (float) (target.xCoord - host.xCoord);
-		mov[1] = (float) (target.yCoord - host.yCoord);
-		mov[2] = (float) (target.zCoord - host.zCoord);
-		
-		mov[3] = MathHelper.sqrt(mov[0]*mov[0] + mov[1]*mov[1] + mov[2]*mov[2]);
-		if (mov[3] < 0.001F) mov[3] = 0.001F;
-		
-		mov[0] = mov[0] / mov[3];
-		mov[1] = mov[1] / mov[3];
-		mov[2] = mov[2] / mov[3];
-		
-		return new Vec3d(mov[0], mov[1], mov[2]);
     }
     
     /** calc normal distribution by table
@@ -415,7 +395,7 @@ public class CalcHelper
 			
 			if(result < 0) result += 360;
 		}
-
+		
 		return result;
 	}
 	
@@ -581,6 +561,95 @@ public class CalcHelper
 		
 		return intSetToArray(sa);
 	}
+	
+    /**
+     * get distance vector from host A to target B (B-A)
+     * NOTE: using BlockPos is less precise than entity position
+     * 
+     * parms: host A, target B
+     * return: "normalized" distance vector [x, y, z, distance]
+     */
+    public static Dist4d getDistanceFromA2B(BlockPos host, BlockPos target)
+    {
+    	if (host != null && target != null)
+    	{
+    		return getDistanceFromA2B(new Vec3d(host.getX(), host.getY(), host.getZ()),
+    								  new Vec3d(target.getX(), target.getY(), target.getZ()));
+    	}
+    	
+    	return Dist4d.ZERO;
+    }
+    
+    /**
+     * get distance vector from host A to target B (B-A)
+     * parms: host A, target B
+     * return: "normalized" distance vector [x, y, z, distance]
+     */
+    public static Dist4d getDistanceFromA2B(Entity host, Entity target)
+    {
+    	if (host != null && target != null)
+    	{
+    		return getDistanceFromA2B(host.getPositionVector(), target.getPositionVector());
+    	}
+    	
+    	return Dist4d.ZERO;
+    }
+	
+    /**
+     * get distance vector from host A to target B (B-A)
+     * parms: host A, target B
+     * return: "normalized" distance vector [x, y, z, distance]
+     */
+    public static Dist4d getDistanceFromA2B(Vec3d host, Vec3d target)
+    {
+    	if (host != null && target != null)
+    	{
+    		double x = target.xCoord - host.xCoord;
+    		double y = target.yCoord - host.yCoord;
+    		double z = target.zCoord - host.zCoord;
+    		double dist = MathHelper.sqrt(x * x + y * y + z * z);
+    		
+    		//避免sqrt過小時, 算出的xyz過大
+    		if (dist > 1.0E-4D)
+            {
+                x = x / dist;
+                y = y / dist;
+                z = z / dist;
+                
+                return new Dist4d(x, y, z, dist);
+            }
+    	}
+    	
+    	return Dist4d.ZERO;
+    }
+    
+    /**
+     * get distance vector from host A to target B (B-A)
+     * parms: host A, target B
+     * return: "normalized" distance vector [x, y, z, distance]
+     */
+    public static Vec3d getUnitVectorFromA2B(Vec3d from, Vec3d to)
+    {
+    	if (from != null && to != null)
+    	{
+    		double x = to.xCoord - from.xCoord;
+    		double y = to.yCoord - from.yCoord;
+    		double z = to.zCoord - from.zCoord;
+    		double dist = MathHelper.sqrt(x * x + y * y + z * z);
+    		
+    		//避免sqrt過小時, 算出的xyz過大
+    		if (dist > 1.0E-4D)
+            {
+                x = x / dist;
+                y = y / dist;
+                z = z / dist;
+                
+                return new Vec3d(x, y, z);
+            }
+    	}
+    	
+    	return Vec3d.ZERO;
+    }
 	
     
 }

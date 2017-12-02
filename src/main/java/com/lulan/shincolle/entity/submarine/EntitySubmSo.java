@@ -68,28 +68,25 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   		
   		if (!this.world.isRemote)
   		{
-  			//add aura to master every 128 ticks
+  			//every 128 ticks
   			if (this.ticksExisted % 128 == 0)
   			{
-  				if (getStateFlag(ID.F.UseRingEffect))
+  				if (getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
   				{
-  					//apply ability to player
-  					EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  				if (getStateFlag(ID.F.IsMarried) && getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
-  	  				{
-  	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 100 + getLevel() * 2));
-  	  				}
+  					//owner invisible
+  					if (getStateFlag(ID.F.IsMarried))
+  					{
+  						EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  	  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+  	  	  				{
+  	  	  					//potion effect: id, time, level
+  	  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 40+getLevel(), 0, false, false));
+  	  	  				}
+  					}
+  					
+  					//self invisible
+  					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 40+getLevel(), 0, false, false));
   				}
-  				
-  				if (this.ticksExisted % 256 == 0)
-  				{
-  	  				if (getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
-  	  				{
-  	  					//apply ability to ship
-  	  					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 46 + getLevel()));
-  	  				}
-  	  			}//end 256 ticks
   			}//end 128 ticks
   		}    
   	}
@@ -122,6 +119,12 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 	
 	@Override
 	public void setInvisibleLevel(float level) {}
+	
+	@Override
+	public double getShipFloatingDepth()
+	{
+		return 1D;
+	}
   	
 
 }

@@ -8,21 +8,17 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.mounts.EntityMountHbH;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -149,76 +145,23 @@ public class EntityHarbourHime extends BasicEntityShipCV
   		}
   	}
 	
-	//attack a position with missile
-    @Override
-  	public boolean attackEntityWithHeavyAmmo(BlockPos target)
-  	{
-    	return false;	//TODO
-  	}
-
-	/**RAILGUN
-  	 * hight speed, 75% damage, direct shot only
-  	 */
+	//apply additional missile value
 	@Override
-  	public boolean attackEntityWithHeavyAmmo(Entity target)
+	public void calcShipAttributesAddEquip()
 	{
-  		//get attack value
-  		float atk = this.getAttackBaseDamage(2, target);
-  		float launchPos = (float)posY + 0.4F;
+		super.calcShipAttributesAddEquip();
 		
-        //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-  		
-  		if (this.getRidingEntity() instanceof BasicEntityMount)
-  		{
-  			launchPos = (float)posY - 1.2F;
-  		}
-  		
-  		//experience++
-  		addShipExp(ConfigHandler.expGain[2]);
-  		
-  		//grudge--
-  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-  		
-  		//morale--
-  		decrMorale(2);
-  		setCombatTick(this.ticksExisted);
-  	
-  		//play attack effect
-        applySoundAtAttacker(2, target);
-	    applyParticleAtAttacker(2, target, distVec);
-          
-  		//heavy ammo--
-  		if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-  		
-	    float tarX = (float) target.posX;
-	    float tarY = (float) target.posY;
-	    float tarZ = (float) target.posZ;
-	    
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
-        {
-        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-        	tarY = tarY + this.rand.nextFloat() * 5F;
-        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-        	
-        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-        }
-  		
-  		//spawn missile
-  		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-          		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, 0.15F, true, 0.3F);
-  		this.world.spawnEntity(missile);
-  		
-  		//play target effect
-        applySoundAtTarget(2, target);
-        applyParticleAtTarget(2, target, distVec);
-      	applyEmotesReaction(3);
-      	
-      	if (ConfigHandler.canFlare) flareTarget(target);
-      	
-  		return true;
-  	}
+		MissileData md = this.getMissileData(2);
+		
+		if (md.type == 0)
+		{
+			md.type = 2;
+			md.movetype = 0;
+			md.vel0 = 0.5F;
+			md.accY1 = 0.3F;
+			md.accY2 = 0.3F;
+		}
+	}
 
   	//true if use mounts
   	@Override

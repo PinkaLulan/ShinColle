@@ -4,6 +4,7 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -100,6 +101,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase
 	    	{
 	    		this.delayLight = this.aimTime;
 	    	}
+	    	
 	    	if (this.delayHeavy <= this.aimTime * 2)
 	    	{
 	    		this.delayHeavy = this.aimTime * 2;
@@ -188,7 +190,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase
 	        		this.host.getShipNavigate().tryMoveToEntityLiving(this.target, 1D);
 	        	}
             }
-	
+	        
 	        //設定攻擊時, 頭部觀看的角度
 	        this.host2.getLookHelper().setLookPositionWithEntity(this.target, 30F, 30F);
 
@@ -211,7 +213,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase
 	        }
 	        
 	        //若超過太久都打不到目標(或是追不到), 則重置目標
-	        if (this.delayHeavy < -40 || this.delayLight < -40)
+	        if (this.delayHeavy < -40 && this.delayLight < -40)
 	        {
 	        	this.delayLight = 20;
 	        	this.delayHeavy = 20;
@@ -227,7 +229,6 @@ public class EntityAIShipRangeAttack extends EntityAIBase
     	this.maxDelayLight = CombatHelper.getAttackDelay(this.host.getAttrs().getAttackSpeed(), 1);
     	this.maxDelayHeavy = CombatHelper.getAttackDelay(this.host.getAttrs().getAttackSpeed(), 2);
     	this.aimTime = (int) (20F * (150 - this.host.getLevel()) / 150F) + 10;
-    	
     	this.range = this.host.getAttrs().getAttackRange();
         this.rangeSq = this.range * this.range;
     }

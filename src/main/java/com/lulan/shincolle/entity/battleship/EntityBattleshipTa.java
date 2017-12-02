@@ -1,5 +1,7 @@
 package com.lulan.shincolle.entity.battleship;
 
+import java.util.List;
+
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipSummonAttack;
@@ -10,8 +12,11 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -38,6 +43,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
 		
 		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		
@@ -65,6 +71,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   	{
   		super.onLivingUpdate();
   		
+  		//server side
   		if (!world.isRemote)
   		{
   			//every 128 ticks
@@ -72,8 +79,27 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   			{
   				//add num of rensouhou
   				if (this.numRensouhou < 6) numRensouhou++;
-  			}
-  		}    
+  				
+  				//married effect: apply str buff to nearby ships
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0)
+  				{
+  					List<BasicEntityShip> shiplist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(16D, 16D, 16D));
+  	  	  			
+  					if (shiplist != null && shiplist.size() > 0)
+  					{
+  						for (BasicEntityShip s : shiplist)
+  						{
+  							if (TeamHelper.checkSameOwner(this, s))
+  							{
+  								//potion effect: id, time, level
+  								s.addPotionEffect(new PotionEffect(MobEffects.SPEED , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 80, false, false));
+  							}
+  						}
+  					}
+  				}//end married buff
+  			}//end every 128 ticks
+  		}//end server side
   	}
 
 	//Ta級額外增加屬性

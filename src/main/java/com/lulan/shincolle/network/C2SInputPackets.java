@@ -217,20 +217,27 @@ public class C2SInputPackets implements IMessage
 					{
 						int skill = 0;
 						
+						//check attack type
 						switch (msg.value3[0])
 						{
+						case 0:
+							if (!ship.getStateFlag(ID.F.AtkType_Light)) return;
+							skill = ID.T.MountSkillCD1;
+						break;
 						case 1:
+							if (!ship.getStateFlag(ID.F.AtkType_Heavy)) return;
 							skill = ID.T.MountSkillCD2;
 						break;
 						case 2:
+							if (!ship.getStateFlag(ID.F.AtkType_AirLight)) return;
 							skill = ID.T.MountSkillCD3;
 						break;
 						case 3:
+							if (!ship.getStateFlag(ID.F.AtkType_AirHeavy)) return;
 							skill = ID.T.MountSkillCD4;
 						break;
 						default:
-							skill = ID.T.MountSkillCD1;
-						break;
+							return;
 						}
 						
 						//check skill cd
@@ -239,12 +246,13 @@ public class C2SInputPackets implements IMessage
 						//check target exist
 						Entity target = null;
 						BlockPos targetPos = null;
+						float rangeSq = ship.getAttrs().getAttackRange() * ship.getAttrs().getAttackRange();
 						
 						if (msg.value3[2] < 0)
 						{
 							target = EntityHelper.getEntityByID(msg.value3[1], ship.world.provider.getDimension(), false);
 							
-							if (target != null && ship.getDistanceSqToEntity(target) > ship.getAttrs().getAttackRange())
+							if (target != null && ship.getDistanceSqToEntity(target) > rangeSq)
 							{
 								target = null;
 							}
@@ -253,11 +261,14 @@ public class C2SInputPackets implements IMessage
 						{
 							targetPos = new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]);
 							
-							if (ship.getDistanceSqToCenter(targetPos) > ship.getAttrs().getAttackRange())
+							if (ship.getDistanceSqToCenter(targetPos) > rangeSq)
 							{
 								targetPos = null;
 							}
 						}
+						
+						//check target friendly
+						if (TeamHelper.checkSameOwner(ship, target)) return;
 						
 						//check ammo and attack target
 						switch (msg.value3[0])
@@ -266,7 +277,7 @@ public class C2SInputPackets implements IMessage
 							if (target != null)
 							{
 								ship.attackEntityWithAmmo(target);
-								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 1));
+								ship.setStateTimer(ID.T.MountSkillCD1, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 1));
 								ship.sendSyncPacketTimer(1);
 							}
 						break;
@@ -276,7 +287,7 @@ public class C2SInputPackets implements IMessage
 							
 							if (target != null || targetPos != null)
 							{
-								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 2));
+								ship.setStateTimer(ID.T.MountSkillCD2, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 2));
 								ship.sendSyncPacketTimer(1);
 							}
 						break;
@@ -284,7 +295,8 @@ public class C2SInputPackets implements IMessage
 							if (ship instanceof BasicEntityShipCV && target != null)
 							{
 								((BasicEntityShipCV) ship).attackEntityWithAircraft(target);
-								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3));
+								ship.setStateTimer(ID.T.MountSkillCD3, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3));
+								ship.setStateTimer(ID.T.MountSkillCD4, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3));
 								ship.sendSyncPacketTimer(1);
 							}
 						break;
@@ -292,7 +304,8 @@ public class C2SInputPackets implements IMessage
 							if (ship instanceof BasicEntityShipCV && target != null)
 							{
 								((BasicEntityShipCV) ship).attackEntityWithHeavyAircraft(target);
-								ship.setStateTimer(skill, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4));
+								ship.setStateTimer(ID.T.MountSkillCD3, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4));
+								ship.setStateTimer(ID.T.MountSkillCD4, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4));
 								ship.sendSyncPacketTimer(1);
 							}
 						break;

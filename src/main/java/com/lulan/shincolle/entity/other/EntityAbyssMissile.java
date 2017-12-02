@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.other;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.lulan.shincolle.client.render.IShipCustomTexture;
@@ -7,6 +8,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipFlyable;
 import com.lulan.shincolle.entity.IShipOwner;
+import com.lulan.shincolle.entity.IShipProjectile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -14,6 +16,10 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.utility.BuffHelper;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -35,50 +41,34 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-/**ENTITY ABYSS MISSILE
- * @parm world, host entity, tarX, tarY, tarZ, damage, knockback value
- * 
- * Parabola Orbit(for distance 7~65)
- * 形狀設定:
- * 在經過距離中點之前, 加上額外motionY向上以及accY向下
- * 到中點時, Vy = 0
- * 
- * speical type:
- * type 1:  high speed torpedo
- *   customAcc: 0.05~0.09
- * type 2:  railgun
- *   customAcc: >0.09
- * type 3:  cluster main
- *   customAcc: 0.02
- * type 4:  cluster sub
- *   customAcc: 0.02
- *   
- * 
+/**
+ * ENTITY ABYSS MISSILE
+ * XZ為等速運動, Y軸為等加速度移動的entity, 有數種移動方式
  */
-public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs, IShipFlyable, IShipCustomTexture
+public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs, IShipFlyable, IShipCustomTexture, IShipProjectile
 {
 	
-    private IShipAttackBase host;	//main host type
-    private EntityLiving host2;		//second host type: entity living
-    private int playerUID;			//owner UID, for owner check
-    private Attrs attrs;
+    protected IShipAttackBase host;	//main host type
+    protected EntityLiving host2;	//second host type: entity living
+    protected int playerUID;		//owner UID, for owner check
+    protected Attrs attrs;
+    protected int type;
+    public int moveType;
+    protected float[] data;
+    public int life;
+    public HashMap<Integer, int[]> EffectMap;
+    public boolean startMove;
+    public int startMoveDelay;
     
-    //missile motion
-    private boolean isDirect;		//false:parabola  true:direct
-  
-    //for parabola y position
-    private float accParaY;			//額外y軸加速度
-    private int midFlyTime;			//一半的飛行時間
-   
-    //for direct only
-    private static final float ACC = 0.01F;
-    private float acce;	//預設加速度
-    private float accX;				//三軸加速度
-    private float accY;
-    private float accZ;
-    
-    //missile attributes
-    public int type;				//missile type
+	//move speed
+    public double vel0;			//XZ初速(拋物線) or XYZ初速(直線)
+    public double accY1;		//Y加速度1(拋物線:上升中)
+    public double accY2;		//Y加速度2(拋物線:下降中)
+    public double t0;			//上升時間
+    public double t1;			//下降時間
+    public double velX;			//三軸速度
+    public double velY;
+    public double velZ;
     
     
     //基本constructor, size必須在此設定
@@ -86,129 +76,187 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     {
     	super(world);
     	this.setSize(1F, 1F);
+    	this.data = new float[11];
     }
-    
-    /** for cluster sub missile */
-    public EntityAbyssMissile(World world, IShipAttackBase host, float mX, float mY, float mZ, float pX, float pY, float pZ, float atk, float kbValue)
-    {
-        this(world);
-        
-        //設定host跟owner
-        this.host = host;
-        this.host2 = (EntityLiving) host;
-        this.setPlayerUID(host.getPlayerUID());
-        
-        //set basic attributes
-        this.attrs = new Attrs();
-        this.attrs.copyRaw2Buffed();
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_L, atk);
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_H, atk);
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AL, atk);
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AH, atk);
-        this.attrs.setAttrsBuffed(ID.Attrs.DODGE, 0.5F);
-        this.attrs.setAttrsBuffed(ID.Attrs.KB, kbValue);
-        this.posX = pX;
-        this.posY = pY;
-        this.posZ = pZ;
-        this.prevPosX = this.posX;
-    	this.prevPosY = this.posY;
-    	this.prevPosZ = this.posZ;
-        this.isDirect = false;
-        this.type = 4;
-        this.acce = ACC;
-        this.accParaY = this.acce * 0.5F;
-        
-        if (mY > 0) mY = 0F;
-        
-        //acc and motion
-        this.accX = mX * 0.1F;
-	    this.accY = -this.acce;
-	    this.accZ = mZ * 0.1F;
-	    this.motionX = mX;
-	    this.motionY = mY;
-	    this.motionZ = mZ;
-    }
-    
-    public EntityAbyssMissile(World world, IShipAttackBase host, float tarX, float tarY, float tarZ, float launchPos, float atk, float kbValue, boolean isDirect, float customAcc)
+
+    /**
+     * type:<br>
+     *   0: white smoke<br>
+     *   1: NO_USE<br>
+     *   2: railgun<br>
+     *   3: cluster missile main<br>
+     *   4: cluster missile sub<br>
+     *   5: black hole<br>
+     * <br>
+     * move type:<br>
+     *   0: direct without gravity<br>
+     *   1: parabola<br>
+     *   2: sim-torpedo<br>
+     *   3: direct with gravity<br>
+     *   4: custom xyz
+     * <br>
+     * data:<br>
+     *   basic missile:<br>
+     *     0:atk, 1:knockback, 2:launchPosY, 3:tarX, 4:tarY, 5:tarZ, 6:life, 7:addHeight, 8:vel0, 9:accY1, 10:accY2 <br>
+     */
+    public EntityAbyssMissile(World world, IShipAttackBase host, int type, int moveType, float[] data)
     {
     	this(world);
         
         //設定host跟owner
         this.host = host;
         this.host2 = (EntityLiving) host;
+        this.EffectMap = host.getAttackEffectMap();  //發射時就決定debuff內容
         this.setPlayerUID(host.getPlayerUID());
+        this.type = type;
+        this.moveType = moveType;
+        this.data = data;
+        this.life = (int) data[6];
+        this.startMove = false;
+        this.startMoveDelay = 0;
         
         //set basic attributes
         this.attrs = new Attrs();
         this.attrs.copyRaw2Buffed();
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_L, atk);
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_H, atk);
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AL, atk);
-        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AH, atk);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_L, data[0]);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_H, data[0]);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AL, data[0]);
+        this.attrs.setAttrsBuffed(ID.Attrs.ATK_AH, data[0]);
         this.attrs.setAttrsBuffed(ID.Attrs.DODGE, 0.5F);
-        this.attrs.setAttrsBuffed(ID.Attrs.KB, kbValue);
+        this.attrs.setAttrsBuffed(ID.Attrs.KB, data[1]);
         this.posX = this.host2.posX;
+        this.posY = data[2];
         this.posZ = this.host2.posZ;
-        this.posY = launchPos;
         this.prevPosX = this.posX;
     	this.prevPosY = this.posY;
     	this.prevPosZ = this.posZ;
-             
-        //計算距離, 取得方向vector, 並且初始化速度, 使飛彈方向朝向目標
-        float distX = (float) (tarX - this.posX);
-        float distY = (float) (tarY - this.posY);
-        float distZ = (float) (tarZ - this.posZ);
-        
-        if (MathHelper.abs(distX) < 0.001F) distX = 0F;
-        if (MathHelper.abs(distY) < 0.001F) distY = 0F;
-        if (MathHelper.abs(distZ) < 0.001F) distZ = 0F;
-        
-        //設定直射或者拋物線
-        this.isDirect = isDirect;
-        this.type = 0;
-        
-        //設定飛彈速度
-        if (customAcc > 0F)
+    	this.setPosition(this.posX, this.posY, this.posZ);
+    	
+		//預設初速
+    	this.vel0 = data[8];
+    	this.accY1 = data[9];
+    	this.accY2 = data[10];
+    	this.t0 = 0D;
+    	this.t1 = 0D;
+    	
+        //get target vector
+    	Dist4d dist = CalcHelper.getDistanceFromA2B(this.getPositionVector(), new Vec3d(data[3], data[4], data[5]));
+
+    	//若目標太近, 直接直射
+    	if (dist.d < 4D)
+    	{
+    		this.moveType = 0;
+    	}
+    	
+		//missile move type
+        switch (this.moveType)
         {
-        	this.acce = customAcc;
-        	
-        	if (customAcc > 0.09F)
+        case 0:  //direct without gravity
+        	this.velX = dist.x * this.vel0;
+        	this.velY = dist.y * this.vel0;
+        	this.velZ = dist.z * this.vel0;
+        	this.accY1 = 0D;
+        	this.accY2 = 0D;
+    	break;
+        case 1:   //parabola: 固定往上addHeight高度, 以此計算velY(Y初速), accY1(前半段加速度), accY2(後半段加速度)
+        {
+        	//若無設定addHeight, 則改為直射
+        	if (data[7] <= 0F)
         	{
-        		this.type = 2;
+        		this.moveType = 0;
+        		this.velX = dist.x * this.vel0;
+            	this.velY = dist.y * this.vel0;
+            	this.velZ = dist.z * this.vel0;
+            	this.accY1 = 0D;
+            	this.accY2 = 0D;
+            	break;
         	}
-        	else if (customAcc > 0.05F)
-        	{	//ro500, u511
-        		this.type = 1;
+        	
+        	double dx = data[3] - this.posX;
+        	double dz = data[5] - this.posZ;
+        	double dxz = MathHelper.sqrt(dx * dx + dz * dz);
+        	
+        	//若水平距離太近, 改為直射
+        	if (dxz <= 4D)
+        	{
+        		this.velX = dist.x * this.vel0;
+            	this.velY = dist.y * this.vel0;
+            	this.velZ = dist.z * this.vel0;
+            	this.accY1 = 0D;
+            	this.accY2 = 0D;
+            	break;
+        	}
+        	else
+        	{
+            	//以vel0為xz軸初速, 計算花費時間t跟xz軸初速
+        		dx /= dxz;
+        		dz /= dxz;
+        		double t = dxz / this.vel0;
+        		
+        		//額外高度, 定為目標距離的一定比例
+        		double addHeight = dist.d * data[7];
+        		double dy = Math.abs(this.posY - data[4]);
+        		double hy = 0D;
+        		this.velX = dx * this.vel0;
+            	this.velZ = dz * this.vel0;
+        		
+        		//若目標比攻擊者位置高
+        		if (this.posY - data[4] < 1D)
+        		{
+        			hy = MathHelper.sqrt(addHeight / (addHeight + dy));
+        			this.t0 = MathHelper.floor(t / (1 + hy));
+        			this.t1 = MathHelper.floor(t * hy / (1 + hy));
+            		this.velY = 2D * (addHeight + dy) / t0;
+            		this.accY1 = -this.velY / t0;
+                	this.accY2 = -2D * addHeight / (t1 * t1);
+        		}
+        		//若目標比攻擊者位置低
+        		else
+        		{
+        			hy = MathHelper.sqrt(addHeight / (addHeight + dy));
+        			this.t0 = MathHelper.floor(t * hy / (1 + hy));
+            		this.t1 = MathHelper.floor(t / (1 + hy));
+            		this.accY1 = -2D * addHeight / (t0 * t0);
+            		this.velY = -this.accY1 * t0;
+                	this.accY2 = -2D * (addHeight + dy) / (t1 * t1);
+        		}
+        		
+        		//若高低差太多導致過高的加速, 改為直射
+        		double limit = 0.15D;
+        		if (Math.abs(this.accY1) > limit || Math.abs(this.accY2) > limit)
+        		{
+        			this.moveType = 0;
+        			this.velX = dist.x * this.vel0;
+                	this.velY = dist.y * this.vel0;
+                	this.velZ = dist.z * this.vel0;
+                	this.accY1 = 0D;
+                	this.accY2 = 0D;
+                	break;
+        		}
         	}
         }
-        else
-        {
-        	this.acce = ACC;
+    	break;
+        case 2:   //torpedo
+        	this.velX = dist.x * 0.6D;
+        	this.velY = 0.1D;
+        	this.velZ = dist.z * 0.6D;
+        	this.accY1 = -0.035D;
+    	break;
+        case 3:   //direct with gravity
+        	this.velX = dist.x * this.vel0;
+        	this.velY = dist.y * this.vel0;
+        	this.velZ = dist.z * this.vel0;
+        	this.accY1 = -0.035D;
+        	this.accY2 = -0.035D;
+    	break;
+        case 4:   //custom xyz
+        	this.velX = data[3];
+        	this.velY = data[4];
+        	this.velZ = data[5];
+    	break;
+        default:
+    	break;
         }
-        
-        //check special type
-        if (customAcc == -2F)
-        {
-        	this.type = 3;	//cluster main
-        	LogHelper.debug("DEBUG : const type 3 missile ");
-        }
-        
-        //直射彈道, no gravity
-    	float dist = MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-  	    this.accX = distX / dist * this.acce;
-	    this.accY = distY / dist * this.acce;
-	    this.accZ = distZ / dist * this.acce;
-	    this.motionX = this.accX;
-	    this.motionY = this.accY;
-	    this.motionZ = this.accZ;
- 
-	    //拋物線軌道計算, y軸初速加上 (一半飛行時間 * 額外y軸加速度)
-	    if (!this.isDirect)
-	    {
-	    	this.midFlyTime = (int) (0.5F * MathHelper.sqrt(2F * dist / this.acce));
-	    	this.accParaY = this.acce;
-	    	this.motionY = this.motionY + (double)this.midFlyTime * this.accParaY;
-	    }
     }
 
     @Override
@@ -234,53 +282,20 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     @Override
 	public void onUpdate()
     {
-    	/**********both side***********/
-    	//將位置更新 (包含server, client間同步位置, 才能使bounding box運作正常)
-        this.setPosition(this.posX, this.posY, this.posZ);
-
-        //計算發射體的高度
-    	if (!this.isDirect)
-    	{  //直射軌道計算  	
-			this.motionY = this.motionY + this.accY - this.accParaY;                   
-    	}
-    	else
-    	{
-    		this.motionY += this.accY;
-    	}
-    	
-    	//cluster sub missile acc
-    	if (this.type == 4)
-    	{
-    		this.motionX *= 0.8F;
-    		this.motionZ *= 0.8F;
-    	}
-    	
-    	//計算next tick的速度
-        this.motionX += this.accX;
-        this.motionZ += this.accZ;
+        super.onUpdate();
         
-    	//設定發射體的下一個位置
+        /********* BOTH SIDE *******/
+		//update position
+    	this.motionX = this.velX;
+    	this.motionY = this.velY;
+    	this.motionZ = this.velZ;
 		this.posX += this.motionX;
 		this.posY += this.motionY;
         this.posZ += this.motionZ;
-        
-    	//計算模型要轉的角度 (RAD, not DEG)
-        float f1 = MathHelper.sqrt(this.motionX*this.motionX + this.motionZ*this.motionZ);
-        this.rotationPitch = (float)(Math.atan2(this.motionY, f1));
-        this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ));    
-        
-        //依照x,z軸正負向修正角度(轉180)
-        if (this.motionX > 0)
-        {
-        	this.rotationYaw -= Math.PI;
-        }
-        else
-        {
-        	this.rotationYaw += Math.PI;
-        }
-        
-        //更新位置等等基本資訊, 同時更新prePosXYZ
-        super.onUpdate();
+        this.setPosition(this.posX, this.posY, this.posZ);
+		
+        //calc new velocity
+        this.handleMissileMovement();
         
         /**********server side***********/
     	if (!this.world.isRemote)
@@ -293,49 +308,54 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     		}
     		
     		//發射超過8 sec, 設定為死亡(消失), 注意server restart後此值會歸零
-    		if (this.ticksExisted > 160)
+    		if (this.ticksExisted > this.life)
     		{
-    			this.setDead();	//直接抹消, 不觸發爆炸
+    			this.onImpact(null);
     			return;
     		}
-    		//sync missile type at start
+    		//sync missile at start
     		else if (this.ticksExisted == 1)
     		{
+    			float[] data = new float[] {0F, (float)this.type, (float)this.moveType, (float)this.velX, (float)this.velY, (float)this.velZ, (float)this.vel0, (float)this.accY1, (float)this.accY2};
     			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-    			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, this.type, S2CEntitySync.PID.SyncProjectile), point);
+    	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_CustomData, data), point);
     		}
     		
-    		//spawn cluster sub missile
-    		if (this.type == 3 && this.ticksExisted > 15)
+    		//apply missile type action
+    		switch (this.type)
     		{
-    			if (this.ticksExisted % 8 == 0)
-    			{
-    				EntityAbyssMissile subm = new EntityAbyssMissile(this.world, this.host, 
-    						(float)this.motionX, (float)this.motionY, (float)this.motionZ, 
-    						(float)this.posX, (float)this.posY - 0.75F, (float)this.posZ,
-    		        		this.attrs.getAttackDamage(), this.attrs.getAttrsBuffed(ID.Attrs.KB));
-    		        this.world.spawnEntity(subm);
-    			}
+    		case 3:
+    			//spawn cluster sub missile
+        		if (this.ticksExisted > 15)
+        		{
+        			if ((this.ticksExisted & 7) == 0)
+        			{
+        				float[] subdata = new float[] {this.data[0], this.data[1], (float)this.posY - 0.75F, (float)this.motionX, (float)this.motionY, (float)this.motionZ, 140, 0F, 0.5F, -0.02F, -0.02F};
+        				EntityAbyssMissile subm = new EntityAbyssMissile(this.world, this.host, 4, 4, subdata);
+        		        this.world.spawnEntity(subm);
+        			}
+        		}
+			break;
     		}
     		
-    		//爆炸判定1: 本體位置碰撞: missile本身位置是固體方塊
+    		//碰撞判定1: 本體位置碰撞: missile本身位置是固體方塊
     		IBlockState state = this.world.getBlockState(new BlockPos(this));
-    		if(state.getMaterial().isSolid())
+    		if (state.getMaterial().isSolid())
     		{
     			this.onImpact(null);
     		}
     		
-    		//爆炸判定2: 移動量投射法: missile每tick的飛行移動量中可碰到的東西, 用於移動量大於擴展AABB的missile
-    		Vec3d vec3 = new Vec3d(this.posX, this.posY, this.posZ);
-            Vec3d vec31 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            RayTraceResult raytrace = this.world.rayTraceBlocks(vec3, vec31);          
+    		//碰撞判定2: 移動量投射法: 以1 tick移動的範圍內判定會碰撞到的物體
+    		Vec3d posStart = new Vec3d(this.posX, this.posY, this.posZ);
+            Vec3d posEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+            RayTraceResult raytrace = this.world.rayTraceBlocks(posStart, posEnd);          
             
-            vec3 = new Vec3d(this.posX, this.posY, this.posZ);
-            vec31 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+            posStart = new Vec3d(this.posX, this.posY, this.posZ);
+            posEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
             
             if (raytrace != null)
             {
-                vec31 = new Vec3d(raytrace.hitVec.xCoord, raytrace.hitVec.yCoord, raytrace.hitVec.zCoord);
+            	posEnd = new Vec3d(raytrace.hitVec.xCoord, raytrace.hitVec.yCoord, raytrace.hitVec.zCoord);
                 
                 if (raytrace.typeOfHit == RayTraceResult.Type.ENTITY)
                 {
@@ -352,7 +372,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
                 }
             }
             
-            //爆炸判定3: 擴展AABB碰撞: missile擴展1格大小內是否有entity可觸發爆炸
+            //碰撞判定3: 擴展AABB碰撞: missile擴展1格大小內是否有entity可觸發爆炸
             List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1D, 1D));
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
@@ -372,36 +392,184 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     	/**********client side***********/
     	else
     	{
+    		//計算模型要轉的角度 (RAD, not DEG)
+    		if (this.moveType == 2 && !this.startMove)
+    		{
+        		this.rotationPitch = 0F;
+        		this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ));
+    		}
+    		else
+    		{
+        		float f1 = MathHelper.sqrt(this.motionX*this.motionX + this.motionZ*this.motionZ);
+        		this.rotationPitch = (float)(Math.atan2(this.motionY, f1));
+        		this.rotationYaw = (float)(Math.atan2(this.motionX, this.motionZ));
+    		}
+    		
+    		//依照x,z軸正負向修正角度(轉180)
+    		if (this.motionX > 0)
+    		{
+    			this.rotationYaw -= Math.PI;
+    		}
+    		else
+    		{
+    			this.rotationYaw += Math.PI;
+    		}
+    		
+    		//type 0: normal missile particle
     		if (this.type != 2)
     		{
-    			//spawn particle by speed type
-        		byte smokeType = 15;
-        		
-        		switch(this.type)
+        		//for high/low speed
+        		if (this.vel0 > 0.55D || this.vel0 < 0.45D)
         		{
-        		case 1:
-        			smokeType = 41;
-        			break;
-        		case 3:
-        		case 4:
-        			smokeType = 18;
-        			break;
-        		default:
-        			break;
+        			byte type = this.vel0 > 0.55D ? (byte)1 : (byte)2;
+        			
+        			if ((this.moveType == 2 && this.startMove) ||
+            			(this.moveType != 2 && this.ticksExisted > 2))
+            		{
+            			for (int j = 0; j < 4; ++j)
+                		{
+                        	ParticleHelper.spawnAttackParticleAtEntity(this, type, new double[] {this.vel0, j});
+                		}
+            		}
         		}
-        		
-        		for (int j = 0; j < 3; ++j)
+        		//for normal speed
+        		else
         		{
-                	ParticleHelper.spawnAttackParticleAt(this.posX-this.motionX*1.5D*j, this.posY+0.5D-this.motionY*1.5D*j, this.posZ-this.motionZ*1.5D*j, 
-                    		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
+        			//spawn particle by speed type
+            		byte smokeType = 15;
+            		
+        			switch(this.type)
+            		{
+            		case 3:  //cluster bomb main
+            		case 4:  //cluster bomb sub
+            			smokeType = 18;
+            		break;
+            		}
+            		
+            		if ((this.moveType == 2 && this.startMove) ||
+            			(this.moveType != 2 && this.ticksExisted > 2))
+            		{
+            			for (int j = 0; j < 4; ++j)
+                		{
+                        	ParticleHelper.spawnAttackParticleAt(this.posX+this.motionX*2D-this.motionX*1.5D*j, this.posY+this.motionY*2D+0.5D-this.motionY*1.5D*j, this.posZ+this.motionZ*2D-this.motionZ*1.5D*j, 
+                            		-this.motionX*0.1D, -this.motionY*0.1D, -this.motionZ*0.1D, smokeType);
+                		}
+            		}
         		}
     		}
+    		//type 2: railgun particle
     		else
     		{
     			//spawn beam head particle
             	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 10, 4D, (byte)9);
     		}
     	}//end client side
+    }
+    
+    //calc motionXYZ
+    protected void handleMissileMovement()
+    {
+    	//for cluster sub missile
+    	if (this.type == 4)
+    	{
+    		this.velX *= 0.85D;
+    		this.velY += this.accY1;
+    		this.velZ *= 0.85D;
+    	}
+    	//for other missile
+    	else
+    	{
+    		switch (this.moveType)
+    		{
+    		case 1:   //parabola
+    		{
+    			if (this.ticksExisted <= this.t0)
+    			{
+    				this.velY += this.accY1;
+    			}
+    			else
+    			{
+    				this.velY += this.accY2;
+    			}
+    		}
+			break;
+    		case 2:   //sim-torpedo
+    		{
+    			//server side: check torpedo is in liquid block then start to move
+    			if (!this.world.isRemote)
+    			{
+    				if (this.startMove)
+    				{
+    					//if start move, check start move delay
+        				if (this.startMoveDelay >= 0)
+        				{
+        					this.startMoveDelay--;
+        					
+        					//sync velXYZ to client
+        					if (this.startMoveDelay < 0)
+        					{
+        						Dist4d dist = CalcHelper.getDistanceFromA2B(this.getPositionVector(), new Vec3d(data[3], data[4], data[5]));
+            			    	
+            					this.velX = dist.x * this.vel0 * 0.25D;
+            		        	this.velY = dist.y * this.vel0 * 0.25D;
+            		        	this.velZ = dist.z * this.vel0 * 0.25D;
+            		        	
+            		        	if (this.velY > 0.005D) this.velY = 0.005D;
+            					
+            					float[] data = new float[] {2F, (float)this.type, (float)this.moveType, (float)this.velX, (float)this.velY, (float)this.velZ, 1F, (float)this.vel0, (float)this.accY1, (float)this.accY2};
+            	    			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
+            	    	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_CustomData, data), point);
+        					}
+        				}
+        				else
+        				{
+        					if ((this.velX*this.velX+this.velY*this.velY+this.velZ*this.velZ) < 2D)
+        					{
+        						this.velX *= this.accY2;
+                				this.velY *= this.accY2;
+                				this.velZ *= this.accY2;
+        					}
+        				}
+    				}
+    				else
+    				{
+    					this.velX *= 0.85D;
+        				this.velY += this.accY1;
+        				this.velZ *= 0.85D;
+        				
+    					//if in liquid, set start move delay = X ticks
+        				BlockPos pos = new BlockPos(this);
+        				IBlockState state = this.world.getBlockState(pos);
+        				if (BlockHelper.checkBlockIsLiquid(state))
+        				{
+        					this.startMove = true;
+        					this.startMoveDelay = 3;
+        				}
+    				}
+    			}//end server side
+    			//client side
+    			else
+    			{
+    				if (this.startMove)
+    				{
+    					if ((this.velX*this.velX+this.velY*this.velY+this.velZ*this.velZ) < 2D)
+    					{
+    						this.velX *= this.accY2;
+            				this.velY *= this.accY2;
+            				this.velZ *= this.accY2;
+    					}
+    				}
+    				else
+    				{
+    					this.velX *= 0.85D;
+        				this.velY += this.accY1;
+        				this.velZ *= 0.85D;
+    				}
+    			}//end clientside
+    		}
+			break;
+    		}//end switch move type
+    	}//end other missile
     }
 
 	//撞擊判定時呼叫此方法
@@ -421,7 +589,10 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     	if (!this.world.isRemote)
     	{
     		float missileAtk = this.attrs.getAttackDamage();
-
+    		
+    		//special missile action
+    		this.specialMissileAction(this.type);
+    		
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
             List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class,
             						this.getEntityBoundingBox().expand(3.5D, 3.5D, 3.5D));
@@ -458,7 +629,10 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
                 		}
                 		
                 		//attack
-                		ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk);
+                		if (ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk))
+                		{
+                			BuffHelper.applyBuffOnTarget(ent, this.EffectMap);
+                		}
                 	}//end can be collided with
           		}//end is attackable
             }//end hit target list for loop
@@ -470,6 +644,27 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     		//set dead
         	this.setDead();
     	}//end if server side
+    }
+    
+    //special missile action
+    protected void specialMissileAction(int type)
+    {
+    	switch (type)
+    	{
+    	case 5:   //black hole
+    	{
+    		if (this.host == null) return;
+    		
+    		EntityProjectileStatic beam = new EntityProjectileStatic(this.world);
+    		double[] data = new double[] {this.posX, this.posY, this.posZ,
+    				20D+host.getLevel()*0.125D,
+    				0.12D+host.getLevel()*0.00075D,
+    				4D+host.getLevel()*0.035D};
+            beam.initAttrs(this.host, 0, data);
+            this.world.spawnEntity(beam);
+    	}
+		break;
+    	}
     }
 
 	//儲存entity的nbt
@@ -566,11 +761,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     {
         return 15728880;
     }
-    
-    public void setMissileType(int par1)
-    {
-    	this.type = par1;
-    }
 
 	@Override
 	public int getPlayerUID()
@@ -606,6 +796,18 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
 	public void setAttrs(Attrs data)
 	{
 		this.attrs = data;
+	}
+
+	@Override
+	public int getProjectileType()
+	{
+		return this.type;
+	}
+
+	@Override
+	public void setProjectileType(int type)
+	{
+		this.type = type;
 	}
 	
 	

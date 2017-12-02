@@ -110,11 +110,11 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 			if (this.delayAircraft <= 0)
 			{
 				//SPD delay
-				delayAircraft = (int)(1000 / (this.getAttrs().getAttackSpeed()));	
-				if (delayAircraft > 1000) delayAircraft = 1000;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
+				delayAircraft = (int)(1200 / (this.getAttrs().getAttackSpeed()));	
+				if (delayAircraft > 1200) delayAircraft = 1200;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
 				
 				//base delay
-				delayAircraft += 200;
+				delayAircraft += 400;
 				
 				this.setNumAircraftLight(this.getNumAircraftLight()+1);
 				this.setNumAircraftHeavy(this.getNumAircraftHeavy()+1);
@@ -122,20 +122,26 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 		}
 	}
 	
-	//增加艦載機數量計算
 	@Override
-	public void calcShipAttributesAdd()
+	public void calcShipAttributesAddEquip()
 	{
-		super.calcShipAttributesAdd();
-		
-		//calc basic airplane
-		this.maxAircraftLight = 8 + StateMinor[ID.M.ShipLevel] / 5;
-		this.maxAircraftHeavy = 4 + StateMinor[ID.M.ShipLevel] / 10;
+		super.calcShipAttributesAddEquip();
 		
 		//calc equip airplane
 		int numair = getNumOfAircraftEquip();
 		this.maxAircraftLight += (numair * 4);
 		this.maxAircraftHeavy += (numair * 2);
+	}
+	
+	//增加艦載機數量計算
+	@Override
+	public void calcShipAttributesAddRaw()
+	{
+		super.calcShipAttributesAddRaw();
+		
+		//calc basic airplane
+		this.maxAircraftLight = 8 + StateMinor[ID.M.ShipLevel] / 5;
+		this.maxAircraftHeavy = 4 + StateMinor[ID.M.ShipLevel] / 10;
 	}
 	
 	//get number of aircraft equips

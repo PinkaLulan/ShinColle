@@ -24,11 +24,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *    11: 15-Inch Fortress Gun
  *    12: 5-inch Coastal Gun
  *    13: 8-inch Long Range Twin Cannon
+ *    14: 15-inch Quadruple Cannon
+ *    15: 12-inch Triple Cannon
  *    
- * todo
- *   12in triple
- *   15in quadruple
- *   Abyssal 15inch Late Model Twin Gun Mount
  */
 public class EquipCannon extends BasicEquip
 {
@@ -66,14 +64,17 @@ public class EquipCannon extends BasicEquip
 		//Tr
 		list.add(new ItemStack(item, 1, 11));
 		list.add(new ItemStack(item, 1, 9));
+		list.add(new ItemStack(item, 1, 15));
 		list.add(new ItemStack(item, 1, 10));
+		//Qu
+		list.add(new ItemStack(item, 1, 14));
 	}
 	
 	/** S=3, Tw=8, Tri=3 */
 	@Override
 	public int getTypes()
 	{
-		return 14;
+		return 16;
 	}
 	
 	@Override
@@ -103,6 +104,8 @@ public class EquipCannon extends BasicEquip
 		case 9:
 		case 10:
 		case 11:
+		case 14:
+		case 15:
 			return ID.EquipType.CANNON_TR;
 		default:
 			return 0;

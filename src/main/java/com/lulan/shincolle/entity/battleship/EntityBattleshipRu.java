@@ -9,19 +9,22 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
  * model state:
- *   0:weapon , 1:armor, 2:glove
+ *   0:weapon , 1:armor, 2:glove, 3:eye effect
  */
 public class EntityBattleshipRu extends BasicEntityShip
 {
@@ -37,7 +40,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRU);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
-		this.setStateMinor(ID.M.NumState, 3);
+		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
@@ -75,8 +78,9 @@ public class EntityBattleshipRu extends BasicEntityShip
 	{
 		super.calcShipAttributesAddRaw();
 		
-		this.getAttrs().setAttrsRaw(ID.Attrs.DHIT, this.getAttrs().getAttrsRaw(ID.Attrs.DHIT) + 0.15F);
-		this.getAttrs().setAttrsRaw(ID.Attrs.THIT, this.getAttrs().getAttrsRaw(ID.Attrs.THIT) + 0.15F);
+		this.getAttrs().setAttrsRaw(ID.Attrs.CRI, this.getAttrs().getAttrsRaw(ID.Attrs.CRI) + 0.05F);
+		this.getAttrs().setAttrsRaw(ID.Attrs.DHIT, this.getAttrs().getAttrsRaw(ID.Attrs.DHIT) + 0.05F);
+		this.getAttrs().setAttrsRaw(ID.Attrs.THIT, this.getAttrs().getAttrsRaw(ID.Attrs.THIT) + 0.05F);
 	}
 	
 	@Override
@@ -89,9 +93,8 @@ public class EntityBattleshipRu extends BasicEntityShip
 			//every 16 ticks
 			if ((this.ticksExisted & 15) == 0)
 			{
-				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-					(this.ticksExisted & 511) < 400 &&
-					!this.isSitting() && !this.isRiding())
+				if (EmotionHelper.checkModelState(3, this.getStateEmotion(ID.S.State)) &&
+					(this.ticksExisted & 511) < 400 && !this.isSitting() && !this.isRiding())
   	  			{
 					ParticleHelper.spawnAttackParticleAtEntity(this, 1.34D, 0.12D, 0.17D, (byte)17);
 				}
@@ -106,8 +109,18 @@ public class EntityBattleshipRu extends BasicEntityShip
 					{
 						ParticleHelper.spawnAttackParticleAtEntity(this, 0.5D, 0D, this.rand.nextInt(2) == 0 ? 0 : 2, (byte)36);
 					}
-				}
-			}
+					
+					//every 128 ticks
+		    		if ((this.ticksExisted & 127) == 0)
+		    		{
+			    		//apply potion effect in the night
+			        	if (this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))
+			        	{	
+		        			this.addPotionEffect(new PotionEffect(MobEffects.LUCK, 150, getStateMinor(ID.M.ShipLevel) / 140, false, false));
+		        		}
+		        	}//end every 128 ticks
+				}//end every 64 ticks
+			}//end every 16 ticks
 		}
 		//server side
 		else
@@ -131,12 +144,12 @@ public class EntityBattleshipRu extends BasicEntityShip
 				this.remainAttack--;
 				
 				//spawn missile
-		        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-		        		this.skillTarget.getX() + this.rand.nextFloat() * 8F - 4F,
-		        		this.skillTarget.getY() + this.rand.nextFloat() * 4F - 2F,
-		        		this.skillTarget.getZ() + this.rand.nextFloat() * 8F - 4F,
-		        		(float)this.posY + this.height, getAttackBaseDamage(2, null), 0.15F,
-		        		false, 0.03F);
+				MissileData md = this.getMissileData(2);
+				float[] data = new float[] {getAttackBaseDamage(2, null), 0.15F, (float)this.posY + this.height,
+						this.skillTarget.getX() + this.rand.nextFloat() * 8F - 4F,
+						this.skillTarget.getY() + this.rand.nextFloat() * 4F - 2F,
+						this.skillTarget.getZ() + this.rand.nextFloat() * 8F - 4F, 160, 0.35F, md.vel0, md.accY1, md.accY2};
+				EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, 1, data);
 		        this.world.spawnEntity(missile);
 		        
 		        //apply sound
@@ -204,15 +217,15 @@ public class EntityBattleshipRu extends BasicEntityShip
 		float launchPos = (float) posY + height * 0.75F;
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 		
 	    float tarX = (float) target.posX;
 	    float tarY = (float) target.posY;
 	    float tarZ = (float) target.posZ;
 	    
 	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, 1F) <= 0F)
-        {
+	    if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
+	    {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
         	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;

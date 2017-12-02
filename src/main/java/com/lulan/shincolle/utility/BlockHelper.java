@@ -3,7 +3,9 @@ package com.lulan.shincolle.utility;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipOwner;
+import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
@@ -16,7 +18,6 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -442,31 +443,58 @@ public class BlockHelper
 	/** ray trace for block, include liquid block
 	 */
 	@SideOnly(Side.CLIENT)
-	public static RayTraceResult getPlayerMouseOverBlock(double dist, float duringTicks)
+	public static RayTraceResult getPlayerMouseOverBlockOnWater(double dist, float duringTicks)
 	{
-	    EntityPlayer player = ClientProxy.getClientPlayer();
+		Entity viewer = ClientProxy.getMineraft().getRenderViewEntity();
 		
-		Vec3d vec3 = player.getPositionEyes(duringTicks);
-	    Vec3d vec31 = player.getLook(duringTicks);
-	    Vec3d vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
+	    //change viewer if on ship's mounts
+        if (viewer.getRidingEntity() instanceof BasicEntityMount && !EventHandler.isViewPlayer)
+        {
+        	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
+        	
+        	if (ship != null)
+        	{
+        		viewer = ship;
+        	}
+        }
 	    
 	    //參數: entity位置, entity視線最遠位置, 停止在液體方塊上, 忽略沒有AABB的方塊, 回傳距離內最遠的不可碰撞方塊
-	    return player.world.rayTraceBlocks(vec3, vec32, true, false, false);
+	    return getMouseOverBlock(viewer, dist, duringTicks, true, false, false);
 	}
 	
-	/** ray trace for block, no liquid block
-	 */
+	/** ray trace for block, no liquid block */
 	@SideOnly(Side.CLIENT)
 	public static RayTraceResult getPlayerMouseOverBlockThroughWater(double dist, float duringTicks)
 	{
-	    EntityPlayer player = ClientProxy.getClientPlayer();
+	    Entity viewer = ClientProxy.getMineraft().getRenderViewEntity();
 		
-		Vec3d vec3 = player.getPositionEyes(duringTicks);
-	    Vec3d vec31 = player.getLook(duringTicks);
+	    //change viewer if on ship's mounts
+        if (viewer.getRidingEntity() instanceof BasicEntityMount && !EventHandler.isViewPlayer)
+        {
+        	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
+        	
+        	if (ship != null)
+        	{
+        		viewer = ship;
+        	}
+        }
+	    
+	    //參數: entity位置, entity視線最遠位置, 停止在液體方塊上, 忽略沒有AABB的方塊, 回傳距離內最遠的不可碰撞方塊
+	    return getMouseOverBlock(viewer, dist, duringTicks, false, true, true);
+	}
+	
+	/** ray trace for block only */
+	@SideOnly(Side.CLIENT)
+	public static RayTraceResult getMouseOverBlock(Entity viewer, double dist, float duringTicks, boolean stopOnLiquid, boolean ignoreBlockWithoutBoundingBox, boolean returnLastUncollidableBlock)
+	{
+		if (viewer == null) return null;
+		
+		Vec3d vec3 = viewer.getPositionEyes(duringTicks);
+	    Vec3d vec31 = viewer.getLook(duringTicks);
 	    Vec3d vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
 	    
 	    //參數: entity位置, entity視線最遠位置, 停止在液體方塊上, 忽略沒有AABB的方塊, 回傳距離內最遠的不可碰撞方塊
-	    return player.world.rayTraceBlocks(vec3, vec32, false, true, true);
+	    return viewer.world.rayTraceBlocks(vec3, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
 	}
 	
 	/** place light block */

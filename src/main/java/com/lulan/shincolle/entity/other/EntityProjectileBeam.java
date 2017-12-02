@@ -7,6 +7,7 @@ import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipOwner;
+import com.lulan.shincolle.entity.IShipProjectile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -14,6 +15,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -36,7 +38,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  *
  *	實際最大射程約為 lifeLength * acc (格)
  */
-public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttrs, IShipCustomTexture
+public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttrs, IShipCustomTexture, IShipProjectile
 {
 	
 	//host data
@@ -139,11 +141,6 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     {
         return false;
     }
-    
-    public void setProjectileType(int par1)
-    {
-    	this.type = par1;
-    }
 
     @Override
 	public void onUpdate()
@@ -233,6 +230,8 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 	//撞擊判定時呼叫此方法
     protected void onImpact(Entity target)
     {
+    	if (this.host == null) return;
+    	
     	//play sound
     	this.playSound(ModSounds.SHIP_EXPLODE, ConfigHandler.volumeFire * 1.5F, 0.7F / (this.rand.nextFloat() * 0.4F + 0.8F));
     	
@@ -268,6 +267,7 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     		//if attack success
     	    if (target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk))
     	    {
+    	    	BuffHelper.applyBuffOnTarget(target, this.host.getAttackEffectMap());
     	        //send packet to client for display partical effect
                 CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
     	    }
@@ -288,6 +288,18 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
 
 	@Override
 	public void setAttrs(Attrs data) {}
+	
+	@Override
+	public int getProjectileType()
+	{
+		return this.type;
+	}
+
+	@Override
+	public void setProjectileType(int type)
+	{
+		this.type = type;
+	}
 	
 	
 }

@@ -42,6 +42,7 @@ import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.item.IShipCombatRation;
 import com.lulan.shincolle.item.IShipFoodItem;
 import com.lulan.shincolle.item.OwnerPaper;
+import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
@@ -57,6 +58,7 @@ import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.BuffHelper;
@@ -136,30 +138,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 * ship attributes: hp, def, atk, ...
 	 */
 	protected AttrsAdv shipAttrs;
-	/** minor states: 0:ShipLevel 1:Kills 2:ExpCurrent 3:ExpNext 4:NumAmmoLight 
-	 *  5:NumAmmoHeavy 6:NumGrudge 7:NumAirLight 8:NumAirHeavy 9:UseCombatRation
-	 *  10:followMin 11:followMax 12:FleeHP 13:TargetAIType 14:guardX 15:guardY 16:guardZ 17:guardDim
-	 *  18:guardID 19:shipType 20:shipClass 21:playerUID 22:shipUID 23:playerEID 24:guardType 
-	 *  25:damageType 26:formationType 27:formationPos 28:grudgeConsumption 29:ammoConsumption
-	 *  30:morale 31:Saturation 32:MaxSaturation 33:hitHeight 34:HitAngle 35:SensBody 36:InvSize
-	 *  37:ChunkLoaderLV 38:FlareLV 39:SearchlightLV 40:LastX 41:LastY 42:LastZ 43:CraneState
-	 *  44:WpStayTime 45:UseCombatRation
-	 */
+	/** minor states, index by {@link ID.M} */
 	protected int[] StateMinor;
-	/** timer array: 0:RevengeTime 1:CraneTime 2:ImmuneTime 3:CraneDelay 4:WpStayTime 5:Emotion3Time
-	 *               6:sound cd 7:FaceTick 8:HeadTilt 9:MoraleTime 10:EmoteDelay 11:LastCombatTime
-	 *               12:AttackTime 13:AttackTime2 14:AttackTime3
-	 */
+	/** timer array, index by {@link ID.T} */
 	protected int[] StateTimer;
-	/** EntityState: 0:State 1:Emotion 2:Emotion2 3:HP State 4:State2 5:AttackPhase 6:Emotion3
-	 *               7:Emotion4 */
+	/** EntityState, index by {@link ID.S} */
 	protected int[] StateEmotion;
-	/** EntityFlag: 0:canFloatUp 1:isMarried 2:noFuel 3:canMelee 4:canAmmoLight 5:canAmmoHeavy 
-	 *  6:canAirLight 7:canAirHeavy 8:headTilt(client only) 9:canRingEffect 10:canDrop 11:canFollow
-	 *  12:onSightChase 13:AtkType_Light 14:AtkType_Heavy 15:AtkType_AirLight 16:AtkType_AirHeavy 
-	 *  17:HaveRingEffect 18:PVPFirst 19:AntiAir 20:AntiSS 21:PassiveAI 22:TimeKeeper 23:PickItem
-	 *  24:canPickItem 25:ShowHeldItem 26:AutoPump
-	 */
+	/** EntityFlag, index by {@link ID.F} */
 	protected boolean[] StateFlag;
 	/** BodyHeightRange: */
 	protected byte[] BodyHeightStand;
@@ -174,8 +159,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public String ownerName;
 	/** unit names */
 	public ArrayList<String> unitNames;
-	/** buffs map : BuffMap<potion id, potion level>*/
+	/** attack attributes */
 	protected HashMap<Integer, Integer> BuffMap;
+	protected HashMap<Integer, int[]> AttackEffectMap;
+	protected MissileData[] MissileData;
 	
 	//for model render
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
@@ -229,6 +216,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.ModelPos = new float[] {0F, 0F, 0F, 50F};
 		this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
 		this.BuffMap = new HashMap<Integer, Integer>();
+		this.resetMissileData();
 		
 		//for AI
 		this.ShipDepth = 0D;				//water block above ship (within ship position)
@@ -764,12 +752,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return this.StateTimer[ID.T.AttackTime2];
 	}
 	
-	//last caress time
-	public int getMoraleTick()
-	{
-		return this.StateTimer[ID.T.MoraleTime];
-	}
-	
 	//emotes CD
 	public int getEmotesTick()
 	{
@@ -925,7 +907,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			}
 			else
 			{
-				return 0D;
+				return this.ShipDepth;
 			}
 		case 2:
 			return 0D;
@@ -1045,8 +1027,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				EquipCalc.updateAttrsEquip(this);
 				this.calcShipAttributesAddEquip();
 				this.setUpdateFlag(ID.FlagUpdate.AttrsEquip, true);
-				
-				float[] aaa = this.shipAttrs.getAttrsEquip();
 			}
 			//recalc morale buff
 			if ((flag & 4) == 4)
@@ -1066,7 +1046,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				BuffHelper.updateBuffFormation(this);
 				this.setUpdateFlag(ID.FlagUpdate.AttrsFormation, true);
 			}
-			
 	  		//apply all buff to raw attrs
 			BuffHelper.applyBuffOnAttrs(this);
 			this.calcShipAttributesAdd();
@@ -1106,14 +1085,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.KB));
 	}
 	
-	/** calc addition attributes
-	 *  calcShipAttributesAdd: attrs not add to this.shipAttrs, like #airplane
-	 *  calcShipAttributesAddRaw: attrs add to raw
-	 *  calcShipAttributesAddEquip: attrs add to equip
-	 */
+	/** calc addition attributes */
 	public void calcShipAttributesAdd() {}
 	public void calcShipAttributesAddRaw() {}
 	public void calcShipAttributesAddEquip() {}
+	
+	/** reset attack effect map */
+	public void calcShipAttributesAddEffect()
+	{
+		this.AttackEffectMap = new HashMap<Integer, int[]>();
+	}
 	
 	@Override
     public IAttributeInstance getEntityAttribute(IAttribute attribute)
@@ -1420,12 +1401,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateTimer[ID.T.AttackTime2] = par1;
 	}
 	
-	//last caress time
-	public void setMoraleTick(int par1)
-	{
-		this.StateTimer[ID.T.MoraleTime] = par1;
-	}
-	
 	//emotes CD
 	public void setEmotesTick(int par1)
 	{
@@ -1680,6 +1655,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 *   FAIL:本方法的動作失敗, 並且禁止其他interact
 	 *   SUCCESS:本方法的動作成功, 並且禁止其他interact
 	 */
+	@Override
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
     	//禁用副手
@@ -1813,6 +1789,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     				this.setHitHeight(CalcHelper.getEntityHitHeightByClientPlayer(this));
     				this.setHitAngle(CalcHelper.getEntityHitSideByClientPlayer(this));
     				this.checkCaressed();
+    				
+    				//send caress position to server (this method is called every 4 ticks)
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.HitHeight, this.getEntityId(), this.getHitHeight(), this.getHitAngle()));
     			}
     		}
     	}//end client side
@@ -1867,11 +1846,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//is owner
 		if (TeamHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel))
 		{
-			int t = this.ticksExisted - this.getMoraleTick();
-			
-			if (t > 3 && this.getMorale() < ID.Morale.Excited * 1.3F)
-			{  //if caress > 3 ticks
-				this.setMoraleTick(this.ticksExisted);
+			if (this.getMorale() < ID.Morale.L_Excited * 1.3F)
+			{
 				this.addMorale(ConfigHandler.baseCaressMorale);
 			}
 
@@ -2245,9 +2221,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//if ice cream, clean debuffs
 				if (meta == 4 || meta == 5)
 				{
-					LogHelper.debug("AAAAAA "+this.getBuffMap().size());
 					BuffHelper.removeDebuffs(this);
-					LogHelper.debug("BBBBBB "+this.getBuffMap().size());
 				}
 				
 				break;
@@ -2257,7 +2231,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		else if (i instanceof ItemPotion)
 		{
 			type = 3;
-			mfood = -10;
+			mfood = -100;	//ship hate potion
 			addgrudge = Values.N.BaseGrudge;
 		}//end potion
 		
@@ -2620,6 +2594,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 		
                 		//update potion buff
                 		BuffHelper.convertPotionToBuffMap(this);
+                		this.calcShipAttributes(8, true);
             		}
 
             		//check every 32 ticks
@@ -2786,7 +2761,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         
         /** both side */
     	//every 32 ticks
-    	if ((this.ticksExisted & 31) == 0)
+    	if ((this.ticksExisted & 15) == 0)
     	{
     		//TODO debug
 //        	float[] raw = this.shipAttrs.getAttrsRaw();
@@ -2854,7 +2829,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		setCombatTick(this.ticksExisted);
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 				
 	    //entity attack effect
 	    applySoundAtAttacker(0, target);
@@ -2866,6 +2841,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    //target attack effect
 	    if (isTargetHurt)
 	    {
+	    	BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
 	    	applySoundAtTarget(0, target);
 	        applyParticleAtTarget(0, target, distVec);
 			applyEmotesReaction(3);
@@ -2902,14 +2878,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		float atk = getAttackBaseDamage(1, target);
   		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
         
         //play cannon fire sound at attacker
         applySoundAtAttacker(1, target);
 	    applyParticleAtAttacker(1, target, distVec);
 	    
 	    //roll miss, cri, dhit, thit
-	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.distance, atk);
+	    atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
   		
   		//damage limit on player target
 	    atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
@@ -2923,6 +2899,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    //if attack success
 	    if (isTargetHurt)
 	    {
+	    	BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        applyEmotesReaction(3);
@@ -2957,24 +2934,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		float atk = getAttackBaseDamage(2, this);
 		float kbValue = 0.15F;
 		
-		//飛彈是否採用直射
-		boolean isDirect = false;
-		float launchPos = (float) posY + height * 0.75F;
+		//missile type
+		float launchPos = (float) posY + height * 0.5F;
+		int moveType = CombatHelper.calcMissileMoveType(this, target.getY(), 2);
+		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this.getPosition(), target);
-        
-        //水中 or 近距離, 採用直射
-        if (distVec.distance < 5D)
-        {
-        	isDirect = true;
-        }
-        
-        if (getShipDepth() > 0D)
-        {
-        	isDirect = true;
-        	launchPos = (float) posY + height * 0.3F;
-        }
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPosition(), target);
         
         //play sound and particle
         applySoundAtAttacker(2, this);
@@ -2984,8 +2950,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    float tarY = (float) target.getY();
 	    float tarZ = (float) target.getZ();
 	    
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, null, false, (float)distVec.distance, atk) <= 0F)
+	    //calc miss rate
+        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
@@ -2995,8 +2961,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
         
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+0.5F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        MissileData md = this.getMissileData(2);
+        float[] data = new float[] {atk, kbValue, launchPos, tarX+0.5F, tarY+0.5F, tarZ+0.5F, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
         this.world.spawnEntity(missile);
         
         //play target effect
@@ -3032,24 +2999,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		float atk = getAttackBaseDamage(2, target);
 		float kbValue = 0.15F;
 		
-		//飛彈是否採用直射
-		boolean isDirect = false;
-		float launchPos = (float) posY + height * 0.75F;
+		//missile type
+		float launchPos = (float) posY + height * 0.5F;
+		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 2);
+		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
 		
         //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-        
-        //水中 or 近距離, 採用直射
-        if (distVec.distance < 5D)
-        {
-        	isDirect = true;
-        }
-        
-        if (getShipDepth() > 0D)
-        {
-        	isDirect = true;
-        	launchPos = (float) posY + height * 0.3F;
-        }
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
         
         //play sound and particle
         applySoundAtAttacker(2, target);
@@ -3059,8 +3015,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    float tarY = (float) target.posY;
 	    float tarZ = (float) target.posZ;
 	    
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
+	    //calc miss rate
+        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
         {
         	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
         	tarY = tarY + this.rand.nextFloat() * 5F;
@@ -3070,8 +3026,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
         
         //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.1F, tarZ, launchPos, atk, kbValue, isDirect, -1F);
+        MissileData md = this.getMissileData(2);
+        float[] data = new float[] {atk, kbValue, launchPos, tarX, tarY+target.height*0.1F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
         this.world.spawnEntity(missile);
         
         //play target effect
@@ -3092,7 +3049,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
 	{
 	}
-	
+
 	@Override
 	public boolean updateSkillAttack(Entity target)
 	{
@@ -4081,9 +4038,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//out of combat
   		if (EntityHelper.checkShipOutOfCombat(this))
   		{
-  			if (m < (int)(ID.Morale.L_Normal * 1.5F))
-  			{	//take 9~11 min from 0 to 3000
-  	  			this.setStateMinor(ID.M.Morale, m + 15);
+  			if (m < ID.Morale.L_Normal + 1000)
+  			{	//take 5 min from 0 to 2100
+  	  			this.setStateMinor(ID.M.Morale, m + 40);
   	  		}
   	  		else if (m > ID.Morale.L_Happy)
   	  		{
@@ -4250,7 +4207,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			this.aiTarget.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * 0.5F, 
   	               0.5D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * 0.5F);
   		
-  			//for other player, send ship state for display
+  			//sync target motion
   			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
   			CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.aiTarget, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
   		}
@@ -5347,7 +5304,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		//server side, send flare packet
   		if (!this.world.isRemote)
   		{
-  	  		if (target != null)
+  			if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
   	  		{
 				TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
 				CommonProxy.channelI.sendToAllAround(new S2CReactPackets(S2CReactPackets.PID.FlareEffect, target.getX(), target.getY(), target.getZ()), point);
@@ -6013,8 +5970,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
 	public HashMap<Integer, Integer> getBuffMap()
 	{
-		if (this.BuffMap != null) return this.BuffMap;
-		return new HashMap<Integer, Integer>();
+		if (this.BuffMap == null) this.BuffMap = new HashMap<Integer, Integer>();
+		return this.BuffMap;
 	}
 
 	@Override
@@ -6033,6 +5990,54 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	public void setAttrs(Attrs data)
 	{
 		if (data instanceof AttrsAdv) this.shipAttrs = (AttrsAdv) data;
+	}
+	
+	@Override
+	public HashMap<Integer, int[]> getAttackEffectMap()
+	{
+		if (this.AttackEffectMap == null) this.AttackEffectMap = new HashMap<Integer, int[]>();
+		return this.AttackEffectMap;
+	}
+
+	@Override
+	public void setAttackEffectMap(HashMap<Integer, int[]> map)
+	{
+		this.AttackEffectMap = map;
+	}
+	
+	@Override
+    public boolean isGlowing()
+    {
+		//for client side, if player is owner, show glowing effect when invisible
+		if (this.world.isRemote)
+		{
+			if (this.isInvisible() &&
+				TeamHelper.checkSameOwner(this, ClientProxy.getClientPlayer()))
+			{
+				return true;
+			}
+		}
+		
+		return super.isGlowing();
+    }
+	
+	@Override
+	public MissileData getMissileData(int type)
+	{
+		return this.MissileData[type];
+	}
+
+	@Override
+	public void setMissileData(int type, MissileData data)
+	{
+		this.MissileData[type] = data;
+	}
+	
+	//init missile data
+	public void resetMissileData()
+	{
+		this.MissileData = new MissileData[5];
+		for (int i = 0; i < 5; i++) this.MissileData[i] = new MissileData();
 	}
 	
 	

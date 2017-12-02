@@ -116,11 +116,11 @@ public class EntityCAHime extends BasicEntityShipSmall
     		//check every 128 ticks
     		if ((this.ticksExisted & 127) == 0)
     		{
-	    		//apply potion effect in the night
+	        	//apply potion effect in the night
 	        	if (!this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))
 	        	{	
-        			this.addPotionEffect(new PotionEffect(MobEffects.SPEED, 300, 1));
-        			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 300, 2));
+        			this.addPotionEffect(new PotionEffect(MobEffects.SPEED, 150, getStateMinor(ID.M.ShipLevel) / 50, false, false));
+        			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 150, getStateMinor(ID.M.ShipLevel) / 40, false, false));
         		}
 	        	
 	        	//push other people every 256 ticks
@@ -154,7 +154,7 @@ public class EntityCAHime extends BasicEntityShipSmall
             			this.targetPush.addVelocity(-MathHelper.sin(rotationYaw * Values.N.DIV_PI_180) * 0.5F, 
          	                   0.5D, MathHelper.cos(rotationYaw * Values.N.DIV_PI_180) * 0.5F);
             			
-            			//for other player, send ship state for display
+            			//sync target motion
             	  		TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
             	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.targetPush, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
 					    

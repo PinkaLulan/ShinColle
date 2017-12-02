@@ -5,9 +5,8 @@ import com.lulan.shincolle.utility.LogHelper;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.GlStateManager.DestFactor;
-import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -222,12 +221,93 @@ public class ParticleSpray extends Particle
         }
         
         //speed limit
-        if (this.motionX > this.speedLimit) this.motionX = this.speedLimit;
-        if (this.motionY > this.speedLimit) this.motionY = this.speedLimit;
-        if (this.motionZ > this.speedLimit) this.motionZ = this.speedLimit;
-        if (this.motionX < -this.speedLimit) this.motionX = -this.speedLimit;
-        if (this.motionY < -this.speedLimit) this.motionY = -this.speedLimit;
-        if (this.motionZ < -this.speedLimit) this.motionZ = -this.speedLimit;
+        double motsq = this.motionX*this.motionX+this.motionY*this.motionY+this.motionZ*this.motionZ;
+        
+        if (motsq > this.speedLimit * this.speedLimit)
+        {
+        	motsq = MathHelper.sqrt(motsq);
+        	this.motionX = this.speedLimit * this.motionX / motsq;
+        	this.motionY = this.speedLimit * this.motionY / motsq;
+        	this.motionZ = this.speedLimit * this.motionZ / motsq;
+        }
+        
+    	//reset pos
+		this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+        this.setPosition(this.posX, this.posY, this.posZ);
+    }
+    
+    /**type:
+     *   0:missile spray, data: 0:vel0, 1:index
+     * 
+     */
+    public ParticleSpray(Entity host, int type, double[] data)
+    {
+        super(host.world, host.posX, host.posY, host.posZ);
+        this.ptype = type;
+        
+        //color, speed, life setting
+        switch (this.ptype)
+        {
+        case 1:   //transparent cyan
+        {
+            this.posX = host.posX + host.motionX * 2D - host.motionX * 1.5D * data[1];
+            this.posY = host.posY + host.motionY * 2D - host.motionY * 1.5D * data[1] + 0.5D;
+            this.posZ = host.posZ + host.motionZ * 2D - host.motionZ*1.5D*data[1];
+            this.motionX = -host.motionX * 0.1D;
+            this.motionY = -host.motionY * 0.1D;
+            this.motionZ = -host.motionZ * 0.1D;
+        	this.speedLimit = 2D;
+        	
+        	float velred = 1.4F - (float)data[0];
+        	if (velred > 1F) velred = 1F;
+        	else if (velred < 0F) velred = 0F;
+        	
+        	this.particleRed = velred;
+            this.particleGreen = 1F;
+            this.particleBlue = 1F;
+            this.particleAlpha = 0.75F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+        }
+        break;
+        case 2:   //transparent red
+        {
+            this.posX = host.posX + host.motionX * 2D - host.motionX * 1.5D * data[1];
+            this.posY = host.posY + host.motionY * 2D - host.motionY * 1.5D * data[1] + 0.5D;
+            this.posZ = host.posZ + host.motionZ * 2D - host.motionZ*1.5D*data[1];
+            this.motionX = -host.motionX * 0.1D;
+            this.motionY = -host.motionY * 0.1D;
+            this.motionZ = -host.motionZ * 0.1D;
+        	this.speedLimit = 2D;
+        	
+        	float velgb = ((float)data[0] - 0.2F) * 3.333F;
+        	if (velgb > 1F) velgb = 1F;
+        	else if (velgb < 0F) velgb = 0F;
+        	
+        	this.particleRed = 1F;
+            this.particleGreen = velgb;
+            this.particleBlue = velgb;
+            this.particleAlpha = 0.75F;
+            this.particleScale *= 1.5F;
+            this.pScale = this.particleScale;
+            this.particleMaxAge = 40;
+        }
+        break;
+        }
+        
+        //speed limit
+        double motsq = this.motionX*this.motionX+this.motionY*this.motionY+this.motionZ*this.motionZ;
+        
+        if (motsq > this.speedLimit * this.speedLimit)
+        {
+        	motsq = MathHelper.sqrt(motsq);
+        	this.motionX = this.speedLimit * this.motionX / motsq;
+        	this.motionY = this.speedLimit * this.motionY / motsq;
+        	this.motionZ = this.speedLimit * this.motionZ / motsq;
+        }
         
     	//reset pos
 		this.prevPosX = this.posX;
@@ -311,7 +391,6 @@ public class ParticleSpray extends Particle
     	}
 		break;
         }
-        
     }
     
     

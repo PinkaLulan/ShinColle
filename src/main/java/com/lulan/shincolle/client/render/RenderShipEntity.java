@@ -45,6 +45,7 @@ import com.lulan.shincolle.client.model.ModelSubmYo;
 import com.lulan.shincolle.client.model.ModelTransportWa;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
@@ -426,7 +427,7 @@ public class RenderShipEntity extends RenderBasic
 		{
 		case ID.ShipClass.MidwayHime:
 			this.miscModelList = new ArrayList<MiscModel>();
-			EntityAirplaneTakoyaki tako1 = new EntityAirplaneTakoyaki(null);
+			EntityAirplaneTakoyaki tako1 = new EntityAirplaneTakoyaki(ClientProxy.getClientWorld());
 			tako1.posX = 0D;
 			tako1.posY = 0D;
 			tako1.posZ = 0D;

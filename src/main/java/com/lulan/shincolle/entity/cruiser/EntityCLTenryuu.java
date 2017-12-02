@@ -25,7 +25,10 @@ import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -132,6 +135,23 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		//server side
 		else
 		{
+			//every 128 ticks
+        	if ((this.ticksExisted & 127) == 0)
+        	{
+        		//married effect
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0)
+  				{
+  					//apply buff to owner
+  					EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+  	  				{
+  	  					//potion effect: id, time, level
+  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION , 100+getStateMinor(ID.M.ShipLevel), 0, false, false));
+					}
+  				}//end married buff
+        	}
+        	
 			//apply skill effect
 			this.updateSkillEffect();
 		}
@@ -144,7 +164,7 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		if (this.StateEmotion[ID.S.Phase] > 1)
 		{
 			//clear attacked target list
-			if (this.StateTimer[ID.T.AttackTime3] == 7)
+			if (this.StateTimer[ID.T.AttackTime3] == 6)
 			{
 				this.damagedTarget.clear();
 				
@@ -167,6 +187,7 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 				}
 			}
 			
+			//apply damage
 			if (this.StateTimer[ID.T.AttackTime3] <= 7 && this.StateTimer[ID.T.AttackTime3] >= 0)
 			{
 				//apply motion
@@ -359,8 +380,8 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		double dist = this.getDistanceSqToCenter(pos);
 		
 		//calc motion
-		this.skillMotion = CalcHelper.calcVecToTarget(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
-		this.skillMotion.scale(dist * 0.15D);
+		this.skillMotion = CalcHelper.getUnitVectorFromA2B(new Vec3d(target.posX, target.posY, target.posZ), vecpos);
+		this.skillMotion = this.skillMotion.scale(-1.25D);
 		
 		//calc rotation
 		float[] degree = CalcHelper.getLookDegree(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, true);
@@ -372,7 +393,7 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.StateTimer[ID.T.AttackTime3] = 9;
+		this.StateTimer[ID.T.AttackTime3] = 7;
 		this.setStateEmotion(ID.S.Phase, 2, true);
 		this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
 	}
@@ -385,14 +406,14 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		double dist = this.getDistanceSqToCenter(pos);
 		
 		//calc motion
-		this.skillMotion = new Vec3d(0D, Math.abs(vecpos.yCoord - target.posY) * -0.14D, 0D);
+		this.skillMotion = new Vec3d(0D, Math.abs(vecpos.yCoord - target.posY) * -0.25D, 0D);
 		
 		//apply teleport
 		EntityHelper.applyTeleport(this, dist, vecpos);
 		
 		//update flag and sync
 		this.remainAttack--;
-		this.StateTimer[ID.T.AttackTime3] = 12;
+		this.StateTimer[ID.T.AttackTime3] = 9;
 		this.setStateEmotion(ID.S.Phase, 3, true);
 		this.sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
 	}
@@ -541,7 +562,7 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
   		case 3:  //heavy attack: final
   			return this.shipAttrs.getAttackDamageHeavy() * 1.2F;
 		default: //melee
-			return this.shipAttrs.getAttackDamage();
+			return this.shipAttrs.getAttackDamage() * 2F;
   		}
   	}
 	

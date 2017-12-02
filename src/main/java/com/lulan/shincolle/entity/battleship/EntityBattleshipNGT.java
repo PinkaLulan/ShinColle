@@ -25,6 +25,8 @@ import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -77,7 +79,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		//use range attack (light)
 		this.tasks.addTask(11, new EntityAIShipRangeAttack(this));
 	}
-    
+	
     //check entity state every tick
   	@Override
   	public void onLivingUpdate()
@@ -114,6 +116,25 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   			{
   				//add morale if DD or Hoppo nearby
   				addMoraleSpecialEvent(this);
+  				
+  				//married effect: apply str buff to nearby ships
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0)
+  				{
+  					List<BasicEntityShip> shiplist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(16D, 16D, 16D));
+  	  	  			
+  					if (shiplist != null && shiplist.size() > 0)
+  					{
+  						for (BasicEntityShip s : shiplist)
+  						{
+  							if (TeamHelper.checkSameOwner(this, s))
+  							{
+  								//potion effect: id, time, level
+  								s.addPotionEffect(new PotionEffect(MobEffects.STRENGTH , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 70, false, false));
+  							}
+  						}
+  					}
+  				}//end married buff
   			}
   		}//end server
   	}
@@ -171,6 +192,13 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         	}
 		}
   	}
+	
+	@Override
+	public void calcShipAttributesAddEffect()
+	{
+		super.calcShipAttributesAddEffect();
+		this.AttackEffectMap.put(19, new int[] {(int)(this.getLevel() / 75), 60+this.getLevel(), this.getLevel()});
+	}
   	
   	/**Type 91 Armor-Piercing Fist
   	 * 需要進行4階段攻擊(3階段準備), 對目標造成重攻擊的4倍傷害, 額外追加8x8範圍1倍傷害
@@ -228,13 +256,13 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         if (atkPhase > 3)
         {	//攻擊準備完成, 計算攻擊傷害
 	        //calc dist to target
-	        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+	        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 	        
         	//display hit particle on target
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
 		    //roll miss, cri, dhit, thit
-		    atk1 = CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk1);
+		    atk1 = CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.d, atk1);
 	  		
 	  		//damage limit on player target
 		    atk1 = CombatHelper.applyDamageReduceOnPlayer(target, atk1);
@@ -281,7 +309,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
                     	}
                 		
             		    //roll miss, cri, dhit, thit
-                		atkTemp = CombatHelper.applyCombatRateToDamage(this, hitEntity, false, (float)distVec.distance, atkTemp);
+                		atkTemp = CombatHelper.applyCombatRateToDamage(this, hitEntity, false, (float)distVec.d, atkTemp);
             	  		
             	  		//damage limit on player target
                 		atkTemp = CombatHelper.applyDamageReduceOnPlayer(hitEntity, atkTemp);
@@ -360,6 +388,24 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		default: //melee
 			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
 		break;
+  		}
+  	}
+	
+	@Override
+  	public float getAttackBaseDamage(int type, Entity target)
+  	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+  	  	case 2:  //heavy cannon
+  			return this.shipAttrs.getAttackDamageHeavy();
+  		case 3:  //light aircraft
+  			return this.shipAttrs.getAttackDamageAir();
+  		case 4:  //heavy aircraft
+  			return this.shipAttrs.getAttackDamageAirHeavy();
+		default: //melee
+			return this.shipAttrs.getAttackDamage() * 3F;
   		}
   	}
 

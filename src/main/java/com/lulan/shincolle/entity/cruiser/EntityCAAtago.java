@@ -9,6 +9,7 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -100,12 +101,32 @@ public class EntityCAAtago extends BasicEntityShipSmall
 			!source.getEntity().equals(this.getHostEntity()))
 		{
 			//slow attacker
-			((EntityLivingBase) source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100, getStateMinor(ID.M.ShipLevel) / 50));
+			((EntityLivingBase) source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100+this.getLevel(), this.getLevel() / 100, false, false));
 			
 			return true;
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public void calcShipAttributesAddEffect()
+	{
+		super.calcShipAttributesAddEffect();
+		this.AttackEffectMap.put(2, new int[] {(int)(this.getLevel() / 100), 100+this.getLevel(), this.getLevel()});
+	}
+	
+	@Override
+	public void calcShipAttributesAddEquip()
+	{
+		super.calcShipAttributesAddEquip();
+		
+		//change missile type
+		if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect))
+		{
+			MissileData md = this.getMissileData(2);
+			if (md.type == 0) md.type = 5;
+		}
 	}
 	
   	//reset emotion4

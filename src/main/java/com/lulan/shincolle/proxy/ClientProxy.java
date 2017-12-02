@@ -69,6 +69,7 @@ import com.lulan.shincolle.entity.other.EntityAirplaneZero;
 import com.lulan.shincolle.entity.other.EntityAirplaneZeroMob;
 import com.lulan.shincolle.entity.other.EntityFloatingFort;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
+import com.lulan.shincolle.entity.other.EntityProjectileStatic;
 import com.lulan.shincolle.entity.other.EntityRensouhou;
 import com.lulan.shincolle.entity.other.EntityRensouhouMob;
 import com.lulan.shincolle.entity.other.EntityRensouhouS;
@@ -232,6 +233,7 @@ public class ClientProxy extends CommonProxy
 		//misc render
 		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, RenderMiscEntity.FACTORY_MISC);
 		RenderingRegistry.registerEntityRenderingHandler(EntityProjectileBeam.class, RenderMiscEntity.FACTORY_MISC);
+		RenderingRegistry.registerEntityRenderingHandler(EntityProjectileStatic.class, RenderMiscEntity.FACTORY_MISC);
 		RenderingRegistry.registerEntityRenderingHandler(EntityShipFishingHook.class, RenderShipFishing.FACTORY_FISHINGHOOK);
 		
 		//summons render

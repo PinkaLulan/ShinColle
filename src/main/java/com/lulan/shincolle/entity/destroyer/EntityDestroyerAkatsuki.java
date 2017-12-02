@@ -11,7 +11,6 @@ import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -20,12 +19,10 @@ import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 /**
@@ -123,16 +120,13 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   				
   				if (this.ticksExisted % 128 == 0)
   	  			{
-  	  				//add aura to master every 128 ticks
-  	  				EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  				
-  	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null &&
-  	  					getDistanceSqToEntity(player) < 256D)
-  	  				{
-  	  					//potion effect: id, time, level
-  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.HASTE, 300, getStateMinor(ID.M.ShipLevel) / 30));
-  	  				}
+	  				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+	  				{
+	  					//potion effect: id, time, level
+	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.HASTE , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 30, false, false));
+	  				}
   	  				
   	  				//try gattai
   	  				tryGattai();
@@ -265,30 +259,6 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
         	}
         }
     }
-	
-  	/** Akatsuki can use flare by AI option */
-	@Override
-  	protected void updateSearchlight()
-  	{
-  		if (getStateFlag(ID.F.IsMarried) &&
-  			getStateFlag(ID.F.UseRingEffect) &&
-			getStateMinor(ID.M.NumGrudge) > 0)
-  		{
-  			BlockPos pos = new BlockPos(this);
-			float light = this.world.getLightFor(EnumSkyBlock.BLOCK, pos);
-
-			//place new light block
-  			if (light < 12F)
-  			{
-				BlockHelper.placeLightBlock(this.world, pos);
-  			}
-  			//search light block, renew lifespan
-  			else
-  			{
-  				BlockHelper.updateNearbyLightBlock(this.world, pos);
-  			}
-  		}
-  	}
   	
   	//檢查是否可以合體
   	public void tryGattai()
@@ -488,7 +458,10 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   	{
   		super.calcShipAttributesAddEquip();
   		
-  		this.StateMinor[ID.M.DrumState] = 2;
+  		if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect))
+  		{
+  			this.StateMinor[ID.M.LevelSearchlight] = 1;
+  		}
   	}
   	
   	

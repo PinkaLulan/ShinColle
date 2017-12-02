@@ -74,14 +74,14 @@ public class EntityCARi extends BasicEntityShipSmall
     	//check server side
     	if (!this.world.isRemote)
     	{
-    		//check every 5 sec
-    		if (this.ticksExisted % 100 == 0)
+    		//every 128 ticks
+    		if (this.ticksExisted % 128 == 0)
     		{
 	    		//apply potion effect in the night
 	        	if (!this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))
 	        	{	
-        			this.addPotionEffect(new PotionEffect(MobEffects.SPEED, 300, 1));
-        			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 300, 2));
+        			this.addPotionEffect(new PotionEffect(MobEffects.SPEED, 150, getStateMinor(ID.M.ShipLevel) / 70, false, false));
+        			this.addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 150, getStateMinor(ID.M.ShipLevel) / 60, false, false));
         		}
         	}
     	}

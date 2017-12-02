@@ -816,6 +816,13 @@ public class ParticleHelper
 			Minecraft.getMinecraft().effectRenderer.addEffect(spark1);
 		}
 		break;
+		case 24:	//color beam INWARD custom
+		{
+			//													 ent, type, life, scale
+			ParticleSphereLight light1 = new ParticleSphereLight(ent, (int)par1, (float)par2, (float)par3);
+			Minecraft.getMinecraft().effectRenderer.addEffect(light1);
+		}
+		break;
 		case 36:	//emotion
 		{
 			ParticleEmotion partEmo = new ParticleEmotion(world, ent,
@@ -828,9 +835,25 @@ public class ParticleHelper
 		}
 	}
 	
-	/**Spawn particle at entity position
-	 * @parm host, par1, par2, par3, particleID
-	 */
+	/** Spawn particle at entity position with diverse parms */
+	@SideOnly(Side.CLIENT)
+	public static void spawnAttackParticleAtEntity(Entity ent, byte type, double[] parms)
+	{
+		World world = Minecraft.getMinecraft().world;
+		
+		switch (type)
+		{
+		case 1:   //missile spray
+		case 2:
+		{
+			ParticleSpray particleSpray1 = new ParticleSpray(ent, type, parms);
+	    	Minecraft.getMinecraft().effectRenderer.addEffect(particleSpray1);
+		}
+		break;
+		}
+	}
+	
+	/** Spawn particle with host, target and setting attack time */
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity host, Entity target, double par1, double par2, double par3, byte type, boolean setAtkTime)
 	{

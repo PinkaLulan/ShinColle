@@ -15,6 +15,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -56,7 +57,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	protected int startEmotion, startEmotion2, attackTime, attackTime2;		//表情timer
 	protected boolean headTilt;
 	public boolean initScale;
-
+	
 	
     public BasicEntitySummon(World world)
     {
@@ -904,6 +905,26 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	{
 		return false;
 	}
+	
+	@Override
+	public HashMap<Integer, int[]> getAttackEffectMap()
+	{
+		if (this.host != null) return this.host.getAttackEffectMap();
+		return new HashMap<Integer, int[]>();
+	}
+
+	@Override
+	public void setAttackEffectMap(HashMap<Integer, int[]> map) {}
+	
+	@Override
+	public MissileData getMissileData(int type)
+	{
+		if (this.host != null) return this.host.getMissileData(type);
+		return new MissileData();
+	}
+
+	@Override
+	public void setMissileData(int type, MissileData data) {}
 	
 	
 }

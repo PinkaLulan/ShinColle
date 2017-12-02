@@ -1,20 +1,24 @@
 package com.lulan.shincolle.entity.hime;
 
+import java.util.List;
+
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.mounts.EntityMountBaH;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.init.MobEffects;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -38,6 +42,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		
 		//set attack type
+		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		
@@ -61,6 +66,62 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		//use range attack
 		this.tasks.addTask(12, new EntityAIShipRangeAttack(this));
 	}
+	
+	@Override
+	public void calcShipAttributesAddEffect()
+	{
+		super.calcShipAttributesAddEffect();
+		this.AttackEffectMap.put(4, new int[] {(int)(this.getLevel() / 70), 100+this.getLevel(), this.getLevel()});
+	}
+	
+	@Override
+	public void calcShipAttributesAddEquip()
+	{
+		super.calcShipAttributesAddEquip();
+		
+		//change missile type
+		MissileData md = this.getMissileData(2);
+		
+		if (md.type == 0)
+		{
+			md.type = 3;
+			md.movetype = 1;
+		}
+	}
+	
+  	@Override
+  	public void onLivingUpdate()
+  	{
+  		super.onLivingUpdate();
+  		
+  		//server side
+  		if (!world.isRemote)
+  		{
+  			//every 128 ticks
+  			if (this.ticksExisted % 128 == 0)
+  			{
+  				//married effect: apply str buff to nearby ships
+  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
+  					getStateMinor(ID.M.NumGrudge) > 0)
+  				{
+  					List<BasicEntityShip> shiplist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, this.getEntityBoundingBox().expand(16D, 16D, 16D));
+  	  	  			
+  					if (shiplist != null && shiplist.size() > 0)
+  					{
+  						for (BasicEntityShip s : shiplist)
+  						{
+  							if (TeamHelper.checkSameOwner(this, s))
+  							{
+  								//potion effect: id, time, level
+  								s.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 70, false, false));
+  								s.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 70, false, false));
+  	  						}
+  						}
+  					}
+  				}//end married buff
+  			}//end every 128 ticks
+  		}//end server side
+  	}
 	
 	//change light cannon particle
 	@Override
@@ -101,63 +162,6 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   		}
   	}
 
-  	/** cluster bomb */
-	@Override
-  	public boolean attackEntityWithHeavyAmmo(Entity target)
-	{
-  		//get attack value
-		float atk = getAttackBaseDamage(2, target);
-		float launchPos = (float) posY + height * 0.75F;
-		
-        //calc dist to target
-        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-        
-		//experience++
-		addShipExp(ConfigHandler.expGain[2]);
-		
-		//grudge--
-		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-		
-  		//morale--
-		decrMorale(2);
-  		setCombatTick(this.ticksExisted);
-	
-		//play attack effect
-        applySoundAtAttacker(2, target);
-	    applyParticleAtAttacker(2, target, distVec);
-        
-        //heavy ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-        
-	    float tarX = (float) target.posX;
-	    float tarY = (float) target.posY;
-	    float tarZ = (float) target.posZ;
-	    
-	    //if miss
-        if (CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk) <= 0F)
-        {
-        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-        	tarY = tarY + this.rand.nextFloat() * 5F;
-        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-        	
-        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-        }
-       
-        //spawn missile
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-        		tarX, tarY+target.height*0.2F, tarZ, launchPos, atk, 0.15F, false, -2F);
-        this.world.spawnEntity(missile);
-        
-        //play target effect
-        applySoundAtTarget(2, target);
-        applyParticleAtTarget(2, target, distVec);
-      	applyEmotesReaction(3);
-        
-      	if (ConfigHandler.canFlare) flareTarget(target);
-      	
-        return true;
-  	}
-
   	//true if use mounts
   	@Override
   	public boolean hasShipMounts()
@@ -191,6 +195,6 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   			return this.height * 0.76F;
   		}
 	}
-  	
+	
 	
 }

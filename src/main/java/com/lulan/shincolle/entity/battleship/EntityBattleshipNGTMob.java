@@ -1,5 +1,6 @@
 package com.lulan.shincolle.entity.battleship;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
@@ -14,7 +15,6 @@ import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -76,6 +76,16 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 			this.smokeY = 1.5F;
 		break;
 		}
+	}
+	
+	@Override
+	public void initAttrsServerPost()
+	{
+		super.initAttrsServerPost();
+		
+		//add attack effects
+		if (this.AttackEffectMap == null) this.AttackEffectMap = new HashMap<Integer, int[]>();
+		this.AttackEffectMap.put(19, new int[] {(int)(this.getScaleLevel() / 2), 60+this.getScaleLevel()*40, 25+this.getScaleLevel()*25});
 	}
 
 	@Override
@@ -163,13 +173,13 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
         if (atkPhase > 3)
         {	//攻擊準備完成, 計算攻擊傷害
             //calc dist to target
-            Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
+            Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
             
         	//display hit particle on target
 	        CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 21, posX, posY, posZ, target.posX, target.posY, target.posZ, true), point);
         	
 		    //roll miss, cri, dhit, thit
-		    atk1 = CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.distance, atk1);
+		    atk1 = CombatHelper.applyCombatRateToDamage(this, target, false, (float)distVec.d, atk1);
 	  		
 	  		//damage limit on player target
 		    atk1 = CombatHelper.applyDamageReduceOnPlayer(target, atk1);
@@ -217,7 +227,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
                     	}
                 		
             		    //roll miss, cri, dhit, thit
-                		atkTemp = CombatHelper.applyCombatRateToDamage(this, hitEntity, false, (float)distVec.distance, atkTemp);
+                		atkTemp = CombatHelper.applyCombatRateToDamage(this, hitEntity, false, (float)distVec.d, atkTemp);
             	  		
             	  		//damage limit on player target
                 		atkTemp = CombatHelper.applyDamageReduceOnPlayer(hitEntity, atkTemp);

@@ -48,7 +48,7 @@ public class ConfigHandler
 	public static int despawnMinion = 600;
 	public static int kaitaiAmountSmall = 20;
 	public static int kaitaiAmountLarge = 20;
-	public static int baseCaressMorale = 15;
+	public static int baseCaressMorale = 20;
 	public static int nameTagDist = 16;
 	public static int spawnBossNum = 2;
 	public static int spawnMobNum = 4;
@@ -72,9 +72,8 @@ public class ConfigHandler
 						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
 						   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
 						   propInfLiquid, propShipTeleport, propFishing, propMining, propTask,
-						   propGrudgeTask;
+						   propGrudgeTask, propPosHUD;
 	
-	//SHIP SETTING
 	//                                                    HP, ATK_L, ATK_H, ATK_AL, ATK_AH
 	public static double[] limitShipAttrs = new double[] {-1D, -1D, -1D, -1D, -1D,
 	//                                                    DEF, SPD, MOV, HIT, CRI
@@ -127,6 +126,8 @@ public class ConfigHandler
 	public static int[] shipTeleport = new int[] {200,             256};
 	//task enable setting                               cook  fish  mine  craft
 	public static boolean[] enableTask = new boolean[] {true, true, true, true};
+	//HUD position                                x     y
+	public static double[] posHUD = new double[] {0.5D, 0.6D};
 	
 	public static int dmgSvS = 100;		//ship vs ship damage modifier, 20 = dmg * 20%
 	public static int expMod = 20;		//ship exp per level, ex: 20 => lv 15 exp req = 15*20+20
@@ -248,7 +249,7 @@ public class ConfigHandler
 		volumeTimekeep = config.getFloat("Volume_Timekeeping", CATE_SHIP, 1.0F, 0F, 10F, "Timekeeping sound volume");
 		volumeShip = config.getFloat("Volume_Ship", CATE_SHIP, 1.0F, 0F, 10F, "Other sound volume");
 		volumeFire = config.getFloat("Volume_Attack", CATE_SHIP, 0.7F, 0F, 10F, "Attack sound volume");
-		baseCaressMorale = config.getInt("Caress_BaseMorale", CATE_SHIP, 15, 1, 1000, "base morale value per CaressTick (4 ticks)");
+		baseCaressMorale = config.getInt("Caress_BaseMorale", CATE_SHIP, 20, 1, 5000, "base morale value per CaressTick (4 ticks)");
 		modernLimit = config.getInt("Attrs_Limit_Modernization", CATE_SHIP, 3, 3, 100, "Max upgrade level by Modernization Toolkit");
 		searchlightCD = config.getInt("CD_SearchLight", CATE_SHIP, 4, 1, 256, "Cooldown for placing light block of searchlight");
 		
@@ -281,6 +282,7 @@ public class ConfigHandler
 		propCrane = config.get(CATE_GENERAL, "Tile_Crane", tileCrane, "Crane: internal fluid tank capacity (mB), internal energy capacity (EU)");
 		propRingAbility = config.get(CATE_GENERAL, "Ring_Ability", ringAbility, "Ring ability related married number, -1 = disable, 0~N = active or max limit number: water breath (active number), fly in water (active number), dig speed boost (max limit number), fog in liquid (max limit number), immune to fire (active number)");
 		propInfLiquid = config.get(CATE_GENERAL, "Infinite_Pump", infLiquid, "Can ship pump infinite water or lava without destroying block: min water depth, min lava depth");
+		propPosHUD = config.get(CATE_GENERAL, "Position_HUD", posHUD, "HUD position of mounts skills: x, y (0.5D = middle of window)");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("DmgTaken_SvS", CATE_SHIP, 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -320,6 +322,7 @@ public class ConfigHandler
 		tickFishing = getIntArrayFromConfig(tickFishing, propFishing);
 		tickMining = getIntArrayFromConfig(tickMining, propMining);
 		enableTask = getBooleanArrayFromConfig(enableTask, propTask);
+		posHUD = getDoubleArrayFromConfig(posHUD, propPosHUD);
 		
 		checkChange(config);
 	}

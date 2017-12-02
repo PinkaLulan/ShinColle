@@ -57,7 +57,7 @@ public class EntityAirplaneZeroMob extends EntityAirplaneZero
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.DEF, ship.getAttrs().getDefense() * 0.5F);
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.SPD, ship.getAttrs().getAttackSpeed() * 3F);
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.MOV, ship.getAttrs().getMoveSpeed() * 0.2F + 0.3F + this.getScaleLevel() * 0.05F);
-    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HIT, 5.5F);
+    		this.shipAttrs.setAttrsBuffed(ID.Attrs.HIT, 16F);
     		this.shipAttrs.setAttrsBuffed(ID.Attrs.DODGE, this.shipAttrs.getAttrsBuffed(ID.Attrs.DODGE) + 0.3F);
     		
     		//apply attrs to entity

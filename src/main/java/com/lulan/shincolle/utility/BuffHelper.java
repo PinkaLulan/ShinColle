@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -36,8 +38,8 @@ import net.minecraft.util.math.BlockPos;
  * potion setting:
    1  speed:          move spd
    2  slow:           move spd, kb
-   3  haste:          attack spd
-   4  mining fatigue: attack spd
+   3  haste:          attack spd++
+   4  mining fatigue: attack spd--
    5  strength:       dmg, kb
    6  instant heal:   heal (2% + 2)/lv
    7  instant dmg:    hurt (2% + 2)/lv
@@ -56,7 +58,7 @@ import net.minecraft.util.math.BlockPos;
    20 wither:         hurt (2% + 2)/lv until dead
    21 heal boost:     max hp
    22 absorption:     def
-   23 saturation:     grudge and morale +N/lv every x ticks
+   23 saturation:     morale +N/lv every x ticks
    24 glowing:        no effect
    25 levitation:     dodge, AA, kb
    26 luck:           cri/dhit/thit++
@@ -200,6 +202,21 @@ public class BuffHelper
 	}
 	
 	/**
+	 * convert id to potion effect
+	 */
+	public static PotionEffect convertIdToPotion(int id, int ampLevel, int ticks)
+	{
+		Potion p = Potion.getPotionById(id);
+		
+		if (p != null)
+		{
+			return new PotionEffect(p, ticks, ampLevel, false, true);
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * convert all buff to attributes
 	 */
 	public static void convertBuffMapToAttrs(Map<Integer, Integer> buffmap, Attrs attrs)
@@ -226,11 +243,11 @@ public class BuffHelper
 				potion[ID.Attrs.MOV] += -0.15F * lv;
 				potion[ID.Attrs.KB] += 0.15F * lv;
 			break;
-			case 3:  //haste: aspd +0.8
-				potion[ID.Attrs.SPD] += 0.8F * lv;
+			case 3:  //haste: aspd +0.6
+				potion[ID.Attrs.SPD] += 0.6F * lv;
 			break;
-			case 4:  //mining fatigue: aspd -1
-				potion[ID.Attrs.SPD] += -1F * lv;
+			case 4:  //mining fatigue: aspd -0.6
+				potion[ID.Attrs.SPD] += -0.6F * lv;
 			break;
 			case 5:  //strength: base dmg +15, kb +0.1
 				potion[ID.Attrs.ATK_L] += 15F * lv;
@@ -249,7 +266,7 @@ public class BuffHelper
 			case 15: //blind: range -24 (fixed level 1)
 				potion[ID.Attrs.HIT] += -24F;
 			break;
-			case 18: //weak: dmg -20, kb -0.15
+			case 18: //weak: dmg -15, kb -0.15
 				potion[ID.Attrs.ATK_L] += -15F * lv;
 				potion[ID.Attrs.ATK_H] += -15F * lv;
 				potion[ID.Attrs.ATK_AL] += -15F * lv;
@@ -267,8 +284,8 @@ public class BuffHelper
 				potion[ID.Attrs.HP] += 100F * lv;
 				potion[ID.Attrs.DEF] += 0.2F * lv;
 			break;
-			case 25: //levitation: dodge +0.15, AA +60, kb -0.2
-				potion[ID.Attrs.DODGE] += 0.15F * lv;
+			case 25: //levitation: dodge +0.1, AA +60, kb -0.2
+				potion[ID.Attrs.DODGE] += 0.1F * lv;
 				potion[ID.Attrs.AA] += 20F * lv;
 				potion[ID.Attrs.KB] += -0.2F * lv;
 			break;
@@ -319,7 +336,7 @@ public class BuffHelper
 			case 20: //wither: hurt 2% + 2 until dead
 				host.attackEntityFrom(DamageSource.magic, (hp1p * 2F + 2F) * lv);
 			break;
-			case 23: //saturation: grudge and morale +N/lv, friendly ship only
+			case 23: //saturation: morale +N/lv, friendly ship only
 				if (host instanceof BasicEntityShip)
 				{
 					BasicEntityShip ship = (BasicEntityShip) host;
@@ -327,6 +344,32 @@ public class BuffHelper
 					ship.addMorale(20);
 				}
 			break;
+			}
+		}
+	}
+	
+	/**
+	 * apply potion effects on target, only for EntityLivingBase
+	 * effects map <potion id, potion data[ampLevel, ticks, chance(0~100)]>
+	 */
+	public static void applyBuffOnTarget(Entity target, Map<Integer, int[]> effects)
+	{
+		if (target instanceof EntityLivingBase)
+		{
+			EntityLivingBase ent = (EntityLivingBase) target;
+			
+			//apply effect to target
+			if (effects != null && effects.size() > 0)
+			{
+				effects.forEach((id, content) ->
+				{
+					PotionEffect pe = convertIdToPotion(id, content[0], content[1]);
+					
+					if (pe != null && ent.getRNG().nextInt(100) < content[2])
+					{
+						ent.addPotionEffect(pe);
+					}
+				});
 			}
 		}
 	}
@@ -953,6 +996,26 @@ public class BuffHelper
 				//remove potion in buffmap
 				buffs.remove(id);
   			}
+  		}
+  	}
+  	
+  	/** add new effect to ship's attack effect map */
+  	public static void addEffectToAttackEffectMap(BasicEntityShip ship, Map<Integer, int[]> emap)
+  	{
+  		//null check
+  		if (ship == null || emap == null || emap.size() < 1) return;
+  		
+  		//get ship map
+  		Map<Integer, int[]> smap = ship.getAttackEffectMap();
+  		if (smap == null) smap = new HashMap<Integer, int[]>();
+  		
+  		//add emap to ship map
+  		Iterator iter = emap.entrySet().iterator();
+  		
+  		while(iter.hasNext())
+  		{
+  			Map.Entry<Integer, int[]> entry = (Entry<Integer, int[]>) iter.next();
+  			smap.put(entry.getKey(), entry.getValue());
   		}
   	}
   	

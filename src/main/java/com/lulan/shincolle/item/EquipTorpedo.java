@@ -1,5 +1,7 @@
 package com.lulan.shincolle.item;
 
+import java.util.Map;
+
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.item.ItemStack;
@@ -12,8 +14,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *    3:  Cuttlefish Torpedo
  *    4:  High-Speed Torpedo
  *    5:  High-speed Abyssal Torpedo Mod.2
+ *    6:  Abyssal Ambush Torpedo
  */
-public class EquipTorpedo extends BasicEquip
+public class EquipTorpedo extends BasicEquip implements IShipEffectItem
 {
 	
 	private static final String NAME = "EquipTorpedo";
@@ -32,7 +35,7 @@ public class EquipTorpedo extends BasicEquip
 	@Override
 	public int getTypes()
 	{
-		return 6;
+		return 7;
 	}
 	
 	@Override
@@ -47,6 +50,7 @@ public class EquipTorpedo extends BasicEquip
 		case 3:
 		case 4:
 		case 5:
+		case 6:
 			return ID.EquipType.TORPEDO_HI;
 		default:
 			return 0;
@@ -86,7 +90,43 @@ public class EquipTorpedo extends BasicEquip
 			return new int[] {0, 0, 0, 0};
 		}
 	}
+
+	@Override
+	public Map<Integer, int[]> getEffectOnAttack(int meta)
+	{
+		return null;
+	}
+
+	//specific missile type by meta
+	@Override
+	public int getMissileType(int meta)
+	{
+		return -1;
+	}
 	
+	//specific move type by meta
+	@Override
+	public int getMissileMoveType(int meta)
+	{
+		return -1;
+	}
 
+	@Override
+	public int getMissileSpeedLevel(int meta)
+	{
+		switch (meta)
+		{
+		case 3:
+		case 4:
+			return 1;
+		case 5:
+			return 2;
+		case 6:
+			return 3;
+		default:
+			return 0;
+		}
+	}
+	
+	
 }
-

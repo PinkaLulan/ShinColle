@@ -59,7 +59,10 @@ public class ParticleSphereLight extends Particle
 	     * type 2: light beam radiate UP
 	     * type 3: light beam radiate DOWN
 	     * type 4: light beam STEADY
-	     * parms: 0:scale, 1:radius, 2:beam speed, 3:beam thickness, 4~7:RGBA
+	     *   parms: 0:scale, 1:radius, 2:beam speed, 3:beam thickness, 4~7:RGBA
+	     * 
+	     * type 5: light beam radiate IN custom
+	     *   parms: 0:life, 1:scale
          */
         case 0:
         case 1:
@@ -76,6 +79,20 @@ public class ParticleSphereLight extends Particle
             this.particleAlpha = parms[7];
             this.beamHeight = parms[8];
             this.particleMaxAge = 40;
+            this.beamPos = new float[NumBeam][6];
+            this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
+        break;
+        case 5:
+        	this.particleMaxAge = (int) parms[0];
+        	this.particleScale = parms[1];
+        	this.beamRad = 0.5F;
+        	this.beamSpd = 0.8F;
+        	this.beamThick = 2F;
+        	this.particleRed = 0F;
+            this.particleGreen = 0F;
+            this.particleBlue = 0F;
+            this.particleAlpha = 0.8F;
+            this.beamHeight = entity.height * 0.5F;
             this.beamPos = new float[NumBeam][6];
             this.setPosition(entity.posX, entity.posY+this.beamHeight, entity.posZ);
         break;
@@ -226,6 +243,43 @@ public class ParticleSphereLight extends Particle
         case 2:		//UP or DOWN
         case 3:		//STEADY
     	break;
+        case 5:		//IN custom data
+        {
+        	if (this.particleAge <= this.particleMaxAge * 0.95F)
+        	{
+        		if (this.particleAge > this.particleMaxAge * 0.5F)
+        		{
+        			this.particleAlpha *= 0.8F;
+        		}
+        		
+        		for (int i = 0; i < (3 - ClientProxy.getMineraft().gameSettings.particleSetting) * 3; i++)
+        		{
+                	//create new beam
+                	newpos = CalcHelper.rotateXZByAxis(
+            								this.beamRad * (this.rand.nextFloat() + 1F),
+    					        			this.beamRad * (this.rand.nextFloat() + 1F),
+    					        			this.rand.nextFloat() * 360F * Values.N.DIV_PI_180, 1F);
+                	this.beamPos[this.beamCurrent] = new float[] {newpos[0], newpos[1], this.particleRed + this.rand.nextFloat() * 0.1F, this.particleGreen, this.particleBlue + this.rand.nextFloat() * 0.2F, this.particleAlpha};
+                	this.beamCurrent++;
+                	if (this.beamCurrent >= this.beamPos.length) this.beamCurrent = 0;
+        		}
+        	}
+        	
+        	//update beam pos: halve dist to (0,0,0)
+        	for (int i = 0; i < this.beamPos.length; i++)
+        	{
+        		//move
+        		this.beamPos[i][0] *= this.beamSpd;
+        		this.beamPos[i][1] *= this.beamSpd;
+        		
+        		//min limit
+        		if (this.beamPos[i][0] > 0F && this.beamPos[i][0] < 0.001F) this.beamPos[i][0] = 0.001F;
+        		if (this.beamPos[i][0] < 0F && this.beamPos[i][0] > -0.001F) this.beamPos[i][0] = -0.001F;
+        		if (this.beamPos[i][1] > 0F && this.beamPos[i][1] < 0.001F) this.beamPos[i][1] = 0.001F;
+        		if (this.beamPos[i][1] < 0F && this.beamPos[i][1] > -0.001F) this.beamPos[i][1] = -0.001F;
+        	}
+        }
+        break;
         }
         
     }

@@ -905,7 +905,7 @@ public class GuiShipInventory extends GuiContainer
 					if (this.entity instanceof IShipInvisible)
 					{
 						float temp2 = attrs.getAttrsBuffed(ID.Attrs.DODGE) + ((IShipInvisible)this.entity).getInvisibleLevel();
-						if (temp2 > ConfigHandler.limitShipAttrs[ID.Attrs.DODGE]) temp2 = (int) ConfigHandler.limitShipAttrs[ID.Attrs.DODGE];
+						if (temp2 > ConfigHandler.limitShipAttrs[ID.Attrs.DODGE]) temp2 = (float) ConfigHandler.limitShipAttrs[ID.Attrs.DODGE];
 						overText = String.format("%.0f", temp2 * 100F) + " %";
 					}
 					//calc dodge for normal ship

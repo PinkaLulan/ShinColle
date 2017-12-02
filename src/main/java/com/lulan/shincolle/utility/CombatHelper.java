@@ -16,6 +16,7 @@ import com.lulan.shincolle.reference.unitclass.Attrs;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
@@ -304,6 +305,88 @@ public class CombatHelper
     	}
     	
     	return 40;
+    }
+    
+    /**
+     * get missile move type
+     * type: 0:melee, 1:light, 2:heavy, 3:air-light, 4:air-heavy
+     */
+    public static int calcMissileMoveType(IShipAttackBase host, double tarY, int type)
+    {
+		int moveType = host.getMissileData(type).movetype;
+		
+		//moveType = -1, check depth
+		if (moveType < 0)
+		{
+			double depth = host.getShipDepth(0);
+			
+			//in water
+			if (depth > 2D)
+	        {
+				moveType = 0;
+	        }
+			//on water
+			else if (depth > 0D)
+	        {
+				//target is lower
+				if (tarY <= ((Entity) host).posY)
+				{
+					moveType = 2;
+				}
+				//target is higher
+				else
+				{
+					moveType = 1;
+				}
+	        }
+			//on solid block
+			else
+			{
+				moveType = 1;
+			}
+		}
+		
+		return moveType;
+    }
+    
+    /** get missile move type for airplane */
+    public static int calcMissileMoveTypeForAirplane(IShipAttackBase host, Entity target, int type)
+    {
+		int moveType = host.getMissileData(type).movetype;
+		
+		if (moveType < 0)
+		{
+			boolean targetliq = EntityHelper.checkEntityIsInLiquid(target);
+			boolean hostliq = EntityHelper.checkEntityIsInLiquid((Entity)host);
+			boolean hostunderliq = BlockHelper.checkBlockIsLiquid(target.world.getBlockState(new BlockPos(((Entity)host).posX, target.posY, ((Entity)host).posZ)));
+			
+			//host in water
+			if (hostliq)
+	        {
+				moveType = 0;
+	        }
+			//on water
+			else if (targetliq && hostunderliq)
+	        {
+				//target is lower
+				if (target.posY <= ((Entity) host).posY)
+				{
+					moveType = 2;
+				}
+				//target is higher
+				else
+				{
+					moveType = 0;
+				}
+	        }
+			//on solid block
+			else
+			{
+				moveType = 0;
+			}
+		}
+		
+		return moveType;
     }
 	
 	

@@ -76,7 +76,7 @@ public class EntityDestroyerI extends BasicEntityShipSmall
   					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
   				{
   					//potion effect: id, time, level
-  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.SPEED , 300, getStateMinor(ID.M.ShipLevel) / 45 + 1));
+  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.SPEED , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 45, false, false));
   				}
   			}
   		}

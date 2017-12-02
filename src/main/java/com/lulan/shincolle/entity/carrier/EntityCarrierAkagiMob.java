@@ -1,5 +1,7 @@
 package com.lulan.shincolle.entity.carrier;
 
+import java.util.HashMap;
+
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostileCV;
 import com.lulan.shincolle.reference.ID;
@@ -46,6 +48,16 @@ public class EntityCarrierAkagiMob extends BasicEntityShipHostileCV
 			this.setSize(0.6F, 1.875F);
 		break;
 		}
+	}
+	
+	@Override
+	public void initAttrsServerPost()
+	{
+		super.initAttrsServerPost();
+		
+		//add attack effects
+		if (this.AttackEffectMap == null) this.AttackEffectMap = new HashMap<Integer, int[]>();
+		this.AttackEffectMap.put(17, new int[] {(int)(this.getScaleLevel() / 3), 100+this.getScaleLevel()*50, 25+this.getScaleLevel()*25});
 	}
 	
 	@Override
