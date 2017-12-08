@@ -152,6 +152,12 @@ public class EquipCalc
 				int meta = equip.getMetadata();
 				IShipEffectItem eitem = (IShipEffectItem) equip.getItem();
 				
+				//apply enchant shell effect
+				if (meta == 7 && eitem == ModItems.EquipAmmo)
+				{
+					BuffHelper.addEffectToAttackEffectMapFromStack(ship, equip);
+				}
+				
 				//apply effect on attack
 				Map<Integer, int[]> emap = eitem.getEffectOnAttack(meta);
 				

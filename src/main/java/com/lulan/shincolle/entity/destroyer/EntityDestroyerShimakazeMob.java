@@ -142,6 +142,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		//missile type
 		float launchPos = (float) posY + height * 0.7F;
 		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 2);
+		if (moveType == 1) moveType = 0;
 		
         //calc dist to target
         Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);

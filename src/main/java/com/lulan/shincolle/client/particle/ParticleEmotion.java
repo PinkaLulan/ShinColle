@@ -91,7 +91,7 @@ public class ParticleEmotion extends Particle
         	//no stay
         	this.stayTick = 0;
         	break;
-        case 3:   //問號R
+        case 3:   //問號
         	this.particleIconX = 0.125F;
         	this.particleIconY = 0F;
         	this.particleMaxAge = 7;

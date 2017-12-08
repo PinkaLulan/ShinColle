@@ -79,7 +79,6 @@ public class OwnerPaper extends BasicItem
         return new ActionResult(EnumActionResult.PASS, stack);
     }
 	
-	//display equip information
     @Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
     {

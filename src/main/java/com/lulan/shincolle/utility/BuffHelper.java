@@ -15,6 +15,7 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.item.EquipAmmo;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Attrs;
@@ -26,11 +27,13 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * BUFF HELPER
@@ -41,11 +44,11 @@ import net.minecraft.util.math.BlockPos;
    3  haste:          attack spd++
    4  mining fatigue: attack spd--
    5  strength:       dmg, kb
-   6  instant heal:   heal (2% + 2)/lv
-   7  instant dmg:    hurt (2% + 2)/lv
+   6  instant heal:   heal (1% + 2)/lv
+   7  instant dmg:    hurt (1% + 2)/lv
    8  jump:           range++
    9  nausea:         miss -0.4/lv
-   10 regen:          heal (2% + 2)/lv every x ticks
+   10 regen:          heal (1% + 2)/lv every x ticks
    11 resis:          reduce missile dmg 20%/lv
    12 fire resis:     reduce non-missile dmg 20%/lv
    13 water breath:   dodge, ASM
@@ -55,7 +58,7 @@ import net.minecraft.util.math.BlockPos;
    17 hunger:         grudge consumption +100%/lv (multiplier)
    18 weak:           dmg, kb
    19 poison:         def, kb
-   20 wither:         hurt (2% + 2)/lv until dead
+   20 wither:         hurt (1% + 2)/lv until dead
    21 heal boost:     max hp
    22 absorption:     def
    23 saturation:     morale +N/lv every x ticks
@@ -277,8 +280,9 @@ public class BuffHelper
 				potion[ID.Attrs.DEF] += -0.25F * lv;
 				potion[ID.Attrs.KB] += -0.1F * lv;
 			break;
-			case 21: //heal boost: hp +200
-				potion[ID.Attrs.HP] += 200F * lv;
+			case 21: //heal boost: hp +150
+				potion[ID.Attrs.HP] += 150F * lv;
+				potion[ID.Attrs.HPRES] += 0.5F * lv;
 			break;
 			case 22: //absorb: hp +100, def +20%
 				potion[ID.Attrs.HP] += 100F * lv;
@@ -330,18 +334,18 @@ public class BuffHelper
 			
 			switch(id)
 			{
-			case 10: //regen: heal 2% + 2 every ticking
-				host.heal((hp1p * 2F + 2F) * lv);
+			case 10: //regen: heal X every ticking
+				host.heal((hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
 			break;
-			case 20: //wither: hurt 2% + 2 until dead
-				host.attackEntityFrom(DamageSource.magic, (hp1p * 2F + 2F) * lv);
+			case 20: //wither: hurt X until dead
+				host.attackEntityFrom(DamageSource.magic, (hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
 			break;
 			case 23: //saturation: morale +N/lv, friendly ship only
+				host.heal((hp1p * 1F + 2F) * (0.8F + (float)lv * 0.2F));
 				if (host instanceof BasicEntityShip)
 				{
 					BasicEntityShip ship = (BasicEntityShip) host;
-					ship.addGrudge((int)((float)(ConfigHandler.buffSaturation * lv) * host.getAttrs().getAttrsBuffed(ID.Attrs.GRUDGE)));
-					ship.addMorale(20);
+					ship.addMorale(ConfigHandler.buffSaturation * lv);
 				}
 			break;
 			}
@@ -363,7 +367,18 @@ public class BuffHelper
 			{
 				effects.forEach((id, content) ->
 				{
-					PotionEffect pe = convertIdToPotion(id, content[0], content[1]);
+					PotionEffect pe = null;
+					
+					//for instant heal, damage
+					if (id == 6 || id == 7)
+					{
+						pe = convertIdToPotion(id, content[0], 5);
+					}
+					//for other effect
+					else
+					{
+						pe = convertIdToPotion(id, content[0], content[1]);
+					}
 					
 					if (pe != null && ent.getRNG().nextInt(100) < content[2])
 					{
@@ -600,7 +615,7 @@ public class BuffHelper
 				//return heal value by potion level
 				if (level > 0)
 				{
-					return heal + (hp1p * 2F + 2F) * level;
+					return heal + (hp1p * 1F + 3F) * (1F + (float)level * 0.5F);
 				}
 			}
 		}
@@ -624,7 +639,7 @@ public class BuffHelper
 					//return heal value by potion level
 					if (level > 0)
 					{
-						return heal + (hp1p * 2F + 2F) * level;
+						return heal + (hp1p * 1F + 6F) * (1F + (float)level * 0.5F);
 					}
 				}
 			}
@@ -1007,7 +1022,6 @@ public class BuffHelper
   		
   		//get ship map
   		Map<Integer, int[]> smap = ship.getAttackEffectMap();
-  		if (smap == null) smap = new HashMap<Integer, int[]>();
   		
   		//add emap to ship map
   		Iterator iter = emap.entrySet().iterator();
@@ -1017,6 +1031,33 @@ public class BuffHelper
   			Map.Entry<Integer, int[]> entry = (Entry<Integer, int[]>) iter.next();
   			smap.put(entry.getKey(), entry.getValue());
   		}
+  	}
+  	
+  	/** add new effect to ship's attack effect map from itemstack */
+  	public static void addEffectToAttackEffectMapFromStack(BasicEntityShip ship, ItemStack stack)
+  	{
+  		//null check
+  		if (ship == null || stack == null || !stack.hasTagCompound()) return;
+  		
+  		//get ship map
+  		Map<Integer, int[]> smap = ship.getAttackEffectMap();
+  		NBTTagCompound nbt = stack.getTagCompound();
+  		NBTTagList nbtlist = nbt.getTagList(EquipAmmo.PLIST, Constants.NBT.TAG_COMPOUND);
+  		int pid = 0;
+  		int plv = 0;
+  		int ptime = 0;
+  		int pchance = 0;
+  		NBTTagCompound nbtX = null;
+  		
+  		for (int i = 0; i < nbtlist.tagCount(); i++)
+        {
+            nbtX = nbtlist.getCompoundTagAt(i);
+            pid = nbtX.getInteger(EquipAmmo.PID);
+            plv = nbtX.getInteger(EquipAmmo.PLEVEL);
+            ptime = nbtX.getInteger(EquipAmmo.PTIME);
+            pchance = nbtX.getInteger(EquipAmmo.PCHANCE);
+            smap.put(pid, new int[] {plv, ptime, pchance});
+        }
   	}
   	
 	

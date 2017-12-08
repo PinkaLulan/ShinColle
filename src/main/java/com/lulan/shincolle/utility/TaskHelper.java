@@ -7,10 +7,12 @@ import java.util.List;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.config.ConfigMining;
 import com.lulan.shincolle.config.ConfigMining.ItemEntry;
+import com.lulan.shincolle.crafting.InventoryCraftingFake;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicItem;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -23,10 +25,14 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -35,6 +41,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTableList;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * helper for cooking, mining, fishing... etc.
@@ -46,7 +53,7 @@ public class TaskHelper
 	public TaskHelper() {}
 	
 	/**
-	 * update task
+	 * update task, called every 8 ticks
 	 * 
 	 * StateMinor[ID.M.Task]:
 	 *   task ID
@@ -85,8 +92,262 @@ public class TaskHelper
 	{
 		//null check
 		if (host == null) return;
+		
+		//check held item is recipe paper
+		CapaShipInventory invShip = host.getCapaShipInventory();
+		ItemStack paper = host.getHeldItemMainhand();
+		if (paper == null || paper.getItem() != ModItems.RecipePaper) return;
+		
+		//check slot 12~20 is empty (for materials)
+		for (int i = 12; i <= 20; i++)
+		{
+			if (invShip.getStackInSlot(i) != null)
+			{
+				if (host.getRNG().nextInt(9) == 0)
+				{
+					//apply emote
+					switch (host.getRNG().nextInt(4))
+					{
+					case 1:
+						host.applyParticleEmotion(22);  //X
+					break;
+					case 2:
+						host.applyParticleEmotion(5);   //...
+					break;
+					case 3:
+						host.applyParticleEmotion(28);  //一口一
+					break;
+					default:
+						host.applyParticleEmotion(32);  //尷尬
+					break;
+					}
+				}
 				
-		//TODO
+				return;
+			}
+		}
+		
+		//check guard position
+		BlockPos pos = new BlockPos(host.getGuardedPos(0), host.getGuardedPos(1), host.getGuardedPos(2));
+		if (pos == null || pos.getY() <= 0) return;
+		
+		//check guard type
+		if (host.getGuardedPos(4) != 1) return;
+		
+		//check dimension
+		if (host.world.provider.getDimension() != host.getGuardedPos(3)) return;
+		
+		//check guard position is waypoint
+		TileEntity te = host.world.getTileEntity(pos);
+		if (!(te instanceof TileEntityWaypoint)) return;
+		
+		//check wapoint has paired chest
+		pos = ((TileEntityWaypoint) te).getPairedChest();
+		if (pos == null || pos.getY() <= 0) return;
+		
+		//check paired chest is IInventory
+		te = host.world.getTileEntity(pos);
+		if (!(te instanceof IInventory)) return;
+		IInventory chest = (IInventory) te;
+		
+		//check distance
+		if (host.getDistanceSq(pos) > 25D)
+		{
+			//too far away, move to guard (waypoint) position
+			host.getShipNavigate().tryMoveToXYZ(host.getGuardedPos(0), host.getGuardedPos(1), host.getGuardedPos(2), 1D);
+			return;
+		}
+		
+		//check recipe is valid
+		InventoryCraftingFake recipe = new InventoryCraftingFake(3, 3);
+		ItemStack result = null;
+		
+		if (paper.hasTagCompound())
+        {
+			//get recipe
+        	NBTTagCompound nbt = paper.getTagCompound();
+        	NBTTagList tagList = nbt.getTagList("Recipe", Constants.NBT.TAG_COMPOUND);
+        	
+            for (int i = 0; i < 9; i++)
+            {
+                NBTTagCompound itemTags = tagList.getCompoundTagAt(i);
+                int slot = itemTags.getInteger("Slot");
+
+                if (slot >= 0 && slot < 9)
+                {
+                	recipe.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(itemTags));
+                }
+            }
+            
+            //get result
+            result = CraftingManager.getInstance().findMatchingRecipe(recipe, host.world);
+            
+            //check result exist
+            if (result == null) return;
+        }
+		else
+		{
+			return;
+		}
+		
+		/** start crafting */
+		int maxCraft = host.getLevel() / 30 + 1;	//max item per 8 ticks
+		ItemStack tempStack = null;
+		int taskSide = host.getStateMinor(ID.M.TaskSide);
+		boolean checkMetadata = (taskSide & Values.N.Pow2[18]) == Values.N.Pow2[18];
+		boolean checkOredict = (taskSide & Values.N.Pow2[19]) == Values.N.Pow2[19];
+		boolean checkNbt = (taskSide & Values.N.Pow2[20]) == Values.N.Pow2[20];
+		InventoryCraftingFake recipeTemp = new InventoryCraftingFake(3, 3);
+		ItemStack resultTemp = null;
+		boolean canAddExp = false;
+		int maxtimes = maxCraft;  //備用while跳出判定, 避免情況太複雜而無法達到跳出條件
+		
+		while (maxCraft > 0)
+		{
+			maxtimes--;
+			if (maxtimes <= 0) break;
+			
+			//check slot 12~20 is empty (for materials)
+			for (int i = 12; i <= 20; i++)
+			{
+				if (invShip.getStackInSlot(i) != null)
+				{
+					if (host.getRNG().nextInt(8) == 0)
+					{
+						//apply emote
+						switch (host.getRNG().nextInt(4))
+						{
+						case 1:
+							host.applyParticleEmotion(22);  //X
+						break;
+						case 2:
+							host.applyParticleEmotion(5);   //...
+						break;
+						case 3:
+							host.applyParticleEmotion(28);  //一口一
+						break;
+						default:
+							host.applyParticleEmotion(32);  //尷尬
+						break;
+						}
+					}
+					
+					maxCraft = 0;
+				}
+			}
+			
+			if (maxCraft <= 0) break;
+			
+			//move materials from chest to ship's inventory slot 12~20
+			for (int i = 0; i < 9; i++)
+			{
+				tempStack = recipe.getStackInSlot(i);
+				
+				if (tempStack == null)
+				{
+					recipeTemp.setInventorySlotContents(i, null);
+					continue;
+				}
+				
+				invShip.setInventorySlotContents(i + 12, InventoryHelper.getAndRemoveItem(chest, tempStack, 1, checkMetadata, checkNbt, checkOredict, null));
+				recipeTemp.setInventorySlotContents(i, invShip.getStackInSlot(i + 12));
+			}
+			
+			//check recipeTemp valid
+            resultTemp = CraftingManager.getInstance().findMatchingRecipe(recipeTemp, host.world);
+
+            //get crafting result
+            if (resultTemp != null)
+            {
+            	//check result is same with recipe result
+            	if (!InventoryHelper.matchTargetItem(resultTemp, result, checkMetadata, checkNbt, checkOredict))
+            	{
+            		//not same, return
+            		break;
+            	}
+            	
+            	//crafting number -1
+            	maxCraft--;
+            	canAddExp = true;
+            	
+            	//move result to chest or drop on ground
+            	if (!InventoryHelper.moveItemstackToInv(chest, resultTemp, null) || resultTemp.stackSize > 0)
+            	{
+            		//put stack on ground
+            		EntityItem entityitem = new EntityItem(host.world, host.posX, host.posY, host.posZ, resultTemp);
+            		entityitem.motionX = host.getRNG().nextGaussian() * 0.08D;
+    	            entityitem.motionY = host.getRNG().nextGaussian() * 0.05D + 0.2D;
+    	            entityitem.motionZ = host.getRNG().nextGaussian() * 0.08D;
+    	            host.world.spawnEntity(entityitem);
+            	}
+            	
+            	//clear material slot in ship inventory
+            	for (int i = 0; i < 9; i++)
+            	{
+            		invShip.setInventorySlotContents(i + 12, null);
+            	}
+            	
+            	//move remaining item to chest (bucket, bottle...)
+            	ItemStack[] remainStacks = CraftingManager.getInstance().getRemainingItems(recipeTemp, host.world);
+            	
+                for (int i = 0; i < remainStacks.length; ++i)
+                {
+                    if (remainStacks[i] != null)
+                    {
+                    	//move to chest
+                    	if (!InventoryHelper.moveItemstackToInv(chest, remainStacks[i], null) && remainStacks[i].stackSize > 0)
+                    	{
+                    		//move failed, drop on ground
+                    		EntityItem entityitem = new EntityItem(host.world, host.posX, host.posY, host.posZ, remainStacks[i]);
+                    		entityitem.motionX = host.getRNG().nextGaussian() * 0.08D;
+            	            entityitem.motionY = host.getRNG().nextGaussian() * 0.05D + 0.2D;
+            	            entityitem.motionZ = host.getRNG().nextGaussian() * 0.08D;
+                            host.world.spawnEntity(entityitem);
+                    	}
+                    }
+                }//end move remaining item
+            }//end move result item
+            //no result item, return
+            else
+            {
+            	break;
+            }
+		}//end while crafting
+		
+		//add exp and consume grudge
+		if (canAddExp)
+		{
+			//add exp and consume grudge
+			host.addShipExp(ConfigHandler.expGainTask[3]);
+			host.decrGrudgeNum(ConfigHandler.consumeGrudgeTask[3]);
+			host.addMorale(-5);
+			
+			//swing arm
+			if (host.getRNG().nextInt(4) == 0) host.swingArm(EnumHand.MAIN_HAND);
+			
+			//apply emotion
+			if (host.getRNG().nextInt(5) == 0)
+			{
+				switch (host.getRNG().nextInt(5))
+				{
+				case 1:
+					host.applyParticleEmotion(2);  //噴汗
+				break;
+				case 2:
+					host.applyParticleEmotion(7);  //note
+				break;
+				case 3:
+					host.applyParticleEmotion(13);  //點頭
+				break;
+				case 4:
+					host.applyParticleEmotion(30);  //pif
+				break;
+				default:
+					host.applyParticleEmotion(21);  //O
+				break;
+				}
+			}
+		}//end add exp
 	}
 	
 	/**
@@ -509,7 +770,7 @@ public class TaskHelper
 					}
 					else
 					{
-						if (host.getRNG().nextInt(8) > 6)
+						if (host.getRNG().nextInt(7) == 0)
 						{
 							switch (host.getRNG().nextInt(5))
 							{

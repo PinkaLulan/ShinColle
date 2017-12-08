@@ -325,7 +325,7 @@ public class ID
 		public static final byte AMMO_DU = 4;
 		public static final byte AMMO_G = 5;
 		public static final byte AMMO_AG = 6;
-		public static final byte AMMO_E = 6;
+		public static final byte AMMO_E = 7;
 	}
 	
 	/** entity flag index */
@@ -371,7 +371,7 @@ public class ID
 		public static final int FORMATION = 5;
 		public static final int CRANE = 6;
 		public static final int VOLCORE = 7;
-		public static final int TASK = 8;
+		public static final int RECIPE = 8;
 	}
 	
 	/** icon id for book GUI */

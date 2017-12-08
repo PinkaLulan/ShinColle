@@ -10,6 +10,7 @@ import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EnchantHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -151,7 +152,7 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
             float[] main = Values.EquipAttrsMain.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));
             int[] misc = Values.EquipAttrsMisc.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));
     		
-    		if (main != null && misc != null)
+            if (main != null && misc != null)
         	{
     			//apply enchant effect
     			main = EquipCalc.calcEquipStatWithEnchant(misc[ID.EquipMisc.EQUIP_TYPE], main, EnchantHelper.calcEnchantEffect(stack));

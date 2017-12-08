@@ -497,7 +497,9 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		//damage ignore def value
 		else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
 		{
-			checkDEF = false;
+			//ignore atk < 1% max hp
+			if (atk < this.getMaxHealth() * 0.01F) return false;
+			return super.attackEntityFrom(source, atk);
 		}
 		//out of world
 		else if (source == DamageSource.outOfWorld)
@@ -535,7 +537,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 			{
 				return false;
 			}
-			LogHelper.debug("GGGGGG ");
+			
 			//進行def計算
 			float reducedAtk = atk;
 			

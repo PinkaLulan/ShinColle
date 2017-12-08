@@ -503,10 +503,10 @@ public class InventoryHelper
 	 */
 	public static int matchTargetItemExceptSlots(IInventory inv, ItemStack temp, boolean checkMetadata, boolean checkNbt, boolean checkOredict, int[] exceptSlots)
 	{
-		if (exceptSlots == null || temp == null) return -1;
+		if (temp == null) return -1;
 		
 		//inventory is ship inv
-		if(inv instanceof CapaShipInventory)
+		if (inv instanceof CapaShipInventory)
 		{
 			CapaShipInventory shipInv = (CapaShipInventory) inv;
 			
@@ -516,32 +516,6 @@ public class InventoryHelper
 				if (CalcHelper.checkIntNotInArray(i, exceptSlots))
 				{
 					if (matchTargetItem(shipInv.getStackInSlotWithPageCheck(i), temp, checkMetadata, checkNbt, checkOredict)) return i;
-				}
-			}
-		}
-		//inventory is vanilla chest
-		else if (inv instanceof TileEntityChest)
-		{
-			//check main chest
-			for (int i = 0; i < inv.getSizeInventory(); i++)
-			{
-				if (CalcHelper.checkIntNotInArray(i, exceptSlots))
-				{
-					if (matchTargetItem(inv.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) return i;
-				}
-			}
-			
-			//check adj chest
-			TileEntityChest chest2 = TileEntityHelper.getAdjChest((TileEntityChest) inv);
-			
-			if (chest2 != null)
-			{
-				for (int i = 0; i < chest2.getSizeInventory(); i++)
-				{
-					if (CalcHelper.checkIntNotInArray(i, exceptSlots))
-					{
-						if (matchTargetItem(chest2.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) return i;
-					}
 				}
 			}
 		}
@@ -558,6 +532,235 @@ public class InventoryHelper
 		}
 		
 		return -1;
+	}
+	
+	/**
+	 * get and remove temp item from inventory, return item
+	 */
+	public static ItemStack getAndRemoveItem(IInventory inv, ItemStack temp, int number, boolean checkMetadata, boolean checkNbt, boolean checkOredict, int[] exceptSlots)
+	{
+		if (temp == null || number <= 0) return null;
+		if (number > 64) number = 64;
+		
+		ItemStack getItem = null;
+		ItemStack getTemp = null;
+		boolean searchItem = true;
+		int slotid = -1;
+		
+		//if vanilla chest
+		if (inv instanceof TileEntityChest)
+		{
+			while (searchItem)
+			{
+				slotid = matchTargetItemExceptSlots(inv, temp, checkMetadata, checkNbt, checkOredict, exceptSlots);
+				
+				//item not found, search adj chest
+				if (slotid < 0)
+				{
+					TileEntityChest adjChest = TileEntityHelper.getAdjChest((TileEntityChest) inv);
+					
+					if (adjChest != null)
+					{
+						slotid = matchTargetItemExceptSlots(adjChest, temp, checkMetadata, checkNbt, checkOredict, exceptSlots);
+						
+						//item not found in adj chest, return
+						if (slotid < 0)
+						{
+							return getItem;
+						}
+						
+						//get item in chest
+						getTemp = adjChest.getStackInSlot(slotid);
+						
+						//got something before, check stack size
+						if (getItem != null)
+						{
+							if (number > 0)
+							{
+								int minsize = Math.min(getTemp.stackSize, number);
+								number -= minsize;
+								getTemp.stackSize -= minsize;
+								getItem.stackSize += minsize;
+								
+								//clear slot if size <= 0
+								if (getTemp.stackSize <= 0)
+								{
+									adjChest.setInventorySlotContents(slotid, null);
+								}
+							}
+							else
+							{
+								return getItem;
+							}
+						}
+						//get new item
+						else
+						{
+							//set new item as temp
+							temp = getTemp.copy();
+							checkMetadata = true;
+							checkNbt = true;
+							checkOredict = true;
+							
+							//take item from chest
+							if (number > 0)
+							{
+								int minsize = Math.min(getTemp.stackSize, number);
+								number -= minsize;
+								getTemp.stackSize -= minsize;
+								getItem = getTemp.copy();
+								getItem.stackSize = minsize;
+								
+								//clear slot if size <= 0
+								if (getTemp.stackSize <= 0)
+								{
+									adjChest.setInventorySlotContents(slotid, null);
+								}
+							}
+							else
+							{
+								return getItem;
+							}
+						}
+					}//end get adj chest
+					//no adj chest, return
+					else
+					{
+						return getItem;
+					}
+				}//end check adj chest
+				else
+				{
+					getTemp = inv.getStackInSlot(slotid);
+					
+					//got something before, check stack size
+					if (getItem != null)
+					{
+						if (number > 0)
+						{
+							int minsize = Math.min(getTemp.stackSize, number);
+							number -= minsize;
+							getTemp.stackSize -= minsize;
+							getItem.stackSize += minsize;
+							
+							//clear slot if size <= 0
+							if (getTemp.stackSize <= 0)
+							{
+								inv.setInventorySlotContents(slotid, null);
+							}
+						}
+						else
+						{
+							return getItem;
+						}
+					}
+					//get new item
+					else
+					{
+						//set new item as temp
+						temp = getTemp.copy();
+						checkMetadata = true;
+						checkNbt = true;
+						checkOredict = true;
+						
+						//take item from chest
+						if (number > 0)
+						{
+							int minsize = Math.min(getTemp.stackSize, number);
+							number -= minsize;
+							getTemp.stackSize -= minsize;
+							getItem = getTemp.copy();
+							getItem.stackSize = minsize;
+							
+							//clear slot if size <= 0
+							if (getTemp.stackSize <= 0)
+							{
+								inv.setInventorySlotContents(slotid, null);
+							}
+						}
+						else
+						{
+							return getItem;
+						}
+					}//end is new item
+				}//end get item from inv
+				
+				if (number <= 0) return getItem;
+			}//end while search item
+		}
+		//other inventory
+		else
+		{
+			while (searchItem)
+			{
+				slotid = matchTargetItemExceptSlots(inv, temp, checkMetadata, checkNbt, checkOredict, exceptSlots);
+				
+				//item not found, return
+				if (slotid < 0)
+				{
+					return getItem;
+				}
+				else
+				{
+					getTemp = inv.getStackInSlot(slotid);
+					
+					//got something before, check stack size
+					if (getItem != null)
+					{
+						if (number > 0)
+						{
+							int minsize = Math.min(getTemp.stackSize, number);
+							number -= minsize;
+							getTemp.stackSize -= minsize;
+							getItem.stackSize += minsize;
+							
+							//clear slot if size <= 0
+							if (getTemp.stackSize <= 0)
+							{
+								inv.setInventorySlotContents(slotid, null);
+							}
+						}
+						else
+						{
+							return getItem;
+						}
+					}
+					//get new item
+					else
+					{
+						//set new item as temp
+						temp = getTemp.copy();
+						checkMetadata = true;
+						checkNbt = true;
+						checkOredict = true;
+						
+						//take item from chest
+						if (number > 0)
+						{
+							int minsize = Math.min(getTemp.stackSize, number);
+							number -= minsize;
+							getTemp.stackSize -= minsize;
+							getItem = getTemp.copy();
+							getItem.stackSize = minsize;
+							
+							//clear slot if size <= 0
+							if (getTemp.stackSize <= 0)
+							{
+								inv.setInventorySlotContents(slotid, null);
+							}
+						}
+						else
+						{
+							return getItem;
+						}
+					}//end is new item
+				}//end get item from inv
+				
+				if (number <= 0) return getItem;
+			}//end while search item
+		}
+		
+		return getItem;
 	}
 	
 	/**
@@ -726,7 +929,7 @@ public class InventoryHelper
 	 * slots: specified slots, if null = all slots
 	 * return true if item moved
 	 */
-	public static boolean moveItemstackToInv(IInventory inv, ItemStack moveitem, int[] slots)
+	public static boolean moveItemstackToInv(IInventory inv, ItemStack moveitem, int[] toSlots)
 	{
 		boolean moved = false;
 		
@@ -736,7 +939,7 @@ public class InventoryHelper
 			//invTo is ship inv
 			if (inv instanceof CapaShipInventory)
 			{
-				moved = mergeItemStack(inv, moveitem, slots);
+				moved = mergeItemStack(inv, moveitem, toSlots);
 			}
 			//invTo is vanilla chest
 			else if (inv instanceof TileEntityChest)
@@ -745,7 +948,7 @@ public class InventoryHelper
 				TileEntityChest chest2 = null;
 				
 				//move to main chest
-				moved = mergeItemStack(chest, moveitem, slots);
+				moved = mergeItemStack(chest, moveitem, toSlots);
 				
 				//move fail, check adj chest
 				if (!moved)
@@ -754,13 +957,13 @@ public class InventoryHelper
 					chest2 = TileEntityHelper.getAdjChest(chest);
 					
 					//move to adj chest
-					if (chest2 != null) moved = mergeItemStack(chest2, moveitem, slots);
+					if (chest2 != null) moved = mergeItemStack(chest2, moveitem, toSlots);
 				}//end move to adj chest
 			}
 			//other normal inv
 			else
 			{
-				moved = mergeItemStack(inv, moveitem, slots);
+				moved = mergeItemStack(inv, moveitem, toSlots);
 			}
 			
 		}//end move item

@@ -1,11 +1,18 @@
 package com.lulan.shincolle.item;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.Potion;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**meta:
@@ -21,7 +28,12 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class EquipAmmo extends BasicEquip implements IShipEffectItem
 {
 	
-	private static final String NAME = "EquipAmmo";
+	public static final String NAME = "EquipAmmo";
+	public static final String PID = "PID";		//nbt tag name for Enchant Shell
+	public static final String PLEVEL = "PLV";
+	public static final String PTIME = "PTick";
+	public static final String PCHANCE = "PChance";
+	public static final String PLIST = "PList";
 	
 	
 	public EquipAmmo()
@@ -145,5 +157,56 @@ public class EquipAmmo extends BasicEquip implements IShipEffectItem
 		return 0;
 	}
 	
+	@Override
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+    {
+		super.addInformation(stack, player, list, par4);
+		
+		//show enchant shell tags
+		if (stack.getMetadata() == 7 && stack.hasTagCompound())
+		{
+			NBTTagCompound nbt = stack.getTagCompound();
+	  		NBTTagList nbtlist = nbt.getTagList(EquipAmmo.PLIST, Constants.NBT.TAG_COMPOUND);
+	  		int pid = 0;
+	  		int plv = 0;
+	  		int ptime = 0;
+	  		int pchance = 0;
+	  		NBTTagCompound nbtX = null;
+	  		String name = null;
+	  		
+	  		for (int i = 0; i < nbtlist.tagCount(); i++)
+	        {
+	            nbtX = nbtlist.getCompoundTagAt(i);
+	            pid = nbtX.getInteger(EquipAmmo.PID);
+	            Potion pt = Potion.getPotionById(pid);
+	            
+	            if (pt != null)
+	            {
+	            	String s1 = I18n.format(pt.getName()).trim();
+		            plv = nbtX.getInteger(EquipAmmo.PLEVEL) + 1;
+		            ptime = nbtX.getInteger(EquipAmmo.PTIME) / 20;
+		            pchance = nbtX.getInteger(EquipAmmo.PCHANCE);
+		            list.add(I18n.format("gui.shincolle:equip.enchantshell", pchance, s1, plv, ptime));
+	            }
+	        }
+		}
+		
+		//show other effect
+		Map<Integer, int[]> emap = getEffectOnAttack(stack.getMetadata());
+		
+		if (emap != null && emap.size() > 0)
+		{
+			emap.forEach((pid, pdata) ->
+			{
+				Potion pt = Potion.getPotionById(pid);
+				
+				if (pt != null)
+	            {
+					String s1 = I18n.format(pt.getName()).trim();
+					list.add(I18n.format("gui.shincolle:equip.enchantshell", pdata[2], s1, pdata[0]+1, pdata[1]/20));
+	            }
+			});
+		}
+    }
 	
 }

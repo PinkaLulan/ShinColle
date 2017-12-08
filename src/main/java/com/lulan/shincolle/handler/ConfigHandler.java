@@ -46,6 +46,7 @@ public class ConfigHandler
 	public static int teamCooldown = 6000;
 	public static int despawnBoss = 12000;
 	public static int despawnMinion = 600;
+	public static int despawnEgg = 12000;
 	public static int kaitaiAmountSmall = 20;
 	public static int kaitaiAmountLarge = 20;
 	public static int baseCaressMorale = 20;
@@ -60,7 +61,7 @@ public class ConfigHandler
 	public static boolean enableIC2 = true;
 	
 	//BUFF DEBUFF
-	public static int buffSaturation = 20;
+	public static int buffSaturation = 100;
 	
 	//DESK
 	public static int radarUpdate = 128;	//radar update interval (ticks)
@@ -184,10 +185,13 @@ public class ConfigHandler
 		debugMode = config.getBoolean("Mode_Debug", CATE_GENERAL, false, "Enable debug message (SPAM WARNING)");
 		
 		//boss刪除時間 (ticks)
-		despawnBoss = config.getInt("Despawn_Boss", CATE_GENERAL, 12000, -1, 1728000, "Boss ship despawn time on chunk unloading, -1 = do NOT despawn");
+		despawnBoss = config.getInt("Despawn_Boss", CATE_GENERAL, 12000, -1, 1728000, "Despawn time of boss ship , -1 = do NOT despawn");
 		
 		//雜魚刪除時間 (ticks)
-		despawnMinion = config.getInt("Despawn_Minion", CATE_GENERAL, 600, -1, 1728000, "Nonboss ship despawn time on chunk unloading, -1 = do NOT despawn");
+		despawnMinion = config.getInt("Despawn_Minion", CATE_GENERAL, 600, -1, 1728000, "Despawn time of nonboss ship, -1 = do NOT despawn");
+		
+		//野生生怪蛋刪除時間 (ticks)
+		despawnEgg = config.getInt("Despawn_Egg", CATE_GENERAL, 12000, -1, 1728000, "Despawn time of spawn egg of ship mob, -1 = do NOT despawn");
 				
 		//grudge掉落率設定
 		dropGrudge = config.getFloat("DropRate_Grudge", CATE_GENERAL, 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");

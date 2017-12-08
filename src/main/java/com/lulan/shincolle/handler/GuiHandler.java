@@ -5,6 +5,7 @@ import com.lulan.shincolle.client.gui.GuiCrane;
 import com.lulan.shincolle.client.gui.GuiDesk;
 import com.lulan.shincolle.client.gui.GuiFormation;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
+import com.lulan.shincolle.client.gui.GuiRecipePaper;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
 import com.lulan.shincolle.client.gui.GuiVolCore;
@@ -12,10 +13,12 @@ import com.lulan.shincolle.client.gui.inventory.ContainerCrane;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerRecipePaper;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
 import com.lulan.shincolle.client.gui.inventory.ContainerVolCore;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
@@ -26,6 +29,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -138,6 +142,15 @@ public class GuiHandler implements IGuiHandler
 				
 				return new ContainerCrane(player.inventory, (TileEntityCrane) tile);
 			}
+			
+			return null;
+		case ID.Gui.RECIPE:  //recipe paper
+			ItemStack stack = player.inventory.getCurrentItem();
+			
+			if (stack != null && stack.getItem() == ModItems.RecipePaper)
+			{
+				return new ContainerRecipePaper(world, player.inventory, stack);
+			}
 			return null;
 		}
 		
@@ -206,6 +219,14 @@ public class GuiHandler implements IGuiHandler
 			if (tile instanceof TileEntityCrane)
 			{
 				return new GuiCrane(player.inventory, (TileEntityCrane) tile);
+			}
+			return null;
+		case ID.Gui.RECIPE:
+			ItemStack stack = player.inventory.getCurrentItem();
+			
+			if (stack != null && stack.getItem() == ModItems.RecipePaper)
+			{
+				return new GuiRecipePaper(player, stack);
 			}
 			return null;
 		}

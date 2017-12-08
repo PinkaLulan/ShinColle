@@ -53,7 +53,6 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.numRensouhou = 6;
 		
 		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
@@ -182,6 +181,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		//missile type
 		float launchPos = (float) posY + height * 0.7F;
 		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 2);
+		if (moveType == 1) moveType = 0;
 		
         //calc dist to target
         Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);

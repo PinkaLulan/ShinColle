@@ -22,7 +22,6 @@ import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -636,7 +635,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
                 	}//end can be collided with
           		}//end is attackable
             }//end hit target list for loop
-  
+            
             //send packet to client for display partical effect
             TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
             CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 2, false), point);

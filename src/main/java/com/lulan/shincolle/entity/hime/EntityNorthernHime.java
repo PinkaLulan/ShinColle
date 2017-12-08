@@ -63,9 +63,6 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		this.goRiding = false;
 		this.launchHeight = this.height;
 		
-		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = true;
-		
 		//misc
 		this.setFoodSaturationMax(16);
 		

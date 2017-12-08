@@ -18,7 +18,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -40,9 +39,6 @@ public class EntityMidwayHime extends BasicEntityShipCV
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 0.7F;
-		
-		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = false; //TODO NYI
 		
 		//misc
 		this.setFoodSaturationMax(35);
@@ -130,78 +126,6 @@ public class EntityMidwayHime extends BasicEntityShipCV
 		default: //melee
 			return this.shipAttrs.getAttackDamage();
   		}
-  	}
-	
-	//attack a position with missile
-    @Override
-  	public boolean attackEntityWithHeavyAmmo(BlockPos target)
-  	{
-    	return super.attackEntityWithHeavyAmmo(target);	//TODO
-  	}
-
-	/**
-	 * TODO
-	 */
-	@Override
-  	public boolean attackEntityWithHeavyAmmo(Entity target)
-	{
-		return super.attackEntityWithHeavyAmmo(target);
-//  		//get attack value
-//  		float atk = this.getAttackBaseDamage(2, target);
-//  		float launchPos = (float)posY + 0.4F;
-//		
-//        //calc dist to target
-//        Dist4d distVec = EntityHelper.getDistanceFromA2B(this, target);
-//  		
-//  		if (this.getRidingEntity() instanceof BasicEntityMount)
-//  		{
-//  			launchPos = (float)posY - 1.2F;
-//  		}
-//  		
-//  		//experience++
-//  		addShipExp(ConfigHandler.expGain[2]);
-//  		
-//  		//grudge--
-//  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-//  		
-//  		//morale--
-//  		decrMorale(2);
-//  		setCombatTick(this.ticksExisted);
-//  	
-//  		//play attack effect
-//        applySoundAtAttacker(2, target);
-//	    applyParticleAtAttacker(2, target, distVec);
-//          
-//  		//heavy ammo--
-//  		if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-//  		
-//	    float tarX = (float) target.posX;
-//	    float tarY = (float) target.posY;
-//	    float tarZ = (float) target.posZ;
-//	    
-//	    //if miss
-//		if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
-//	    {
-//        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-//        	tarY = tarY + this.rand.nextFloat() * 5F;
-//        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-//        	
-//        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-//        }
-//  		
-//  		//spawn missile
-//  		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, 
-//          		tarX, tarY+target.height*0.35F, tarZ, launchPos, atk, 0.15F, true, 0.3F);
-//  		this.world.spawnEntity(missile);
-//  		
-//  		//play target effect
-//        applySoundAtTarget(2, target);
-//        applyParticleAtTarget(2, target, distVec);
-//      	applyEmotesReaction(3);
-//      	
-//      	if (ConfigHandler.canFlare) flareTarget(target);
-//      	
-//  		return true;
   	}
 
   	//true if use mounts

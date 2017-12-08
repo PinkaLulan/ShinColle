@@ -31,6 +31,7 @@ import com.lulan.shincolle.item.MarriageRing;
 import com.lulan.shincolle.item.ModernKit;
 import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.item.PointerItem;
+import com.lulan.shincolle.item.RecipePaper;
 import com.lulan.shincolle.item.RepairGoddess;
 import com.lulan.shincolle.item.ShipSpawnEgg;
 import com.lulan.shincolle.item.ShipTank;
@@ -77,6 +78,7 @@ public class ModItems
 	public static BasicItem ModernKit;
 	public static BasicItem OwnerPaper;
 	public static BasicItem PointerItem;
+	public static BasicItem RecipePaper;
 	public static BasicItem RepairGoddess;
 	public static BasicItem ShipTank;
 	public static BasicItem TargetWrench;
@@ -128,6 +130,7 @@ public class ModItems
 		ModernKit = initItems(ModernKit.class);
 		OwnerPaper = initItems(OwnerPaper.class);
 		PointerItem = initItems(PointerItem.class);
+		RecipePaper = initItems(RecipePaper.class);
 		RepairGoddess = initItems(RepairGoddess.class);
 		ShipTank = initItems(ShipTank.class);
 		TargetWrench = initItems(TargetWrench.class);

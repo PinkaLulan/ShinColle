@@ -46,7 +46,6 @@ public class EntityCANe extends BasicEntityShipSmall
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
-		this.StateFlag[ID.F.HaveRingEffect] = true;
 		
 		//misc
 		this.setFoodSaturationMax(14);

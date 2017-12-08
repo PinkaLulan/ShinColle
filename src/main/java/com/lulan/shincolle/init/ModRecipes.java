@@ -1,5 +1,7 @@
 package com.lulan.shincolle.init;
 
+import com.lulan.shincolle.crafting.RecipeEnchantShell;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -88,6 +90,7 @@ public class ModRecipes
 		ItemStack shiptank1 = new ItemStack(ModItems.ShipTank, 1, 1);
 		ItemStack shiptank2 = new ItemStack(ModItems.ShipTank, 1, 2);
 		ItemStack shiptank3 = new ItemStack(ModItems.ShipTank, 1, 3);
+		ItemStack recipepaper = new ItemStack(ModItems.RecipePaper);
 		
 		//SHAPELESS RECIPE
 		//abyssium material:
@@ -114,6 +117,7 @@ public class ModRecipes
 		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.PAPER));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(waypoint, grudeStack, Items.STICK));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(recipepaper, grudeStack, Items.PAPER, "gemLapis"));
 		//combat ration
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration0, Items.BREAD, Items.GOLDEN_CARROT, grudeStack, "cookedRice"));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration1, ration0, ModBlocks.BlockGrudge, ModBlocks.BlockPolymetalGravel));
@@ -209,6 +213,8 @@ public class ModRecipes
 		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank1,"mtm","mtm","mtm",'m',Blocks.OBSIDIAN,'t',shiptank0));
 		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank2,"mtm","mtm","mtm",'m',abyssiumBlock,'t',shiptank1));
 		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank3,"mtm","mtm","mtm",'m',grudeHeavyBlock,'t',shiptank2));
+		//enchant shell
+		GameRegistry.addRecipe(new RecipeEnchantShell());
 	}
 
 	

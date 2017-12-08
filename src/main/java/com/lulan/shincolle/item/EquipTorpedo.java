@@ -1,10 +1,14 @@
 package com.lulan.shincolle.item;
 
+import java.util.List;
 import java.util.Map;
 
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**meta:
@@ -127,6 +131,19 @@ public class EquipTorpedo extends BasicEquip implements IShipEffectItem
 			return 0;
 		}
 	}
+	
+	@Override
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+    {
+		super.addInformation(stack, player, list, par4);
+		
+		int level = getMissileSpeedLevel(stack.getMetadata());
+		
+		if (level != 0)
+		{
+			list.add(TextFormatting.GRAY + I18n.format("gui.shincolle:equip.torpedospeed", level));
+		}
+    }
 	
 	
 }

@@ -46,7 +46,6 @@ public class EntityBattleshipRu extends BasicEntityShip
 		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
 		
 		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		
@@ -145,7 +144,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 				
 				//spawn missile
 				MissileData md = this.getMissileData(2);
-				float[] data = new float[] {getAttackBaseDamage(2, null), 0.15F, (float)this.posY + this.height,
+				float[] data = new float[] {getAttackBaseDamage(2, null), 0.15F, (float)this.posY + this.height * 0.4F,
 						this.skillTarget.getX() + this.rand.nextFloat() * 8F - 4F,
 						this.skillTarget.getY() + this.rand.nextFloat() * 4F - 2F,
 						this.skillTarget.getZ() + this.rand.nextFloat() * 8F - 4F, 160, 0.35F, md.vel0, md.accY1, md.accY2};

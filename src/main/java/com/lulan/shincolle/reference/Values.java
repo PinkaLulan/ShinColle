@@ -553,7 +553,7 @@ public class Values
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_DU * 100,      			new float[]{0F,  12F, 0F,  12F, 0F,  0F,   0F,   -0.06F, 3F,   0.09F, 0.06F, 0.06F, 0.06F, 0F,  0F,  0F,   0F,   0F,   0.2F, 0F,   0F});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_G * 100,        		new float[]{0F,  2F,  0F,  2F,  0F,  0F,   -0.1F,-0.06F, -2F,  0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_AG * 100,      			new float[]{0F,  2F,  0F,  2F,  0F,  0F,   -0.1F,-0.02F, 2F,   0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
-		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_E * 100,        		new float[]{0F,  0F,  0F,  0F,  0F,  0F,   -0.2F,-0.01F, 1F,   0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_E * 100,        		new float[]{0F,  0F,  0F,  0F,  0F,  0F,   -0.2F,-0.01F, -2F,  0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
 	}});
 	
 	/**

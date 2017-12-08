@@ -41,7 +41,6 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		this.launchHeight = this.height * 0.9F;
 		
 		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_Light] = false;
 		this.StateFlag[ID.F.AtkType_Heavy] = false;
 		

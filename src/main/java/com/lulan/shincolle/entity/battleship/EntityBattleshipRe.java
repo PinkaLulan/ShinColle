@@ -55,8 +55,6 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.ModelPos = new float[] {-6F, 25F, 0F, 40F};
 		this.launchHeight = this.height * 0.8F;
 		
-		this.StateFlag[ID.F.HaveRingEffect] = true;
-		
 		this.postInit();
 	}
 

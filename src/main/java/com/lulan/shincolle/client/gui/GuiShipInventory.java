@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
@@ -22,7 +23,6 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.GuiHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -309,6 +309,7 @@ public class GuiShipInventory extends GuiContainer
 	{
 		//reset color & draw background
 		GlStateManager.color(1F, 1F, 1F, 1F);
+		GlStateManager.enableBlend();
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_BG);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
         
@@ -597,6 +598,7 @@ public class GuiShipInventory extends GuiContainer
     		
     		//draw button: task icon
     		drawTexturedModalRect(guiLeft + 174, guiTop + 136, 87, 214, 64, 16);
+    		drawTexturedModalRect(guiLeft + 174, guiTop + 138, 151, 237, 64, 16);
     		
     		switch (this.entity.getStateMinor(ID.M.Task))
     		{
@@ -696,6 +698,43 @@ public class GuiShipInventory extends GuiContainer
         //draw AI page indicator
         drawTexturedModalRect(guiLeft + this.pageIndicator, guiTop + this.pageIndicatorAI, 74, 214, 6, 11);
         
+        //draw task icon and task slot background
+        if (this.showPageInv == 0)
+        {
+			switch (this.entity.getStateMinor(ID.M.Task))
+			{
+			case 1:  //cooking
+				drawTexturedModalRect(guiLeft + 25, guiTop + 107, 33, 225, 18, 18);
+				drawTexturedModalRect(guiLeft + 26, guiTop + 109, 151, 236, 18, 18);
+		    break;
+			case 2:  //fishing
+				drawTexturedModalRect(guiLeft + 25, guiTop + 107, 33, 225, 18, 18);
+				drawTexturedModalRect(guiLeft + 26, guiTop + 109, 167, 236, 18, 18);
+		    break;
+			case 3:  //mining
+				drawTexturedModalRect(guiLeft + 25, guiTop + 107, 33, 225, 18, 18);
+				drawTexturedModalRect(guiLeft + 26, guiTop + 109, 183, 236, 18, 18);
+		    break;
+			case 4:  //crafting
+				drawTexturedModalRect(guiLeft + 25, guiTop + 107, 33, 225, 18, 18);
+				drawTexturedModalRect(guiLeft + 26, guiTop + 109, 199, 236, 18, 18);
+				
+				CapaShipInventory inv = this.entity.getCapaShipInventory();
+				for (int i = 0; i < 9; i++)
+				{
+					if (inv.getStackInSlot(i + 12) == null)
+					{
+						drawTexturedModalRect(guiLeft + 7 + (i % 3) * 18, guiTop + 53 + (i / 3) * 18, 33, 225, 18, 18);
+					}
+					else
+					{
+						drawTexturedModalRect(guiLeft + 7 + (i % 3) * 18, guiTop + 53 + (i / 3) * 18, 51, 225, 18, 18);
+					}
+				}
+		    break;
+			}
+        }
+        
         //draw level, ship type/name icon
         Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
         
@@ -749,6 +788,8 @@ public class GuiShipInventory extends GuiContainer
         
         //draw entity model                                            guiLeft + 200 - xMouse  guiTop + 50 - yMouse
         drawEntityModel(guiLeft+218, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.shipRiding);
+        
+        GlStateManager.disableBlend();
 	}
 	
 	//draw ship morale

@@ -4,6 +4,11 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Optional;
+import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.utility.EntityHelper;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityTracker;
@@ -24,10 +29,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.google.common.base.Optional;
-import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.utility.EntityHelper;
 
 /** custom entity item with:
  *  1. owner checking
@@ -117,13 +118,31 @@ public class BasicEntityItem extends Entity
 	@Override
     public void onUpdate()
     {
+		//client side
+		if (this.world.isRemote)
+		{
+			//play portal sound
+			if ((this.ticksExisted & 31) == 0 && rand.nextInt(3) == 0)
+	        {
+	            this.world.playSound(posX + 0.5D, posY + 0.5D, posZ + 0.5D, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 0.5F, rand.nextFloat() * 0.4F + 0.8F, false);
+	        }
+		}
+		//server side
+		else
+		{
+			//despawn ship mob egg
+			if (this.ticksExisted > ConfigHandler.despawnEgg)
+			{
+				ItemStack stack = this.getEntityItem();
+				
+				if (!stack.hasTagCompound())
+				{
+					this.setDead();
+				}
+			}
+		}
+		
 		this.setPosition(posX, posY, posZ);
-
-		//play portal sound
-		if (this.world.isRemote && rand.nextInt(50) == 0)
-        {
-            this.world.playSound(posX + 0.5D, posY + 0.5D, posZ + 0.5D, SoundEvents.BLOCK_PORTAL_AMBIENT, SoundCategory.BLOCKS, 0.5F, rand.nextFloat() * 0.4F + 0.8F, false);
-        }
 		
 		if(this.getEntityItem() == null)
 		{
@@ -135,7 +154,6 @@ public class BasicEntityItem extends Entity
 			this.prevPosX = this.posX;
 			this.prevPosY = this.posY;
 			this.prevPosZ = this.posZ;
-          
 			this.motionX *= 0.5D;
 			this.motionY *= 0.5D;
 			this.motionZ *= 0.5D;
@@ -156,7 +174,6 @@ public class BasicEntityItem extends Entity
         {
             --this.delayBeforeCanPickup;
         }
-        
     }
 	
 	//immune to fire and lava
@@ -526,31 +543,6 @@ public class BasicEntityItem extends Entity
                     				player.inventory.addItemStackToInventory(itemstack);
                     			}
                     		}
-                    		
-                    		
-                    		//TODO old method
-//                    		int pid1 = nbt.getInteger("PlayerID");
-//                    		int pid2 = EntityHelper.getPlayerUID(player);
-//                    		
-//                    		//check player UID
-//                    		if (pid1 <= 0)
-//                    		{	//ship's player UID isn't inited (old ship)
-//                    			//check player UUID
-//                    			String uuid1 = nbt.getString("owner");
-//                    			String uuid2 = player.getUniqueID().toString();
-//                    			
-//                    			if (uuid2.equals(uuid1))
-//                    			{
-//                    				player.inventory.addItemStackToInventory(itemstack);
-//                    			}
-//                    		}
-//                    		else
-//                    		{	//get legal player UID
-//                    			if (pid1 == pid2)
-//                    			{
-//                    				player.inventory.addItemStackToInventory(itemstack);
-//                    			}
-//                    		}
                     	}
                     	//ship egg w/o tag
                     	else

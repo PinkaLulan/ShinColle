@@ -206,7 +206,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
 								        true, false, true, true, true,
-								        true, true, false, true, false,
+								        true, true, true, true, false,
 								        false, false, true, true, false,
 								        true, false
 								       };
@@ -1721,7 +1721,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					if (this.getLevel() < 150)
 					{
 						int lv = this.getLevel() + 5 + this.rand.nextInt(6);
-						if (lv > 150) lv = 150;
+						int lvcap = this.getStateFlag(ID.F.IsMarried) ? 150 : 100;
+						if (lv > lvcap) lv = lvcap;
 						
 						this.setShipLevel(lv, true);
 						

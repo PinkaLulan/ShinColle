@@ -45,7 +45,6 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		this.launchHeight = this.height * 1.2F;
 		
 		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_Heavy] = false;
 		
 		//misc

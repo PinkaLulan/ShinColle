@@ -37,7 +37,6 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.ModelPos = new float[] {-3F, 20F, 0F, 45F};
 		
 		//set attack type
-		this.StateFlag[ID.F.HaveRingEffect] = true;
 		this.StateFlag[ID.F.AtkType_Light] = false;
 		this.StateFlag[ID.F.AtkType_Heavy] = false;
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
