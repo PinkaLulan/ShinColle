@@ -191,7 +191,7 @@ public class TaskHelper
 		}
 		
 		/** start crafting */
-		int maxCraft = host.getLevel() / 30 + 1;	//max item per 8 ticks
+		int maxCraft = host.getLevel() / 20 + 1;	//max item per 8 ticks
 		ItemStack tempStack = null;
 		int taskSide = host.getStateMinor(ID.M.TaskSide);
 		boolean checkMetadata = (taskSide & Values.N.Pow2[18]) == Values.N.Pow2[18];
@@ -320,10 +320,10 @@ public class TaskHelper
 			//add exp and consume grudge
 			host.addShipExp(ConfigHandler.expGainTask[3]);
 			host.decrGrudgeNum(ConfigHandler.consumeGrudgeTask[3]);
-			host.addMorale(-5);
+			host.addMorale(-10);
 			
 			//swing arm
-			if (host.getRNG().nextInt(4) == 0) host.swingArm(EnumHand.MAIN_HAND);
+			host.swingArm(EnumHand.MAIN_HAND);
 			
 			//apply emotion
 			if (host.getRNG().nextInt(5) == 0)

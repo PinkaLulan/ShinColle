@@ -449,6 +449,8 @@ public class ID
 		public static final short Tank2 = 69;
 		public static final short Tank3 = 70;
 		public static final short Cauldron = 71;
+		public static final short Lapis = 72;
+		public static final short RecipePaper = 73;
 	}
 	
 	/** hp state index */

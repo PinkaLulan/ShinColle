@@ -384,6 +384,9 @@ gui.shincolle:book.chap1.text24d1=
 gui.shincolle:book.chap1.title25=Abyssal Fluid Drum
 gui.shincolle:book.chap1.text25d0=<br><br><br><br><br><br><br><br><br>A fluid container for ship fluid transport. There are 4 sizes of fluid container.<br>Ship have to equip at least one §9Abyssal Pumps Station§0 to transfer fluid to the containers in the ship's inventory at Abyssal Crane.
 gui.shincolle:book.chap1.text25d1=
+gui.shincolle:book.chap1.title26=Crafting Recipe
+gui.shincolle:book.chap1.text26d0=<br><br><br><br><br><br><br><br><br>Right click to set recipe for ship's crafting task.<br><br>Please see chap.3 for more details.
+gui.shincolle:book.chap1.text26d1=
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
@@ -460,17 +463,17 @@ gui.shincolle:book.chap3.title15=Caress
 gui.shincolle:book.chap3.text15d0=The owner can caress ship to reward or simply harass her. A correct caress can §9improve the shop's morale§0 effectively.<br><br>To caress ship, hold §dWo-Class Command Scepter§0 and press §9List Players (default: TAB)§0 to change to caress mode, and §9Right Click§0 on the ship.
 gui.shincolle:book.chap3.text15d1=Caress target is determined by the cross and the relative face angle between owner and ship.<br><br>The target are: top, head, face, neck, chest, belly, under belly, leg, arm, back.<br><br>Different individuals have different sensitive part, be careful of the reaction when caressing.
 gui.shincolle:book.chap3.title16=Cooking
-gui.shincolle:book.chap3.text16d0=Ship can help the owner to cook item:<br><br>§91.§0 Click the raw beef icon in AI options<br>§92.§0 Put the item to be cooked to mainhand slot (the most middle and lower slot in the first page)<br>§93.§0 Put the fuel item to offhand slot (option)<br>§94.§0 check metadata/forge ore dict./nbt tag in the same AI page (option)<br>§95.§0 move ship to an Abyssal Waypoint<br>§96.§0 link the waypoint and furnace block by Target Wrench 
-gui.shincolle:book.chap3.text16d1=§97.§0 set the input/output/fuel side of the furnace in AI option (B:Bottom T:Top N:North S:South W:West E:East)<br>§98.§0 ship will start cooking the target item except main/offhand slot<br><br>Cooking is a difficult job, less experienced ship sometimes produce some dark matter in cooking.  
+gui.shincolle:book.chap3.text16d0=Ship can help the owner to cook item:<br><br>§91.§0 Click the raw beef icon in AI options<br>§92.§0 Put the item to be cooked to mainhand slot (the most middle and lower slot in the first page)<br>§93.§0 Put the fuel item to offhand slot. (option)<br>§94.§0 Check metadata/forge ore dict/nbt tag in the same AI page. (option)<br>§95.§0 Move ship to an Abyssal Waypoint.<br>§96.§0 Link the waypoint and a furnace block by Target Wrench. 
+gui.shincolle:book.chap3.text16d1=§97.§0 Set the input/output/fuel side of the furnace in AI option. (B:Bottom T:Top N:North S:South W:West E:East)<br>§98.§0 Ship will start cooking the target item except main/offhand slot.<br><br>Cooking is a difficult job, less experienced ship sometimes produce some dark matter in cooking.  
 gui.shincolle:book.chap3.title17=Fishing
-gui.shincolle:book.chap3.text17d0=Ship can go fishing to feed the owner:<br><br>§91.§0 Click the fishing rod icon in AI options<br>§92.§0 Put the fishing rod to mainhand slot<br>§93.§0 move the ship to the pool with depth >= 3 blocks
+gui.shincolle:book.chap3.text17d0=Ship can go fishing to feed the owner:<br><br>§91.§0 Click the fishing rod icon in AI options.<br>§92.§0 Put the fishing rod to mainhand slot.<br>§93.§0 Move the ship to the pool with depth >= 3 blocks.
 gui.shincolle:book.chap3.text17d1=§9"Luck of the Sea"§0 enchantment on the fishing rod and luck potion can increase the rate of rare drop from fishing. 
 gui.shincolle:book.chap3.title18=Mining
-gui.shincolle:book.chap3.text18d0=Ship can go mining to feed the lazy owner:<br><br>§91.§0 Click the pickaxe icon in AI options<br>§92.§0 Put the pickaxe to mainhand slot<br>§93.§0 move the ship to the mine with a lot of solid blocks
+gui.shincolle:book.chap3.text18d0=Ship can go mining to feed the lazy owner:<br><br>§91.§0 Click the pickaxe icon in AI options.<br>§92.§0 Put the pickaxe to mainhand slot.<br>§93.§0 Move the ship to the mine with a lot of solid blocks.
 gui.shincolle:book.chap3.text18d1=Ship can get ores without breaking blocks.<br><br>§9"Fortune"§0 enchantment on the pickaxe and luck potion can increase the number of rare drop from mining.<br><br>The mining result is related to world, biome, y level, ship level and pickaxe type.
 gui.shincolle:book.chap3.title19=Crafting
-gui.shincolle:book.chap3.text19d0=(NYI)
-gui.shincolle:book.chap3.text19d1=
+gui.shincolle:book.chap3.text19d0=Ship can craft items for owner:<br><br>§91.§0 Use §cCrafting Recipe§0 to set recipe.<br>§92.§0 Click the crafting icon in AI options.<br>§93.§0 Put the recipe to mainhand slot (the most middle and lower slot in the first page).<br>§94.§0 Clear slots in ship's inventory in 3,4,5 row.<br>§95.§0 Move ship to an Abyssal Waypoint.<br>§96.§0 Link the waypoint and a chest block by Target Wrench.<br>§97.§0 Put some materials in chest to start crafting.
+gui.shincolle:book.chap3.text19d1=Ship level will affect the number of items can be crafted at a time.<br><br>NOTE: Ship will drop crafting items if chest is full. 
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List

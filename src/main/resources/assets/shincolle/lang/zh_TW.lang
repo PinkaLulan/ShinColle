@@ -384,7 +384,10 @@ gui.shincolle:book.chap1.text24d1=
 gui.shincolle:book.chap1.title25=深海液體運輸罐
 gui.shincolle:book.chap1.text25d0=<br><br><br><br><br><br><br><br><br>可以裝載各種液體以方便船艦運輸的容器，有四種大小等級。將運輸罐放置於船艙任何欄位中，然後船艦裝備至少一個§9深海抽水機組§0即可於深海起重機中裝載液體或在水面上抽取液體。
 gui.shincolle:book.chap1.text25d1=
- 
+gui.shincolle:book.chap1.title26=合成配方
+gui.shincolle:book.chap1.text26d0=<br><br><br><br><br><br><br><br><br>右鍵使用可以設定合成配方，用來給太太們作為合成物品的參考。<br><br>請查閱第三章中的說明。
+gui.shincolle:book.chap1.text26d1=
+
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
 gui.shincolle:book.chap2.title0=建造初級深海棲艦
@@ -461,7 +464,7 @@ gui.shincolle:book.chap3.text15d0=主人可以藉由撫摸來獎勵或者單純�
 gui.shincolle:book.chap3.text15d1=依照十字游標所指到的棲艦§9高度位置§0跟§9前後左右角度§0，會撫摸到的部位分為：頭頂、頭、臉、脖子、歐派、肚子、下腹部、腳、手、屁股、背後。<br><br>不同棲艦個體會有不同的敏感部位，請撫摸時小心注意其反應。
 gui.shincolle:book.chap3.title16=烹飪
 gui.shincolle:book.chap3.text16d0=船艦們現在可以幫主人完成燒製物品的工作：<br><br>§91.§0 在船艦的AI選項中點選生肉圖示<br>§92.§0 在船艦的物品欄主手位置(第一頁最中下格)放置欲燒製材料<br>§93.§0 在船艦的物品欄副手位置(第一頁最右下格)放置燃料或不放任合物品<br>§94.§0 烹飪圖示下面可設定是否判定物品的meta值/是否參考forge礦石字典/是否核對NBT值相同<br>§95.§0 指定船艦移動到一個深海路徑點<br>§96.§0 使用扳手將深海路徑點連結到目標熔爐方塊
-gui.shincolle:book.chap3.text16d1=§97.§0 船艦的AI選項中需要設定熔爐的輸入/輸出/燃料的操作方向(B:底部 T:頂端 N:北面 S:南面 W:西面 E:東面)<br>8. 以上全部設置好後就會開始燒製除了主副手欄位以外的目標物品<br><br>烹飪是一件有相當難度的工作，經驗較低的船艦可能會燒出某些黑色物質-.-
+gui.shincolle:book.chap3.text16d1=§97.§0 船艦的AI選項中需要設定熔爐的輸入/輸出/燃料的操作方向(B:底部 T:頂端 N:北面 S:南面 W:西面 E:東面)<br>§98.§0 以上全部設置好後就會開始燒製除了主副手欄位以外的目標物品<br><br>烹飪是一件有相當難度的工作，經驗較低的船艦可能會燒出某些黑色物質-.-
 gui.shincolle:book.chap3.title17=釣魚
 gui.shincolle:book.chap3.text17d0=船艦們現在可以幫主人出海捕撈食物以補貼家計：<br><br>§91.§0 在船艦的AI選項中點選釣竿圖示<br>§92.§0 在船艦的物品欄主手位置(第一頁最中下格)放置釣竿<br>§93.§0 將船艦指定移動到在水深達到3格以上的水池附近<br>§94.§0 以上全部設置好後就會開始釣魚
 gui.shincolle:book.chap3.text17d1=釣竿的§9"海洋的祝福"§0附魔以及對船艦使用幸運藥水可以提高稀有漁獲的數量。
@@ -469,8 +472,8 @@ gui.shincolle:book.chap3.title18=採礦
 gui.shincolle:book.chap3.text18d0=船艦們現在可以幫忙採礦以養活懶惰的主人：<br><br>§91.§0 在船艦的AI選項中點選採礦鎬圖示<br>§92.§0 在船艦的物品欄主手位置(第一頁最中下格)放置採礦鎬<br>§93.§0 將船艦放置在充滿石頭等固體方塊的環境中<br>§94.§0 以上全部設置好後就會開始採礦
 gui.shincolle:book.chap3.text18d1=船艦不會破壞方塊就能採到礦石。<br><br>採礦鎬的§9"幸運"§0附魔以及對船艦使用幸運藥水可以提高稀有礦石的獲得量。<br><br>採到的礦石種類跟船艦所在的世界/生態系/所在Y高度/船艦等級/採礦鎬等級有關
 gui.shincolle:book.chap3.title19=合成
-gui.shincolle:book.chap3.text19d0=(NYI)
-gui.shincolle:book.chap3.text19d1=
+gui.shincolle:book.chap3.text19d0=船艦們現在可以幫主人合成物品：<br><br>§91.§0 先使用§c合成配方§0道具來設定配方<br>§92.§0 在船艦的AI選項中點選合成圖示<br>§93.§0 在船艦的物品欄主手位置(第一頁最中下格)放入配方<br>§94.§0 清空船艦物品欄的第3,4,5行<br>§95.§0 指定船艦移動到一個深海路徑點<br>§96.§0 使用扳手將深海路徑點連結到一個箱子<br>§97.§0 在箱子中放入合成材料，合成就會自動開始。
+gui.shincolle:book.chap3.text19d1=船艦的等級會影響一次可合成的物品個數。<br><br>注意若目標箱子滿了，則合成好的物品會被丟到地上。
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=深海棲艦列表

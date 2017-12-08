@@ -825,6 +825,8 @@ public class Values
 		put(ID.Icon.Tank2,      new ItemStack(ModItems.ShipTank, 1, 2));
 		put(ID.Icon.Tank3,      new ItemStack(ModItems.ShipTank, 1, 3));
 		put(ID.Icon.Cauldron,   new ItemStack(Items.CAULDRON));
+		put(ID.Icon.Lapis,      new ItemStack(Items.DYE, 1, 4));
+		put(ID.Icon.RecipePaper,new ItemStack(ModItems.RecipePaper));
 	}});
 	
 	
@@ -1155,6 +1157,14 @@ public class Values
 								new int[] {2, 6, 23, 37, ID.Icon.Tank2},
 								new int[] {2, 6, 43, 37, ID.Icon.GrudgeBH},
 								new int[] {2, 6, 81, 17, ID.Icon.Tank3}));
+		//page 26: recipe paper
+		put(1023, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 0, 3,  17, ID.Icon.Grudge},
+								new int[] {2, 0, 23, 17, ID.Icon.Paper},
+								new int[] {2, 0, 43, 17, ID.Icon.Lapis},
+								new int[] {2, 0, 81, 17, ID.Icon.RecipePaper}));
 		//chap 2: construction
 		//page 0: vent
 		put(2000, Arrays.asList(new int[] {0, 0, 0, 0},
