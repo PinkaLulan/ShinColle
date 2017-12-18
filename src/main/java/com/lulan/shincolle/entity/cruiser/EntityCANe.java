@@ -87,7 +87,7 @@ public class EntityCANe extends BasicEntityShipSmall
     	if(!this.world.isRemote)
     	{
     		//check every 128 ticks
-    		if (this.ticksExisted % 128 == 0)
+    		if (this.ticksExisted % 128 == 0 && !this.isMorph)
     		{
 	    		//apply potion effect in the night
 	        	if (!this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))

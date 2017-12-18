@@ -20,6 +20,7 @@ import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -79,7 +80,13 @@ public class CapaTeitoku implements ICapaTeitoku
 	
 	//target selector
 	private HashMap<Integer, String> targetClassMap;	//temp for client side, used in GUI
-
+	
+	//inter-mod
+	public EntityLivingBase morphEntity;
+	public int numGrudge;
+	public int numAmmoLight;
+	public int numAmmoHeavy;
+	
 	
 	/**
 	 * 注意constructor會在entity之前就先new, 外加會接著跑一次loadNBTData
@@ -114,6 +121,10 @@ public class CapaTeitoku implements ICapaTeitoku
 		this.mapTeamData = new HashMap<Integer, TeamData>();
 		this.listTeamData = new ArrayList<TeamData>();
 		this.targetClassMap = new HashMap<Integer, String>();
+		this.morphEntity = null;
+		this.numGrudge = 0;
+		this.numAmmoLight = 0;
+		this.numAmmoHeavy = 0;
 		
 		//need init
 		this.needInit = true;
@@ -145,6 +156,9 @@ public class CapaTeitoku implements ICapaTeitoku
 		nbtExt.setInteger("BossCD", bossCooldown);
 		nbtExt.setInteger("PlayerUID", playerUID);
 		nbtExt.setInteger("TeamCD", teamCooldown);
+		nbtExt.setInteger("NumGrudge", numGrudge);
+		nbtExt.setInteger("NumAmmoL", numAmmoLight);
+		nbtExt.setInteger("NumAmmoH", numAmmoHeavy);
 		
 		//save player name
 		try
@@ -249,7 +263,9 @@ public class CapaTeitoku implements ICapaTeitoku
 			bossCooldown = nbtExt.getInteger("BossCD");
 			playerUID = nbtExt.getInteger("PlayerUID");
 			teamCooldown = nbtExt.getInteger("TeamCD");
-//			playerName = nbtExt.getString("PlayerName");  //player name is SAVE ONLY
+			numGrudge = nbtExt.getInteger("NumGrudge");
+			numAmmoLight = nbtExt.getInteger("NumAmmoL");
+			numAmmoHeavy = nbtExt.getInteger("NumAmmoH");
 			
 			//load colle list
 			int[] arrtemp = nbtExt.getIntArray("ColleShip");

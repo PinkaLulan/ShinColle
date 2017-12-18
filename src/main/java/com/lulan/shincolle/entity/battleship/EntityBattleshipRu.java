@@ -110,7 +110,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 					}
 					
 					//every 128 ticks
-		    		if ((this.ticksExisted & 127) == 0)
+		    		if ((this.ticksExisted & 127) == 0 && !this.isMorph)
 		    		{
 			    		//apply potion effect in the night
 			        	if (this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))

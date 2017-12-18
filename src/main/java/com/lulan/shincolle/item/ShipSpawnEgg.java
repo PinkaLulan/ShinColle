@@ -182,6 +182,7 @@ public class ShipSpawnEgg extends BasicItem
 		case ID.ShipClass.IsolatedHime+2:
 		case ID.ShipClass.MidwayHime+2:
 		case ID.ShipClass.NorthernHime+2:
+		case ID.ShipClass.SubmarineHime+2:
 			return 9;
 		case ID.ShipClass.CarrierWO+2:				//CV
 		case ID.ShipClass.CarrierKaga+2:
@@ -227,6 +228,7 @@ public class ShipSpawnEgg extends BasicItem
   		shipList.add(ID.ShipClass.IsolatedHime+2);
   		shipList.add(ID.ShipClass.MidwayHime+2);
   		shipList.add(ID.ShipClass.NorthernHime+2);
+  		shipList.add(ID.ShipClass.SubmarineHime+2);
   		shipList.add(ID.ShipClass.CarrierWD+2);
   		//hostile ship
   		shipList.add(ID.ShipClass.DestroyerAkatsuki+2);

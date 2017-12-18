@@ -118,7 +118,7 @@ public class EntityDestroyerInazumaMob extends BasicEntityShipHostile implements
   		//server side
   		else
   		{
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				this.checkIsRaiden();
   			}

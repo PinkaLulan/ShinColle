@@ -34,7 +34,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-abstract public class BasicEntitySummon extends EntityLiving implements IShipCannonAttack, IShipCustomTexture
+abstract public class BasicEntitySummon extends EntityLiving implements IShipCannonAttack, IShipCustomTexture, IShipMorph
 {
 	
     //attributes
@@ -57,6 +57,10 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 	protected int startEmotion, startEmotion2, attackTime, attackTime2;		//表情timer
 	protected boolean headTilt;
 	public boolean initScale;
+	
+	//for inter-mod
+	protected boolean isMorph = false;		//is a morph entity, for Metamorph mod
+	protected EntityPlayer morphHost;
 	
 	
     public BasicEntitySummon(World world)
@@ -925,6 +929,30 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
 
 	@Override
 	public void setMissileData(int type, MissileData data) {}
+	
+	@Override
+	public boolean isMorph()
+	{
+		return this.isMorph;
+	}
+
+	@Override
+	public void setIsMorph(boolean par1)
+	{
+		this.isMorph = par1;
+	}
+
+	@Override
+	public EntityPlayer getMorphHost()
+	{
+		return this.morphHost;
+	}
+
+	@Override
+	public void setMorphHost(EntityPlayer player)
+	{
+		this.morphHost = player;
+	}
 	
 	
 }

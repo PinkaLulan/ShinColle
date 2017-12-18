@@ -100,6 +100,9 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticle(Entity target, byte type, boolean setAtkTime)
 	{
+		//null check
+		if (target == null) return;
+				
 		if (setAtkTime && target instanceof IShipEmotion)
 		{
 			((IShipEmotion) target).setAttackTick(50);
@@ -563,6 +566,9 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity ent, double par1, double par2, double par3, byte type)
 	{
+		//null check
+		if (ent == null) return;
+		
 		World world = Minecraft.getMinecraft().world;
 		EntityLivingBase host = null;
 		
@@ -839,6 +845,9 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity ent, byte type, double[] parms)
 	{
+		//null check
+		if (ent == null) return;
+				
 		World world = Minecraft.getMinecraft().world;
 		
 		switch (type)
@@ -857,21 +866,16 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAtEntity(Entity host, Entity target, double par1, double par2, double par3, byte type, boolean setAtkTime)
 	{
+		//null check
+		if (host == null || target == null) return;
+				
 		World world = Minecraft.getMinecraft().world;
 		EntityLivingBase host2 = null;
 		
-		//null check
-		if (host == null || target == null)
-		{
-			return;
-		}
 		//set attack time, EntityLivingBase only
-		else
+		if (setAtkTime && host instanceof IShipEmotion)
 		{
-			if (setAtkTime && host instanceof IShipEmotion)
-			{
-				((IShipEmotion) host).setAttackTick(50);
-			}
+			((IShipEmotion) host).setAttackTick(50);
 		}
 		
 		//get target position
@@ -1019,6 +1023,9 @@ public class ParticleHelper
 	@SideOnly(Side.CLIENT)
 	public static void spawnAttackParticleAt(String text, double posX, double posY, double posZ, byte type, int...parms)
 	{
+		//null check
+		if (text == null || text.length() < 1) return;
+				
 		World w = ClientProxy.getClientWorld();
 		
 		//spawn particle

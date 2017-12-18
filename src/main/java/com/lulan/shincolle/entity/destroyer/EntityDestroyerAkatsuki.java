@@ -99,7 +99,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   		//server side
   		if (!world.isRemote)
   		{
-  			if (this.ticksExisted % 32 == 0)
+  			if (this.ticksExisted % 32 == 0 && !this.isMorph)
   			{
   				//add morale when gattai
   				this.checkRiderType();
@@ -165,7 +165,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   		}
   		
   		//sync rotate when gattai
-	  	this.syncRotateToRider();
+	  	if (!this.isMorph) this.syncRotateToRider();
   	}
   	
   	@Override

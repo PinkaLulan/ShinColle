@@ -93,7 +93,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
   		if (!this.world.isRemote)
   		{
   			//every 64 ticks
-        	if (this.ticksExisted % 64 == 0)
+        	if (this.ticksExisted % 64 == 0 && !this.isMorph)
         	{
         		//increase morale when riding
         		if (this.isRiding())

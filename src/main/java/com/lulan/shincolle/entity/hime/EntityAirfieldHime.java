@@ -71,7 +71,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV
   		if (!this.world.isRemote)
   		{
   			//飛行場特殊能力
-        	if (this.ticksExisted % 128 == 0)
+        	if (this.ticksExisted % 128 == 0 && !this.isMorph)
         	{
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())

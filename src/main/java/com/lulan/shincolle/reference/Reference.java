@@ -22,6 +22,7 @@ public class Reference
 	public static final String MOD_ID_Baubles = "Baubles";
 	public static final String MOD_ID_IC2 = "IC2";
 	public static final String MOD_ID_Optifine = "optifine";
+	public static final String MOD_ID_Metamorph = "metamorph";
 	
 	
 }

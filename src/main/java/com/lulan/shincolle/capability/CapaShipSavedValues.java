@@ -104,6 +104,7 @@ public class CapaShipSavedValues
 		nbtExt_add4.setBoolean("PickItem", ship.getStateFlag(ID.F.PickItem));
 		nbtExt_add4.setBoolean("HeldItem", ship.getStateFlag(ID.F.ShowHeldItem));
 		nbtExt_add4.setBoolean("AutoPump", ship.getStateFlag(ID.F.AutoPump));
+		nbtExt_add4.setBoolean("IsMorph", ship.isMorph());
 		
 		//save timer
 		nbtExt.setTag("Timer", nbtExt_add5);
@@ -211,6 +212,7 @@ public class CapaShipSavedValues
 		ship.setStateFlag(ID.F.PickItem, nbt_load.getBoolean("PickItem"));
 		ship.setStateFlag(ID.F.ShowHeldItem, nbt_load.getBoolean("HeldItem"));
 		ship.setStateFlag(ID.F.AutoPump, nbt_load.getBoolean("AutoPump"));
+		ship.setIsMorph(nbt_load.getBoolean("IsMorph"));
 		
 		//load timer
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Timer");

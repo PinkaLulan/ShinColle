@@ -95,7 +95,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		if (!world.isRemote)
   		{
   			//add aura to master every 128 ticks
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				//add num of rensouhou
   				if (this.numRensouhou < 6) numRensouhou++;

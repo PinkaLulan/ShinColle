@@ -114,7 +114,7 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating, IShipCustomTexture
+public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating, IShipCustomTexture, IShipMorph
 {
 
 	//basic attribute
@@ -176,8 +176,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	private Ticket chunkTicket;
 	private Set<ChunkPos> chunks;
 	
-	//for debug
-	public static boolean stopAI = false;  //stop onUpdate, onLivingUpdate
+	//misc flags
+	public static boolean stopAI = false;  //stop onUpdate, onLivingUpdate (for all ship entity)
+	
+	//for inter-mod
+	protected boolean isMorph = false;		//is a morph entity, for Metamorph mod
+	protected EntityPlayer morphHost;
 	
 	
 	public BasicEntityShip(World world)
@@ -1011,6 +1015,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//null check
 		if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getShipClass());
 		
+		//check morph
+		if (this.isMorph) return;
+		
 		//server side
 		if (!this.world.isRemote)
 		{
@@ -1658,11 +1665,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
-    	//禁用副手
-    	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
-    	
-    	//死亡時不反應
-    	if (!this.isEntityAlive()) return EnumActionResult.FAIL;
+    	//禁用副手, 死亡時不反應, morph不反應
+    	if (hand == EnumHand.OFF_HAND || !this.isEntityAlive() || this.isMorph) return EnumActionResult.FAIL;
     	
     	//server side
     	if (!this.world.isRemote)
@@ -2397,7 +2401,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			updateClientBodyRotate();
 			
 			//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
-			if (this.ticksExisted % ConfigHandler.searchlightCD == 0)
+			if (!this.isMorph && this.ticksExisted % ConfigHandler.searchlightCD == 0)
 			{
         		if (ConfigHandler.canSearchlight && this.isEntityAlive())
         		{
@@ -2433,60 +2437,62 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					//check every 32 ticks
 					if (this.ticksExisted % 32 == 0)
 					{
-						//show guard position
-						if (!this.getStateFlag(ID.F.CanFollow))
+						if (!this.isMorph)
 						{
-							//set guard entity
-							if (this.getStateMinor(ID.M.GuardID) > 0)
+							//show guard position
+							if (!this.getStateFlag(ID.F.CanFollow))
 							{
-								Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
-								this.setGuardedEntity(getEnt);
+								//set guard entity
+								if (this.getStateMinor(ID.M.GuardID) > 0)
+								{
+									Entity getEnt = EntityHelper.getEntityByID(this.getStateMinor(ID.M.GuardID), 0, true);
+									this.setGuardedEntity(getEnt);
+								}
+								else
+								{
+									//reset guard entity
+									this.setGuardedEntity(null);
+								}
+							}//end show pointer target effect
+							
+							//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
+							//get owner entity
+							EntityPlayer player = null;
+							if (this.getStateMinor(ID.M.PlayerEID) > 0)
+							{
+								player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
+							}
+							
+							//show circle particle on ship and guard target
+							if (player != null && player.dimension == this.getGuardedPos(3))
+							{
+								ItemStack item = EntityHelper.getPointerInUse((EntityPlayer) player);
+								
+								if (item != null && item.getItemDamage() < 3 || ConfigHandler.alwaysShowTeamParticle)
+								{
+									//show friendly particle
+									ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
+									
+									//show guard particle
+									//標記在entity上
+									if (this.getGuardedEntity() != null)
+									{
+										ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
+										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
+									}
+									//標記在block上
+									else if (this.getGuardedPos(1) >= 0)
+									{
+										ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
+										ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
+									}
+								}
 							}
 							else
 							{
-								//reset guard entity
-								this.setGuardedEntity(null);
+								this.setStateMinor(ID.M.PlayerEID, -1);
 							}
-						}//end show pointer target effect
-						
-						//display circle particle, 只有owner才會接收到該ship同步的EID, 非owner讀取到的EID <= 0
-						//get owner entity
-						EntityPlayer player = null;
-						if (this.getStateMinor(ID.M.PlayerEID) > 0)
-						{
-							player = EntityHelper.getEntityPlayerByID(getStateMinor(ID.M.PlayerEID), 0, true);
-						}
-						
-						//show circle particle on ship and guard target
-						if (player != null && player.dimension == this.getGuardedPos(3))
-						{
-							ItemStack item = EntityHelper.getPointerInUse((EntityPlayer) player);
-							
-							if (item != null && item.getItemDamage() < 3 || ConfigHandler.alwaysShowTeamParticle)
-							{
-								//show friendly particle
-								ParticleHelper.spawnAttackParticleAtEntity(this, 0.3D, 7D, 0D, (byte)2);
-								
-								//show guard particle
-								//標記在entity上
-								if (this.getGuardedEntity() != null)
-								{
-									ParticleHelper.spawnAttackParticleAtEntity(this.getGuardedEntity(), 0.3D, 6D, 0D, (byte)2);
-									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedEntity(), 0D, 0D, 0D, (byte)3, false);
-								}
-								//標記在block上
-								else if (this.getGuardedPos(1) >= 0)
-								{
-									ParticleHelper.spawnAttackParticleAt(this.getGuardedPos(0)+0.5D, this.getGuardedPos(1), this.getGuardedPos(2)+0.5D, 0.3D, 6D, 0D, (byte)25);
-									ParticleHelper.spawnAttackParticleAtEntity(this, this.getGuardedPos(0)+0.5D, this.getGuardedPos(1)+0.2D, this.getGuardedPos(2)+0.5D, (byte)8);
-								}
-							}
-						}
-						else
-						{
-							this.setStateMinor(ID.M.PlayerEID, -1);
-						}
-						
+						}//end is not morph
 					}//end every 32 ticks
 				}//end every 16 ticks
 			}//end  every 8 ticks
@@ -2513,21 +2519,25 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         /** server side */
         if ((!world.isRemote))
         {
-	    	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
-	    	EntityHelper.updateShipNavigator(this);
-	        super.onLivingUpdate();
-	        
-        	//update target
-        	TargetHelper.updateTarget(this);
-        	
-        	//update/init id
-        	updateShipCacheData(false);
+	    	if (!this.isMorph)
+    		{
+	    		//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+	    		EntityHelper.updateShipNavigator(this);
+	    		
+	    		//update target
+	    		TargetHelper.updateTarget(this);
+	    		
+	    		//update/init id
+	    		updateShipCacheData(false);
+    		}
+	    	
+	    	super.onLivingUpdate();
         	
         	//timer ticking
         	updateServerTimer();
         	
         	//pump liquid, transport ship has built-in pump equip
-        	if (this.StateFlag[ID.F.AutoPump] &&
+        	if (this.StateFlag[ID.F.AutoPump] && !this.isMorph &&
         		this.isEntityAlive() && !this.isSitting() && !this.getStateFlag(ID.F.NoFuel))
         		EntityHelper.autoPumpFluid(this);
         	
@@ -2540,36 +2550,36 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         			sendSyncPacket(S2CEntitySync.PID.SyncEntity_Rot, true);
         		}
         		
-        		//update formation buff (fast update)
-        		if (this.getUpdateFlag(ID.FlagUpdate.FormationBuff))
+        		if (!this.isMorph)
         		{
-        			this.calcShipAttributes(16, true);
-        		}
-        		
-        		//reset AI and sync once
-        		if (!this.initAI && ticksExisted > 10)
-        		{
-        			setStateFlag(ID.F.CanDrop, true);
-            		clearAITasks();
-            		clearAITargetTasks();		//reset AI for get owner after loading NBT data
-            		setAIList();
-            		setAITargetList();
-            		decrGrudgeNum(0);			//check grudge
-            		updateChunkLoader();
+        			//update formation buff (fast update)
+            		if (this.getUpdateFlag(ID.FlagUpdate.FormationBuff))
+            		{
+            			this.calcShipAttributes(16, true);
+            		}
             		
-            		this.initAI = true;
-        		}
-        		
-        		if (this.isEntityAlive())
-        		{
-        			//check task
+            		//reset AI and sync once
+            		if (!this.initAI && ticksExisted > 10)
+            		{
+            			setStateFlag(ID.F.CanDrop, true);
+                		clearAITasks();
+                		clearAITargetTasks();		//reset AI for get owner after loading NBT data
+                		setAIList();
+                		setAITargetList();
+                		decrGrudgeNum(0);			//check grudge
+                		updateChunkLoader();
+                		
+                		this.initAI = true;
+            		}
+            		
+            		//update task
         			TaskHelper.onUpdateTask(this);
         		}
         		
         		//check every 16 ticks
             	if ((ticksExisted & 15) == 0)
             	{
-            		if (this.isEntityAlive())
+            		if (this.isEntityAlive() && !this.isMorph)
             		{
                 		//waypoint move
                 		if (!(this.getRidingEntity() instanceof BasicEntityMount))
@@ -2601,7 +2611,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             		//check every 32 ticks
                 	if ((ticksExisted & 31) == 0)
                 	{
-                		if (this.isEntityAlive())
+                		if (this.isEntityAlive() && !this.isMorph)
                 		{
                 			//apply potion effects
                 			BuffHelper.applyBuffOnTicks(this);
@@ -2631,7 +2641,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		updateEmotionState();
                     		
                     		//sync riding state to client
-                    		if (this.isRiding())
+                    		if (this.isRiding() && !this.isMorph)
                     		{
                     			this.sendSyncPacketRiders();
                     		}
@@ -2639,83 +2649,89 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		//check every 128 ticks
                         	if ((ticksExisted & 127) == 0)
                         	{
-                        		//update state (slow update)
-                        		this.calcShipAttributes(31, true);
-                        		
-                        		//check chunk loader
-                        		this.updateChunkLoader();
-                        		
-                        		//delayed init, waiting for player entity loaded
-                        		if (!this.initWaitAI && ticksExisted >= 128)
+                        		if (!this.isMorph)
                         		{
-                        			//request formation buff update
-                        			setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
-                        			sendSyncPacketAll();
-                        			
-                        			this.initWaitAI = true;
-                        		}
-
-                        		//check owner online
-                        		if (this.getPlayerUID() > 0)
-                        		{
-                        			//get owner
-                        			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-                        			
-                        			//owner exists (online and same world)
-                        			if (player != null)
-                        			{
-                    					//update owner entity id (could be changed when owner change dimension or dead)
-                            			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
-                            			//sync guard position
-                            			this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, false);
+                        			//update state (slow update)
+                            		this.calcShipAttributes(31, true);
+                            		
+                            		//check chunk loader
+                            		this.updateChunkLoader();
+                            		
+                            		//delayed init, waiting for player entity loaded
+                            		if (!this.initWaitAI && ticksExisted >= 128)
+                            		{
+                            			//request formation buff update
+                            			setUpdateFlag(ID.FlagUpdate.FormationBuff, true);
+                            			sendSyncPacketAll();
+                            			
+                            			this.initWaitAI = true;
                             		}
-                        		}
-                        		
-                        		if (this.isEntityAlive())
-                        		{
-    	                    		//use combat ration automatically
-    	                    		if (EntityHelper.getMoraleLevel(this.getMorale()) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
-    	                    		{
-    	                    			useCombatRation();
-    	                    		}
-    	                    		
-    	                    		//update mount
-    	                    		updateMountSummon();
-    	                    		
-    	                    		//update consume item
-    	                    		updateConsumeItem();
-    	                    		
-    	                    		//update morale value
-    	                    		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
-                        		}
+                            		
+                            		//check owner online
+                            		if (this.getPlayerUID() > 0)
+                            		{
+                            			//get owner
+                            			EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+                            			
+                            			//owner exists (online and same world)
+                            			if (player != null)
+                            			{
+                        					//update owner entity id (could be changed when owner change dimension or dead)
+                                			this.setStateMinor(ID.M.PlayerEID, player.getEntityId());
+                                			//sync guard position
+                                			this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, false);
+                                		}
+                            		}
+                            		
+                            		if (this.isEntityAlive())
+                            		{
+        	                    		//use combat ration automatically
+        	                    		if (EntityHelper.getMoraleLevel(this.getMorale()) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
+        	                    		{
+        	                    			useCombatRation();
+        	                    		}
+        	                    		
+        	                    		//update mount
+        	                    		updateMountSummon();
+        	                    		
+        	                    		//update consume item
+        	                    		updateConsumeItem();
+        	                    		
+        	                    		//update morale value
+        	                    		if (!getStateFlag(ID.F.NoFuel)) updateMorale();
+                            		}
+                        		}//end is not morph
                         		
                         		//check every 256 ticks
                             	if ((this.ticksExisted & 255) == 0)
                             	{
-                            		if (this.isEntityAlive())
+                            		if (!this.isMorph)
                             		{
-    	                        		//show idle emotes
-    	                        		if (!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
-    	                        		
-    	                        		//HP auto regen
-    	                        		if (this.getHealth() < this.getMaxHealth())
-    	                        		{
-    	                        			this.heal(this.getMaxHealth() * 0.03F + 1F);
-    	                        		}
-    	                        		
-    	                        		//update ship cache data
-    	                        		updateShipCacheDataWithoutNewID();
+                            			if (this.isEntityAlive())
+                                		{
+        	                        		//show idle emotes
+        	                        		if (!getStateFlag(ID.F.NoFuel)) applyEmotesReaction(4);
+        	                        		
+        	                        		//HP auto regen
+        	                        		if (this.getHealth() < this.getMaxHealth())
+        	                        		{
+        	                        			this.heal(this.getMaxHealth() * 0.03F + 1F);
+        	                        		}
+        	                        		
+        	                        		//update ship cache data
+        	                        		updateShipCacheDataWithoutNewID();
+        	                        		
+        	                        		//food saturation--
+                                    		int f = this.getFoodSaturation();
+                                    		if (f > 0)
+                                    		{
+                                    			this.setFoodSaturation(--f);
+                                    		}
+                                		}
+                                		
+                                		//update name string
+                                		EntityHelper.updateNameTag(this);
                             		}
-                            		
-                            		//food saturation--
-                            		int f = this.getFoodSaturation();
-                            		if (f > 0)
-                            		{
-                            			this.setFoodSaturation(--f);
-                            		}
-                            		
-                            		//update name string
-                            		EntityHelper.updateNameTag(this);
                             	}//end every 256 ticks
                         	}//end every 128 ticks
                 		}//end every 64 ticks
@@ -2724,7 +2740,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	}//end every 8 ticks
         	
         	//play timekeeping sound
-        	if (ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper) && this.isEntityAlive())
+        	if (!this.isMorph && ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper) && this.isEntityAlive())
         	{
         		int checkHour = getWorldHourTime();
         		if (checkHour >= 0) playTimeSound(checkHour);
@@ -2748,7 +2764,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//every 32 ticks
         	if ((this.ticksExisted & 31) == 0)
         	{
-        		//show unit name and uid on head
+    			//show unit name and uid on head
         		EntityHelper.showNameTag(this);
         		
             	//every 128 ticks
@@ -3850,7 +3866,16 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	//update emotion, SERVER SIDE ONLY!
   	protected void updateEmotionState()
   	{
-  		float hpState = this.getHealth() / this.getMaxHealth();
+  		float hpState = 1F;
+  		
+  		if (this.morphHost != null)
+  		{
+  			hpState = this.morphHost.getHealth() / this.morphHost.getMaxHealth();
+  		}
+  		else
+  		{
+  			hpState = this.getHealth() / this.getMaxHealth();
+  		}
 		
 		//check hp state
 		if (hpState > 0.75F)
@@ -3920,7 +3945,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//send sync packet
-		if (!this.world.isRemote)
+		if (!this.world.isRemote && !this.isMorph)
 		{
 			this.sendSyncPacketEmotion();
 		}
@@ -4144,11 +4169,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	{
   		if (!this.isRiding())
   		{
-  			if (MathHelper.abs((float) (posX - prevPosX)) > 0.1F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.1F)
-  	  		{
-  	  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
-  	  			this.rotationYaw = degree[0];
-  	  		}
+  			if (this.morphHost != null)
+  			{
+  				this.rotationYaw = this.morphHost.rotationYaw;
+  			}
+  			else
+  			{
+  				if (MathHelper.abs((float) (posX - prevPosX)) > 0.1F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.1F)
+  	  	  		{
+  	  	  			float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+  	  	  			this.rotationYaw = degree[0];
+  	  	  		}
+  			}
   		}
   	}
   	
@@ -5908,16 +5940,34 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     @Nullable
     public ItemStack getHeldItemMainhand()
     {
-		if (this.itemHandler != null) return this.itemHandler.getStackInSlot(22);
-		return null;
+		//show morph on player's hand
+		if (this.morphHost != null)
+		{
+			return this.morphHost.getHeldItemMainhand();
+		}
+		//show item in ship's inventory
+		else
+		{
+			if (this.itemHandler != null) return this.itemHandler.getStackInSlot(22);
+			return null;
+		}
     }
 
 	@Override
     @Nullable
     public ItemStack getHeldItemOffhand()
     {
-		if (this.itemHandler != null) return this.itemHandler.getStackInSlot(23);
-		return null;
+		//show morph on player's hand
+		if (this.morphHost != null)
+		{
+			return this.morphHost.getHeldItemOffhand();
+		}
+		//show item in ship's inventory
+		else
+		{
+			if (this.itemHandler != null) return this.itemHandler.getStackInSlot(23);
+			return null;
+		}
     }
 	
 	//check held item can be rendered
@@ -6039,6 +6089,30 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		this.MissileData = new MissileData[5];
 		for (int i = 0; i < 5; i++) this.MissileData[i] = new MissileData();
+	}
+	
+	@Override
+	public boolean isMorph()
+	{
+		return this.isMorph;
+	}
+
+	@Override
+	public void setIsMorph(boolean par1)
+	{
+		this.isMorph = par1;
+	}
+
+	@Override
+	public EntityPlayer getMorphHost()
+	{
+		return this.morphHost;
+	}
+
+	@Override
+	public void setMorphHost(EntityPlayer player)
+	{
+		this.morphHost = player;
 	}
 	
 	

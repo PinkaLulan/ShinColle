@@ -37,6 +37,7 @@ import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
 import com.lulan.shincolle.client.model.ModelIsolatedHime;
 import com.lulan.shincolle.client.model.ModelMidwayHime;
 import com.lulan.shincolle.client.model.ModelNorthernHime;
+import com.lulan.shincolle.client.model.ModelSubmHime;
 import com.lulan.shincolle.client.model.ModelSubmKa;
 import com.lulan.shincolle.client.model.ModelSubmRo500;
 import com.lulan.shincolle.client.model.ModelSubmSo;
@@ -114,6 +115,8 @@ public class RenderShipEntity extends RenderBasic
 	public static final ModelBase MD_Hime_Midway = new ModelMidwayHime();
 	public static final ResourceLocation TEX_Hime_Northern = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityNorthernHime.png");
 	public static final ModelBase MD_Hime_Northern = new ModelNorthernHime();
+	public static final ResourceLocation TEX_Hime_Subm = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntitySubmHime.png");
+	public static final ModelBase MD_Hime_Subm = new ModelSubmHime();
 	//SS
 	public static final ResourceLocation TEX_SS_Ka = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntitySubmKa.png");
 	public static final ModelBase MD_SS_Ka = new ModelSubmKa();
@@ -224,6 +227,8 @@ public class RenderShipEntity extends RenderBasic
 			return TEX_Hime_Midway;
 		case ID.ShipClass.NorthernHime:
 			return TEX_Hime_Northern;
+		case ID.ShipClass.SubmarineHime:
+			return TEX_Hime_Subm;
 		//SS
 		case ID.ShipClass.SubmarineKA:
 			return TEX_SS_Ka;
@@ -347,6 +352,9 @@ public class RenderShipEntity extends RenderBasic
 		break;
 		case ID.ShipClass.NorthernHime:
 			this.mainModel = MD_Hime_Northern;
+		break;
+		case ID.ShipClass.SubmarineHime:
+			this.mainModel = MD_Hime_Subm;
 		break;
 		//SS
 		case ID.ShipClass.SubmarineKA:

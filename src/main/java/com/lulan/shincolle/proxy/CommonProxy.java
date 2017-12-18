@@ -41,6 +41,7 @@ public abstract class CommonProxy implements IProxy
 	public static boolean isMultiplayer = false;	//the world is MP or SP
 	public static boolean activeBaubles = false;	//mod Baubles active flag
 	public static boolean activeIC2 = false;		//mod IC2 active flag
+	public static boolean activeMetamorph = false;	//mod Metamorph active flag
 	
 	
 	public CommonProxy() {}
@@ -90,7 +91,14 @@ public abstract class CommonProxy implements IProxy
 			LogHelper.info("INFO : Enable mod support: "+Reference.MOD_ID_IC2);
 			activeIC2 = true;
 		}
+		
+		//Metamorph
+		if (Loader.isModLoaded(Reference.MOD_ID_Metamorph))
+		{
+			LogHelper.info("INFO : Enable mod support: "+Reference.MOD_ID_Metamorph);
+			activeMetamorph = true;
+		}
 	}
 	
-
+	
 }

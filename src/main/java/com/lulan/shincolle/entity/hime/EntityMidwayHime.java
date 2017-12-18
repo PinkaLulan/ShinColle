@@ -70,7 +70,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
   		if (!this.world.isRemote)
   		{
   			//every 128 ticks
-        	if ((this.ticksExisted & 127) == 0)
+        	if ((this.ticksExisted & 127) == 0 && !this.isMorph)
         	{
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())

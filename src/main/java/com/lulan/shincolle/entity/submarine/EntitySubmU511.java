@@ -75,7 +75,7 @@ public class EntitySubmU511 extends BasicEntityShipSmall implements IShipInvisib
   		if (!this.world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				if (getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
   				{
