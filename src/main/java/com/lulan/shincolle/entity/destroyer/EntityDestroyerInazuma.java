@@ -105,7 +105,7 @@ public class EntityDestroyerInazuma extends BasicEntityShipSmall implements IShi
   		//server side
   		if (!world.isRemote)
   		{
-  			if (this.ticksExisted % 32 == 0)
+  			if (this.ticksExisted % 32 == 0 && !this.isMorph)
   			{
   				//check raiden gattai
   				this.checkRiderType();

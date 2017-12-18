@@ -47,6 +47,7 @@ import com.lulan.shincolle.entity.hime.EntityHarbourHime;
 import com.lulan.shincolle.entity.hime.EntityIsolatedHime;
 import com.lulan.shincolle.entity.hime.EntityMidwayHime;
 import com.lulan.shincolle.entity.hime.EntityNorthernHime;
+import com.lulan.shincolle.entity.hime.EntitySubmHime;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.entity.mounts.EntityMountBaH;
 import com.lulan.shincolle.entity.mounts.EntityMountCaH;
@@ -158,6 +159,7 @@ public class ModEntity
 		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
 		createEntity(EntityRensouhouMob.class, "EntityRensouhouMob", modEntityID++);
 		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+		createEntity(EntitySubmHime.class, "EntitySubmHime", modEntityID++);
 		createEntity(EntitySubmKa.class, "EntitySubmKa", modEntityID++);
 		createEntity(EntitySubmYo.class, "EntitySubmYo", modEntityID++);
 		createEntity(EntitySubmSo.class, "EntitySubmSo", modEntityID++);

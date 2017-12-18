@@ -110,7 +110,7 @@ public class EntityDestroyerAkatsukiMob extends BasicEntityShipHostile implement
   	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY+this.smokeY, posZ+partPos[0], 1D+this.scaleLevel*0.8D, 0D, 0D, (byte)43);
   	  			}
   	  			
-  				if (this.ticksExisted % 16 == 0)
+  				if (this.ticksExisted % 16 == 0 && !this.isMorph)
   	  			{
   					//update searchlight
   	  	    		if(ConfigHandler.canSearchlight)

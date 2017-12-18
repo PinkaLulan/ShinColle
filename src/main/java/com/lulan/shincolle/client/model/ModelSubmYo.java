@@ -899,6 +899,11 @@ public class ModelSubmYo extends ShipModelBaseAdv
 		    //body
 		    this.Head.rotateAngleX -= 1.1F;
 	    	this.BodyMain.rotateAngleX = 1.1F;
+	    	//胸部
+	  	    this.BoobL.rotateAngleX = angleAdd1 * 0.08F - 0.7F;
+	  	    this.BoobL.rotateAngleZ = -0.07F;
+	  	    this.BoobR.rotateAngleX = angleAdd1 * 0.08F - 0.7F;
+	  	    this.BoobR.rotateAngleZ = 0.07F;
 	    	//arm
 	    	this.ArmLeft01.rotateAngleX = -2.5133F;
 		    this.ArmLeft01.rotateAngleZ = -0.22F;

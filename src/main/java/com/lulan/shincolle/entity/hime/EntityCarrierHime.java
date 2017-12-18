@@ -74,7 +74,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
   		if (!world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				//married effect: apply str buff to nearby ships
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&

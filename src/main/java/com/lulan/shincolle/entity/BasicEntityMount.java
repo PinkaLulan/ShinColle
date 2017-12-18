@@ -66,7 +66,7 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
  * mount use cannon attack, no aircraft attack
  * all states get from host ex: sitting, leashed, sprinting...
  */
-abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, IShipCustomTexture
+abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, IShipCustomTexture, IShipMorph
 {
 	
 	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
@@ -90,9 +90,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	//AI
 	protected double shipDepth;					//水深, 用於水中高度判定
 	public int keyPressed;						//key(bit): 0:W 1:S 2:A 3:D 4:Jump
-	public int keyTick;						//player controll key tick
+	public int keyTick;							//player controll key tick
 	public static boolean stopAI = false;		//stop onUpdate, onLivingUpdate
 	
+	//for inter-mod
+	protected boolean isMorph = false;			//is a morph entity, for Metamorph mod
+	protected EntityPlayer morphHost;
+		
 	
     public BasicEntityMount(World world)
     {
@@ -1837,6 +1841,30 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	
 	@Override
 	public void setMissileData(int type, MissileData data) {}
+	
+	@Override
+	public boolean isMorph()
+	{
+		return this.isMorph;
+	}
+
+	@Override
+	public void setIsMorph(boolean par1)
+	{
+		this.isMorph = par1;
+	}
+
+	@Override
+	public EntityPlayer getMorphHost()
+	{
+		return this.morphHost;
+	}
+
+	@Override
+	public void setMorphHost(EntityPlayer player)
+	{
+		this.morphHost = player;
+	}
 	
 	
 }

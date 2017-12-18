@@ -94,7 +94,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
   		//server side
   		if (!world.isRemote)
   		{
-  			if (this.ticksExisted % 32 == 0)
+  			if (this.ticksExisted % 32 == 0 && !this.isMorph)
   			{
   				this.checkRiderType();
   				this.checkRidingState();

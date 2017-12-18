@@ -88,7 +88,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
   		if (!world.isRemote)
   		{
   			//add aura to master every N ticks
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				//add num of rensouhou
   				if (this.numRensouhou < 10) numRensouhou++;

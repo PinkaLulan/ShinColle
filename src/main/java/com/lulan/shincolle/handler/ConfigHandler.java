@@ -59,6 +59,7 @@ public class ConfigHandler
 	
 	//INTER-MOD
 	public static boolean enableIC2 = true;
+	public static boolean enableMetamorphSkill = true;
 	
 	//BUFF DEBUFF
 	public static int buffSaturation = 100;
@@ -243,6 +244,7 @@ public class ConfigHandler
 		//是否開啟林業支援
 		enableIC2 = config.getBoolean("Mod_IC2", CATE_INTERMOD, true, "Enable IC2 module if mod existed: add EU related function.");
 		propDrumEU = config.get(CATE_INTERMOD, "Drum_EU", drumEU, "EU transport rate: base transfer rate (EU/t), additional rate per enchantment (EU/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate * #TotalTransformers + EnchantRate * #TotalEnchantments)");
+		enableMetamorphSkill = config.getBoolean("Mod_MetamorphSkill", CATE_INTERMOD, true, "Enable Metamorph module if mod existed: add ship skill for ship morph");
 		
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", CATE_SHIP, true, "Can ship spawn Flare lighting effect, CLIENT SIDE only");

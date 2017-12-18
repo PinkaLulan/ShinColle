@@ -112,7 +112,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   		//server side
   		else
   		{
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				//add morale if DD or Hoppo nearby
   				addMoraleSpecialEvent(this);

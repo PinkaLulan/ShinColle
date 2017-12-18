@@ -76,13 +76,6 @@ public class EntityIsolatedHime extends BasicEntityShipCV
 		MissileData md = this.getMissileData(2);
 		if (md.type == 0) md.type = 5;
 	}
-	
-	//check entity state every tick
-  	@Override
-  	public void onLivingUpdate()
-  	{
-  		super.onLivingUpdate();
-  	}
 
 	@Override
 	public float getAttackBaseDamage(int type, Entity target)

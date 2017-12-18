@@ -136,7 +136,7 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		else
 		{
 			//every 128 ticks
-        	if ((this.ticksExisted & 127) == 0)
+        	if ((this.ticksExisted & 127) == 0 && !this.isMorph)
         	{
         		//married effect
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&

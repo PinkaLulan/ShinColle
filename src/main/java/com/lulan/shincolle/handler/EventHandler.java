@@ -5,12 +5,15 @@ import java.util.Map;
 
 import org.lwjgl.input.Keyboard;
 
+import com.lulan.shincolle.capability.CapaShipSavedValues;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -19,6 +22,7 @@ import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -30,6 +34,10 @@ import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 import com.lulan.shincolle.worldgen.ChestLootTable;
 
+import mchorse.metamorph.api.events.MorphActionEvent;
+import mchorse.metamorph.api.events.MorphEvent;
+import mchorse.metamorph.api.events.SpawnGhostEvent;
+import mchorse.metamorph.api.morphs.EntityMorph;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.FogMode;
@@ -47,6 +55,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
@@ -56,6 +65,7 @@ import net.minecraftforge.client.event.EntityViewRenderEvent.FogDensity;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
@@ -67,6 +77,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -711,6 +722,9 @@ public class EventHandler
 					}
 				}
 			}//end every 16 ticks
+			
+			//check morph
+			if (CommonProxy.activeMetamorph) MetamorphHelper.onPlayerTickHelper(event.player, capa);
 		}//end player tick phase: START
 	}//end onPlayerTick
 	
@@ -1296,6 +1310,147 @@ public class EventHandler
 		if (event.getType() == ElementType.HOTBAR)
 		{
 			RenderHelper.drawMountSkillIcon(event);
+		}
+	}
+	
+	/********************************************************
+	 *                EVENT FOR INTER-MOD
+	 *******************************************************/
+	
+	/**
+	 * set isMorph = true before morphing
+	 */
+	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onMorphPre(MorphEvent.Pre event)
+	{
+		if (event.player != null && event.morph instanceof EntityMorph)
+		{
+			EntityMorph em = (EntityMorph) event.morph;
+			EntityLivingBase target = em.getEntity();
+			
+			if (target instanceof IShipMorph)
+			{
+				LogHelper.debug("DEBUG: Metamorph: try morph to: "+target);
+				
+				//set IsMorph = true to nbt tag
+				NBTTagCompound nbtAll = em.getEntityData();
+				
+				if (nbtAll == null)
+				{
+					nbtAll = new NBTTagCompound();
+					em.setEntityData(nbtAll);
+				}
+				
+				NBTTagCompound nbt = (NBTTagCompound) nbtAll.getTag(CapaShipSavedValues.SHIP_EXTPROP_NAME);
+				
+				if (nbt == null)
+				{
+					nbt = new NBTTagCompound();
+					nbtAll.setTag(CapaShipSavedValues.SHIP_EXTPROP_NAME, nbt);
+				}
+				
+				NBTTagCompound nbt_flags = (NBTTagCompound) nbt.getTag("ShipFlags");
+						
+				if (nbt_flags == null)
+				{
+					nbt_flags = new NBTTagCompound();
+					nbt.setTag("ShipFlags", nbt_flags);
+				}
+				
+				nbt_flags.setBoolean("IsMorph", true);
+			}
+		}
+	}
+	
+	/**
+	 * delete or reset some data in nbt tag after morphing
+	 */
+	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onMorphPost(MorphEvent.Post event)
+	{
+		if (event.player != null && event.morph instanceof EntityMorph)
+		{
+			EntityMorph em = (EntityMorph) event.morph;
+			EntityLivingBase target = em.getEntity();
+			
+			if (target instanceof BasicEntityShip)
+			{
+				BasicEntityShip ship = (BasicEntityShip) target;
+				LogHelper.debug("DEBUG: Metamorph: morph to ship: "+ship);
+				
+				//set flags
+				ship.setIsMorph(true);
+				ship.setMorphHost(event.player);
+				ship.setStateFlag(ID.F.NoFuel, false);
+				ship.setStateFlag(ID.F.CanFollow, true);
+				ship.setStateFlag(ID.F.CanDrop, false);
+				
+				//change some data in nbt tag here
+			}
+			else if (target instanceof BasicEntityShipHostile)
+			{
+				BasicEntityShipHostile ship = (BasicEntityShipHostile) target;
+				LogHelper.debug("DEBUG: Metamorph: morph to ship: "+ship);
+				
+				//set flags
+				ship.setIsMorph(true);
+				ship.setMorphHost(event.player);
+				
+				//change some data in nbt tag here
+			}
+		}
+	}
+	
+	/**
+	 * change morph entity's attribute on spawn
+	 */
+	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onSppawnMorphPre(SpawnGhostEvent.Pre event)
+	{
+		if (event.player != null && event.morph instanceof EntityMorph)
+		{
+			EntityMorph em = (EntityMorph) event.morph;
+			EntityLivingBase target = em.getEntity();
+			
+			//change some data in nbt tag
+			NBTTagCompound nbtAll = em.getEntityData();
+			if (nbtAll == null) return;
+			NBTTagList tagList = nbtAll.getTagList("Attributes", Constants.NBT.TAG_COMPOUND);
+			if (tagList == null) return;
+			
+			for (int i = 0; i < tagList.tagCount(); i++)
+	        {
+	            NBTTagCompound tags = tagList.getCompoundTagAt(i);
+	            String name = tags.getString("Name");
+	            
+	            if (name == "generic.maxHealth")
+	            {
+	            	tags.setDouble("Base", 20D);
+	            }
+	        }
+		}//end get entity morph
+	}
+	
+	/**
+	 * add skill to morph entity
+	 */
+	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onMorphAction(MorphActionEvent event)
+	{
+		if (event.player != null && event.morph instanceof EntityMorph)
+		{
+			EntityMorph em = (EntityMorph) event.morph;
+			EntityLivingBase target = em.getEntity();
+			
+			if (target instanceof IShipMorph)
+			{
+				//apply morph action
+				MetamorphHelper.onMorphActionHelper(event);
+			}
 		}
 	}
 

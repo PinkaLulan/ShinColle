@@ -117,7 +117,7 @@ public class EntityDestroyerIkazuchiMob extends BasicEntityShipHostile implement
   		//server side
   		else
   		{
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				this.checkIsRaiden();
 				this.tryRaidenGattai();

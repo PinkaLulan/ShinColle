@@ -65,9 +65,11 @@ public class TaskHelper
 	 */
 	public static void onUpdateTask(BasicEntityShip host)
 	{
-		int taskid = host.getStateMinor(ID.M.Task);
+		//stop working flag
+		if (host.getStateFlag(ID.F.NoFuel) || !host.isEntityAlive()) return;
 		
-		switch (taskid)
+		//check task type
+		switch (host.getStateMinor(ID.M.Task))
 		{
 		case 1:  //cooking
 			if (ConfigHandler.enableTask[0]) onUpdateCooking(host);

@@ -483,7 +483,8 @@ public class C2SInputPackets implements IMessage
 				
 				if (entity instanceof BasicEntityShip)
 				{
-					((BasicEntityShip) entity).sendSyncPacketBuffMap();
+					BasicEntityShip ship = (BasicEntityShip) entity;
+					if (!ship.isMorph()) ship.sendSyncPacketBuffMap();
 				}
 			}
 			break;

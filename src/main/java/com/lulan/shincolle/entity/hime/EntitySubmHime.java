@@ -1,12 +1,16 @@
-package com.lulan.shincolle.entity.submarine;
+package com.lulan.shincolle.entity.hime;
 
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
+import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
+import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
@@ -15,20 +19,20 @@ import net.minecraft.world.World;
 
 /**
  * model state:
- *   0:head, 1:cannon, 2:cloth, 3:weapon
+ *   0:mount, 1:collar
  */
-public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
+public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisible
 {
 	
 
-	public EntitySubmSo(World world)
+	public EntitySubmHime(World world)
 	{
 		super(world);
-		this.setSize(0.6F, 1.8F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineSO);
+		this.setSize(0.7F, 1.85F);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
-		this.setStateMinor(ID.M.NumState, 4);
+		this.setStateMinor(ID.M.NumState, 2);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
@@ -40,13 +44,13 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 		
 		this.postInit();
 	}
-	
+
 	@Override
 	public int getEquipType()
 	{
 		return 1;
 	}
-	
+
 	@Override
 	public void setAIList()
 	{
@@ -79,12 +83,12 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   	  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
   	  	  				{
   	  	  					//potion effect: id, time, level
-  	  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 40+getLevel(), 0, false, false));
+  	  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 80+getLevel(), 0, false, false));
   	  	  				}
   					}
   					
   					//self invisible
-  					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 40+getLevel(), 0, false, false));
+  					this.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 80+getLevel(), 0, false, false));
   				}
   			}//end 128 ticks
   		}    
@@ -97,7 +101,7 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
   		{
 			if (getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 			{
-				return this.height * 0.48F;
+				return this.height * 0.25F;
   			}
   			else
   			{
@@ -113,7 +117,7 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 	@Override
 	public float getInvisibleLevel()
 	{
-		return 0.25F;
+		return 0.3F;
 	}
 	
 	@Override
@@ -123,6 +127,20 @@ public class EntitySubmSo extends BasicEntityShipSmall implements IShipInvisible
 	public double getShipFloatingDepth()
 	{
 		return 1D;
+	}
+	
+  	//true if use mounts
+  	@Override
+  	public boolean hasShipMounts()
+  	{
+  		return false;//TODO
+  	}
+  	
+  	@Override
+  	public BasicEntityMount summonMountEntity()
+  	{
+  		return null; //TODO
+//		return new EntityMountAfH(this.world);
 	}
   	
 

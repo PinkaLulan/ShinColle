@@ -619,7 +619,7 @@ public class ServerProxy extends CommonProxy
 	public static BasicEntityShip checkShipIsDupe(BasicEntityShip ship, int uid)
 	{
 		//check cache exist
-		if (mapShipID.containsKey(uid))
+		if (!ship.isMorph() && mapShipID.containsKey(uid))
 		{
 			CacheDataShip olddata = mapShipID.get(uid);
 			Entity ent = EntityHelper.getEntityByID(olddata.entityID, olddata.worldID, false);

@@ -102,7 +102,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
     	{
 
   			//every 128 ticks
-  			if ((this.ticksExisted & 127) == 0)
+  			if ((this.ticksExisted & 127) == 0 && !this.isMorph)
   			{
   				//add aura to master
   				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());

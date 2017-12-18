@@ -83,7 +83,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
   		else
   		{
   			//check every 128 ticks
-  			if (this.ticksExisted % 128 == 0)
+  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
   			{
   				//consume supplies to a fixed level
   				if (this.getStateMinor(ID.M.NumGrudge) <= 5400)

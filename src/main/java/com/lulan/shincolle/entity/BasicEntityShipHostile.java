@@ -34,7 +34,6 @@ import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -63,7 +62,7 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating, IShipCustomTexture
+public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating, IShipCustomTexture, IShipMorph
 {
 	
 	//attributes
@@ -100,7 +99,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected Entity rvgTarget;					//revenge target
 	protected int revengeTime;					//revenge target time
 	public static boolean stopAI = false;		//stop onUpdate, onLivingUpdate
-		
+	
+	//for inter-mod
+	protected boolean isMorph = false;		//is a morph entity, for Metamorph mod
+	protected EntityPlayer morphHost;
+	
 	
 	public BasicEntityShipHostile(World world)
 	{
@@ -860,34 +863,40 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		//server side
         if ((!world.isRemote))
         {
-        	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
-        	EntityHelper.updateShipNavigator(this);
+        	if (!this.isMorph)
+        	{
+        		//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
+            	EntityHelper.updateShipNavigator(this);
+        	}
         	
             super.onLivingUpdate();
             
         	//check every 16 ticks
         	if ((ticksExisted & 15) == 0)
         	{
-        		//update target
-            	TargetHelper.updateTarget(this);
-            	
-            	//get target from vanilla target AI
-            	if (this.getAttackTarget() != null)
+        		if (!this.isMorph)
             	{
-            		this.setEntityTarget(this.getAttackTarget());
+	        		//update target
+	            	TargetHelper.updateTarget(this);
+	            	
+	            	//get target from vanilla target AI
+	            	if (this.getAttackTarget() != null)
+	            	{
+	            		this.setEntityTarget(this.getAttackTarget());
+	            	}
+	            	
+	            	if (this.isEntityAlive())
+	        		{
+	                	//update potion buff
+	            		BuffHelper.convertPotionToBuffMap(this);
+	            		this.calcShipAttributes(8);
+	        		}
             	}
-            	
-        		if (this.isEntityAlive())
-        		{
-                	//update potion buff
-            		BuffHelper.convertPotionToBuffMap(this);
-            		this.calcShipAttributes(8);
-        		}
 
             	//check every 32 ticks
             	if ((ticksExisted & 31) == 0)
             	{
-            		if (this.isEntityAlive())
+            		if (this.isEntityAlive() && !this.isMorph)
             		{
             			//apply potion effects on ticks
             			BuffHelper.applyBuffOnTicks(this);
@@ -902,7 +911,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
                 		//every 128 ticks
             			if ((this.ticksExisted & 127) == 0)
             			{
-            				if (this.isEntityAlive())
+            				if (this.isEntityAlive() && !this.isMorph)
                     		{
             					//update buff to attrs
             					this.calcShipAttributes(31);
@@ -956,8 +965,17 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	//update hp state, SERVER SIDE ONLY!
   	protected void updateEmotionState()
   	{
-  		float hpState = this.getHealth() / this.getMaxHealth();
+  		float hpState = 1F;
 		
+  		if (this.morphHost != null)
+  		{
+  			hpState = this.morphHost.getHealth() / this.morphHost.getMaxHealth();
+  		}
+  		else
+  		{
+  			hpState = this.getHealth() / this.getMaxHealth();
+  		}
+  		
 		//check hp state
 		if (hpState > 0.75F)
 		{	//normal
@@ -1813,5 +1831,28 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public void setMissileData(int type, MissileData data) {}
   	
+	@Override
+	public boolean isMorph()
+	{
+		return this.isMorph;
+	}
+
+	@Override
+	public void setIsMorph(boolean par1)
+	{
+		this.isMorph = par1;
+	}
+
+	@Override
+	public EntityPlayer getMorphHost()
+	{
+		return this.morphHost;
+	}
+
+	@Override
+	public void setMorphHost(EntityPlayer player)
+	{
+		this.morphHost = player;
+	}
 	
 }

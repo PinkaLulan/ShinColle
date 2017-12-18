@@ -82,7 +82,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
   		if (!this.world.isRemote)
   		{
   			//every 128 ticks
-  			if ((this.ticksExisted & 127) == 0)
+  			if ((this.ticksExisted & 127) == 0 && !this.isMorph)
   			{
   				if (this.rand.nextInt(2) == 0)
   				{
