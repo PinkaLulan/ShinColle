@@ -12,6 +12,7 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -23,9 +24,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.text.ITextComponent;
 
 /**
  * teitoku data capability
@@ -35,7 +39,7 @@ import net.minecraft.nbt.NBTTagString;
  * 
  * TODO: remove this capa, move to ServerProxy world data
  */
-public class CapaTeitoku implements ICapaTeitoku
+public class CapaTeitoku implements ICapaTeitoku, IInventory
 {
 	public static final String CAPA_KEY = "TeitokuExtProps";
 	public EntityPlayer player;
@@ -86,6 +90,8 @@ public class CapaTeitoku implements ICapaTeitoku
 	public int numGrudge;
 	public int numAmmoLight;
 	public int numAmmoHeavy;
+	public CapaInventory itemHandler;
+	public AttrsAdv shipAttrs;
 	
 	
 	/**
@@ -131,12 +137,13 @@ public class CapaTeitoku implements ICapaTeitoku
 	}
 
 	//第二段init: init capability on player login
-	public void init(EntityPlayer entity)
+	public void init(EntityPlayer player)
 	{
 		LogHelper.debugHighLevel("DEBUG: init player capability data.");
 		
-		this.player = entity;
-		this.playerName = entity.getName();
+		this.player = player;
+		this.playerName = player.getName();
+		this.itemHandler = new CapaInventory(this.getSizeInventory(), player);
 		
 		//init done
 		this.needInit = false;
@@ -220,6 +227,9 @@ public class CapaTeitoku implements ICapaTeitoku
 			}
 		}
 		
+		//save ship inventory
+		nbtExt.setTag(CapaInventory.InvName, itemHandler.serializeNBT());
+		
 		nbt.setTag(CAPA_KEY, nbtExt);
 		LogHelper.debug("DEBUG : save player ExtNBT data on: "+this.player);
 
@@ -298,6 +308,12 @@ public class CapaTeitoku implements ICapaTeitoku
 				
 				this.unitNames[i] = nbtExt.getString("uname"+i);
 			}
+			
+			//load inventory
+	        if (nbtExt.hasKey(CapaInventory.InvName))
+	        {
+	        	itemHandler.deserializeNBT((NBTTagCompound) nbtExt.getTag(CapaInventory.InvName));
+	        }
 		}
 		catch (Exception e)
 		{
@@ -1635,6 +1651,141 @@ public class CapaTeitoku implements ICapaTeitoku
 		}
 		
 		return tid;
+	}
+
+	@Override
+	public String getName()
+	{
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName()
+	{
+		return false;
+	}
+
+	@Override
+	public ITextComponent getDisplayName()
+	{
+		return null;
+	}
+
+	@Override
+	public int getSizeInventory()
+	{
+		return 6;
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int index)
+	{
+		return this.itemHandler.getStackInSlot(index);
+	}
+
+	@Override
+	public ItemStack decrStackSize(int id, int count)
+	{
+		try
+		{
+  			if (id >= 0 && id < itemHandler.getSlots() &&
+  				itemHandler.getStackInSlot(id) != null && count > 0)
+  	        {
+  	            ItemStack itemstack = itemHandler.getStackInSlot(id).splitStack(count);
+
+  	            if (itemHandler.getStackInSlot(id).stackSize == 0)
+  	            {
+  	            	itemHandler.setStackInSlot(id, null);
+  	            }
+
+  	            return itemstack;
+  	        }
+  	        else
+  	        {
+  	            return null;
+  	        }
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index)
+	{
+		return null;
+	}
+
+	@Override
+	public void setInventorySlotContents(int id, ItemStack stack)
+	{
+		if (itemHandler != null && itemHandler.getSlots() > id)
+		{
+  			itemHandler.setStackInSlot(id, stack);
+			
+			//若手上物品超過該格子限制數量, 則只能放進限制數量
+	  		if (stack != null && stack.stackSize > getInventoryStackLimit())
+	  		{
+	  			stack.stackSize = getInventoryStackLimit();
+	  		}
+		}
+	}
+
+	@Override
+	public int getInventoryStackLimit()
+	{
+		return 1;
+	}
+
+	@Override
+	public void markDirty()
+	{
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player)
+	{
+		return true;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player)
+	{
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player)
+	{
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int index, ItemStack stack)
+	{
+		return true;
+	}
+
+	@Override
+	public int getField(int id)
+	{
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value)
+	{
+	}
+
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
+
+	@Override
+	public void clear()
+	{
 	}
 	
 	

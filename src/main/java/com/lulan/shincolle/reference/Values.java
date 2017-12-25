@@ -43,6 +43,15 @@ public class Values
 	 */
 	public static final Map<Integer, float[]> ShipAttrMap = Collections.unmodifiableMap(new HashMap<Integer, float[]>()
 	{{
+		//player                                               HP    ATK  DEF     SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
+		put((int)ID.ShipClass.PlayerBASE,         new float[] {20F,  3F,  0.08F,  1.0F, 0.38F, 6F,  0.3F,  0.25F, 0.10F, 0.5F,  0.8F,  0.5F});
+		put((int)ID.ShipClass.PlayerBB,           new float[] {40F,  6F,  0.20F,  1.0F, 0.30F, 8F,  0.6F,  0.45F, 0.20F, 0.65F, 0.6F,  0.6F});
+		put((int)ID.ShipClass.PlayerBBV,          new float[] {35F,  4F,  0.16F,  1.0F, 0.32F, 8F,  0.5F,  0.35F, 0.16F, 0.6F,  0.7F,  0.6F});
+		put((int)ID.ShipClass.PlayerCL,           new float[] {25F,  4F,  0.10F,  1.0F, 0.40F, 6F,  0.35F, 0.35F, 0.10F, 0.6F,  0.8F,  0.5F});
+		put((int)ID.ShipClass.PlayerCV,           new float[] {30F,  5F,  0.12F,  1.0F, 0.32F, 15F, 0.4F,  0.4F,  0.12F, 0.55F, 0.7F,  0.8F});
+		put((int)ID.ShipClass.PlayerDD,           new float[] {20F,  3F,  0.08F,  1.0F, 0.5F,  5F,  0.3F,  0.3F,  0.08F, 0.55F, 1F,    0.45F});
+		put((int)ID.ShipClass.PlayerSS,           new float[] {15F,  8F,  0.05F,  1.0F, 0.30F, 4F,  0.25F, 0.6F,  0.05F, 0.6F,  0.6F,  0.4F});
+				
 		//destroyer                                            HP    ATK  DEF     SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT     
 		put((int)ID.ShipClass.DestroyerI,         new float[] {20F,  3F,  0.05F,  1.0F, 0.5F,  6F,  0.3F,  0.25F, 0.11F, 0.5F,  1F,    0.4F});
 		put((int)ID.ShipClass.DestroyerRO,        new float[] {22F,  4F,  0.06F,  1.0F, 0.5F,  6F,  0.32F, 0.28F, 0.12F, 0.5F,  1F,    0.4F});

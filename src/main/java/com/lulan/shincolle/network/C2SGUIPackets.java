@@ -51,6 +51,7 @@ public class C2SGUIPackets implements IMessage
 		//simple gui button
 		public static final byte ShipBtn = 0;
 		public static final byte TileBtn = 1;
+		public static final byte MorphBtn = 2;
 		//pointer gui
 		public static final byte AddTeam = 20;
 		public static final byte AttackTarget = 21;
@@ -148,6 +149,7 @@ public class C2SGUIPackets implements IMessage
 		switch(this.packetType)
 		{
 		case PID.ShipBtn:	//ship entity gui click
+		case PID.MorphBtn:	//morph entity gui click
 			this.valueInt = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.TileBtn:	//tile entity gui click
@@ -202,6 +204,7 @@ public class C2SGUIPackets implements IMessage
 		switch (this.packetType)
 		{
 		case PID.ShipBtn:	//ship entity gui click
+		case PID.MorphBtn:	//morph entity gui click
 		{
 			buf.writeInt(this.entity.getEntityId());
 			buf.writeInt(this.entity.world.provider.getDimension());
@@ -298,6 +301,16 @@ public class C2SGUIPackets implements IMessage
 			if (entity instanceof BasicEntityShip)
 			{
 				PacketHelper.setEntityByGUI((BasicEntityShip) entity, msg.valueInt[2], msg.valueInt[3]);
+			}
+		}
+		break;
+		case PID.MorphBtn:	//morph entity gui click
+		{
+			capa = CapaTeitoku.getTeitokuCapability(msg.valueInt[0], msg.valueInt[1], false);
+			
+			if (capa != null && capa.morphEntity instanceof BasicEntityShip)
+			{
+				PacketHelper.setEntityByGUI((BasicEntityShip) capa.morphEntity, msg.valueInt[2], msg.valueInt[3]);
 			}
 		}
 		break;

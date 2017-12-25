@@ -61,6 +61,7 @@ import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
 import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.entity.mounts.EntityMountIsH;
 import com.lulan.shincolle.entity.mounts.EntityMountMiH;
+import com.lulan.shincolle.entity.mounts.EntityMountSuH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneT;
@@ -101,10 +102,31 @@ public class ClientProxy extends CommonProxy
 	
 	//textures
 	public static final ResourceLocation TextureGuiHUD = new ResourceLocation(Reference.TEXTURES_GUI+"GuiHUD.png");
+	
 	//keys
 	public static int keyGCD;			//key global cooldown
 	public static int[] skillCD;		//mount skill cooldown
 	public static boolean[] skillON;	//mount skill switch
+	public static boolean activeMorphSkills;	//active morph skills for inter-mod: Metamorph
+	
+	//keys
+	public static int rideKeys = 0;			//CLIENT SIDE ONLY
+	public static int openGUI = 0;			//CLIENT SIDE ONLY
+	public static int keyMountCD = 0;		//CLIENT SIDE ONLY, key CD for mount movement
+	public static int keyMountSkillCD = 0;	//CLIENT SIDE ONLY, key CD for mount skill
+	
+	//render view change
+	public static boolean isViewChanged = false;	//CLIENT SIDE ONLY
+	public static boolean isViewPlayer = false;		//CLIENT SIDE ONLY
+	
+	//for debug usage
+	public static int debugCooldown = 0;	//CLIENT SIDE ONLY
+	public static float field1 = 0F;		//CLIENT SIDE ONLY
+	public static float field2 = 0F;		//CLIENT SIDE ONLY
+	public static float field3 = 0F;		//CLIENT SIDE ONLY
+	public static float field4 = 0F;		//CLIENT SIDE ONLY
+	public static float field5 = 0F;		//CLIENT SIDE ONLY
+	public static float field6 = 0F;		//CLIENT SIDE ONLY
 	
 	
 	public ClientProxy()
@@ -117,6 +139,7 @@ public class ClientProxy extends CommonProxy
 		keyGCD = 0;
 		skillCD = new int[] {0, 0, 0, 0};
 		skillON = new boolean[] {false, false, false, false};
+		activeMorphSkills = false;
 	}
 	
 	//client world
@@ -231,6 +254,7 @@ public class ClientProxy extends CommonProxy
 		RenderingRegistry.registerEntityRenderingHandler(EntityMountCaH.class, RenderMountsEntity.FACTORY_MOUNT);
 		RenderingRegistry.registerEntityRenderingHandler(EntityMountIsH.class, RenderMountsEntity.FACTORY_MOUNT);
 		RenderingRegistry.registerEntityRenderingHandler(EntityMountMiH.class, RenderMountsEntity.FACTORY_MOUNT);
+		RenderingRegistry.registerEntityRenderingHandler(EntityMountSuH.class, RenderMountsEntity.FACTORY_MOUNT);
 		
 		//misc render
 		RenderingRegistry.registerEntityRenderingHandler(EntityAbyssMissile.class, RenderMiscEntity.FACTORY_MISC);

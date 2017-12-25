@@ -26,7 +26,6 @@ import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
@@ -749,7 +748,7 @@ public class EntityHelper
             Vec3d vec3 = null;
             
             //change viewer if on ship's mounts
-            if (viewer.getRidingEntity() instanceof BasicEntityMount && !EventHandler.isViewPlayer)
+            if (viewer.getRidingEntity() instanceof BasicEntityMount && !ClientProxy.isViewPlayer)
             {
             	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
             	

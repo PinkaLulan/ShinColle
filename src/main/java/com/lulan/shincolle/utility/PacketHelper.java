@@ -605,6 +605,9 @@ public class PacketHelper
 			case ID.B.ShipInv_TaskSide:
 				entity.setStateMinor(ID.M.TaskSide, value);
 			break;
+			case ID.B.ShipInv_NoFuel:
+				entity.setStateFlagI(ID.F.NoFuel, value);
+			break;
 			}
 		}
 		else
@@ -631,6 +634,7 @@ public class PacketHelper
 			ent.vel0 = value[6];
 			ent.accY1 = value[7];
 			ent.accY2 = value[8];
+			ent.invisibleTicks = (int) value[9];
 		}
 		break;
 		case 1:   //static

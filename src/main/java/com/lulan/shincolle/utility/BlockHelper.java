@@ -5,7 +5,6 @@ import java.util.Random;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipOwner;
-import com.lulan.shincolle.handler.EventHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
@@ -448,7 +447,7 @@ public class BlockHelper
 		Entity viewer = ClientProxy.getMineraft().getRenderViewEntity();
 		
 	    //change viewer if on ship's mounts
-        if (viewer.getRidingEntity() instanceof BasicEntityMount && !EventHandler.isViewPlayer)
+        if (viewer.getRidingEntity() instanceof BasicEntityMount && !ClientProxy.isViewPlayer)
         {
         	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
         	
@@ -469,7 +468,7 @@ public class BlockHelper
 	    Entity viewer = ClientProxy.getMineraft().getRenderViewEntity();
 		
 	    //change viewer if on ship's mounts
-        if (viewer.getRidingEntity() instanceof BasicEntityMount && !EventHandler.isViewPlayer)
+        if (viewer.getRidingEntity() instanceof BasicEntityMount && !ClientProxy.isViewPlayer)
         {
         	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
         	

@@ -5,6 +5,7 @@ import com.lulan.shincolle.client.gui.GuiCrane;
 import com.lulan.shincolle.client.gui.GuiDesk;
 import com.lulan.shincolle.client.gui.GuiFormation;
 import com.lulan.shincolle.client.gui.GuiLargeShipyard;
+import com.lulan.shincolle.client.gui.GuiMorphInventory;
 import com.lulan.shincolle.client.gui.GuiRecipePaper;
 import com.lulan.shincolle.client.gui.GuiShipInventory;
 import com.lulan.shincolle.client.gui.GuiSmallShipyard;
@@ -13,6 +14,7 @@ import com.lulan.shincolle.client.gui.inventory.ContainerCrane;
 import com.lulan.shincolle.client.gui.inventory.ContainerDesk;
 import com.lulan.shincolle.client.gui.inventory.ContainerFormation;
 import com.lulan.shincolle.client.gui.inventory.ContainerLargeShipyard;
+import com.lulan.shincolle.client.gui.inventory.ContainerMorphInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerRecipePaper;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerSmallShipyard;
@@ -152,6 +154,15 @@ public class GuiHandler implements IGuiHandler
 				return new ContainerRecipePaper(world, player.inventory, stack);
 			}
 			return null;
+		case ID.Gui.MORPHINVENTORY:	//morph inventory
+			capa = CapaTeitoku.getTeitokuCapability(player);
+			
+            if (capa != null && capa.morphEntity instanceof BasicEntityShip)
+            {
+            	//sync ship when gui opened
+            	return new ContainerMorphInventory(capa, player.inventory,(BasicEntityShip) capa.morphEntity);
+			}
+            return null;
 		}
 		
 		return null;
@@ -162,6 +173,7 @@ public class GuiHandler implements IGuiHandler
 	{
 		TileEntity tile = null;
 		Entity entity = null;
+		CapaTeitoku capa = null;
 		
 		//判定gui種類
 		switch(guiId)
@@ -227,6 +239,14 @@ public class GuiHandler implements IGuiHandler
 			if (stack != null && stack.getItem() == ModItems.RecipePaper)
 			{
 				return new GuiRecipePaper(player, stack);
+			}
+			return null;
+		case ID.Gui.MORPHINVENTORY:	//morph inventory
+			capa = CapaTeitoku.getTeitokuCapability(player);
+			
+            if(capa != null && capa.morphEntity instanceof BasicEntityShip)
+            {
+				return new GuiMorphInventory(capa, player.inventory,(BasicEntityShip) capa.morphEntity);
 			}
 			return null;
 		}

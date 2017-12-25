@@ -9,6 +9,7 @@ import com.lulan.shincolle.client.model.ModelMountCaWD;
 import com.lulan.shincolle.client.model.ModelMountHbH;
 import com.lulan.shincolle.client.model.ModelMountIsH;
 import com.lulan.shincolle.client.model.ModelMountMiH;
+import com.lulan.shincolle.client.model.ModelMountSuH;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 
@@ -37,6 +38,8 @@ public class RenderMountsEntity extends RenderShipEntity
 	public static final ModelBase MD_IsloatedMount = new ModelMountIsH();
 	public static final ResourceLocation TEX_MidwayMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountMiH.png");
 	public static final ModelBase MD_MidwayMount = new ModelMountMiH();
+	public static final ResourceLocation TEX_SubmMount = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityMountSuH.png");
+	public static final ModelBase MD_SubmMount = new ModelMountSuH();
 	
 	//factory
 	public static final FactoryDefault FACTORY_MOUNT = new FactoryDefault();
@@ -67,6 +70,8 @@ public class RenderMountsEntity extends RenderShipEntity
 			return TEX_IsloatedMount;
 		case ID.ShipMisc.MidwayMount:
 			return TEX_MidwayMount;
+		case ID.ShipMisc.SubmMount:
+			return TEX_SubmMount;
 		default:	//default texture
 			return TEX_AirfieldMount;
 		}//end switch
@@ -101,6 +106,9 @@ public class RenderMountsEntity extends RenderShipEntity
 		case ID.ShipMisc.MidwayMount:
 			this.mainModel = MD_MidwayMount;
 		break;
+		case ID.ShipMisc.SubmMount:
+			this.mainModel = MD_SubmMount;
+		break;
 		default:	//default model
 			this.mainModel = MD_AirfieldMount;
 		break;
@@ -132,6 +140,8 @@ public class RenderMountsEntity extends RenderShipEntity
 		case ID.ShipMisc.IsloatedMount:
 			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
 		case ID.ShipMisc.MidwayMount:
+			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
+		case ID.ShipMisc.SubmMount:
 			return new float[] {0.45F, 1.05F, 1.05F, 1.05F, 1.05F};
 		default:
 			return new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F};

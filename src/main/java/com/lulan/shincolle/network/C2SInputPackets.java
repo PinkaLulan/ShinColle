@@ -1,6 +1,7 @@
 package com.lulan.shincolle.network;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
@@ -60,6 +61,7 @@ public class C2SInputPackets implements IMessage
 		public static final byte Request_UnitName = 10;
 		public static final byte Request_Buffmap = 11;
 		public static final byte MountSkill = 12;
+		public static final byte MorphGUI = 13;
 	}
 	
 	
@@ -92,6 +94,7 @@ public class C2SInputPackets implements IMessage
 		{
 		case PID.MountMove:			//mount move key
 		case PID.MountGUI:			//mount GUI key
+		case PID.MorphGUI:			//morph GUI key
 		case PID.MountSkill:		//mount skill  key
 		case PID.SyncHandheld:		//sync current item
 		case PID.CmdChOwner:    	//command: change owner
@@ -133,6 +136,7 @@ public class C2SInputPackets implements IMessage
 		{
 		case PID.MountMove:		//mount move key
 		case PID.MountGUI:		//mount GUI key
+		case PID.MorphGUI:		//morph GUI key
 		case PID.MountSkill:	//mount skill key
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
@@ -203,6 +207,15 @@ public class C2SInputPackets implements IMessage
 						//open ship GUI
 						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, mount.getHostEntity().getEntityId(), 0, 0);
 					}
+				}
+			break;
+			case PID.MorphGUI:	//mounts open GUI
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
+				
+				if (capa != null && capa.morphEntity instanceof BasicEntityShip)
+				{
+					BasicEntityShip ship = (BasicEntityShip) capa.morphEntity;
+					FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.MORPHINVENTORY, player.world, 0, 0, 0);
 				}
 			break;
 			case PID.MountSkill://mounts skill key input packet

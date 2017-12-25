@@ -30,29 +30,6 @@ public class CapaShipInventory extends CapaInventory<BasicEntityShip> implements
 		super(size, host);
 	}
 	
-//    @Override
-//    public void deserializeNBT(NBTTagCompound nbt)
-//    {
-//    	super.deserializeNBT(nbt);
-//    	
-//    	//load 1.7.10 old inventory to new capability inventory
-//    	if (nbt.hasKey(ShipInvName, Constants.NBT.TAG_COMPOUND))
-//    	{
-//    		NBTTagList list = nbt.getTagList(ShipInvName, Constants.NBT.TAG_COMPOUND);
-//
-//    		for (int i = 0; i < list.tagCount(); i++)
-//    		{
-//    			NBTTagCompound item = list.getCompoundTagAt(i);
-//    			byte sid = item.getByte("Slot");
-//
-//    			if (sid >= 0 && sid < this.getSlots())
-//    			{
-//    				stacks[sid] = ItemStack.loadItemStackFromNBT(item);
-//    			}
-//    		}
-//    	}
-//    }
-	
 	public int getInventoryPage()
 	{
 		return this.inventoryPage;

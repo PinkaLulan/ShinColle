@@ -1,6 +1,5 @@
 package com.lulan.shincolle.handler;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.lwjgl.input.Keyboard;
@@ -16,7 +15,6 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.network.C2SGUIPackets;
-import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -24,11 +22,10 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.BlockHelper;
+import com.lulan.shincolle.shipskill.ShipSkillHandler;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.InventoryHelper;
 import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.RenderHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -59,7 +56,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogDensity;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -101,28 +97,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EventHandler
 {
 	
-	private static GameSettings keySet;		//CLIENT SIDE ONLY, keyset
 	
-	//keys
-	public static int rideKeys = 0;			//CLIENT SIDE ONLY
-	public static int openGUI = 0;			//CLIENT SIDE ONLY
-	public static int keyMountCD = 0;		//CLIENT SIDE ONLY, key CD for mount movement
-	public static int keyMountSkillCD = 0;	//CLIENT SIDE ONLY, key CD for mount skill
-	
-	//render view change
-	public static boolean isViewChanged = false;	//CLIENT SIDE ONLY
-	public static boolean isViewPlayer = false;		//CLIENT SIDE ONLY
-	
-	//for debug usage
-	public static int debugCooldown = 0;	//CLIENT SIDE ONLY
-	public static float field1 = 0F;		//CLIENT SIDE ONLY
-	public static float field2 = 0F;		//CLIENT SIDE ONLY
-	public static float field3 = 0F;		//CLIENT SIDE ONLY
-	public static float field4 = 0F;		//CLIENT SIDE ONLY
-	public static float field5 = 0F;		//CLIENT SIDE ONLY
-	public static float field6 = 0F;		//CLIENT SIDE ONLY
-	
-
 	//change vanilla mob drop (add grudge), this is SERVER event
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onDrop(LivingDropsEvent event)
@@ -665,9 +640,9 @@ public class EventHandler
 			else if (event.player.world.isRemote)
 			{
 				//cd--
-				if (this.keyMountCD > 0) this.keyMountCD--;
-				if (this.keyMountSkillCD > 0) this.keyMountSkillCD--;
-				if (this.debugCooldown > 0) this.debugCooldown--;
+				if (ClientProxy.keyMountCD > 0) ClientProxy.keyMountCD--;
+				if (ClientProxy.keyMountSkillCD > 0) ClientProxy.keyMountSkillCD--;
+				if (ClientProxy.debugCooldown > 0) ClientProxy.debugCooldown--;
 				
 //				//DEBUG TODO
 //				this.keySet = ClientProxy.getGameSetting();
@@ -740,147 +715,147 @@ public class EventHandler
 	public void onKeyInput(InputEvent event)
 	{
 		EntityPlayer player = ClientProxy.getClientPlayer();
-		this.keySet = ClientProxy.getGameSetting();
+		GameSettings keySet = ClientProxy.getGameSetting();
 		
 		/** for debug usage */
-		if (this.debugCooldown <= 0 && ConfigHandler.debugMode)
+		if (ClientProxy.debugCooldown <= 0 && ConfigHandler.debugMode)
 		{
 			float ctrl = 0F;
-			boolean shift = false;
+			boolean lalt = false;
 			
 			if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
 			{
 				ctrl = 0.09F;
 			}
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+			if (Keyboard.isKeyDown(Keyboard.KEY_LMENU))
 			{
-				shift = true;
+				lalt = true;
 			}
 			
 			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD4))
 			{
-				if (shift)
+				if (lalt)
 				{
-					this.field4 += 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field4 += 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f1 "+String.format("%.2f", this.field4)
+						"f4 "+String.format("%.2f", ClientProxy.field4)
 					));
 				}
 				else
 				{
-					this.field1 += 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field1 += 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f1 "+String.format("%.2f", this.field1)
+						"f1 "+String.format("%.2f", ClientProxy.field1)
 					));
 				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))
 			{
-				if (shift)
+				if (lalt)
 				{
-					this.field4 -= 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field4 -= 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f1 "+String.format("%.2f", this.field4)
+						"f4 "+String.format("%.2f", ClientProxy.field4)
 					));
 				}
 				else
 				{
-					this.field1 -= 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field1 -= 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f1 "+String.format("%.2f", this.field1)
+						"f1 "+String.format("%.2f", ClientProxy.field1)
 					));
 				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD5))
 			{
-				if (shift)
+				if (lalt)
 				{
-					this.field5 += 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field5 += 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f2 "+String.format("%.2f", this.field5)
+						"f5 "+String.format("%.2f", ClientProxy.field5)
 					));
 				}
 				else
 				{
-					this.field2 += 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field2 += 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f2 "+String.format("%.2f", this.field2)
+						"f2 "+String.format("%.2f", ClientProxy.field2)
 					));
 				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
 			{
-				if (shift)
+				if (lalt)
 				{
-					this.field5 -= 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field5 -= 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f2 "+String.format("%.2f", this.field5)
+						"f5 "+String.format("%.2f", ClientProxy.field5)
 					));
 				}
 				else
 				{
-					this.field2 -= 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field2 -= 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f2 "+String.format("%.2f", this.field2)
+						"f2 "+String.format("%.2f", ClientProxy.field2)
 					));
 				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))
 			{
-				if (shift)
+				if (lalt)
 				{
-					this.field6 += 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field6 += 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f3 "+String.format("%.2f", this.field6)
+						"f6 "+String.format("%.2f", ClientProxy.field6)
 					));
 				}
 				else
 				{
-					this.field3 += 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field3 += 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f3 "+String.format("%.2f", this.field3)
+						"f3 "+String.format("%.2f", ClientProxy.field3)
 					));
 				}
 			}
 			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD3))
 			{
-				if (shift)
+				if (lalt)
 				{
-					this.field6 -= 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field6 -= 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f3 "+String.format("%.2f", this.field6)
+						"f6 "+String.format("%.2f", ClientProxy.field6)
 					));
 				}
 				else
 				{
-					this.field3 -= 0.01F + ctrl;
-					this.debugCooldown = 2;
+					ClientProxy.field3 -= 0.01F + ctrl;
+					ClientProxy.debugCooldown = 2;
 					player.sendMessage(new TextComponentString
 					(
-						"f3 "+String.format("%.2f", this.field3)
+						"f3 "+String.format("%.2f", ClientProxy.field3)
 					));
 				}
 			}
@@ -952,159 +927,8 @@ public class EventHandler
 			}
 		}
 		
-		//ship mounts control
-		if (player.getRidingEntity() instanceof BasicEntityMount)
-		{
-			BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
-			
-			//keys for movement
-			if (this.keyMountCD <= 0)
-			{
-				//open ship GUI while riding, NO SUPPORT FOR MOUSE!
-				if (keySet.keyBindInventory.isPressed())
-				{
-					LogHelper.debug("DEBUG: key event: open ship GUI");
-					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountGUI));
-					return;
-				}
-				
-				//change renderer viewer, support for mouse keys
-				if (keySet.keyBindPickBlock.isPressed() || keySet.keyBindPickBlock.isKeyDown())
-				{
-					LogHelper.debug("DEBUG: key event: player view "+this.isViewPlayer);
-					this.keyMountCD = 8;
-					this.isViewPlayer = !this.isViewPlayer;
-					return;
-				}
-				
-				//持續偵測所有移動按鍵是否按住
-				int newKeys = 0;
-				//forward
-				if (keySet.keyBindForward.isKeyDown()) newKeys = newKeys | 1;
-				//back
-				if (keySet.keyBindBack.isKeyDown()) newKeys = newKeys | 2;
-				//left
-				if (keySet.keyBindLeft.isKeyDown()) newKeys = newKeys | 4;
-				//right
-				if (keySet.keyBindRight.isKeyDown()) newKeys = newKeys | 8;
-				//jump
-				if (keySet.keyBindJump.isKeyDown() && (mount.onGround || EntityHelper.checkEntityIsInLiquid(mount))) newKeys = newKeys | 16;
-				
-				if (newKeys > 0)
-				{
-					//set key for packet
-					this.rideKeys = newKeys;
-					this.keyMountCD = 2;
-					
-					//server跟client必須同時設定移動狀態, 移動顯示才會順暢, 只靠server設定移動會不連續
-					mount.keyPressed = newKeys;		//set client moving key
-					mount.keyTick = 10;				//continue moving for 10 ticks
-					
-					//send mounts move key packet
-					LogHelper.debug("DEBUG: key event: mounts move key: "+Integer.toBinaryString(newKeys));
-					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountMove, this.rideKeys));
-				}
-			}//end keys for movement
-			
-			//keys for movement
-			if (this.keyMountSkillCD <= 0 && mount.getAttrs() != null)
-			{
-				int getKey = -1;
-				
-				if (keySet.keyBindsHotbar[0].isKeyDown()) getKey = 0;
-				else if (keySet.keyBindsHotbar[1].isKeyDown()) getKey = 1;
-				else if (keySet.keyBindsHotbar[2].isKeyDown()) getKey = 2;
-				else if (keySet.keyBindsHotbar[3].isKeyDown()) getKey = 3;
-				
-				if (getKey < 0) return;
-				
-				float range = mount.getAttrs().getAttackRange();
-				this.keyMountSkillCD = 2;
-				
-				//create exclude entity list
-				ArrayList<Entity> exlist = new ArrayList<Entity>();
-				exlist.add(player);
-				exlist.add(mount);
-				exlist.add(mount.getHostEntity());
-				
-				//get skill target
-				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(range, 1F, exlist);
-				Entity target = null;
-				int[] targetPos = null;
-				
-				//get skill target: entity
-				if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.ENTITY)
-				{
-					target = hitObj.entityHit;
-					//在目標上畫出標記
-					ParticleHelper.spawnAttackParticleAtEntity(target, 0.3D, 5D, 0D, (byte)2);
-				}
-				
-				//get skill target: block
-				if (target == null) 
-				{
-					if (mount.getShipDepth() >= 3D)
-					{
-						hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
-					}
-					else
-					{
-						hitObj = BlockHelper.getPlayerMouseOverBlockOnWater(range, 1F);
-					}
-					
-					if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.BLOCK)
-					{
-						targetPos = new int[] {hitObj.getBlockPos().getX(), hitObj.getBlockPos().getY(), hitObj.getBlockPos().getZ()};
-						//在目標上畫出標記
-						ParticleHelper.spawnAttackParticleAt(targetPos[0]+0.5D, targetPos[1], targetPos[2]+0.5D, 0.3D, 5D, 0D, (byte)25);
-					}
-				}
-				
-				//fire only 1 key at a time
-				if (getKey == 0)
-				{
-					//hit entity only
-					if (target != null)
-					{
-						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 0, target.getEntityId(), -1, -1));
-					}
-				}
-				else if (getKey == 1)
-				{
-					//hit entity
-					if (target != null)
-					{
-						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 1, target.getEntityId(), -1, -1));
-					}
-					//hit block
-					else if (targetPos != null)
-					{
-						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 1, targetPos[0], targetPos[1], targetPos[2]));
-					}
-				}
-				else if (getKey == 2)
-				{
-					//hit entity only
-					if (target != null)
-					{
-						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 2, target.getEntityId(), -1, -1));
-					}
-				}
-				else if (getKey == 3)
-				{
-					//hit entity
-					if (target != null)
-					{
-						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 3, target.getEntityId(), -1, -1));
-					}
-//					//hit block
-//					else if (targetPos != null)
-//					{
-//						CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.MountSkill, 3, targetPos[0], targetPos[1], targetPos[2]));
-//					}
-				}
-			}
-		}//end riding ship mounts
+		//ship skill command
+		ShipSkillHandler.handleShipSkillKeys(ShipSkillHandler.getShipSkillHostType(player));
 	}
 	
 	/**
@@ -1176,14 +1000,14 @@ public class EventHandler
 					BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
 					
 					//將view point切換到ship身上
-					if (mount.host != null && !this.isViewChanged && !this.isViewPlayer)
+					if (mount.host != null && !ClientProxy.isViewChanged && !ClientProxy.isViewPlayer)
 					{
 						ClientProxy.getMineraft().setRenderViewEntity(mount.host);
-						this.isViewChanged = true;
+						ClientProxy.isViewChanged = true;
 					}
 					
 					//將人物視野轉動套用到ship身上
-					if (this.isViewChanged)
+					if (ClientProxy.isViewChanged)
 					{
 						Entity camera = ClientProxy.getMineraft().getRenderViewEntity();
 						
@@ -1205,10 +1029,10 @@ public class EventHandler
 			else if (event.phase == TickEvent.Phase.END)
 			{
 				//該render tick結束後必須把視角切回玩家, 以免其他利用view entity的方法出錯
-				if (this.isViewChanged)
+				if (ClientProxy.isViewChanged)
 				{
 					ClientProxy.getMineraft().setRenderViewEntity(ClientProxy.getClientPlayer());
-					this.isViewChanged = false;
+					ClientProxy.isViewChanged = false;
 				}
 			}//end phase END
 		}
@@ -1318,13 +1142,13 @@ public class EventHandler
 	 *******************************************************/
 	
 	/**
-	 * set isMorph = true before morphing
+	 * set isMorph = true before morphing, SERVER SIDE ONLY
 	 */
 	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onMorphPre(MorphEvent.Pre event)
 	{
-		if (event.player != null && event.morph instanceof EntityMorph)
+		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
 			EntityLivingBase target = em.getEntity();
@@ -1364,13 +1188,13 @@ public class EventHandler
 	}
 	
 	/**
-	 * delete or reset some data in nbt tag after morphing
+	 * delete or reset some data in nbt tag after morphing, SERVER SIDE ONLY
 	 */
 	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onMorphPost(MorphEvent.Post event)
 	{
-		if (event.player != null && event.morph instanceof EntityMorph)
+		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
 			EntityLivingBase target = em.getEntity();
@@ -1404,13 +1228,13 @@ public class EventHandler
 	}
 	
 	/**
-	 * change morph entity's attribute on spawn
+	 * change morph entity's attribute on spawn, SERVER SIDE ONLY
 	 */
 	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onSppawnMorphPre(SpawnGhostEvent.Pre event)
 	{
-		if (event.player != null && event.morph instanceof EntityMorph)
+		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
 			EntityLivingBase target = em.getEntity();
@@ -1431,17 +1255,20 @@ public class EventHandler
 	            	tags.setDouble("Base", 20D);
 	            }
 	        }
+			
+			//remove ship inventory
+			nbtAll.removeTag("CpInv");
 		}//end get entity morph
 	}
 	
 	/**
-	 * add skill to morph entity
+	 * add skill to morph entity, SERVER SIDE ONLY
 	 */
 	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onMorphAction(MorphActionEvent event)
 	{
-		if (event.player != null && event.morph instanceof EntityMorph)
+		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
 			EntityLivingBase target = em.getEntity();

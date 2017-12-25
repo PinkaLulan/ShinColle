@@ -22,6 +22,7 @@ import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -69,6 +70,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     public double velY;
     public double velZ;
     
+    //misc attrs
+    public int invisibleTicks;
+    
     
     //基本constructor, size必須在此設定
     public EntityAbyssMissile(World world)
@@ -97,6 +101,10 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
      * data:<br>
      *   basic missile:<br>
      *     0:atk, 1:knockback, 2:launchPosY, 3:tarX, 4:tarY, 5:tarZ, 6:life, 7:addHeight, 8:vel0, 9:accY1, 10:accY2 <br>
+     *   addition pos:<br>
+     *     11:posX, 12:posY, 13:posZ<br>
+     *   invisible time:<br>
+     *     14:invisible ticks<br>
      */
     public EntityAbyssMissile(World world, IShipAttackBase host, int type, int moveType, float[] data)
     {
@@ -123,9 +131,28 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
         this.attrs.setAttrsBuffed(ID.Attrs.ATK_AH, data[0]);
         this.attrs.setAttrsBuffed(ID.Attrs.DODGE, 0.5F);
         this.attrs.setAttrsBuffed(ID.Attrs.KB, data[1]);
-        this.posX = this.host2.posX;
-        this.posY = data[2];
-        this.posZ = this.host2.posZ;
+        
+        //set misc attrs
+        if (this.data.length > 14)
+        {
+        	this.invisibleTicks = (int) this.data[14];
+        }
+        
+        //set position
+        if (this.data.length > 13)
+        {
+        	data[2] = data[12];
+        	this.posX = data[11];
+            this.posY = data[12];
+            this.posZ = data[13];
+        }
+        else
+        {
+        	this.posX = this.host2.posX;
+            this.posY = data[2];
+            this.posZ = this.host2.posZ;
+        }
+        
         this.prevPosX = this.posX;
     	this.prevPosY = this.posY;
     	this.prevPosZ = this.posZ;
@@ -296,6 +323,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
         //calc new velocity
         this.handleMissileMovement();
         
+        //timer--
+		if (this.invisibleTicks > 0) this.invisibleTicks--;
+        
         /**********server side***********/
     	if (!this.world.isRemote)
     	{
@@ -315,7 +345,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     		//sync missile at start
     		else if (this.ticksExisted == 1)
     		{
-    			float[] data = new float[] {0F, (float)this.type, (float)this.moveType, (float)this.velX, (float)this.velY, (float)this.velZ, (float)this.vel0, (float)this.accY1, (float)this.accY2};
+    			float[] data = new float[] {0F, (float)this.type, (float)this.moveType, (float)this.velX, (float)this.velY, (float)this.velZ, (float)this.vel0, (float)this.accY1, (float)this.accY2, this.invisibleTicks};
     			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
     	  		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, S2CEntitySync.PID.SyncEntity_CustomData, data), point);
     		}
@@ -422,8 +452,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
         		{
         			byte type = this.vel0 > 0.55D ? (byte)1 : (byte)2;
         			
-        			if ((this.moveType == 2 && this.startMove) ||
-            			(this.moveType != 2 && this.ticksExisted > 2))
+        			if (this.invisibleTicks <= 0 &&
+        				((this.moveType == 2 && this.startMove) ||
+            			(this.moveType != 2 && this.ticksExisted > 2)))
             		{
             			for (int j = 0; j < 4; ++j)
                 		{
@@ -445,8 +476,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
             		break;
             		}
             		
-            		if ((this.moveType == 2 && this.startMove) ||
-            			(this.moveType != 2 && this.ticksExisted > 2))
+        			if (this.invisibleTicks <= 0 &&
+        				((this.moveType == 2 && this.startMove) ||
+            			(this.moveType != 2 && this.ticksExisted > 2)))
             		{
             			for (int j = 0; j < 4; ++j)
                 		{
@@ -459,8 +491,11 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     		//type 2: railgun particle
     		else
     		{
-    			//spawn beam head particle
-            	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 10, 4D, (byte)9);
+    			if (this.invisibleTicks <= 0)
+    			{
+    				//spawn beam head particle
+                	ParticleHelper.spawnAttackParticleAtEntity(this, 0D, 10, 4D, (byte)9);
+    			}
     		}
     	}//end client side
     }
@@ -808,6 +843,17 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
 	{
 		this.type = type;
 	}
+	
+	@Override
+	public boolean isInvisible()
+    {
+		if (this.data != null && this.data.length > 14)
+		{
+			return this.data[14] > 0;
+		}
+		
+        return this.getFlag(5);
+    }
 	
 	
 }

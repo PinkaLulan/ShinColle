@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import net.minecraft.entity.Entity;
@@ -76,7 +77,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     		}
     		
     		//check inventory space
-    		if(this.hostShip.getCapaShipInventory().getFirstSlotForItem() > 0) return true;
+    		if (this.hostShip.getCapaShipInventory().getFirstSlotForItem() > 0) return true;
     	}
     	//mount類
     	else if (this.hostMount != null && this.hostShip != null)

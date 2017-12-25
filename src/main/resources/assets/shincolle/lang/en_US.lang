@@ -866,3 +866,6 @@ chat.shincolle:command.wrongrange=Command FAIL: Wrong range:
 chat.shincolle:command.wrongcid=Command FAIL: Wrong ship class ID:
 chat.shincolle:command.wrongparanum=Command FAIL: Wrong number of parameters:
 chat.shincolle:command.wrongpararange=Command FAIL: Wrong range of parameters:
+
+# Inter-mod
+gui.shincolle:morph.nofuel=No Fuel

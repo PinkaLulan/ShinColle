@@ -12,7 +12,6 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.server.CacheDataShip;
 
 import io.netty.buffer.ByteBuf;

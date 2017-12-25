@@ -866,3 +866,6 @@ chat.shincolle:command.wrongrange=指令失敗： 範圍錯誤：
 chat.shincolle:command.wrongcid=指令失敗： 艦種ID錯誤：
 chat.shincolle:command.wrongparanum=指令失敗： 參數個數錯誤：
 chat.shincolle:command.wrongpararange=指令失敗： 參數範圍錯誤：
+
+# Inter-mod
+gui.shincolle:morph.nofuel=燃料不足

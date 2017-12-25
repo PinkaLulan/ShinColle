@@ -55,6 +55,7 @@ import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
 import com.lulan.shincolle.entity.mounts.EntityMountHbH;
 import com.lulan.shincolle.entity.mounts.EntityMountIsH;
 import com.lulan.shincolle.entity.mounts.EntityMountMiH;
+import com.lulan.shincolle.entity.mounts.EntityMountSuH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityAirplane;
 import com.lulan.shincolle.entity.other.EntityAirplaneT;
@@ -177,6 +178,7 @@ public class ModEntity
 		createEntity(EntityMountHbH.class, "EntityMountHbH", modEntityID++);
 		createEntity(EntityMountIsH.class, "EntityMountIsH", modEntityID++);
 		createEntity(EntityMountMiH.class, "EntityMountMiH", modEntityID++);
+		createEntity(EntityMountSuH.class, "EntityMountSuH", modEntityID++);
 		
 		//register misc entity
 		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);

@@ -2947,15 +2947,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		decrMorale(2);
   		setCombatTick(this.ticksExisted);
 	
-		//get attack value
-		float atk = getAttackBaseDamage(2, this);
-		float kbValue = 0.15F;
-		
-		//missile type
-		float launchPos = (float) posY + height * 0.5F;
-		int moveType = CombatHelper.calcMissileMoveType(this, target.getY(), 2);
-		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
-		
         //calc dist to target
         Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPosition(), target);
         
@@ -2977,11 +2968,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
+        //get attack value
+  		float atk = getAttackBaseDamage(2, null);
+        
         //spawn missile
-        MissileData md = this.getMissileData(2);
-        float[] data = new float[] {atk, kbValue, launchPos, tarX+0.5F, tarY+0.5F, tarZ+0.5F, 160, 0.25F, md.vel0, md.accY1, md.accY2};
-		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
-        this.world.spawnEntity(missile);
+  		summonMissile(2, atk, tarX, tarY, tarZ, 1F);
         
         //play target effect
         applySoundAtTarget(2, this);
@@ -3012,15 +3003,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		decrMorale(2);
   		setCombatTick(this.ticksExisted);
 	
-		//get attack value
-		float atk = getAttackBaseDamage(2, target);
-		float kbValue = 0.15F;
-		
-		//missile type
-		float launchPos = (float) posY + height * 0.5F;
-		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 2);
-		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
-		
         //calc dist to target
         Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
         
@@ -3042,11 +3024,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
+        //get attack value
+  		float atk = getAttackBaseDamage(2, target);
+        
         //spawn missile
-        MissileData md = this.getMissileData(2);
-        float[] data = new float[] {atk, kbValue, launchPos, tarX, tarY+target.height*0.1F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
-        this.world.spawnEntity(missile);
+        summonMissile(2, atk, tarX, tarY, tarZ, target.height);
         
         //play target effect
         applySoundAtTarget(2, target);
@@ -3060,12 +3042,28 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return true;
 	}
 	
+	/**
+	 * spawn attack missile, used in light or heavy attack method
+	 * 
+	 * attackType: 0:melee, 1:light, 2:heavy
+	 */
+	protected void summonMissile(int attackType, float atk, float tarX, float tarY, float tarZ, float targetHeight)
+	{
+		//missile type
+		float launchPos = (float) posY + height * 0.5F;
+		int moveType = CombatHelper.calcMissileMoveType(this, tarY, attackType);
+		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
+		
+		MissileData md = this.getMissileData(attackType);
+        float[] data = new float[] {atk, 0.15F, launchPos, tarX, tarY + targetHeight * 0.1F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
+        this.world.spawnEntity(missile);
+	}
+	
 	/** apply motion after attack
 	 *  type: 0:melee, 1:light, 2:heavy, 3:light air, 4:heavy air
 	 */
-	public void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk)
-	{
-	}
+	public void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk) {}
 
 	@Override
 	public boolean updateSkillAttack(Entity target)
@@ -5574,7 +5572,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   	 */
 	public int getFieldCount()
 	{
-		return 34;
+		return 35;
 	}
 	
 	public int getField(int id)
@@ -5649,6 +5647,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			return this.StateMinor[ID.M.Task];
 		case 33:
 			return this.StateMinor[ID.M.TaskSide];
+		case 34:
+			return this.getStateFlagI(ID.F.NoFuel);  //for morph entity
 		}
 		
 		return 0;
@@ -5759,6 +5759,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		break;
 		case 33:
 			this.StateMinor[ID.M.TaskSide] = value;
+		break;
+		case 34:
+			this.setStateFlagI(ID.F.NoFuel, value);	 //for morph entity
 		break;
 		}
 		

@@ -5,6 +5,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.EventHandler;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
@@ -95,7 +96,7 @@ public class LayerShipHeldItem implements LayerRenderer<EntityLivingBase>
 //        		this.itemRotate[0] = 0F;
 //        		this.itemRotate[1] = 0F;
 //        		this.itemRotate[2] = 0F;
-        		
+            	
         		//從bodyMain到手部所有連接的模型都post render一次以便套用位移跟旋轉
         		for (int i = 0; i < hand.length; i++)
         		{

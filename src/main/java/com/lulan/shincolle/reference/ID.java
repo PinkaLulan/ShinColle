@@ -100,6 +100,7 @@ public class ID
 		public static final byte ShipInv_ModelState16 = 36;
 		public static final byte ShipInv_Task = 37;
 		public static final byte ShipInv_TaskSide = 38;
+		public static final byte ShipInv_NoFuel = 39;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -372,6 +373,7 @@ public class ID
 		public static final int CRANE = 6;
 		public static final int VOLCORE = 7;
 		public static final int RECIPE = 8;
+		public static final int MORPHINVENTORY = 9;
 	}
 	
 	/** icon id for book GUI */
@@ -566,6 +568,14 @@ public class ID
 	/** ship class id */
 	public static final class ShipClass
 	{
+		public static final byte PlayerBASE = -10;
+		public static final byte PlayerBB = -11;
+		public static final byte PlayerBBV = -12;
+		public static final byte PlayerCL = -13;
+		public static final byte PlayerCV = -14;
+		public static final byte PlayerDD = -15;
+		public static final byte PlayerSS = -16;
+		
 		public static final short DestroyerI = 0;
 		public static final short DestroyerRO = 1;
 		public static final short DestroyerHA = 2;
@@ -664,6 +674,7 @@ public class ID
 		public static final short CarrierMount = 12;
 		public static final short IsloatedMount = 13;
 		public static final short MidwayMount = 14;
+		public static final short SubmMount = 15;
 	}
 	
 	/** ship type for damage calc */
