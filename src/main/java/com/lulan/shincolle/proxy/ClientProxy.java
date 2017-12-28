@@ -7,6 +7,8 @@ import com.lulan.shincolle.client.render.RenderShipFishing;
 import com.lulan.shincolle.client.render.RenderSummonEntity;
 import com.lulan.shincolle.client.render.item.RenderBasicEntityItem;
 import com.lulan.shincolle.client.render.item.RenderTileEntityItem;
+import com.lulan.shincolle.entity.battleship.EntityBBKongou;
+import com.lulan.shincolle.entity.battleship.EntityBBKongouMob;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTMob;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
@@ -189,6 +191,8 @@ public class ClientProxy extends CommonProxy
 		//entity render (model class, shadow size)
 		RenderingRegistry.registerEntityRenderingHandler(EntityAirfieldHime.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipHime.class, RenderShipEntity.FACTORY_SHIP);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBBKongou.class, RenderShipEntity.FACTORY_SHIP);
+		RenderingRegistry.registerEntityRenderingHandler(EntityBBKongouMob.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGT.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipNGTMob.class, RenderShipEntity.FACTORY_SHIP);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBattleshipYMT.class, RenderShipEntity.FACTORY_SHIP);

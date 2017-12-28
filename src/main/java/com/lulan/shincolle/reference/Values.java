@@ -120,10 +120,10 @@ public class Values
 		//battleship
 		put((int)ID.ShipClass.BattleshipNagato,   new float[] {135F, 40F, 0.26F,  1.0F, 0.32F, 14F, 0.85F, 0.8F,  0.25F, 0.63F, 0.64F, 0.6F});
 		put((int)ID.ShipClass.BattleshipYamato,   new float[] {150F, 55F, 0.36F,  1.0F, 0.3F,  20F, 1F,    1F,    0.3F,  0.7F,  0.6F,  0.7F});
-		put((int)ID.ShipClass.BattleshipKongou,   new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
-		put((int)ID.ShipClass.BattleshipHiei,     new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
-		put((int)ID.ShipClass.BattleshipHaruna,   new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
-		put((int)ID.ShipClass.BattleshipKirishima,new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
+		put((int)ID.ShipClass.BBKongou,           new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
+		put((int)ID.ShipClass.BBHiei,             new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
+		put((int)ID.ShipClass.BBHaruna,           new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
+		put((int)ID.ShipClass.BBKirishima,        new float[] {90F,  28F, 0.36F,  1.0F, 0.42F, 12F, 0.7F,  0.6F,  0.24F, 0.6F,  0.84F, 0.55F});
 		//submarine
 		put((int)ID.ShipClass.SubmarineU511,      new float[] {28F,  30F, 0.07F,  0.8F, 0.3F,  7F,  0.3F,  0.7F,  0.13F, 0.7F,  0.6F,  0.4F});
 		put((int)ID.ShipClass.SubmarineRo500,     new float[] {32F,  32F, 0.10F,  0.8F, 0.3F,  8F,  0.33F, 0.75F, 0.16F, 0.7F,  0.6F,  0.4F});
@@ -152,10 +152,10 @@ public class Values
 		//battleship
 		put((int)ID.ShipClass.BattleshipNagato,   new float[] {1.1F,  1.1F,  1.1F,  1F,    0.8F,  1.05F});
 		put((int)ID.ShipClass.BattleshipYamato,   new float[] {1.2F,  1.2F,  1.2F,  1.2F,  0.8F,  1.1F});
-		put((int)ID.ShipClass.BattleshipKongou,   new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
-		put((int)ID.ShipClass.BattleshipHiei,     new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
-		put((int)ID.ShipClass.BattleshipHaruna,   new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
-		put((int)ID.ShipClass.BattleshipKirishima,new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
+		put((int)ID.ShipClass.BBKongou,   new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
+		put((int)ID.ShipClass.BBHiei,     new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
+		put((int)ID.ShipClass.BBHaruna,   new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
+		put((int)ID.ShipClass.BBKirishima,new float[] {1F,    1.05F, 1F,    1F,    1F,    1F});
 		//submarine                                            HP     ATK    DEF    SPD    MOV    HIT
 		put((int)ID.ShipClass.SubmarineU511,      new float[] {0.25F, 0.8F,  0.25F, 0.75F, 0.4F,  0.4F});
 		put((int)ID.ShipClass.SubmarineRo500,     new float[] {0.25F, 0.8F,  0.25F, 0.75F, 0.4F,  0.4F});
@@ -237,10 +237,10 @@ public class Values
 		//BB
 		put((int)ID.ShipClass.BattleshipNagato,	    new float[] {0.1F, 0.95F, 0.95F, 0.95F, 0.1F});
 		put((int)ID.ShipClass.BattleshipYamato,	    new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.15F});
-		put((int)ID.ShipClass.BattleshipKongou,     new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.BattleshipHiei,       new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.BattleshipHaruna,     new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.BattleshipKirishima,  new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBKongou,     new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBHiei,       new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBHaruna,     new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBKirishima,  new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
 		//SS
 		put((int)ID.ShipClass.SubmarineU511,	    new float[] {0.1F, 1F, 1F, 1F, 0.35F});
 		put((int)ID.ShipClass.SubmarineRo500,	    new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.35F});
@@ -330,10 +330,10 @@ public class Values
 		put((int)ID.ShipClass.LightCruiserTatsuta,new int[] {0, 22, 180});
 		put((int)ID.ShipClass.HeavyCruiserAtago,  new int[] {0, 33, 180});
 		put((int)ID.ShipClass.HeavyCruiserTakao,  new int[] {0, 44, 180});
-		put((int)ID.ShipClass.BattleshipKongou,   new int[] {0, 55, 180});
-		put((int)ID.ShipClass.BattleshipHiei,     new int[] {0, 66, 180});
-		put((int)ID.ShipClass.BattleshipHaruna,   new int[] {0, 77, 180});
-		put((int)ID.ShipClass.BattleshipKirishima,new int[] {0, 88, 180});
+		put((int)ID.ShipClass.BBKongou,   new int[] {0, 55, 180});
+		put((int)ID.ShipClass.BBHiei,     new int[] {0, 66, 180});
+		put((int)ID.ShipClass.BBHaruna,   new int[] {0, 77, 180});
+		put((int)ID.ShipClass.BBKirishima,new int[] {0, 88, 180});
 	}});
 	
 	/**SHIP LIST for guidebook
@@ -390,10 +390,10 @@ public class Values
 		add((int)ID.ShipClass.LightCruiserTatsuta);
 		add((int)ID.ShipClass.HeavyCruiserAtago);
 		add((int)ID.ShipClass.HeavyCruiserTakao);
-		add((int)ID.ShipClass.BattleshipKongou);
-		add((int)ID.ShipClass.BattleshipHiei);
-		add((int)ID.ShipClass.BattleshipHaruna);
-		add((int)ID.ShipClass.BattleshipKirishima);
+		add((int)ID.ShipClass.BBKongou);
+		add((int)ID.ShipClass.BBHiei);
+		add((int)ID.ShipClass.BBHaruna);
+		add((int)ID.ShipClass.BBKirishima);
 	}});
 	
 	

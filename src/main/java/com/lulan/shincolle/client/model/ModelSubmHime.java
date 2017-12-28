@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 /**
  * ModelSubmHime - PinkaLulan
- * Created using Tabula 5.1.0
+ * Created using Tabula 5.1.0  2017/12/10
  */
 public class ModelSubmHime extends ShipModelBaseAdv
 {

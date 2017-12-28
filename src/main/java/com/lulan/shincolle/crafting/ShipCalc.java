@@ -264,6 +264,10 @@ public class ShipCalc
   			return "shincolle.EntityDestroyerShimakaze";
   		case ID.ShipClass.DestroyerShimakaze+2000:
   			return "shincolle.EntityDestroyerShimakazeMob";
+  		case ID.ShipClass.BBKongou:
+  			return "shincolle.EntityBattleshipKongou";
+  		case ID.ShipClass.BBKongou+2000:
+  			return "shincolle.EntityBattleshipKongouMob";
   		case ID.ShipClass.BattleshipNagato:
   			return "shincolle.EntityBattleshipNGT";
   		case ID.ShipClass.BattleshipNagato+2000:
@@ -486,6 +490,10 @@ public class ShipCalc
   			amount[2] = new ItemStack(ModItems.Ammo, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1), 1);
   			amount[3] = new ItemStack(ModBlocks.BlockPolymetal, ConfigHandler.kaitaiAmountLarge + rand.nextInt((int)(ConfigHandler.kaitaiAmountLarge * 0.25F) + 1));
   			break;
+  		case ID.ShipClass.BBKongou:
+  		case ID.ShipClass.BBHiei:
+  		case ID.ShipClass.BBHaruna:
+  		case ID.ShipClass.BBKirishima:
   		case ID.ShipClass.BattleshipNagato:
   		case ID.ShipClass.BattleshipYamato:
   		case ID.ShipClass.CarrierKaga:

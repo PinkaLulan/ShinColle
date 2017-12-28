@@ -649,10 +649,10 @@ public class ID
 		public static final short HeavyCruiserAtago = 58;
 		public static final short HeavyCruiserTakao = 59;
 		
-		public static final short BattleshipKongou = 60;
-		public static final short BattleshipHiei = 61;
-		public static final short BattleshipHaruna = 62;
-		public static final short BattleshipKirishima = 63;
+		public static final short BBKongou = 60;
+		public static final short BBHiei = 61;
+		public static final short BBHaruna = 62;
+		public static final short BBKirishima = 63;
 	}
 	
 	/** ship misc entity id for renderer */

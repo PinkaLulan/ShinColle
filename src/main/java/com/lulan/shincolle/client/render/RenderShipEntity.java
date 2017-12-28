@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.annotation.Nonnull;
 
 import com.lulan.shincolle.client.model.ModelAirfieldHime;
+import com.lulan.shincolle.client.model.ModelBBKongou;
 import com.lulan.shincolle.client.model.ModelBattleshipHime;
 import com.lulan.shincolle.client.model.ModelBattleshipNagato;
 import com.lulan.shincolle.client.model.ModelBattleshipRe;
@@ -129,6 +130,8 @@ public class RenderShipEntity extends RenderBasic
 	public static final ModelBase MD_WD_Carrier = new ModelCarrierWDemon();
 	//Hostile Sip
 	//BB
+	public static final ResourceLocation TEX_BB_Kongou = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBBKongou.png");
+	public static final ModelBase MD_BB_Kongou = new ModelBBKongou();
 	public static final ResourceLocation TEX_BB_Nagato = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipNagato.png");
 	public static final ModelBase MD_BB_Nagato = new ModelBattleshipNagato();
 	public static final ResourceLocation TEX_BB_Yamato = new ResourceLocation(Reference.TEXTURES_ENTITY+"EntityBattleshipYamato.png");
@@ -242,6 +245,8 @@ public class RenderShipEntity extends RenderBasic
 			
 		//Hostile Ship
 		//BB
+		case ID.ShipClass.BBKongou:
+			return TEX_BB_Kongou;
 		case ID.ShipClass.BattleshipNagato:
 			return TEX_BB_Nagato;
 		case ID.ShipClass.BattleshipYamato:
@@ -372,6 +377,9 @@ public class RenderShipEntity extends RenderBasic
 		break;
 		//Hostile Ship
 		//BB
+		case ID.ShipClass.BBKongou:
+			this.mainModel = MD_BB_Kongou;
+		break;
 		case ID.ShipClass.BattleshipNagato:
 			this.mainModel = MD_BB_Nagato;
 		break;

@@ -97,6 +97,7 @@ public class ConfigSound extends BasicShipConfig
 		strs.add("54,25,0,25,0,50,0,50,0,0"+NEW_LINE);
 		strs.add("56,50,50,50,100,0,0,50,0,0"+NEW_LINE);
 		strs.add("60,25,50,0,0,0,0,0,0,0"+NEW_LINE);
+		strs.add("62,0,35,0,0,0,0,0,0,0"+NEW_LINE);
 		
 		return strs;
 	}

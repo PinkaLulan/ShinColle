@@ -104,7 +104,6 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 		this.tasks.addTask(1, new EntityAIShipRangeAttack(this));
 	}
 	
-	//num rensouhou++
 	@Override
   	public void onLivingUpdate()
 	{

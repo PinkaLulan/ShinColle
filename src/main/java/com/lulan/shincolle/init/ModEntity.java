@@ -1,6 +1,8 @@
 package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.entity.battleship.EntityBBKongou;
+import com.lulan.shincolle.entity.battleship.EntityBBKongouMob;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTMob;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
@@ -113,6 +115,8 @@ public class ModEntity
 		//register ship entity
 		createEntity(EntityAirfieldHime.class, "EntityAirfieldHime", modEntityID++);
 		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
+		createEntity(EntityBBKongou.class, "EntityBattleshipKongou", modEntityID++);
+		createEntity(EntityBBKongouMob.class, "EntityBattleshipKongouMob", modEntityID++);
 		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
 		createEntity(EntityBattleshipNGTMob.class, "EntityBattleshipNGTMob", modEntityID++);
 		createEntity(EntityBattleshipYMT.class, "EntityBattleshipYMT", modEntityID++);

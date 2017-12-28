@@ -375,6 +375,11 @@
   "ship-hit-60": { "sounds": [
     "shincolle:pan1",
     "shincolle:pan2"
+  ]},
+  
+  "ship-hit-62": { "sounds": [
+    "shincolle:burnlove1",
+    "shincolle:burnlove2"
   ]}
   
 }
