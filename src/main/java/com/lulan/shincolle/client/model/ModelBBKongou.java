@@ -257,7 +257,7 @@ public class ModelBBKongou extends ShipModelBaseAdv
         this.Cloth02c4.setRotationPoint(0.0F, 7.9F, 0.0F);
         this.Cloth02c4.addBox(-3.5F, 0.0F, 0.0F, 7, 8, 0, 0.0F);
         this.ClothA02a = new ModelRenderer(this, 128, 49);
-        this.ClothA02a.setRotationPoint(2.5F, 0.0F, -2.5F);
+        this.ClothA02a.setRotationPoint(2.5F, -0.1F, -2.5F);
         this.ClothA02a.addBox(-3.0F, 0.0F, -3.0F, 6, 9, 6, 0.0F);
         this.EquipB00b_1 = new ModelRenderer(this, 0, 0);
         this.EquipB00b_1.setRotationPoint(-6.0F, -0.1F, 2.0F);
@@ -414,7 +414,7 @@ public class ModelBBKongou extends ShipModelBaseAdv
         this.Cloth01c.addBox(-1.5F, 0.0F, 0.0F, 3, 6, 0, 0.0F);
         this.setRotateAngle(Cloth01c, -0.2617993877991494F, 0.13962634015954636F, 0.17453292519943295F);
         this.ClothA02 = new ModelRenderer(this, 128, 49);
-        this.ClothA02.setRotationPoint(-2.5F, 0.0F, -2.5F);
+        this.ClothA02.setRotationPoint(-2.5F, -0.1F, -2.5F);
         this.ClothA02.addBox(-3.0F, 0.0F, -3.0F, 6, 9, 6, 0.0F);
         this.EquipB00c = new ModelRenderer(this, 0, 0);
         this.EquipB00c.setRotationPoint(5.7F, 2.0F, -0.3F);
@@ -1063,10 +1063,6 @@ public class ModelBBKongou extends ShipModelBaseAdv
 		break;
     	}
     	
-    	//TODO
-    	scale = 0.45F;
-    	offsetY = 1.79F;
-    	
     	GlStateManager.pushMatrix();
     	GlStateManager.enableBlend();
     	GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -1554,6 +1550,8 @@ public class ModelBBKongou extends ShipModelBaseAdv
 				  	this.Cloth02c2_1.rotateAngleX = 0.35F;
 				  	this.Cloth02c3_1.rotateAngleX = 0.05F;
 				  	this.Cloth02c4_1.rotateAngleX = 0.0F;
+				  	this.ClothA03.rotateAngleY = 0.2F;
+				  	this.ClothA03a.rotateAngleY = -0.2F;
 		    	  	//hair
 		    	  	this.Hair01.rotateAngleX = 0.21F + headX;
 		    	  	this.Hair02.rotateAngleX = -0.28F + headX;
@@ -1618,8 +1616,8 @@ public class ModelBBKongou extends ShipModelBaseAdv
 			  	this.Cloth02c2.rotateAngleX += 0.1F;
 			  	this.Cloth02c1_1.rotateAngleX += 0.45F;
 			  	this.Cloth02c2_1.rotateAngleX += 0.1F;
-			  	this.ClothA03.rotateAngleY = 1.29F;
-			  	this.ClothA03a.rotateAngleY = -1.13F;
+			  	this.ClothA03.rotateAngleY = 1.49F;
+			  	this.ClothA03a.rotateAngleY = -1.33F;
 			    //arm 
 			  	this.ArmLeft01.rotateAngleX = -0.3142F;
 			    this.ArmLeft01.rotateAngleZ = 0.3490F;

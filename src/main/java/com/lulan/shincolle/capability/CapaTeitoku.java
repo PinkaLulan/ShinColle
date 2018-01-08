@@ -30,6 +30,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.items.ItemStackHandler;
 
 /**
  * teitoku data capability
@@ -42,6 +43,7 @@ import net.minecraft.util.text.ITextComponent;
 public class CapaTeitoku implements ICapaTeitoku, IInventory
 {
 	public static final String CAPA_KEY = "TeitokuExtProps";
+	public static final String INV_KEY = "CpInv";
 	public EntityPlayer player;
 	public String playerName;
 	
@@ -90,7 +92,7 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 	public int numGrudge;
 	public int numAmmoLight;
 	public int numAmmoHeavy;
-	public CapaInventory itemHandler;
+	public ItemStackHandler itemHandler;
 	public AttrsAdv shipAttrs;
 	
 	
@@ -131,6 +133,7 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		this.numGrudge = 0;
 		this.numAmmoLight = 0;
 		this.numAmmoHeavy = 0;
+		this.itemHandler = new ItemStackHandler(this.getSizeInventory());
 		
 		//need init
 		this.needInit = true;
@@ -143,7 +146,6 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		
 		this.player = player;
 		this.playerName = player.getName();
-		this.itemHandler = new CapaInventory(this.getSizeInventory(), player);
 		
 		//init done
 		this.needInit = false;
@@ -228,7 +230,8 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		}
 		
 		//save ship inventory
-		nbtExt.setTag(CapaInventory.InvName, itemHandler.serializeNBT());
+		if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.getSizeInventory());
+		nbtExt.setTag(CapaTeitoku.INV_KEY, this.itemHandler.serializeNBT());
 		
 		nbt.setTag(CAPA_KEY, nbtExt);
 		LogHelper.debug("DEBUG : save player ExtNBT data on: "+this.player);
@@ -310,10 +313,11 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 			}
 			
 			//load inventory
-	        if (nbtExt.hasKey(CapaInventory.InvName))
+	        if (nbtExt.hasKey(CapaTeitoku.INV_KEY))
 	        {
-	        	itemHandler.deserializeNBT((NBTTagCompound) nbtExt.getTag(CapaInventory.InvName));
-	        }
+	        	if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.getSizeInventory());
+	        	this.itemHandler.deserializeNBT((NBTTagCompound) nbtExt.getTag(CapaTeitoku.INV_KEY));
+        	}
 		}
 		catch (Exception e)
 		{

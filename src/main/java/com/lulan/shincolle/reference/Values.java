@@ -837,6 +837,7 @@ public class Values
 		put(ID.Icon.Cauldron,   new ItemStack(Items.CAULDRON));
 		put(ID.Icon.Lapis,      new ItemStack(Items.DYE, 1, 4));
 		put(ID.Icon.RecipePaper,new ItemStack(ModItems.RecipePaper));
+		put(ID.Icon.OPTool,     new ItemStack(ModItems.OPTool));
 	}});
 	
 	
@@ -1118,7 +1119,7 @@ public class Values
 		//page 24: training book
 		put(1024, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
-								new int[] {2, 0, 23, 17, ID.Icon.TrainBook}));
+								new int[] {2, 0, 43, 17, ID.Icon.TrainBook}));
 		//page 25: ship tank
 		put(1025, Arrays.asList(new int[] {3, 6, 1},
 								new int[] {0, 0, 0, 0},
@@ -1168,13 +1169,18 @@ public class Values
 								new int[] {2, 6, 43, 37, ID.Icon.GrudgeBH},
 								new int[] {2, 6, 81, 17, ID.Icon.Tank3}));
 		//page 26: recipe paper
-		put(1023, Arrays.asList(new int[] {0, 0, 0, 0},
+		put(1026, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
 								new int[] {2, 0, 3,  17, ID.Icon.Grudge},
 								new int[] {2, 0, 23, 17, ID.Icon.Paper},
 								new int[] {2, 0, 43, 17, ID.Icon.Lapis},
 								new int[] {2, 0, 81, 17, ID.Icon.RecipePaper}));
+		//page 27: OP Tool
+		put(1027, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {2, 0, 43, 17, ID.Icon.OPTool}));
+				
 		//chap 2: construction
 		//page 0: vent
 		put(2000, Arrays.asList(new int[] {0, 0, 0, 0},
@@ -1209,6 +1215,7 @@ public class Values
 		//page 4: vortex
 		put(2004, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0}));
+		
 		//chap 3:
 		//page 13: morale
 		put(3013, Arrays.asList(new int[] {0, 0, 0, 0},

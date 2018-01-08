@@ -14,7 +14,6 @@ import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEquip;
-import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -717,6 +716,15 @@ public class EventHandler
 		EntityPlayer player = ClientProxy.getClientPlayer();
 		GameSettings keySet = ClientProxy.getGameSetting();
 		
+		/* OPTool: add or remove unattackable target */
+		TargetHelper.handleOPToolKeyInput();
+		
+		/* change pointer team id */
+		EntityHelper.handlePointerKeyInput();
+		
+		/* ship skill command */
+		ShipSkillHandler.handleShipSkillKeys(ShipSkillHandler.getShipSkillHostType(player));
+		
 		/** for debug usage */
 		if (ClientProxy.debugCooldown <= 0 && ConfigHandler.debugMode)
 		{
@@ -859,76 +867,7 @@ public class EventHandler
 					));
 				}
 			}
-		}
-		
-		//pointer item control
-		ItemStack pointer = EntityHelper.getPointerInUse(player);
-		
-		if (pointer != null)
-		{
-			int meta = pointer.getMetadata();
-			int getKey = -1;
-			int orgCurrentItem = player.inventory.currentItem;
-			
-			//若按住ctrl (sprint key)
-			if (keySet.keyBindSprint.isKeyDown())	//注意持續偵測類按鍵必須使用isKeyDown
-			{
-				//若按住hotbar 1~9, 則切換隊伍, 但是避免數字按鍵將hotbar位置改變 (固定current item)
-				for (int i = 0; i < keySet.keyBindsHotbar.length; i++)
-				{
-					if (keySet.keyBindsHotbar[i].isPressed())
-					{
-						getKey = i;
-						
-//						//儲存快捷位置到權杖, 使權杖能將快捷列回復到權杖上 (CLIENT SIDE) TODO dep
-//						if (!pointer.hasTagCompound()) pointer.setTagCompound(new NBTTagCompound());
-//						pointer.getTagCompound().setBoolean("chgHB", true);
-//						pointer.getTagCompound().setInteger("orgHB", orgCurrentItem);
-						
-						break;
-					}
-				}
-				
-				LogHelper.debug("DEBUG: key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
-				//send key input packet
-				if (getKey >= 0)
-				{
-					//change team id
-					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
-				}
-			}
-			//change pointer mode to caress head mode (meta + 3)
-			//current item must be PointerItem (NO OFFHAND!)
-			else if (player.inventory.getCurrentItem() != null &&
-					 player.inventory.getCurrentItem().getItem() == ModItems.PointerItem &&
-					 keySet.keyBindPlayerList.isPressed())
-			{
-				//switch caress head mode
-				switch (meta)
-				{
-				case 1:
-				case 2:
-					meta += 3;
-					break;
-				case 3:
-				case 4:
-				case 5:
-					meta -= 3;
-					break;
-				default:
-					meta = 3;
-					break;
-				}
-				
-				player.inventory.getCurrentItem().setItemDamage(meta);
-				
-				//send sync packet to server
-				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
-			}
-		}
-		
-		//ship skill command
-		ShipSkillHandler.handleShipSkillKeys(ShipSkillHandler.getShipSkillHostType(player));
+		}//end debug keys
 	}
 	
 	/**

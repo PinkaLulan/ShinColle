@@ -346,10 +346,12 @@ public class ShipCalc
   		//25% for super rare level
   		if (ran1 > 75)
   		{
-  			switch (rand.nextInt(2))
+  			switch (rand.nextInt(3))
   			{
   			case 1:
   				return getEntityToSpawnName(ID.ShipClass.BattleshipYamato+2000);
+  			case 2:
+  				return getEntityToSpawnName(ID.ShipClass.BBKongou+2000);
   			default:
   				return getEntityToSpawnName(ID.ShipClass.BattleshipNagato+2000);
   			}

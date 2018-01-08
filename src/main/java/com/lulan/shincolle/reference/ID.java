@@ -453,6 +453,7 @@ public class ID
 		public static final short Cauldron = 71;
 		public static final short Lapis = 72;
 		public static final short RecipePaper = 73;
+		public static final short OPTool = 74;
 	}
 	
 	/** hp state index */

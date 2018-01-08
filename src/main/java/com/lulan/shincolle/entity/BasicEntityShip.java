@@ -1643,7 +1643,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			switch (type)
 			{
 			case 0:		//model display
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
+				if (this.morphHost != null)
+				{
+					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.morphHost.getEntityId(), this.world.provider.getDimension()));
+				}
+				else
+				{
+					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
+				}
 			break;
 			case 1:		//unit name display
 				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_UnitName, this.getEntityId(), this.world.provider.getDimension()));
@@ -2757,7 +2764,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//request sync packet
         	if (this.ticksExisted == 40 || this.ticksExisted == 120)
         	{
-        		this.sendSyncRequest(0);	//request emotion state sync
         		this.sendSyncRequest(1);	//request unit name sync
         	}
         	
@@ -2767,12 +2773,18 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     			//show unit name and uid on head
         		EntityHelper.showNameTag(this);
         		
-            	//every 128 ticks
-            	if ((this.ticksExisted & 127) == 0)
+        		if ((this.ticksExisted & 63) == 0)
             	{
-            		//update potion buff (client side for GUI display)
-            		this.sendSyncRequest(2);	//request buff map sync
-            	}//end 128 ticks
+        			//request sync model state every X ticks
+        			this.sendSyncRequest(0);	//request emotion state sync
+        			
+	            	//every 128 ticks
+	            	if ((this.ticksExisted & 127) == 0)
+	            	{
+	            		//update potion buff (client side for GUI display)
+	            		this.sendSyncRequest(2);	//request buff map sync
+	            	}//end 128 ticks
+            	}//end 64 ticks
         	}//end 32 ticks
         }//end client side
         
@@ -3782,7 +3794,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		if (this.getPlayerUID() > 0)
 		{
-			return EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+			if (this.world.isRemote)
+			{
+				return this.getOwner();
+			}
+			else
+			{
+				return EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
+			}
 		}
 		else
 		{

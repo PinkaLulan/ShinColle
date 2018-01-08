@@ -27,6 +27,7 @@ import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
@@ -44,6 +45,7 @@ import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityList;
@@ -409,15 +411,15 @@ public class EntityHelper
 	{
 		if (uid > 0)
 		{
-			//get all worlds
-			World[] worlds = ServerProxy.getServerWorld();
-			
-			//get player data
-			int peid = getPlayerEID(uid);
-			
 			//get player entity
 			try
 			{
+				//get all worlds
+				World[] worlds = ServerProxy.getServerWorld();
+				
+				//get player data
+				int peid = getPlayerEID(uid);
+				
 				//check all world
 				for (World w : worlds)
 				{
@@ -435,6 +437,7 @@ public class EntityHelper
 			{
 				LogHelper.info("EXCEPTION: get EntityPlayer by name fail: "+e);
 				e.printStackTrace();
+				return null;
 			}
 		}
 		
@@ -1579,6 +1582,73 @@ public class EntityHelper
   		}
   		
   		return pointer;
+  	}
+  	
+  	/**
+  	 * change team id of pointer item in key event, CLIENT SIDE ONLY
+  	 */
+  	public static void handlePointerKeyInput()
+  	{
+  		EntityPlayer player = ClientProxy.getClientPlayer();
+		GameSettings keySet = ClientProxy.getGameSetting();
+		ItemStack pointer = EntityHelper.getPointerInUse(player);
+		
+		if (pointer != null)
+		{
+			int meta = pointer.getMetadata();
+			int getKey = -1;
+			int orgCurrentItem = player.inventory.currentItem;
+			
+			//若按住ctrl (sprint key)
+			if (keySet.keyBindSprint.isKeyDown())	//注意持續偵測類按鍵必須使用isKeyDown
+			{
+				//若按住hotbar 1~9, 則切換隊伍, 但是避免數字按鍵將hotbar位置改變 (固定current item)
+				for (int i = 0; i < keySet.keyBindsHotbar.length; i++)
+				{
+					if (keySet.keyBindsHotbar[i].isPressed())
+					{
+						getKey = i;
+						break;
+					}
+				}
+				
+				LogHelper.debug("DEBUG: key input: pointer set team: "+getKey+" currItem: "+orgCurrentItem);
+				//send key input packet
+				if (getKey >= 0)
+				{
+					//change team id
+					CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetShipTeamID, getKey, orgCurrentItem));
+				}
+			}
+			//change pointer mode to caress head mode (meta + 3)
+			//current item must be PointerItem (NO OFFHAND!)
+			else if (player.inventory.getCurrentItem() != null &&
+					 player.inventory.getCurrentItem().getItem() == ModItems.PointerItem &&
+					 keySet.keyBindPlayerList.isPressed())
+			{
+				//switch caress head mode
+				switch (meta)
+				{
+				case 1:
+				case 2:
+					meta += 3;
+					break;
+				case 3:
+				case 4:
+				case 5:
+					meta -= 3;
+					break;
+				default:
+					meta = 3;
+					break;
+				}
+				
+				player.inventory.getCurrentItem().setItemDamage(meta);
+				
+				//send sync packet to server
+				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SyncPlayerItem, meta));
+			}
+		}
   	}
   	
     //check entity is not host or launcher

@@ -1,17 +1,16 @@
 package com.lulan.shincolle.network;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -24,6 +23,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -67,9 +67,12 @@ public class C2SGUIPackets implements IMessage
 		public static final byte SetFormation = 31;
 		public static final byte OpenItemGUI = 32;
 		public static final byte SwapShip = 33;
-		public static final byte SetUnatkClass = 34;
+		public static final byte NO_USE = 34;		//no use
 		public static final byte HitHeight = 35;
 		public static final byte SetUnitName = 36;
+		//op tool
+		public static final byte SetUnatkClass = 50;
+		public static final byte ShowUnatkClass = 51;
 		//desk gui
 		public static final byte Desk_Create = 70;
 		public static final byte Desk_Rename = 71;
@@ -179,14 +182,15 @@ public class C2SGUIPackets implements IMessage
 		case PID.OpenItemGUI:
 		case PID.SwapShip:
 		case PID.HitHeight:
+		case PID.ShowUnatkClass:
 			int length = buf.readInt();
 			this.valueInt = PacketHelper.readIntArray(buf, length);
 		break;
 		case PID.SetTarClass:
-		case PID.SetUnatkClass:
 		case PID.SetUnitName:
 		case PID.Desk_Create:
 		case PID.Desk_Rename:
+		case PID.SetUnatkClass:
 			this.valueInt = PacketHelper.readIntArray(buf, 2);
 			this.valueStr = PacketHelper.readString(buf);
 		break;
@@ -256,16 +260,25 @@ public class C2SGUIPackets implements IMessage
 		case PID.OpenItemGUI:
 		case PID.SwapShip:
 		case PID.HitHeight:
+		case PID.ShowUnatkClass:
 		{
-			int length = this.valueInt.length + 2;
+			int length = 2;
+			
+			if (this.valueInt != null)
+			{
+				length += this.valueInt.length;
+			}
 			
 			buf.writeInt(length);
 			buf.writeInt(this.entity.getEntityId());
 			buf.writeInt(this.entity.world.provider.getDimension());
 			
-			for (int val : this.valueInt)
+			if (this.valueInt != null)
 			{
-				buf.writeInt(val);
+				for (int val : this.valueInt)
+				{
+					buf.writeInt(val);
+				}
 			}
 		}
 		break;
@@ -651,17 +664,13 @@ public class C2SGUIPackets implements IMessage
 			{
 				//add target to list	
 				if (ServerProxy.addUnattackableTargetClass(msg.valueStr))
-				{	//TODO use local lang string, not hardcoded string
-					player.sendMessage(new TextComponentString("Target Wrench: ADD entity: "+msg.valueStr));
+				{
+					player.sendMessage(new TextComponentTranslation("chat.shincolle:optool.add").appendText(" "+msg.valueStr));
 				}
 				else
 				{
-					player.sendMessage(new TextComponentString("Target Wrench: REMOVE entity: "+msg.valueStr));
+					player.sendMessage(new TextComponentTranslation("chat.shincolle:optool.remove").appendText(" "+msg.valueStr));
 				}
-			}
-			else
-			{
-				player.sendMessage(new TextComponentString("Target Wrench: This item is OP ONLY!"));
 			}
 		}
 		break;
@@ -673,6 +682,25 @@ public class C2SGUIPackets implements IMessage
 			{
 				((BasicEntityShip) entity).setHitHeight(msg.valueInt[3]);
 				((BasicEntityShip) entity).setHitAngle(msg.valueInt[4]);
+			}
+		}
+		break;
+		case PID.ShowUnatkClass:
+		{
+			player = EntityHelper.getEntityPlayerByID(msg.valueInt[0], msg.valueInt[1], false);
+			
+			if (player != null)
+			{
+				HashMap<Integer, String> tarlist = ServerProxy.getUnattackableTargetClass();
+				TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:optool.show");
+				
+				text.getStyle().setColor(TextFormatting.GOLD);
+				player.sendMessage(text);
+				
+				tarlist.forEach((k, v) ->
+				{
+					player.sendMessage(new TextComponentString(TextFormatting.AQUA+v));
+				});
 			}
 		}
 		break;

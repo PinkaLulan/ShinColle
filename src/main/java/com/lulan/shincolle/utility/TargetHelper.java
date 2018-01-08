@@ -4,19 +4,27 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
 import com.google.common.base.Predicate;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.C2SGUIPackets;
+import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityHanging;
@@ -30,6 +38,8 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.RayTraceResult;
 
 /** some targeting class/method
  * 
@@ -100,10 +110,39 @@ public class TargetHelper
 				return false;
 			}
 			
-            //若target是玩家, 則不打無敵目標, ex: OP/觀察者
-            if (target2 instanceof EntityPlayer && ((EntityPlayer) target2).capabilities.disableDamage)
+            //is player 
+            if (target2 instanceof EntityPlayer)
             {
-                return false;
+            	//不打無敵目標, ex: OP/觀察者
+            	if (((EntityPlayer) target2).capabilities.disableDamage)
+            	{
+            		return false;
+            	}
+            	
+                //check team
+            	switch (ConfigHandler.shipAttackPlayer)
+            	{
+            	case 0:  //ship dont attack player automatically, do nothing
+        		break;
+            	case 1:  //ship attack hostile player
+            		if (TeamHelper.checkIsBanned(host, target2))
+            		{
+            			return true;
+            		}
+        		break;
+            	case 2:  //ship attack hostile and neutral player
+            		if (!TeamHelper.checkIsAlly(host, target2))
+            		{
+            			return true;
+            		}
+        		break;
+            	case 3:  //ship attkac all player except owner
+            		if (!TeamHelper.checkSameOwner(host, target2))
+            		{
+            			return true;
+            		}
+        		break;
+            	}
             }
 			
 			//check unattackable list
@@ -617,6 +656,52 @@ public class TargetHelper
     	}
 		
 		return false;
+	}
+	
+	/** handle key event for OPTool */
+	public static void handleOPToolKeyInput()
+	{
+		if (ClientProxy.debugCooldown > 0) return;
+		
+		EntityPlayer player = ClientProxy.getClientPlayer();
+		GameSettings keySet = ClientProxy.getGameSetting();
+		ItemStack optool = player.inventory.getCurrentItem();
+		
+		//key press
+		if (optool != null && optool.getItem() == ModItems.OPTool)
+		{
+			//numpad 1: add/remove target to unattackable list
+			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))
+			{
+				ClientProxy.debugCooldown = 5;
+				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
+				
+				//hit entity
+				if (hitObj != null && hitObj.entityHit != null)
+				{
+					//target != ship
+					if (!(hitObj.entityHit instanceof BasicEntityShip ||
+						  hitObj.entityHit instanceof BasicEntityShipHostile ||
+						  hitObj.entityHit instanceof BasicEntitySummon ||
+						  hitObj.entityHit instanceof BasicEntityMount))
+					{
+						String tarName = hitObj.entityHit.getClass().getSimpleName();
+						LogHelper.debug("DEBUG: target wrench get class: "+tarName);
+						
+						//send packet to server
+						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetUnatkClass, tarName));
+						return;
+					}//end not ship
+				}//end hit != null
+			}
+			//numpad 2: show unattackable list
+			else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
+			{
+				ClientProxy.debugCooldown = 20;
+				//send packet to server
+				CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.ShowUnatkClass));
+			}
+		}
 	}
 	
 	

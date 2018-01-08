@@ -59,33 +59,38 @@ public class RecipePaper extends BasicItem
     		//get recipe itemstack
     		NBTTagCompound nbt = stack.getTagCompound();
         	NBTTagList tagList = nbt.getTagList("Recipe", Constants.NBT.TAG_COMPOUND);
-        	ItemStack[] stacks = new ItemStack[10];
         	
-            for (int i = 0; i < 10; i++)
-            {
-                NBTTagCompound itemTags = tagList.getCompoundTagAt(i);
-                int slot = itemTags.getInteger("Slot");
-
-                if (slot >= 0 && slot < 10)
-                {
-                	stacks[slot] = ItemStack.loadItemStackFromNBT(itemTags);
-                }
-            }
-    		
-            //show result stack
-            if (stacks[9] != null)
-            {
-            	list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:recipepaper.result") + " " + TextFormatting.WHITE + stacks[9].getDisplayName());
-            }
-            
-            list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:recipepaper.material"));
-    		
-            //show material stack
-    		for (int i = 0; i < 9; i++)
-    		{
-    			if (stacks[i] != null)
-        			list.add(TextFormatting.GRAY + "  " + stacks[i].getDisplayName());
-			}
+        	if (tagList != null && tagList.tagCount() > 0)
+        	{
+        		ItemStack[] stacks = new ItemStack[10];
+        		
+	            for (int i = 0; i < tagList.tagCount(); i++)
+	            {
+	                NBTTagCompound itemTags = tagList.getCompoundTagAt(i);
+	                int slot = itemTags.getInteger("Slot");
+	                
+	                if (slot >= 0 && slot < 10)
+	                {
+	                	stacks[slot] = ItemStack.loadItemStackFromNBT(itemTags);
+	                }
+	            }
+	    		
+	            //show result stack
+	            if (stacks[9] != null)
+	            {
+	            	list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:recipepaper.result") + " " + TextFormatting.WHITE + stacks[9].getDisplayName());
+	            }
+	            
+	            list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:recipepaper.material"));
+	    		
+	            
+	            //show material stack
+	    		for (int i = 0; i < 9; i++)
+	    		{
+	    			if (stacks[i] != null)
+	        			list.add(TextFormatting.GRAY + "  " + stacks[i].getDisplayName());
+				}
+        	}
 		}
     }
 	

@@ -39,7 +39,9 @@ public class EntityAIShipWatchClosest extends EntityAIWatchClosest
     		}
     	}
     	
-    	if (target != null && target.isRiding())
+    	if (target != null &&
+    		(target.isRiding() ||
+    		 target.isInvisible()))
     	{
     		return false;
     	}

@@ -448,7 +448,16 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
 	public void setStateFlag(int id, boolean flag)
 	{
-		if (id == ID.F.HeadTilt) this.headTilt = flag;
+		switch (id)
+		{
+		case ID.F.HeadTilt:
+			this.headTilt = flag;
+		break;
+		case ID.F.NoFuel:
+			if (flag) this.deathTime = 1;
+			else this.deathTime = 0;
+		break;
+		}
 	}
 
 	@Override

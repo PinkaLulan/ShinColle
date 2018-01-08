@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.IShipProjectile;
 import com.lulan.shincolle.entity.other.EntityShipFishingHook;
@@ -25,6 +27,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -180,7 +183,8 @@ public class S2CEntitySync implements IMessage
 			else { this.valueFloat6 = null; }
 		break;
 		case PID.SyncShip_Emo: //entity emotion only
-			this.valueInt1 = PacketHelper.readIntArray(buf, 5);
+		case PID.SyncEntity_Emo: //IShipEmotion sync emtion
+			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
 			this.valueBoolean1 = PacketHelper.readBooleanArray(buf, 1);
 		break;
 		case PID.SyncShip_Flag: //entity flag only
@@ -207,9 +211,6 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncShip_MountSkillTimer: //ship timer only
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
-		break;
-		case PID.SyncEntity_Emo: //IShipEmotion sync emtion
-			this.valueInt1 = PacketHelper.readIntArray(buf, 5);
 		break;
 		case PID.SyncShip_Riders: //player mount sync
 			this.valueInt = buf.readInt();
@@ -413,14 +414,31 @@ public class S2CEntitySync implements IMessage
 		}
 		break;
 		case PID.SyncShip_Emo:	//entity state only
+		case PID.SyncEntity_Emo:	//IShipEmotion emotion only
 		{
-			BasicEntityShip entity = (BasicEntityShip) this.entity;
+			IShipEmotion entity = (IShipEmotion) this.entity;
 			
 			buf.writeInt(entity.getStateEmotion(ID.S.State));
 			buf.writeInt(entity.getStateEmotion(ID.S.HPState));
 			buf.writeInt(entity.getStateEmotion(ID.S.Emotion));
 			buf.writeInt(entity.getStateEmotion(ID.S.Emotion4));
 			buf.writeInt(entity.getStateEmotion(ID.S.Phase));
+			
+			if (this.entity instanceof IShipMorph)
+			{
+				if (((IShipMorph)entity).getMorphHost() != null)
+				{
+					buf.writeInt(((IShipMorph)entity).getMorphHost().getEntityId());
+				}
+				else
+				{
+					buf.writeInt(-1);
+				}
+			}
+			else
+			{
+				buf.writeInt(-1);
+			}
 			
 			buf.writeBoolean(entity.getStateFlag(ID.F.NoFuel));
 		}
@@ -509,17 +527,6 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_Scale:			//sync hostile ship level
 		{
 			buf.writeInt(((IShipEmotion) this.entity).getScaleLevel());
-		}
-		break;
-		case PID.SyncEntity_Emo:	//IShipEmotion emotion only
-		{
-			IShipEmotion entity = (IShipEmotion) this.entity;
-			
-			buf.writeInt(entity.getStateEmotion(ID.S.State));
-			buf.writeInt(entity.getStateEmotion(ID.S.HPState));
-			buf.writeInt(entity.getStateEmotion(ID.S.Emotion));
-			buf.writeInt(entity.getStateEmotion(ID.S.Emotion4));
-			buf.writeInt(entity.getStateEmotion(ID.S.Phase));
 		}
 		break;
 		case PID.SyncShip_Timer:			//sync timer only
@@ -749,7 +756,6 @@ public class S2CEntitySync implements IMessage
 		{
 		case PID.SyncShip_AllMisc:
 		case PID.SyncShip_Attrs:
-		case PID.SyncShip_Emo:
 		case PID.SyncShip_Flag:
 		case PID.SyncShip_Formation:
 		case PID.SyncShip_Minor:
@@ -760,12 +766,26 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_Scale:
 		case PID.SyncShip_UnitName:
 		case PID.SyncShip_Buffmap:
+			if (entity instanceof BasicEntityShip ||
+				entity instanceof IShipEmotion ||
+				entity instanceof EntityLiving)
+			{
+				getTarget = true;
+			}
+		break;
+		case PID.SyncShip_Emo:
 		case PID.SyncEntity_Emo:
 			if (entity instanceof BasicEntityShip ||
 				entity instanceof IShipEmotion ||
 				entity instanceof EntityLiving)
 			{
 				getTarget = true;
+			}
+			//sync emotion to morph entity
+			else
+			{
+				entity = EntityHelper.getEntityPlayerByID(msg.valueInt1[5], 0, true);
+				if (entity != null) getTarget = true;
 			}
 		break;
 		case PID.SyncShip_Riders:
@@ -879,16 +899,35 @@ public class S2CEntitySync implements IMessage
 			}
 			break;
 			case PID.SyncShip_Emo: //entity emotion only
+			case PID.SyncEntity_Emo: //IShipEmotion sync emtion
 			{
-				ship = (BasicEntityShip) entity;
+				IShipEmotion entity2 = null;
 				
-				ship.setStateEmotion(ID.S.State, msg.valueInt1[0], false);
-				ship.setStateEmotion(ID.S.HPState, msg.valueInt1[1], false);
-				ship.setStateEmotion(ID.S.Emotion, msg.valueInt1[2], false);
-				ship.setStateEmotion(ID.S.Emotion4, msg.valueInt1[3], false);
-				ship.setStateEmotion(ID.S.Phase, msg.valueInt1[4], false);
+				if (entity instanceof IShipEmotion)
+				{
+					entity2 = (IShipEmotion) entity;
+				}
+				//sync emotion to morph entity
+				else if (entity instanceof EntityPlayer)
+				{
+					CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) entity);
+					
+					if (capa != null && capa.morphEntity instanceof IShipEmotion)
+					{
+						entity2 = (IShipEmotion) capa.morphEntity;
+					}
+				}
 				
-				ship.setStateFlag(ID.F.NoFuel, msg.valueBoolean1[0]);
+				if (entity2 != null)
+				{
+					entity2.setStateEmotion(ID.S.State, msg.valueInt1[0], false);
+					entity2.setStateEmotion(ID.S.HPState, msg.valueInt1[1], false);
+					entity2.setStateEmotion(ID.S.Emotion, msg.valueInt1[2], false);
+					entity2.setStateEmotion(ID.S.Emotion4, msg.valueInt1[3], false);
+					entity2.setStateEmotion(ID.S.Phase, msg.valueInt1[4], false);
+					
+					entity2.setStateFlag(ID.F.NoFuel, msg.valueBoolean1[0]);
+				}
 			}
 			break;
 			case PID.SyncShip_Flag: //entity flag only
@@ -1009,17 +1048,6 @@ public class S2CEntitySync implements IMessage
 				{
 					((IShipEmotion) entity).setScaleLevel(msg.valueInt);
 				}
-			}
-			break;
-			case PID.SyncEntity_Emo: //IShipEmotion sync emtion
-			{
-				IShipEmotion entity2 = (IShipEmotion) entity;
-				
-				entity2.setStateEmotion(ID.S.State, msg.valueInt1[0], false);
-				entity2.setStateEmotion(ID.S.HPState, msg.valueInt1[1], false);
-				entity2.setStateEmotion(ID.S.Emotion, msg.valueInt1[2], false);
-				entity2.setStateEmotion(ID.S.Emotion4, msg.valueInt1[3], false);
-				entity2.setStateEmotion(ID.S.Phase, msg.valueInt1[4], false);
 			}
 			break;
 			case PID.SyncShip_Riders: //player mount sync

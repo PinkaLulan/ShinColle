@@ -210,6 +210,7 @@ public class C2SInputPackets implements IMessage
 				}
 			break;
 			case PID.MorphGUI:	//mounts open GUI
+			{
 				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
 				
 				if (capa != null && capa.morphEntity instanceof BasicEntityShip)
@@ -217,6 +218,7 @@ public class C2SInputPackets implements IMessage
 					BasicEntityShip ship = (BasicEntityShip) capa.morphEntity;
 					FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.MORPHINVENTORY, player.world, 0, 0, 0);
 				}
+			}
 			break;
 			case PID.MountSkill://mounts skill key input packet
 				//set player's mount movement
@@ -385,6 +387,7 @@ public class C2SInputPackets implements IMessage
 				}
 			break;
 			case PID.Request_SyncModel:  //request model display sync
+			{
 				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
 				
 				if (entity instanceof BasicEntityShip)
@@ -399,6 +402,17 @@ public class C2SInputPackets implements IMessage
 				{
 					((BasicEntitySummon) entity).sendSyncPacket(0);
 				}
+				//sync model state to morph entity
+				else if (entity instanceof EntityPlayer)
+				{
+					CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) entity);
+					
+					if (capa != null && capa.morphEntity instanceof BasicEntityShip)
+					{
+						((BasicEntityShip) capa.morphEntity).sendSyncPacketEmotion();
+					}
+				}
+			}
 			break;
 			case PID.Request_Riding:
 			{

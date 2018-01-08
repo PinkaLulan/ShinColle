@@ -40,7 +40,7 @@ public class CapaInventory<T> extends ItemStackHandler
         else if (this.host instanceof ItemStack) { hostType = 3; }
         else
         {
-        	throw new IllegalArgumentException("Capability: Inventory is only for Tile/Entity/Item host!");
+        	hostType = 4;	//null host
         }
     }
     

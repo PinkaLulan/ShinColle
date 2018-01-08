@@ -29,6 +29,7 @@ import com.lulan.shincolle.item.InstantConMat;
 import com.lulan.shincolle.item.KaitaiHammer;
 import com.lulan.shincolle.item.MarriageRing;
 import com.lulan.shincolle.item.ModernKit;
+import com.lulan.shincolle.item.OPTool;
 import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.item.PointerItem;
 import com.lulan.shincolle.item.RecipePaper;
@@ -77,6 +78,7 @@ public class ModItems
 	public static BasicItem MarriageRing;
 	public static BasicItem ModernKit;
 	public static BasicItem OwnerPaper;
+	public static BasicItem OPTool;
 	public static BasicItem PointerItem;
 	public static BasicItem RecipePaper;
 	public static BasicItem RepairGoddess;
@@ -129,6 +131,7 @@ public class ModItems
 		MarriageRing = initItems(MarriageRing.class);
 		ModernKit = initItems(ModernKit.class);
 		OwnerPaper = initItems(OwnerPaper.class);
+		OPTool = initItems(OPTool.class);
 		PointerItem = initItems(PointerItem.class);
 		RecipePaper = initItems(RecipePaper.class);
 		RepairGoddess = initItems(RepairGoddess.class);

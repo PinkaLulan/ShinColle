@@ -100,35 +100,6 @@ public class TaskHelper
 		ItemStack paper = host.getHeldItemMainhand();
 		if (paper == null || paper.getItem() != ModItems.RecipePaper) return;
 		
-		//check slot 12~20 is empty (for materials)
-		for (int i = 12; i <= 20; i++)
-		{
-			if (invShip.getStackInSlot(i) != null)
-			{
-				if (host.getRNG().nextInt(9) == 0)
-				{
-					//apply emote
-					switch (host.getRNG().nextInt(4))
-					{
-					case 1:
-						host.applyParticleEmotion(22);  //X
-					break;
-					case 2:
-						host.applyParticleEmotion(5);   //...
-					break;
-					case 3:
-						host.applyParticleEmotion(28);  //一口一
-					break;
-					default:
-						host.applyParticleEmotion(32);  //尷尬
-					break;
-					}
-				}
-				
-				return;
-			}
-		}
-		
 		//check guard position
 		BlockPos pos = new BlockPos(host.getGuardedPos(0), host.getGuardedPos(1), host.getGuardedPos(2));
 		if (pos == null || pos.getY() <= 0) return;
@@ -206,43 +177,25 @@ public class TaskHelper
 		
 		while (maxCraft > 0)
 		{
+			//quit cond 1: max try < 0
 			maxtimes--;
-			if (maxtimes <= 0) break;
+			if (maxtimes < 0) break;
 			
-			//check slot 12~20 is empty (for materials)
-			for (int i = 12; i <= 20; i++)
-			{
-				if (invShip.getStackInSlot(i) != null)
-				{
-					if (host.getRNG().nextInt(8) == 0)
-					{
-						//apply emote
-						switch (host.getRNG().nextInt(4))
-						{
-						case 1:
-							host.applyParticleEmotion(22);  //X
-						break;
-						case 2:
-							host.applyParticleEmotion(5);   //...
-						break;
-						case 3:
-							host.applyParticleEmotion(28);  //一口一
-						break;
-						default:
-							host.applyParticleEmotion(32);  //尷尬
-						break;
-						}
-					}
-					
-					maxCraft = 0;
-				}
-			}
-			
-			if (maxCraft <= 0) break;
+			//quit cond 2: max craft < 0
+			if (maxCraft < 0) break;
 			
 			//move materials from chest to ship's inventory slot 12~20
 			for (int i = 0; i < 9; i++)
 			{
+				//check target slot in ship inventory is empty
+				if (invShip.getStackInSlot(i + 12) != null)
+				{
+					//get item in ship inventory, add to recipe temp
+					recipeTemp.setInventorySlotContents(i, invShip.getStackInSlot(i + 12));
+					continue;
+				}
+				
+				//check recipe
 				tempStack = recipe.getStackInSlot(i);
 				
 				if (tempStack == null)
@@ -251,6 +204,7 @@ public class TaskHelper
 					continue;
 				}
 				
+				//no item in ship inventory, get item from chest
 				invShip.setInventorySlotContents(i + 12, InventoryHelper.getAndRemoveItem(chest, tempStack, 1, checkMetadata, checkNbt, checkOredict, null));
 				recipeTemp.setInventorySlotContents(i, invShip.getStackInSlot(i + 12));
 			}
@@ -283,10 +237,20 @@ public class TaskHelper
     	            host.world.spawnEntity(entityitem);
             	}
             	
-            	//clear material slot in ship inventory
+            	//material -1
             	for (int i = 0; i < 9; i++)
             	{
-            		invShip.setInventorySlotContents(i + 12, null);
+            		tempStack = invShip.getStackInSlot(i + 12);
+            		
+            		if (tempStack != null)
+            		{
+            			tempStack.stackSize--;
+            			
+            			if (tempStack.stackSize <= 0)
+            			{
+            				invShip.setInventorySlotContents(i + 12, null);
+            			}
+            		}
             	}
             	
             	//move remaining item to chest (bucket, bottle...)

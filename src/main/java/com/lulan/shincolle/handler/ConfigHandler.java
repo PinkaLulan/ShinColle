@@ -30,7 +30,15 @@ public class ConfigHandler
 	public static ConfigLoot configLoot;	//loot config
 	public static ConfigMining configMining;//mining config
 	
-	//GENERAL
+	private static Property propShip, propLimitShipAttrs, propMobSpawn,
+	   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
+	   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp, propExpTask,
+	   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
+	   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
+	   propInfLiquid, propShipTeleport, propFishing, propMining, propTask,
+	   propGrudgeTask, propPosHUD;
+	
+	/********************* GENERAL **********************/
 	public static boolean debugMode = false;
 	public static boolean easyMode = false;
 	public static boolean showTag = true;
@@ -40,7 +48,9 @@ public class ConfigHandler
 	public static boolean polyAsMn = false;
 	public static boolean vortexDepth = false;
 	public static boolean mobAttackPlayer = true;
+	
 	public static float dropGrudge = 1.0F;
+	
 	public static int closeGUIDist = 64;
 	public static int bossCooldown = 4800;
 	public static int teamCooldown = 6000;
@@ -56,26 +66,27 @@ public class ConfigHandler
 	public static int shipNumPerPage = 5;
 	public static int chunkloaderMode = 2;
 	public static int deathMaxTick = 400;
+	public static int radarUpdate = 128;	//radar update interval (ticks)
+	public static int shipAttackPlayer = 0;
 	
-	//INTER-MOD
+	//tile entity setting                                    max storage, build speed, fuel magn
+	public static double[] tileShipyardSmall = new double[] {460800D,     48D,         1D};
+	public static double[] tileShipyardLarge = new double[] {1382400D,    48D,         1D};
+	public static double[] tileVolCore = new double[] {      9600D,       16D,         240D};
+	
+	//crane setting                            liquid tank capa, EU capa
+	public static int[] tileCrane = new int[] {2048000,         160000000};
+	
+	/********************* INTER-MOD **********************/
 	public static boolean enableIC2 = true;
 	public static boolean enableMetamorphSkill = true;
 	
-	//BUFF DEBUFF
+	/********************* BUFF **********************/
 	public static int buffSaturation = 100;
 	
-	//DESK
-	public static int radarUpdate = 128;	//radar update interval (ticks)
 	
-	//array data
-	private static Property propShip, propLimitShipAttrs, propMobSpawn,
-						   propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
-						   propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp, propExpTask,
-						   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
-						   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
-						   propInfLiquid, propShipTeleport, propFishing, propMining, propTask,
-						   propGrudgeTask, propPosHUD;
 	
+	/********************* SHIP **********************/
 	//                                                    HP, ATK_L, ATK_H, ATK_AL, ATK_AH
 	public static double[] limitShipAttrs = new double[] {-1D, -1D, -1D, -1D, -1D,
 	//                                                    DEF, SPD, MOV, HIT, CRI
@@ -136,23 +147,18 @@ public class ConfigHandler
 	public static int modernLimit = 3;	//ship attrs upgrade level limit
 	public static int searchlightCD = 4;
 	public static int maxLevel = 150;   //TODO not configurable now
+	
 	public static boolean timeKeeping = true;
 	public static boolean canFlare = true;
 	public static boolean canSearchlight = true;
 	public static boolean checkRing = true;
 	public static boolean canTeleport = false;
+	
 	public static float volumeTimekeep = 1.0F;
 	public static float volumeShip = 1.0F;
 	public static float volumeFire = 0.7F;
 	
-	//tile entity setting                                max storage, build speed, fuel magn
-	public static double[] tileShipyardSmall = new double[] {460800D,     48D,         1D};
-	public static double[] tileShipyardLarge = new double[] {1382400D,    48D,         1D};
-	public static double[] tileVolCore = new double[] {      9600D,       16D,         240D};
-	//crane setting                            liquid tank capa, EU capa
-	public static int[] tileCrane = new int[] {2048000,         160000000};
-
-	//WORLD GEN
+	/********************* WORLD GEN **********************/
 	public static int polyOreBaseRate = 7;
 	public static int polyGravelBaseRate = 4;
 	public static boolean[] polyGravelBaseBlock = new boolean[] {true, true, false, false};	//stone gravel sand dirt
@@ -208,8 +214,11 @@ public class ConfigHandler
 		kaitaiAmountLarge = config.getInt("Recycle_Large", CATE_GENERAL, 20, 0, 1000, "Recycle amount by Dismantle Hammer for rare ship, ex: Yamato.");
 		
 		//野生船艦是否主動攻擊玩家
-		mobAttackPlayer = config.getBoolean("Attack_Player", CATE_GENERAL, true, "true: ship mob will attack player automatically");
+		mobAttackPlayer = config.getBoolean("Attack_Player_ShipMob", CATE_GENERAL, true, "for mob ship, true: attack player automatically");
 		
+		//船艦是否主動攻擊玩家
+		shipAttackPlayer = config.getInt("Attack_Player_Ship", CATE_GENERAL, 0, 0, 3, "for pet ship, 0: ship don't attack player automatically, 1: attack hostile player, 2: attack hostile and neutral player, 3: attack all player even if the player isn't in a team");
+				
 		//是否把多金屬當成錳礦
 		polyAsMn = config.getBoolean("Polymetal_as_Mn", CATE_GENERAL, false, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
 		

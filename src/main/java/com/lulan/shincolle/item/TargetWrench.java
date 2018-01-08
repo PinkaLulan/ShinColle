@@ -63,78 +63,6 @@ public class TargetWrench extends BasicItem
 		this.pointID = 0;
 	}
 	
-	//item glow effect
-	@Override
-	@SideOnly(Side.CLIENT)
-    public boolean hasEffect(ItemStack item)
-	{
-        return true;
-    }
-	
-	/** left click: add / remove attackable target
-	 * 
-	 *  excluding BasicEntityShip and BasicEntityShipHostile
-	 *  
-	 *  process:
-	 *  1. get mouseover entity (client)
-	 *  2. send player eid and entity to server (c 2 s)
-	 *  3. check player is OP (server)
-	 *  4. add/remove entity to list (server)
-	 */
-	@Override
-	public boolean onEntitySwing(EntityLivingBase entity, ItemStack item)
-	{
-		int meta = item.getItemDamage();
-		
-		if (entity instanceof EntityPlayer)
-		{
-			EntityPlayer player = (EntityPlayer) entity;
-			
-			//玩家左鍵使用此武器時 (client side only)
-			if (player.world.isRemote)
-			{
-				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
-				
-				//hit entity
-				if (hitObj != null && hitObj.entityHit != null)
-				{
-					//target != ship
-					if (!(hitObj.entityHit instanceof BasicEntityShip ||
-						  hitObj.entityHit instanceof BasicEntityShipHostile ||
-						  hitObj.entityHit instanceof BasicEntitySummon))
-					{
-						String tarName = hitObj.entityHit.getClass().getSimpleName();
-						LogHelper.debug("DEBUG: target wrench get class: "+tarName);
-						
-						//send packet to server
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.SetUnatkClass, tarName));
-						return false;
-					}//end not ship
-				}//end hit != null
-			}//end client side
-			else
-			{
-				if (player.isSneaking())
-				{
-					HashMap<Integer, String> tarlist = ServerProxy.getUnattackableTargetClass();
-					
-					TextComponentTranslation text = new TextComponentTranslation("chat.shincolle:wrench.unatkshow");
-					text.getStyle().setColor(TextFormatting.GOLD);
-					player.sendMessage(text);
-					
-					tarlist.forEach((k, v) ->
-					{
-						player.sendMessage(new TextComponentString(TextFormatting.AQUA+v));
-					});
-					
-					return true;
-				}
-			}
-		}//end player not null
-		
-        return false;	//both side
-    }
-	
 	/**
 	 * right click on block
 	 * sneaking: pair Chest, Crane and Waypoint
@@ -186,8 +114,6 @@ public class TargetWrench extends BasicItem
 	@Override
     public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
 	{
-    	list.add(TextFormatting.RED + I18n.format("gui.shincolle:wrench1"));
-    	list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:wrench2"));
     	list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:wrench3"));
 	}
 	
