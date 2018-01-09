@@ -52,7 +52,7 @@ public class GuiMorphInventory extends GuiContainer
 	  strMiAmmoH, strMiGrudge, canMelee, canLATK, canHATK, canALATK, canAHATK, auraEffect,
 	  strTimeKeep, strNofuel,
 	  strAttrModern, strAttrXP, strAttrGrudge, strAttrAmmo, strAttrHPRES,
-	  strShowHeld, strAttrKB, strAttrHP, strAppear;
+	  strShowHeld, strAttrKB, strAttrHP, strAppear, strSit, strEmoFlag1, strEmoFlag2;
 	private static int widthHoveringText1, widthHoveringText2, widthHoveringText3;
 	
 	private List mouseoverList;
@@ -157,6 +157,9 @@ public class GuiMorphInventory extends GuiContainer
 		strShowHeld = I18n.format("gui.shincolle:showhelditem");
 		strAppear = I18n.format("gui.shincolle:appearance");
 		strNofuel = I18n.format("gui.shincolle:morph.nofuel");
+		strSit = I18n.format("gui.shincolle:morph.sit");
+		strEmoFlag1 = I18n.format("gui.shincolle:morph.emo1");
+		strEmoFlag2 = I18n.format("gui.shincolle:morph.emo2");
 	}
 	
 	//有用到fontRendererObj的必須放在此init
@@ -307,17 +310,17 @@ public class GuiMorphInventory extends GuiContainer
         	
         	//get button value
         	this.switchPage1a[0] = this.entity.getStateFlag(ID.F.NoFuel);
-//        	this.switchPage1a[1] = this.entity.getStateFlag(ID.F.UseAmmoLight);
-//            this.switchPage1a[2] = this.entity.getStateFlag(ID.F.UseAmmoHeavy);
-//            this.switchPage1a[3] = this.entity.getStateFlag(ID.F.UseAirLight);
+        	this.switchPage1a[1] = this.entity.isSitting();
+            this.switchPage1a[2] = this.entity.getStateEmotion(ID.S.Emotion) > 0 ? true : false;
+            this.switchPage1a[3] = this.entity.getStateEmotion(ID.S.Emotion4) > 0 ? true : false;
 //            this.switchPage1a[4] = this.entity.getStateFlag(ID.F.UseAirHeavy);
 //            this.switchPage1a[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
             
             //get button display flag
         	this.switchPage1b[0] = true;
-        	this.switchPage1b[1] = false;
-            this.switchPage1b[2] = false;
-            this.switchPage1b[3] = false;
+        	this.switchPage1b[1] = true;
+            this.switchPage1b[2] = true;
+            this.switchPage1b[3] = true;
             this.switchPage1b[4] = false;
             this.switchPage1b[5] = false;
             
@@ -1012,9 +1015,9 @@ public class GuiMorphInventory extends GuiContainer
 		{	//AI page 1
 			//draw string
 			this.fontRendererObj.drawString(strNofuel, 187, 133, 0);
-//			this.fontRendererObj.drawString(strOnSight, 187, 146, 0);
-//			this.fontRendererObj.drawString(strPVP, 187, 159, 0);
-//			this.fontRendererObj.drawString(strAA, 187, 172, 0);
+			this.fontRendererObj.drawString(strSit, 187, 146, 0);
+			this.fontRendererObj.drawString(strEmoFlag1, 187, 159, 0);
+			this.fontRendererObj.drawString(strEmoFlag2, 187, 172, 0);
 //			this.fontRendererObj.drawString(strASM, 187, 185, 0);
 //			this.fontRendererObj.drawString(strTimeKeep, 187, 198, 0);
 		}
@@ -1067,10 +1070,20 @@ public class GuiMorphInventory extends GuiContainer
         	}
         break;
         case 4:	//AI operation 1
+        	switch (this.showPageAI)
+        	{
+        	case 1:		//page 1: state: sit
+        		this.switchPage1a[1] = this.entity.isSitting();
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.invPlayer.player, C2SGUIPackets.PID.MorphBtn, ID.B.ShipInv_Sit, 0));
+    		break;
+        	}
         break;
         case 5:	//AI operation 2
         	switch (this.showPageAI)
         	{
+        	case 1:		//page 1: state: emotion flag 1
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.invPlayer.player, C2SGUIPackets.PID.MorphBtn, ID.B.ShipInv_EmoFlag1, this.entity.getRNG().nextInt(9)));
+    		break;
         	case 6:		//page 6: model display switch button 0~3
         		if (this.xClick < btCols[0])
         		{
@@ -1094,6 +1107,9 @@ public class GuiMorphInventory extends GuiContainer
         case 6:	//AI operation 3
         	switch (this.showPageAI)
         	{
+        	case 1:		//page 1: state: emotion flag 2
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.invPlayer.player, C2SGUIPackets.PID.MorphBtn, ID.B.ShipInv_EmoFlag2, this.entity.getStateEmotion(ID.S.Emotion4) > 0 ? 0 : 4));
+        	break;
         	case 6:		//page 6: model display switch button 4~7
         		if (this.xClick < btCols[0])
         		{

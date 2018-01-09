@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -24,6 +25,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *    5: Gravity Shell 重力彈
  *    6: Anti-Gravity Shell 反重力彈
  *    7: Enchant Shell 附魔彈
+ *    8: Cluster Bomb 集束炸彈
  */
 public class EquipAmmo extends BasicEquip implements IShipEffectItem
 {
@@ -49,7 +51,7 @@ public class EquipAmmo extends BasicEquip implements IShipEffectItem
 	@Override
 	public int getTypes()
 	{
-		return 8;
+		return 9;
 	}
 	
 	@Override
@@ -57,18 +59,16 @@ public class EquipAmmo extends BasicEquip implements IShipEffectItem
 	{
 		switch(meta)
 		{
-		case 0:
-		case 2:
-			return ID.EquipType.AMMO_LO;
 		case 1:
 		case 3:
 		case 4:
 		case 5:
 		case 6:
 		case 7:
+		case 8:
 			return ID.EquipType.AMMO_HI;
 		default:
-			return 0;
+			return ID.EquipType.AMMO_LO;
 		}
 	}
 	
@@ -138,8 +138,10 @@ public class EquipAmmo extends BasicEquip implements IShipEffectItem
 	{
 		switch (meta)
 		{
-		case 5:
+		case 5:  //black hole
 			return 5;
+		case 8:  //cluster bomb
+			return 3;
 		default:
 			return 0;
 		}
@@ -148,7 +150,13 @@ public class EquipAmmo extends BasicEquip implements IShipEffectItem
 	@Override
 	public int getMissileMoveType(int meta)
 	{
-		return -1;
+		switch (meta)
+		{
+		case 8:  //cluster bomb
+			return 1;
+		default:
+			return -1;
+		}
 	}
 
 	@Override
@@ -162,33 +170,49 @@ public class EquipAmmo extends BasicEquip implements IShipEffectItem
     {
 		super.addInformation(stack, player, list, par4);
 		
-		//show enchant shell tags
-		if (stack.getMetadata() == 7 && stack.hasTagCompound())
+		switch (stack.getMetadata())
 		{
-			NBTTagCompound nbt = stack.getTagCompound();
-	  		NBTTagList nbtlist = nbt.getTagList(EquipAmmo.PLIST, Constants.NBT.TAG_COMPOUND);
-	  		int pid = 0;
-	  		int plv = 0;
-	  		int ptime = 0;
-	  		int pchance = 0;
-	  		NBTTagCompound nbtX = null;
-	  		String name = null;
-	  		
-	  		for (int i = 0; i < nbtlist.tagCount(); i++)
-	        {
-	            nbtX = nbtlist.getCompoundTagAt(i);
-	            pid = nbtX.getInteger(EquipAmmo.PID);
-	            Potion pt = Potion.getPotionById(pid);
-	            
-	            if (pt != null)
-	            {
-	            	String s1 = I18n.format(pt.getName()).trim();
-		            plv = nbtX.getInteger(EquipAmmo.PLEVEL) + 1;
-		            ptime = nbtX.getInteger(EquipAmmo.PTIME) / 20;
-		            pchance = nbtX.getInteger(EquipAmmo.PCHANCE);
-		            list.add(I18n.format("gui.shincolle:equip.enchantshell", pchance, s1, plv, ptime));
-	            }
-	        }
+		case 5:  //gravity
+		{
+			list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:equip.gravity"));
+		}
+		break;
+		case 7:  //enchant
+		{
+			if (stack.hasTagCompound())
+			{
+				NBTTagCompound nbt = stack.getTagCompound();
+		  		NBTTagList nbtlist = nbt.getTagList(EquipAmmo.PLIST, Constants.NBT.TAG_COMPOUND);
+		  		int pid = 0;
+		  		int plv = 0;
+		  		int ptime = 0;
+		  		int pchance = 0;
+		  		NBTTagCompound nbtX = null;
+		  		String name = null;
+		  		
+		  		for (int i = 0; i < nbtlist.tagCount(); i++)
+		        {
+		            nbtX = nbtlist.getCompoundTagAt(i);
+		            pid = nbtX.getInteger(EquipAmmo.PID);
+		            Potion pt = Potion.getPotionById(pid);
+		            
+		            if (pt != null)
+		            {
+		            	String s1 = I18n.format(pt.getName()).trim();
+			            plv = nbtX.getInteger(EquipAmmo.PLEVEL) + 1;
+			            ptime = nbtX.getInteger(EquipAmmo.PTIME) / 20;
+			            pchance = nbtX.getInteger(EquipAmmo.PCHANCE);
+			            list.add(I18n.format("gui.shincolle:equip.enchantshell", pchance, s1, plv, ptime));
+		            }
+		        }
+			}
+		}
+		break;
+		case 8:  //cluster
+		{
+			list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:equip.cluster"));
+		}
+		break;
 		}
 		
 		//show other effect

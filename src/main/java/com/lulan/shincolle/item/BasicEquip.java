@@ -134,7 +134,6 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
             	
             	//has flags, change flag by player key input
             	int flag = nbt.getInteger("HideFlags");
-//            	GameSettings keySet = ClientProxy.getGameSetting();	//this is not working, dunno why
             	
             	if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ||
             		Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))	//if press CTRL, show enchantments

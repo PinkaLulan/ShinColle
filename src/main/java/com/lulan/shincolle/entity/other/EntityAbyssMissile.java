@@ -22,7 +22,6 @@ import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -355,11 +354,12 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     		{
     		case 3:
     			//spawn cluster sub missile
-        		if (this.ticksExisted > 15)
+        		if (this.ticksExisted > 6 && this.ticksExisted < 41)
         		{
         			if ((this.ticksExisted & 7) == 0)
         			{
-        				float[] subdata = new float[] {this.data[0], this.data[1], (float)this.posY - 0.75F, (float)this.motionX, (float)this.motionY, (float)this.motionZ, 140, 0F, 0.5F, -0.02F, -0.02F};
+        				//atk = 50%, motionY = -0.06
+        				float[] subdata = new float[] {this.data[0] * 0.5F, this.data[1], (float)this.posY - 0.75F, (float)this.motionX, (float)this.motionY, (float)this.motionZ, 140, 0F, 0.5F, -0.06F, -0.06F, (float)this.posX, (float)this.posY - 0.65F - MathHelper.abs((float)this.motionY), (float)this.posZ, 4};
         				EntityAbyssMissile subm = new EntityAbyssMissile(this.world, this.host, 4, 4, subdata);
         		        this.world.spawnEntity(subm);
         			}
@@ -506,9 +506,9 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     	//for cluster sub missile
     	if (this.type == 4)
     	{
-    		this.velX *= 0.85D;
+    		this.velX *= 0.95D;
     		this.velY += this.accY1;
-    		this.velZ *= 0.85D;
+    		this.velZ *= 0.95D;
     	}
     	//for other missile
     	else

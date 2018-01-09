@@ -966,7 +966,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   			this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
   	        
   			//entity sound
-  			if (this.rand.nextInt(10) > 8)
+  			if (this.rand.nextInt(20) == 0)
   			{
   				this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
   	        }
@@ -975,7 +975,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   			this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
   	        
   	        //entity sound
-  	        if (this.getRNG().nextInt(10) > 8)
+  	        if (this.rand.nextInt(20) == 0)
   	        {
   	        	this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
   	        }
@@ -985,7 +985,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   			this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
   	  	break;
 		default: //melee
-			if (this.getRNG().nextInt(2) == 0)
+			if (this.rand.nextInt(20) == 0)
 			{
 				this.playSound(ModSounds.SHIP_WAKA_ATTACK, this.getSoundVolume(), this.getSoundPitch());
 	        }

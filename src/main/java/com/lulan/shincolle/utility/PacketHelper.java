@@ -608,6 +608,16 @@ public class PacketHelper
 			case ID.B.ShipInv_NoFuel:
 				entity.setStateFlagI(ID.F.NoFuel, value);
 			break;
+			case ID.B.ShipInv_Sit:
+				entity.setSitting(!entity.isSitting());
+				entity.sendSyncPacketEmotion();
+			break;
+			case ID.B.ShipInv_EmoFlag1:
+				entity.setStateEmotion(ID.S.Emotion, value, true);
+			break;
+			case ID.B.ShipInv_EmoFlag2:
+				entity.setStateEmotion(ID.S.Emotion4, value, true);
+			break;
 			}
 		}
 		else

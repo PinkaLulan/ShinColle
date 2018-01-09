@@ -151,7 +151,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   		case 1:  //light cannon
   			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
   		case 2:  //heavy cannon
-  			return this.shipAttrs.getAttackDamageHeavy() * 0.75F;
+  			return this.shipAttrs.getAttackDamageHeavy();
   		case 3:  //light aircraft
   			return this.shipAttrs.getAttackDamageAir();
   		case 4:  //heavy aircraft

@@ -63,6 +63,7 @@ item.shincolle:EquipAmmo4.name=貧化鈾彈
 item.shincolle:EquipAmmo5.name=重力彈
 item.shincolle:EquipAmmo6.name=反重力彈
 item.shincolle:EquipAmmo7.name=附魔彈
+item.shincolle:EquipAmmo8.name=集束炸彈
 item.shincolle:EquipCannon.name=5吋單裝砲
 item.shincolle:EquipCannon1.name=6吋單裝砲
 item.shincolle:EquipCannon2.name=5吋連裝砲
@@ -394,6 +395,9 @@ gui.shincolle:book.chap1.text26d1=
 gui.shincolle:book.chap1.title27=OP工具
 gui.shincolle:book.chap1.text27d0=<br><br><br><br><br><br><br><br><br>§9數字鍵盤1:§0<br>指向一個entity時，§6新增§r/§c移除§0該entity到§d不可攻擊清單§0。§4(僅限OP)§0<br><br>§9數字鍵盤2:§0<br>顯示§d不可攻擊目標清單§0。<br><br>
 gui.shincolle:book.chap1.text27d1=§d不可攻擊目標§0不會受到任何船艦造成的傷害。你可以把繩子的頭、物品框、礦車或木船設為不可攻擊目標。<br><br>野生的艦娘攻擊時也會檢查此清單，不過你不能把棲艦、艦娘跟召喚物設為不可攻擊目標。
+gui.shincolle:book.chap1.title28=附魔彈
+gui.shincolle:book.chap1.text28d0=<br><br><br><br><br><br><br><br><br>§c附魔彈§0需要在超深海熱漩中製造，接著可以在工作台中以8個相同的藥水合成具有該藥水特效的附魔彈。<br><br>繼續以8個相同藥水合成可以進一步提升特效發動率跟持續時間，使用不同藥水則會覆蓋掉特效並回到最低等級。
+gui.shincolle:book.chap1.text28d1=
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=建造
@@ -481,6 +485,9 @@ gui.shincolle:book.chap3.text18d1=船艦不會破壞方塊就能採到礦石。<
 gui.shincolle:book.chap3.title19=合成
 gui.shincolle:book.chap3.text19d0=船艦們現在可以幫主人合成物品：<br><br>§91.§0 先使用§c合成配方§0道具來設定配方<br>§92.§0 在船艦的AI選項中點選合成圖示<br>§93.§0 在船艦的物品欄主手位置(第一頁最中下格)放入配方<br>§94.§0 清空船艦物品欄的第3,4,5行<br>§95.§0 指定船艦移動到一個深海路徑點<br>§96.§0 使用扳手將深海路徑點連結到一個箱子<br>§97.§0 在箱子中放入合成材料，合成就會自動開始。
 gui.shincolle:book.chap3.text19d1=船艦的等級會影響一次可合成的物品個數。<br><br>注意若目標箱子滿了，則合成好的物品會被丟到地上。
+gui.shincolle:book.chap3.title20=Metamorph
+gui.shincolle:book.chap3.text20d0=若伺服器有裝Metamorph mod，則有另外修改變身方法：<br><br>§91.§0 只能對所擁有的船艦以§c目標設定扳手§0左鍵點擊一次取得變身。<br><br>§92.§0 擊殺所擁有的船艦將不會再掉落變身。<br><br>§93.§0 擊殺野生船艦依然會掉落變身。<br><br>§94.§0 變身為所擁有的船艦時，按下§cMorph Action§0按鍵可以開啟外觀調整GUI。<br><br>§95.§0 變身為野生船艦時不能使用外觀調整GUI。
+gui.shincolle:book.chap3.text20d1=
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=深海棲艦列表
@@ -519,7 +526,7 @@ gui.shincolle:book.chap4.text10d0=
 gui.shincolle:book.chap4.text10d1=§9名稱：§0 飛行場姬<br>§9艦種：§0 姬級 陸上基地<br>§9建造：§0 超深海熱漩 深海金屬 (3000)<br>§9特殊能力：§0<br>修復附近船艦<br>§9其他能力：§0<br>增強被動修復能力<br><br>看到紅色又粗又大的東西會感到混亂，吃過蛋糕就會擺JOJO立嘲諷對手。<br><br>雖然叫飛行場姬，卻是個巨乳 ლ(́◉◞౪◟◉ლ‵)
 gui.shincolle:book.chap4.title11=
 gui.shincolle:book.chap4.text11d0=
-gui.shincolle:book.chap4.text11d1=§9名稱：§0 戰艦棲姬<br>§9艦種：§0 姬級 戰艦<br>§9建造：§0 超深海熱漩 怨念彈 (4600)<br>§9特殊能力：§0<br>周圍船艦獲得抗性/抗火狀態<br>§9其他能力：§0<br>近戰增強為3倍砲擊傷害<br>附加挖掘減速<br><br>深海的院長大人，會踩在三連裝砲醬頭上出巡。若主人頭抬太高的話就會被三連裝砲醬丟出去(未實裝)。<br>重型攻擊：集束炸彈，分裂每發造成75%%雷裝傷害。
+gui.shincolle:book.chap4.text11d1=§9名稱：§0 戰艦棲姬<br>§9艦種：§0 姬級 戰艦<br>§9建造：§0 超深海熱漩 怨念彈 (4600)<br>§9特殊能力：§0<br>周圍船艦獲得抗性/抗火狀態<br>§9其他能力：§0<br>近戰增強為3倍砲擊傷害<br>附加挖掘減速<br><br>深海的院長大人，會踩在三連裝砲醬頭上出巡。若主人頭抬太高的話就會被三連裝砲醬丟出去(未實裝)。<br>重型攻擊：集束炸彈，分裂每發造成50%%雷裝傷害。
 gui.shincolle:book.chap4.title12=
 gui.shincolle:book.chap4.text12d0=
 gui.shincolle:book.chap4.text12d1=§9名稱：§0 港灣棲姬<br>§9艦種：§0 姬級 陸上基地<br>§9建造：§0 超深海熱漩 深海金屬 (2800)<br>§9特殊能力：§0<br>修復附近船艦<br>§9其他能力：§0<br>增強被動修復能力<br><br>深海的爆乳大要塞，媽媽力就跟胸部裝甲一樣可以包容整個大海。<br>重型攻擊：深海電磁砲，可造成75%%雷裝傷害。
@@ -842,6 +849,8 @@ gui.shincolle:equip.torpedospeed=魚雷移動速度增加 %d 級
 gui.shincolle:equip.enchantshell=攻擊時 %d%% 機率附帶 %s 等級 %d 持續 %d 秒
 gui.shincolle:recipepaper.result=合成：
 gui.shincolle:recipepaper.material=材料：
+gui.shincolle:equip.gravity=拉扯周圍敵人到爆炸點。
+gui.shincolle:equip.cluster=移動中釋放小型炸彈。
 
 # Chat message
 chat.shincolle:bossspawn1=有艦娘出現在水面上！
@@ -875,3 +884,6 @@ chat.shincolle:command.wrongpararange=指令失敗： 參數範圍錯誤：
 
 # Inter-mod
 gui.shincolle:morph.nofuel=燃料不足
+gui.shincolle:morph.sit=坐下
+gui.shincolle:morph.emo1=表情flag1
+gui.shincolle:morph.emo2=表情flag2

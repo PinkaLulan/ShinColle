@@ -23,6 +23,7 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.GuiHelper;
+import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -841,47 +842,47 @@ public class GuiShipInventory extends GuiContainer
 			//draw value
 			mouseoverList.clear();
 			
-			str = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_L) * 100F) + " %";
-			str2 = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_H) * 100F) + " %";
+			str = String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.ATK_L) * 100F) + " %";
+			str2 = String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.ATK_H) * 100F) + " %";
 			overText = "x " + str + " / " + str2;
 			mouseoverList.add(overText);
 			
-			str = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_AL) * 100F) + " %";
-			str2 = String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ATK_AH) * 100F) + " %";
+			str = String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.ATK_AL) * 100F) + " %";
+			str2 = String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.ATK_AH) * 100F) + " %";
 			overText = "x " + str + " / " + str2;
 			mouseoverList.add(overText);
 			
-			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.SPD) * 100F) + " %";
+			overText = "x " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.SPD) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.1f", attrs.getAttrsFormation(ID.Attrs.HIT));
+			overText = "+ " + String.format("%.1f", attrs.getAttrsMorale(ID.Attrs.HIT));
 			mouseoverList.add(overText);
-			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.CRI) * 100F) + " %";
+			overText = "x " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.CRI) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DHIT) * 100F) + " %";
+			overText = "x " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.DHIT) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.THIT) * 100F) + " %";
+			overText = "x " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.THIT) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.MISS) * 100F) + " %";
+			overText = "x " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.MISS) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.AA) * 100F) + " %";
+			overText = "x " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.AA) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "x " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.ASM) * 100F) + " %";
+			overText = "x " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.ASM) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DEF) * 100F) + " %";
+			overText = "+ " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.DEF) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.DODGE) * 100F) + " %";
+			overText = "+ " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.DODGE) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.XP) * 100F) + " %";
+			overText = "+ " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.XP) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.GRUDGE) * 100F) + " %";
+			overText = "+ " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.GRUDGE) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.AMMO) * 100F) + " %";
+			overText = "+ " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.AMMO) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.HPRES) * 100F) + " %";
+			overText = "+ " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.HPRES) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.0f", attrs.getAttrsFormation(ID.Attrs.KB) * 100F) + " %";
+			overText = "+ " + String.format("%.0f", attrs.getAttrsMorale(ID.Attrs.KB) * 100F) + " %";
 			mouseoverList.add(overText);
-			overText = "+ " + String.format("%.2f", attrs.getAttrsFormation(ID.Attrs.MOV));
+			overText = "+ " + String.format("%.2f", attrs.getAttrsMorale(ID.Attrs.MOV));
 			mouseoverList.add(overText);
 			
 			this.drawHoveringText(mouseoverList, 126 + this.widthHoveringText3, 46, this.fontRendererObj);

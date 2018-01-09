@@ -63,6 +63,7 @@ item.shincolle:EquipAmmo4.name=Depleted Uranium Shell
 item.shincolle:EquipAmmo5.name=Gravity Shell
 item.shincolle:EquipAmmo6.name=Anti-Gravity Shell
 item.shincolle:EquipAmmo7.name=Enchant Shell
+item.shincolle:EquipAmmo8.name=Cluster Bomb
 item.shincolle:EquipCannon.name=5-Inch Single Cannon
 item.shincolle:EquipCannon1.name=6-Inch Single Cannon
 item.shincolle:EquipCannon2.name=5-Inch Twin Cannon
@@ -394,6 +395,9 @@ gui.shincolle:book.chap1.text26d1=
 gui.shincolle:book.chap1.title27=OP Tool
 gui.shincolle:book.chap1.text27d0=<br><br><br><br><br><br><br><br><br>§9Numpad 1:§0<br>§6ADD§r or §cREMOVE§0 entity in §dUnattackable Target List§0. §4(OP ONLY!!)§0<br><br>§9Numpad 2:§0<br>Show §dUnattackable Target List§0.<br><br>
 gui.shincolle:book.chap1.text27d1=§dUnattackable Target§0 immune to all ship's attack, and can't be targeted. You can add entity like leash knot, item frame, cart or boat.<br><br>This list applies to hostile mob ships too.<br><br>Ship, hostile ship and ship's summons can't be unattackable target.
+gui.shincolle:book.chap1.title28=Enchant Shell
+gui.shincolle:book.chap1.text28d0=<br><br><br><br><br><br><br><br><br>§9Enchant Shell§0 can be made in §cHadal Hydrothermal Vortex§0, and then craft with 8x the same potions to gain the potion effect.<br><br>Further, crafting with 8x the same potions can increase the effect chance and duration.<br><br>Crafting with different potions will replace the potion effect.
+gui.shincolle:book.chap1.text28d1=
 
 # GUI: Book Text Chap 2
 gui.shincolle:book.chap2.title=Construction
@@ -481,6 +485,9 @@ gui.shincolle:book.chap3.text18d1=Ship can get ores without breaking blocks.<br>
 gui.shincolle:book.chap3.title19=Crafting
 gui.shincolle:book.chap3.text19d0=Ship can craft items for owner:<br><br>§91.§0 Use §cCrafting Recipe§0 to set recipe.<br>§92.§0 Click the crafting icon in AI options.<br>§93.§0 Put the recipe to mainhand slot (the most middle and lower slot in the first page).<br>§94.§0 Clear slots in ship's inventory in 3,4,5 row.<br>§95.§0 Move ship to an Abyssal Waypoint.<br>§96.§0 Link the waypoint and a chest block by Target Wrench.<br>§97.§0 Put some materials in chest to start crafting.
 gui.shincolle:book.chap3.text19d1=Ship level will affect the number of items can be crafted at a time.<br><br>NOTE: Ship will drop crafting items if chest is full. 
+gui.shincolle:book.chap3.title20=Metamorph
+gui.shincolle:book.chap3.text20d0=Tweak morph methods of Metamorph mod:<br><br>§91.§0 Left click with §cTarget Wrench§0 on own ships to get morph.<br><br>§92.§0 Kill friendly ship will not drop ghost morph.<br><br>§93.§0 Kill mob ship still drop ghost morph.<br><br>§94.§0 Press §cMorph Action§0 key to open appearance GUI. (Own ship morph only)<br><br>§95.§0 You can't open appearance GUI in mob ship morph.
+gui.shincolle:book.chap3.text20d1=
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
@@ -519,10 +526,10 @@ gui.shincolle:book.chap4.text10d0=
 gui.shincolle:book.chap4.text10d1=§9Name:§0 Airfield Princess<br>§9Class:§0 Princess Class Installation<br>§9Factory:§0 Hadal Vortex / Abyssium (3000)<br>§9AuraEffect:§0<br>Repair nearby ships<br>§9OtherEffect:§0<br>Enhanced regeneration<br><br>She is busty although she is called "airfield".
 gui.shincolle:book.chap4.title11=
 gui.shincolle:book.chap4.text11d0=
-gui.shincolle:book.chap4.text11d1=§9Name:§0 Battleship Princess<br>§9Class:§0 Princess Class BB<br>§9Factory:§0 Hadal Vortex / Ammo (4600)<br>§9AuraEffect:§0<br>+"Resistance"&"Fire Resistance" to nearby ships<br>§9OtherEffect:§0<br>Enhanced melee to 300%% firepower<br><br>Heavy attack: Cluster Bomb: deal 75%% torpedo damage each bomb.
+gui.shincolle:book.chap4.text11d1=§9Name:§0 Battleship Princess<br>§9Class:§0 Princess Class BB<br>§9Factory:§0 Hadal Vortex / Ammo (4600)<br>§9AuraEffect:§0<br>+"Resistance"&"Fire Resistance" to nearby ships<br>§9OtherEffect:§0<br>Enhanced melee to 300%% firepower<br><br>Heavy attack: Cluster Bomb: deal 70%% torpedo damage each bomb.
 gui.shincolle:book.chap4.title12=
 gui.shincolle:book.chap4.text12d0=
-gui.shincolle:book.chap4.text12d1=§9Name:§0 Harbour Princess<br>§9Class:§0 Princess Class Installation<br>§9Factory:§0 Hadal Vortex / Abyssium (2800)<br>§9AuraEffect:§0<br>Repair nearby ships<br>§9OtherEffect:§0<br>Enhanced regeneration<br><br>Heavy attack: Abyssal Railgun: deal 75%% torpedo damage.
+gui.shincolle:book.chap4.text12d1=§9Name:§0 Harbour Princess<br>§9Class:§0 Princess Class Installation<br>§9Factory:§0 Hadal Vortex / Abyssium (2800)<br>§9AuraEffect:§0<br>Repair nearby ships<br>§9OtherEffect:§0<br>Enhanced regeneration<br><br>Heavy attack: Abyssal Railgun: deal 50%% torpedo damage.
 gui.shincolle:book.chap4.title13=
 gui.shincolle:book.chap4.text13d0=
 gui.shincolle:book.chap4.text13d1=§9Name:§0 Northern Princess<br>§9Class:§0 Princess Class Installation<br>§9Factory:§0 Hadal Vortex / Abyssium (2600)<br>§9AuraEffect:§0<br>Repair nearby ships<br>§9OtherEffect:§0<br>Enhanced regeneration<br>Ride nearby ship<br><br>Heavy attack: Throwing Aircraft: deal 75%% torpedo damage.
@@ -842,6 +849,8 @@ gui.shincolle:equip.torpedospeed=Increase movement speed of torpedo level %d
 gui.shincolle:equip.enchantshell=%d%% chance to apply %s level %d for %d seconds
 gui.shincolle:recipepaper.result=Craft:
 gui.shincolle:recipepaper.material=Materials:
+gui.shincolle:equip.gravity=Pulling nearby enemies to the center.
+gui.shincolle:equip.cluster=Releasing smaller bomb on the move.
 
 # Chat message
 chat.shincolle:bossspawn1=A Fleet Walks on the Water!
@@ -875,3 +884,6 @@ chat.shincolle:command.wrongpararange=Command FAIL: Wrong range of parameters:
 
 # Inter-mod
 gui.shincolle:morph.nofuel=No Fuel
+gui.shincolle:morph.sit=Sitting
+gui.shincolle:morph.emo1=Emotion Flag1
+gui.shincolle:morph.emo2=Emotion Flag2

@@ -1,40 +1,28 @@
 package com.lulan.shincolle.item;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipHostile;
-import com.lulan.shincolle.entity.BasicEntitySummon;
-import com.lulan.shincolle.network.C2SGUIPackets;
+import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /** target selector for OP only
  * 
@@ -105,10 +93,19 @@ public class TargetWrench extends BasicItem
 		return EnumActionResult.PASS;
     }
 	
+	/**
+	 * left click on entity to get morph
+	 */
 	@Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
-        return new ActionResult(EnumActionResult.PASS, itemStackIn);
+		if (CommonProxy.activeMetamorph)
+		{
+			MetamorphHelper.getShipMorph(player, entity);
+			return true;
+		}
+		
+        return false;
     }
 	
 	@Override

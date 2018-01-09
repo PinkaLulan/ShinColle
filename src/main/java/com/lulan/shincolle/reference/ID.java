@@ -101,6 +101,9 @@ public class ID
 		public static final byte ShipInv_Task = 37;
 		public static final byte ShipInv_TaskSide = 38;
 		public static final byte ShipInv_NoFuel = 39;
+		public static final byte ShipInv_Sit = 40;
+		public static final byte ShipInv_EmoFlag1 = 41;
+		public static final byte ShipInv_EmoFlag2 = 42;
 		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
@@ -327,6 +330,7 @@ public class ID
 		public static final byte AMMO_G = 5;
 		public static final byte AMMO_AG = 6;
 		public static final byte AMMO_E = 7;
+		public static final byte AMMO_C = 8;
 	}
 	
 	/** entity flag index */
@@ -454,6 +458,8 @@ public class ID
 		public static final short Lapis = 72;
 		public static final short RecipePaper = 73;
 		public static final short OPTool = 74;
+		public static final short AmmoEnchant = 75;
+		public static final short Potions = 76;
 	}
 	
 	/** hp state index */

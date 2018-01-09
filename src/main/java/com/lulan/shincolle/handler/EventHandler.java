@@ -1171,32 +1171,42 @@ public class EventHandler
 	 */
 	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void onSppawnMorphPre(SpawnGhostEvent.Pre event)
+	public void onSpawnMorphPre(SpawnGhostEvent.Pre event)
 	{
 		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
-			EntityLivingBase target = em.getEntity();
+			EntityLivingBase target = em.getEntity(event.player.world);
 			
-			//change some data in nbt tag
-			NBTTagCompound nbtAll = em.getEntityData();
-			if (nbtAll == null) return;
-			NBTTagList tagList = nbtAll.getTagList("Attributes", Constants.NBT.TAG_COMPOUND);
-			if (tagList == null) return;
-			
-			for (int i = 0; i < tagList.tagCount(); i++)
-	        {
-	            NBTTagCompound tags = tagList.getCompoundTagAt(i);
-	            String name = tags.getString("Name");
-	            
-	            if (name == "generic.maxHealth")
-	            {
-	            	tags.setDouble("Base", 20D);
-	            }
-	        }
-			
-			//remove ship inventory
-			nbtAll.removeTag("CpInv");
+			//disable morph ghost
+			if (target instanceof BasicEntityShip)
+			{
+				event.morph = null;
+				return;
+			}
+			//change other ship morph HP to 20
+			else if (target instanceof IShipAttackBase)
+			{
+				//change some data in nbt tag
+				NBTTagCompound nbtAll = em.getEntityData();
+				if (nbtAll == null) return;
+				NBTTagList tagList = nbtAll.getTagList("Attributes", Constants.NBT.TAG_COMPOUND);
+				if (tagList == null) return;
+				
+				for (int i = 0; i < tagList.tagCount(); i++)
+		        {
+		            NBTTagCompound tags = tagList.getCompoundTagAt(i);
+		            String name = tags.getString("Name");
+		            
+		            if (name == "generic.maxHealth")
+		            {
+		            	tags.setDouble("Base", 20D);
+		            }
+		        }
+				
+				//remove ship inventory
+				nbtAll.removeTag("CpInv");
+			}
 		}//end get entity morph
 	}
 	

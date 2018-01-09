@@ -154,9 +154,9 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		{
 			md.type = 2;
 			md.movetype = 0;
-			md.vel0 = 0.5F;
-			md.accY1 = 0.3F;
-			md.accY2 = 0.3F;
+			md.vel0 = 3F;
+			md.accY1 = 0F;
+			md.accY2 = 0F;
 		}
 	}
 

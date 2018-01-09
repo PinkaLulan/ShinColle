@@ -3067,7 +3067,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
 		
 		MissileData md = this.getMissileData(attackType);
-        float[] data = new float[] {atk, 0.15F, launchPos, tarX, tarY + targetHeight * 0.1F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+        float[] data = new float[] {atk, 0.15F, launchPos, tarX, tarY + targetHeight * 0.1F, tarZ, 140, 0.25F, md.vel0, md.accY1, md.accY2};
         EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
         this.world.spawnEntity(missile);
 	}
@@ -5249,7 +5249,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
   	        
   			//entity sound
-  			if (this.rand.nextInt(10) > 7)
+  			if (this.rand.nextInt(8) == 0)
   			{
   				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
   	        }
@@ -5258,7 +5258,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
   	        
   	        //entity sound
-  	        if (this.getRNG().nextInt(10) > 7)
+  	        if (this.getRNG().nextInt(8) == 0)
   	        {
   	        	this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
   	        }
@@ -5268,13 +5268,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   			this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
   	  	
   	        //entity sound
-  	        if (this.getRNG().nextInt(10) > 7)
+  	        if (this.getRNG().nextInt(8) == 0)
   	        {
   	        	this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
   	        }
   		break;
 		default: //melee
-			if (this.getRNG().nextInt(2) == 0)
+			if (this.getRNG().nextInt(3) == 0)
 			{
 				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
 	        }

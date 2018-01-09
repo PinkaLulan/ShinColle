@@ -561,9 +561,10 @@ public class Values
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T1 * 100,      			new float[]{0F,  8F,  0F,  8F,  0F,  0F,   0F,   -0.04F, 2F,   0.06F, 0.04F, 0.04F, 0.04F, 0F,  0F,  0F,   0F,   0F,   0.15F,0F,   0F});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T3 * 100,        		new float[]{0F,  4F,  0F,  4F,  0F,  0F,   0F,   -0.04F, 4F,   0F,    0F,    0F,    0.1F,  60F, 0F,  0F,   0F,   0F,   0.15F,0F,   0F});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_DU * 100,      			new float[]{0F,  12F, 0F,  12F, 0F,  0F,   0F,   -0.06F, 3F,   0.09F, 0.06F, 0.06F, 0.06F, 0F,  0F,  0F,   0F,   0F,   0.2F, 0F,   0F});
-		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_G * 100,        		new float[]{0F,  2F,  0F,  2F,  0F,  0F,   -0.1F,-0.06F, -2F,  0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_G * 100,        		new float[]{0F,  0F,  8F,  0F,  8F,  0F,   -0.2F,-0.06F, -2F,  0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_AG * 100,      			new float[]{0F,  2F,  0F,  2F,  0F,  0F,   -0.1F,-0.02F, 2F,   0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_E * 100,        		new float[]{0F,  0F,  0F,  0F,  0F,  0F,   -0.2F,-0.01F, -2F,  0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_C * 100,        		new float[]{0F,  0F,  16F, 0F,  16F, 0F,   -0.3F,-0.01F, -2F,  0F,    0F,    0F,    0F,    0F,  0F,  0F,   0F,   0F,   0F,   0F,   0F});
 	}});
 	
 	/**
@@ -684,10 +685,11 @@ public class Values
 		put((int)ID.EquipType.AMMO_LO + (int)ID.EquipSubID.AMMO_AA * 100,        		new int[]{2,   ID.EquipType.AMMO_LO,        2000, 120,  2,  1});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T1 * 100,      			new int[]{2,   ID.EquipType.AMMO_HI,        1000, 1000, 2,  1});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_T3 * 100,        		new int[]{2,   ID.EquipType.AMMO_HI,        2000, 1000, 2,  1});
-		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_DU * 100,      			new int[]{2,   ID.EquipType.AMMO_HI,        4000, 1000, 2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_DU * 100,      			new int[]{2,   ID.EquipType.AMMO_HI,        4500, 1000, 2,  1});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_G * 100,        		new int[]{2,   ID.EquipType.AMMO_HI,        3000, 1000, 2,  1});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_AG * 100,      			new int[]{2,   ID.EquipType.AMMO_HI,        3000, 1000, 2,  1});
 		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_E * 100,        		new int[]{2,   ID.EquipType.AMMO_HI,        3500, 1000, 2,  1});
+		put((int)ID.EquipType.AMMO_HI + (int)ID.EquipSubID.AMMO_C * 100,        		new int[]{2,   ID.EquipType.AMMO_HI,        4000, 1000, 2,  1});
 	}});
 
 	
@@ -838,6 +840,8 @@ public class Values
 		put(ID.Icon.Lapis,      new ItemStack(Items.DYE, 1, 4));
 		put(ID.Icon.RecipePaper,new ItemStack(ModItems.RecipePaper));
 		put(ID.Icon.OPTool,     new ItemStack(ModItems.OPTool));
+		put(ID.Icon.AmmoEnchant,new ItemStack(ModItems.EquipAmmo, 1, 7));
+		put(ID.Icon.Potions,    new ItemStack(Items.POTIONITEM));
 	}});
 	
 	
@@ -1180,6 +1184,20 @@ public class Values
 		put(1027, Arrays.asList(new int[] {0, 0, 0, 0},
 								new int[] {0, 1, 0, 0},
 								new int[] {2, 0, 43, 17, ID.Icon.OPTool}));
+		//page 28: Enchant Shell
+		put(1028, Arrays.asList(new int[] {0, 0, 0, 0},
+								new int[] {0, 1, 0, 0},
+								new int[] {1, 0, 0, -6, 0, 100, 72, 100, 62},
+								new int[] {2, 0, 3,  -3, ID.Icon.Potions},
+								new int[] {2, 0, 23, -3, ID.Icon.Potions},
+								new int[] {2, 0, 43, -3, ID.Icon.Potions},
+								new int[] {2, 0, 3,  17, ID.Icon.Potions},
+								new int[] {2, 0, 23, 17, ID.Icon.AmmoEnchant},
+								new int[] {2, 0, 43, 17, ID.Icon.Potions},
+								new int[] {2, 0, 3,  37, ID.Icon.Potions},
+								new int[] {2, 0, 23, 37, ID.Icon.Potions},
+								new int[] {2, 0, 43, 37, ID.Icon.Potions},
+								new int[] {2, 0, 81, 17, ID.Icon.AmmoEnchant}));
 				
 		//chap 2: construction
 		//page 0: vent

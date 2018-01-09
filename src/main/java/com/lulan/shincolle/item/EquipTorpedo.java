@@ -141,7 +141,7 @@ public class EquipTorpedo extends BasicEquip implements IShipEffectItem
 		
 		if (level != 0)
 		{
-			list.add(TextFormatting.GRAY + I18n.format("gui.shincolle:equip.torpedospeed", level));
+			list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:equip.torpedospeed", level));
 		}
     }
 	
