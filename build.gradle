@@ -10,7 +10,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
 
-version = "1.10.2.3.2"
+version = "1.10.2.7.0"
 group = "com.lulan.shincolle" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "ShinColle"
 compileJava.options.encoding = 'UTF-8'	//for win7 + zh_TW
@@ -24,7 +24,7 @@ compileJava {
 sourceSets {
     main {
         java {
-            exclude 'com/lulan/shincolle/intermod/*'
+            
         }
     }
 }
@@ -64,7 +64,9 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    
+    //use jar file as api
+    compile files("debugMod/metamorph-1.1.4-1.10.2.jar")
 }
 
 processResources
