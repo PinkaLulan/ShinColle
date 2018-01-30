@@ -82,7 +82,7 @@ public class S2CGUIPackets implements IMessage
 		public static final byte TileCrane = 16;
 		public static final byte SyncPlayerProp_Misc = 17;
 		public static final byte SyncPlayerProp_UnitName = 18;
-		public static final byte TileTask = 19;
+		public static final byte FlagShowPlayerSkill = 19;
 	}
 	
 	
@@ -197,7 +197,7 @@ public class S2CGUIPackets implements IMessage
 			this.valueByte1 = PacketHelper.readByteArray(buf, 4);
 		break;
 		case PID.SyncShipInv:	//sync ship GUI
-			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
 		break;
 		case PID.SyncPlayerProp: //sync player props
 			this.valueInt1 = new int[6+9+12];
@@ -239,7 +239,8 @@ public class S2CGUIPackets implements IMessage
 		case PID.SyncPlayerProp_UnitName:	//sync unit name
 			this.valueStrs = PacketHelper.readListString(buf);
 		break;
-		case PID.FlagInitSID:	//ship UID init flag
+		case PID.FlagInitSID:			//ship UID init flag
+		case PID.FlagShowPlayerSkill:	//show player skill hotbar
 			this.valueBoolean = buf.readBoolean();
 		break;
 		case PID.SyncShipList:				  //sync loaded ship list
@@ -572,12 +573,33 @@ public class S2CGUIPackets implements IMessage
 		}
 		break;
 		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
-			buf.writeInt(ship.getEntityId());
+			//check ship is morph
+			if (ship.isMorph())
+			{
+				EntityPlayer player = ship.getMorphHost();
+				
+				if (player != null)
+				{
+					buf.writeInt(player.getEntityId());
+				}
+				else
+				{
+					buf.writeInt(-1);
+				}
+			}
+			else
+			{
+				buf.writeInt(ship.getEntityId());
+			}
+			
 			buf.writeInt(ship.getStateMinor(ID.M.Kills));
 			buf.writeInt(ship.getStateMinor(ID.M.NumGrudge));
+			buf.writeInt(ship.getStateMinor(ID.M.NumAmmoLight));
+			buf.writeInt(ship.getStateMinor(ID.M.NumAmmoHeavy));
 			buf.writeInt(ship.getCapaShipInventory().getInventoryPage());
 		break;
-		case PID.FlagInitSID:	//ship UID init flag
+		case PID.FlagInitSID:			//ship UID init flag
+		case PID.FlagShowPlayerSkill:	//show player skill hotbar
 			buf.writeBoolean(this.valueBoolean);
 		break;
 		case PID.SyncShipList:				  //send ship list to client
@@ -943,14 +965,29 @@ public class S2CGUIPackets implements IMessage
 		{
 			//set value
 			Entity entity = EntityHelper.getEntityByID(msg.valueInt1[0], 0, true);
+			BasicEntityShip ship = null;
 			
-			if (entity instanceof BasicEntityShip)
+			if (entity instanceof EntityPlayer)
 			{
-				BasicEntityShip ship = (BasicEntityShip) entity;
+				CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
 				
+				if (capa != null && capa.morphEntity instanceof BasicEntityShip)
+				{
+					ship = (BasicEntityShip) capa.morphEntity;
+				}
+			}
+			else
+			{
+				ship = (BasicEntityShip) entity;
+			}
+			
+			if (ship != null)
+			{
 				ship.setStateMinor(ID.M.Kills, msg.valueInt1[1]);
 				ship.setStateMinor(ID.M.NumGrudge, msg.valueInt1[2]);
-				ship.getCapaShipInventory().setInventoryPage(msg.valueInt1[3]);
+				ship.setStateMinor(ID.M.NumAmmoLight, msg.valueInt1[3]);
+				ship.setStateMinor(ID.M.NumAmmoHeavy, msg.valueInt1[4]);
+				ship.getCapaShipInventory().setInventoryPage(msg.valueInt1[5]);
 			}
 		}
 		break;
@@ -962,6 +999,11 @@ public class S2CGUIPackets implements IMessage
 			{
 				capa.initSID = msg.valueBoolean;
 			}
+		}
+		break;
+		case PID.FlagShowPlayerSkill:	//show player skill hotbar
+		{
+			ClientProxy.showMorphSkills = !ClientProxy.showMorphSkills;
 		}
 		break;
 		case PID.SyncShipList:				  //sync loaded ship list

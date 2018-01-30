@@ -105,6 +105,10 @@ public class ID
 		public static final byte ShipInv_EmoFlag1 = 41;
 		public static final byte ShipInv_EmoFlag2 = 42;
 		
+		public static final byte MorphInv_AddAmmoL = 0;
+		public static final byte MorphInv_AddAmmoH = 1;
+		public static final byte MorphInv_AddGrudge = 2;
+		
 		public static final byte Shipyard_Type = 0;
 		public static final byte Shipyard_InvMode = 1;
 		public static final byte Shipyard_SelectMat = 2;
@@ -516,7 +520,7 @@ public class ID
 		public static final byte LevelSearchlight = 39;	//level of searchlight
 		public static final byte Task = 40;			//doing task id
 		public static final byte TaskSide = 41;		//side setting for task
-		public static final byte NO_USE = 42;		//NO_USE
+		public static final byte XP = 42;			//for collect xp orb, NO SAVE IF LOGOUT!
 		public static final byte CraneState = 43;	//crane state: 0:none 1:wait 2:craning
 		public static final byte WpStay = 44;		//waypoint stay setting
 	}
@@ -755,10 +759,11 @@ public class ID
 		public static final byte AttackTime2 = 13;		//CLIENT: attack time 2 for model display
 		public static final byte AttackTime3 = 14;		//SERVER: attack time 3 for skill AI
 		public static final byte TaskTime = 15;			//SERVER: task start time
-		public static final byte MountSkillCD1 = 16;	//BOTH:   mount skill cooldwon 1~4
+		public static final byte MountSkillCD1 = 16;	//BOTH:   player skill cooldown
 		public static final byte MountSkillCD2 = 17;
 		public static final byte MountSkillCD3 = 18;
 		public static final byte MountSkillCD4 = 19;
+		public static final byte MountSkillCD5 = 20;
 	}
 	
 	/** Update Flag */

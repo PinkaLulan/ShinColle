@@ -100,7 +100,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
 		            	{
 	            			if (target instanceof EntityPlayer)
 	            			{
-	            				target.heal(4F + this.getLevel() * 0.06F);
+	            				target.heal(4F + target.getMaxHealth() * 0.06F + this.getLevel() * 0.06F);
 	            				canHeal = true;
 		            		}
 		            		else if (target instanceof BasicEntityShip)

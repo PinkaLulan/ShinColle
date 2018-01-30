@@ -68,6 +68,8 @@ public class ConfigHandler
 	public static int deathMaxTick = 400;
 	public static int radarUpdate = 128;	//radar update interval (ticks)
 	public static int shipAttackPlayer = 0;
+	public static int pairDistChest = 16;
+	public static int pairDistWp = 48;
 	
 	//tile entity setting                                    max storage, build speed, fuel magn
 	public static double[] tileShipyardSmall = new double[] {460800D,     48D,         1D};
@@ -80,11 +82,15 @@ public class ConfigHandler
 	/********************* INTER-MOD **********************/
 	public static boolean enableIC2 = true;
 	public static boolean enableMetamorphSkill = true;
-	
+	//exp gain modify by player skill
+	public static double expGainPlayerSkill = 6D;
+	//hp ratio of morph ship
+	public static double morphHPRatio = 0.1D;
+	//damage taken ratio of morph ship
+	public static double morphDmgTakenRatio = 0.2D;
+		
 	/********************* BUFF **********************/
 	public static int buffSaturation = 100;
-	
-	
 	
 	/********************* SHIP **********************/
 	//                                                    HP, ATK_L, ATK_H, ATK_AL, ATK_AH
@@ -147,6 +153,7 @@ public class ConfigHandler
 	public static int modernLimit = 3;	//ship attrs upgrade level limit
 	public static int searchlightCD = 4;
 	public static int maxLevel = 150;   //TODO not configurable now
+	public static int airplaneDelay = 2400;	//airplane recovery base delay ticks
 	
 	public static boolean timeKeeping = true;
 	public static boolean canFlare = true;
@@ -247,13 +254,20 @@ public class ConfigHandler
 		spawnBossNum = config.getInt("Spawn_Boss_Number", CATE_GENERAL, 2, 1, 10, "large hostile ship (boss) number per spawn");
 		spawnMobNum = config.getInt("Spawn_Mob_Number", CATE_GENERAL, 4, 1, 10, "small hostile ship number per spawn");
 		
+		//配對距離: waypoint and chest
+		pairDistChest = config.getInt("PairingDist_Chest", CATE_GENERAL, 16, 0, 64, "Max pairing distance between waypoint and chest");
+		pairDistWp = config.getInt("PairingDist_Waypoint", CATE_GENERAL, 48, 0, 64, "Max pairing distance between waypoints");
+		
 		//buff debuff TODO not configurable for now
 //		buffSaturation = config.getInt("Saturation", CATE_BUFF, 20, 0, 5000, "add X grudge value to ship every 32 ticks");
 		
 		//是否開啟林業支援
 		enableIC2 = config.getBoolean("Mod_IC2", CATE_INTERMOD, true, "Enable IC2 module if mod existed: add EU related function.");
 		propDrumEU = config.get(CATE_INTERMOD, "Drum_EU", drumEU, "EU transport rate: base transfer rate (EU/t), additional rate per enchantment (EU/t). Total Rate = (ShipLV * 0.1 + 1) * (BaseRate * #TotalTransformers + EnchantRate * #TotalEnchantments)");
-		enableMetamorphSkill = config.getBoolean("Mod_MetamorphSkill", CATE_INTERMOD, true, "Enable Metamorph module if mod existed: add ship skill for ship morph");
+		enableMetamorphSkill = config.getBoolean("Mod_MetamorphSkill", CATE_INTERMOD, true, "Enable Metamorph module, if true: 1. player can use ship skill in morphing, 2. if no grudge, player will be demorphed.");
+		expGainPlayerSkill = config.getFloat("Metamorph_ExpGain", CATE_INTERMOD, 6F, 0F, 1000F, "Exp modify for casting ship attack skill by player in morph, final exp = raw exp * Metamorph_ExpGain, req: Metamorph mod.");
+		morphHPRatio = config.getFloat("Metamorph_HPRatio", CATE_INTERMOD, 0.1F, 0F, 10F, "HP modify of player in morph, final HP = 20 + shipHP * Metamorph_HPRatio, req: Metamorph mod.");
+		morphDmgTakenRatio = config.getFloat("Metamorph_DmgTakenRatio", CATE_INTERMOD, 0.2F, 0F, 1F, "Damage by ship attack modify of player in morph, final DamageTaken = raw damage * Metamorph_DmgTakenRatio, req: Metamorph mod.");
 		
 		//讀取 ship setting設定
 		canFlare = config.getBoolean("Can_Flare", CATE_SHIP, true, "Can ship spawn Flare lighting effect, CLIENT SIDE only");
@@ -267,6 +281,7 @@ public class ConfigHandler
 		baseCaressMorale = config.getInt("Caress_BaseMorale", CATE_SHIP, 20, 1, 5000, "base morale value per CaressTick (4 ticks)");
 		modernLimit = config.getInt("Attrs_Limit_Modernization", CATE_SHIP, 3, 3, 100, "Max upgrade level by Modernization Toolkit");
 		searchlightCD = config.getInt("CD_SearchLight", CATE_SHIP, 4, 1, 256, "Cooldown for placing light block of searchlight");
+		airplaneDelay = config.getInt("CD_AirplaneRecovery", CATE_SHIP, 3600, 1, 30000, "Base cooldown for airplane recovery, actual recovery time = CD_AirplaneRecovery / attack speed + 20");
 		
 		//array data
 		propShip = config.get(CATE_SHIP, "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");

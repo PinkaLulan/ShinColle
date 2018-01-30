@@ -220,7 +220,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 
                 	//目標不能是自己 or 主人
                 	if (!hitEntity.equals(this) && !hitEntity.equals(target) &&
-                		!TargetHelper.checkUnattackTargetList(hitEntity) &&
+                		!TargetHelper.isEntityInvulnerable(hitEntity) &&
                 		hitEntity.canBeCollidedWith() && !TeamHelper.checkSameOwner(this, hitEntity))
                 	{
                 		//roll miss, cri, dhit, thit

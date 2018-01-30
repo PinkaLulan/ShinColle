@@ -4,6 +4,7 @@ import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.PacketHelper;
+import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -91,24 +92,12 @@ abstract public class BasicTileInventory extends BasicTileEntity implements ISid
         return super.getCapability(capability, facing);
     }
     
-    /** methods for IInventory to access IItemHandler
-     */
+    /** methods for IInventory to access IItemHandler */
 	//是否可以右鍵點開方塊
 	@Override
 	public boolean isUsableByPlayer(EntityPlayer player)
 	{
-		//由於會有多個tile entity副本, 要先確認座標相同的副本才能使用
-		//確認player要在該tile entity 8格內
-		//確認該tile entity沒有被標為invalid
-		if (world.getTileEntity(pos) == this && !isInvalid() &&
-			player.getDistanceSq(pos.getX()+0.5D, pos.getY()+0.5D, pos.getZ()+0.5D) <= 64)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return TeamHelper.isUsableByPlayer(this, player);
 	}
     
   	@Override

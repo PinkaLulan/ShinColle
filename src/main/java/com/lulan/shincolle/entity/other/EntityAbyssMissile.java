@@ -402,14 +402,12 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
             }
             
             //碰撞判定3: 擴展AABB碰撞: missile擴展1格大小內是否有entity可觸發爆炸
-            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1D, 1D));
+            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1.5D, 1D));
             
             //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
             for (Entity ent : hitList)
             { 
-            	/**不會對自己主人觸發爆炸
-        		 * isEntityEqual() is NOT working
-        		 * use entity id to check entity  */
+            	//不會對自己主人觸發爆炸
             	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) && !TeamHelper.checkSameOwner(host2, ent))
             	{
             		this.onImpact(ent);
@@ -548,7 +546,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
             		        	this.velY = dist.y * this.vel0 * 0.25D;
             		        	this.velZ = dist.z * this.vel0 * 0.25D;
             		        	
-            		        	if (this.velY > 0.005D) this.velY = 0.005D;
+            		        	if (this.velY > 0.003D) this.velY = 0.003D;
             					
             					float[] data = new float[] {2F, (float)this.type, (float)this.moveType, (float)this.velX, (float)this.velY, (float)this.velZ, 1F, (float)this.vel0, (float)this.accY1, (float)this.accY2};
             	    			TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
@@ -636,39 +634,37 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
             {
             	missileAtk = this.attrs.getAttackDamage();
             	
-            	//check target attackable
-          		if (!TargetHelper.checkUnattackTargetList(ent))
-          		{
-          			//calc equip special dmg: AA, ASM
+            	//目標不能是自己 or 主人, 且可以被碰撞
+            	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) &&
+            		!TargetHelper.isEntityInvulnerable(ent))
+            	{
+            		//calc equip special dmg: AA, ASM
                 	missileAtk = CombatHelper.modDamageByAdditionAttrs(this, ent, missileAtk, 0);
                 	
-                	//目標不能是自己 or 主人, 且可以被碰撞
-                	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
-                	{
-                		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
-                		if (TeamHelper.checkSameOwner(host2, ent))
-                		{
-                    		missileAtk = 0F;
-                    	}
-                		else
-                		{
-                		    //roll miss, cri, dhit, thit
-                			missileAtk = CombatHelper.applyCombatRateToDamage(this.host, ent, false, 1F, missileAtk);
-                	  		
-                	  		//damage limit on player target
-                			missileAtk = CombatHelper.applyDamageReduceOnPlayer(ent, missileAtk);
-                	  		
-                	  		//check friendly fire
-                			if (!TeamHelper.doFriendlyFire(this.host, ent)) missileAtk = 0F;
-                		}
-                		
-                		//attack
-                		if (ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk))
-                		{
-                			BuffHelper.applyBuffOnTarget(ent, this.EffectMap);
-                		}
-                	}//end can be collided with
-          		}//end is attackable
+            		//若owner相同, 則傷害設為0
+            		if (TeamHelper.checkSameOwner(host2, ent))
+            		{
+                		missileAtk = 0F;
+                		continue;
+                	}
+            		else
+            		{
+            		    //roll miss, cri, dhit, thit
+            			missileAtk = CombatHelper.applyCombatRateToDamage(this.host, ent, false, 1F, missileAtk);
+            	  		
+            	  		//damage limit on player target
+            			missileAtk = CombatHelper.applyDamageReduceOnPlayer(ent, missileAtk);
+            	  		
+            	  		//check friendly fire
+            			if (!TeamHelper.doFriendlyFire(this.host, ent)) missileAtk = 0F;
+            		}
+            		
+            		//attack
+            		if (ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), missileAtk))
+            		{
+            			if (!TeamHelper.checkSameOwner(this.getHostEntity(), ent)) BuffHelper.applyBuffOnTarget(ent, this.EffectMap);
+            		}
+            	}//end can be collided with
             }//end hit target list for loop
             
             //send packet to client for display partical effect

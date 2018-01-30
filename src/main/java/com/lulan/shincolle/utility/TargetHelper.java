@@ -145,8 +145,8 @@ public class TargetHelper
             	}
             }
 			
-			//check unattackable list
-    		if (checkUnattackTargetList(target2)) return false;
+            //dont attack these entity
+        	if (isEntityInvulnerable(target2)) return false;
     		
     		//check invisible
     		if (target2.isInvisible())
@@ -246,12 +246,6 @@ public class TargetHelper
         		return true;
         	}
         	
-        	//dont attack these entity
-        	if (isEntitySpecialCase_Invulnerable(target2))
-        	{
-        		return false;
-        	}
-        	
         	return false;
         }
 
@@ -282,8 +276,8 @@ public class TargetHelper
                 return false;
             }
 			
-			//check unattackable list
-    		if (checkUnattackTargetList(target2)) return false;
+            //dont attack these entity
+        	if (isEntityInvulnerable(target2)) return false;
     		
     		//check invisible
     		if (target2.isInvisible())
@@ -326,12 +320,6 @@ public class TargetHelper
 				return true;
 			}
 			
-			//dont attack these entity
-        	if (isEntitySpecialCase_Invulnerable(target2))
-        	{
-        		return false;
-        	}
-			
         	//check faction
     		if (!TeamHelper.checkSameOwner(host, target2))
     		{
@@ -372,8 +360,8 @@ public class TargetHelper
             	else return false;
             }
     		
-    		//check unattackable list
-    		if (checkUnattackTargetList(target2)) return false;
+            //dont attack these entity
+        	if (isEntityInvulnerable(target2)) return false;
 
 			if (!target2.isInvisible())
 			{
@@ -401,12 +389,6 @@ public class TargetHelper
     				return true;
     			}
 			}
-			
-			//dont attack these entity
-        	if (isEntitySpecialCase_Invulnerable(target2))
-        	{
-        		return false;
-        	}
     		
         	return false;
         }
@@ -442,8 +424,8 @@ public class TargetHelper
             	return true;
             }
     		
-    		//check unattackable list
-    		if (checkUnattackTargetList(target2)) return false;
+            //dont attack these entity
+        	if (isEntityInvulnerable(target2)) return false;
 			
         	if (target2.isEntityAlive() && !target2.isInvisible())
         	{
@@ -470,12 +452,6 @@ public class TargetHelper
     				
     				return true;
     			}
-    			
-    			//dont attack these entity
-            	if (isEntitySpecialCase_Invulnerable(target2))
-            	{
-            		return false;
-            	}
     			
         		//check faction
         		if (!TeamHelper.checkSameOwner(host, target2))
@@ -642,9 +618,10 @@ public class TargetHelper
 		}
 	}
 	
-	/** invulnerable entity special case */
-	public static boolean isEntitySpecialCase_Invulnerable(Entity target)
+	/** check special case: invulnerable entity and unattackable entity */
+	public static boolean isEntityInvulnerable(Entity target)
 	{
+		//check special case
 		if (target instanceof IProjectile ||
 			target instanceof EntityFireball ||
 			target instanceof EntityFireworkRocket ||
@@ -654,6 +631,12 @@ public class TargetHelper
     	{
     		return true;
     	}
+		
+		//check unattackable entity
+		if (target.world != null && !target.world.isRemote)
+		{
+			return checkUnattackTargetList(target);
+		}
 		
 		return false;
 	}
@@ -674,7 +657,7 @@ public class TargetHelper
 			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))
 			{
 				ClientProxy.debugCooldown = 5;
-				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F);
+				RayTraceResult hitObj = EntityHelper.getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), 32D, 1F, null, false);
 				
 				//hit entity
 				if (hitObj != null && hitObj.entityHit != null)

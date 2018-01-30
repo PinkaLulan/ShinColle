@@ -12,7 +12,6 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -57,7 +56,6 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 	private boolean hasTeam;
 	private boolean isRingActive;
 	private boolean isRingFlying;
-	private int[] ringEffect;			//NO USE FOR NOW
 	private int marriageNum;
 	private int bossCooldown;			//spawn boss cooldown
 	private int teamCooldown;			//recreate team cooldown
@@ -88,12 +86,9 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 	private HashMap<Integer, String> targetClassMap;	//temp for client side, used in GUI
 	
 	//inter-mod
-	public EntityLivingBase morphEntity;
-	public int numGrudge;
-	public int numAmmoLight;
-	public int numAmmoHeavy;
 	public ItemStackHandler itemHandler;
-	public AttrsAdv shipAttrs;
+	public EntityLivingBase morphEntity;
+	public int[] shipMinor;		//0:grudge, 1:lightAmmo, 2:heavyAmmo
 	
 	
 	/**
@@ -110,7 +105,6 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		this.hasTeam = false;
 		this.isRingActive = false;
 		this.isRingFlying = false;
-		this.ringEffect = new int[] {0, 0, 0, 0};
 		this.marriageNum = 0;
 		this.bossCooldown = ConfigHandler.bossCooldown;
 		this.teamCooldown = 20;
@@ -119,7 +113,7 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		this.selectState = new boolean[9][6];
 		this.initSID = false;
 		this.sidList = new int[9][6];
-		this.formatID = new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0};
+		this.formatID = new int[9];
 		this.saveId = 0;
 		this.teamId = 0;
 		this.listShipEID = new ArrayList<Integer>();
@@ -129,11 +123,11 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		this.mapTeamData = new HashMap<Integer, TeamData>();
 		this.listTeamData = new ArrayList<TeamData>();
 		this.targetClassMap = new HashMap<Integer, String>();
+		
+		//inter-mod
 		this.morphEntity = null;
-		this.numGrudge = 0;
-		this.numAmmoLight = 0;
-		this.numAmmoHeavy = 0;
 		this.itemHandler = new ItemStackHandler(this.getSizeInventory());
+		this.shipMinor = new int[3];
 		
 		//need init
 		this.needInit = true;
@@ -159,15 +153,11 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		nbtExt.setBoolean("hasRing", hasRing);
 		nbtExt.setBoolean("RingOn", isRingActive);
 		nbtExt.setBoolean("RingFly", isRingFlying);
-		nbtExt.setIntArray("RingEffect", ringEffect);
 		nbtExt.setIntArray("FormatID", formatID);
 		nbtExt.setInteger("MarriageNum", marriageNum);
 		nbtExt.setInteger("BossCD", bossCooldown);
 		nbtExt.setInteger("PlayerUID", playerUID);
 		nbtExt.setInteger("TeamCD", teamCooldown);
-		nbtExt.setInteger("NumGrudge", numGrudge);
-		nbtExt.setInteger("NumAmmoL", numAmmoLight);
-		nbtExt.setInteger("NumAmmoH", numAmmoHeavy);
 		
 		//save player name
 		try
@@ -229,9 +219,18 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 			}
 		}
 		
+		/** inter-mod */
 		//save ship inventory
 		if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.getSizeInventory());
 		nbtExt.setTag(CapaTeitoku.INV_KEY, this.itemHandler.serializeNBT());
+		
+		//save ship minor data
+		if (this.shipMinor != null)
+		{
+			nbtExt.setInteger("NumGrudge", this.shipMinor[0]);
+			nbtExt.setInteger("NumAmmoL", this.shipMinor[1]);
+			nbtExt.setInteger("NumAmmoH", this.shipMinor[2]);
+		}
 		
 		nbt.setTag(CAPA_KEY, nbtExt);
 		LogHelper.debug("DEBUG : save player ExtNBT data on: "+this.player);
@@ -270,15 +269,11 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 			hasRing = nbtExt.getBoolean("hasRing");
 			isRingActive = nbtExt.getBoolean("RingOn");
 			isRingFlying = nbtExt.getBoolean("RingFly");
-			ringEffect = nbtExt.getIntArray("RingEffect");
 			formatID = nbtExt.getIntArray("FormatID");
 			marriageNum = nbtExt.getInteger("MarriageNum");
 			bossCooldown = nbtExt.getInteger("BossCD");
 			playerUID = nbtExt.getInteger("PlayerUID");
 			teamCooldown = nbtExt.getInteger("TeamCD");
-			numGrudge = nbtExt.getInteger("NumGrudge");
-			numAmmoLight = nbtExt.getInteger("NumAmmoL");
-			numAmmoHeavy = nbtExt.getInteger("NumAmmoH");
 			
 			//load colle list
 			int[] arrtemp = nbtExt.getIntArray("ColleShip");
@@ -312,12 +307,19 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 				this.unitNames[i] = nbtExt.getString("uname"+i);
 			}
 			
-			//load inventory
+			/** inter-mod */
+			//load ship inventory
 	        if (nbtExt.hasKey(CapaTeitoku.INV_KEY))
 	        {
 	        	if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.getSizeInventory());
 	        	this.itemHandler.deserializeNBT((NBTTagCompound) nbtExt.getTag(CapaTeitoku.INV_KEY));
         	}
+	        
+	        //load ship minor data
+	        if (this.shipMinor == null) this.shipMinor = new int[3];
+	        this.shipMinor[0] = nbtExt.getInteger("NumGrudge");
+	        this.shipMinor[1] = nbtExt.getInteger("NumAmmoL");
+	        this.shipMinor[2] = nbtExt.getInteger("NumAmmoH");
 		}
 		catch (Exception e)
 		{
@@ -355,11 +357,6 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		
 		//client side
 		return this.hasTeam;
-	}
-	
-	public int getRingEffect(int id)
-	{
-		return ringEffect[id];
 	}
 	
 	public int getMarriageNum()
@@ -822,11 +819,6 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 	public void setHasRing(boolean par1)
 	{
 		hasRing = par1;
-	}
-	
-	public void setRingEffect(int id, int par1)
-	{
-		ringEffect[id] = par1;
 	}
 	
 	public void setMarriageNum(int par1)
@@ -1734,6 +1726,13 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 	  		{
 	  			stack.stackSize = getInventoryStackLimit();
 	  		}
+	  		
+	  		//check item in equip slot
+			if (this.player != null && this.player.world != null && !this.player.world.isRemote &&
+				id < 6 && this.morphEntity instanceof BasicEntityShip)
+			{
+				((BasicEntityShip)this.morphEntity).calcShipAttributes(2, true);  //update equip and attribute value
+			}
 		}
 	}
 
@@ -1790,6 +1789,14 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 	@Override
 	public void clear()
 	{
+	}
+	
+	/**
+	 * ticking method for player skill
+	 */
+	public void onPlayerSkillTick()
+	{
+		//TODO
 	}
 	
 	

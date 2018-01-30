@@ -16,12 +16,12 @@ import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CGUIPackets;
+import com.lulan.shincolle.playerskill.ShipSkillHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.shipskill.ShipSkillHandler;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.InventoryHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -42,6 +42,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntitySlime;
@@ -67,6 +68,8 @@ import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.minecraftforge.event.world.WorldEvent.Load;
@@ -78,6 +81,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -396,6 +400,14 @@ public class EventHandler
 //			ships.removeIf(s -> ship.equals(s));
 //		}
 //	}
+	
+	/** on entity damaged, BOTH SIDE EVENT
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onEntityDamaged(LivingHurtEvent event)
+	{
+		if (CommonProxy.activeMetamorph) MetamorphHelper.onMorphDamagedHelper(event);
+	}
 
 	/** on entity attack event, BOTH SIDE EVENT
 	 *  set ship's revenge target if player attack or be attacked
@@ -428,7 +440,7 @@ public class EventHandler
 				//immune to fire
 				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) target);
 				if (capa.hasRing() && capa.isRingActive() && ConfigHandler.ringAbility[4] >= 0 &&
-					capa.getMarriageNum() >= ConfigHandler.ringAbility[4])
+					capa.getMarriageNum() >= ConfigHandler.ringAbility[4] && event.getSource().isFireDamage())
 				{
 					//disable fire damage
 					if (target.isBurning()) target.extinguish();
@@ -639,8 +651,8 @@ public class EventHandler
 			else if (event.player.world.isRemote)
 			{
 				//cd--
-				if (ClientProxy.keyMountCD > 0) ClientProxy.keyMountCD--;
-				if (ClientProxy.keyMountSkillCD > 0) ClientProxy.keyMountSkillCD--;
+				if (ClientProxy.keyMountActionCD > 0) ClientProxy.keyMountActionCD--;
+				if (ClientProxy.keyPlayerSkillCD > 0) ClientProxy.keyPlayerSkillCD--;
 				if (ClientProxy.debugCooldown > 0) ClientProxy.debugCooldown--;
 				
 //				//DEBUG TODO
@@ -698,7 +710,7 @@ public class EventHandler
 			}//end every 16 ticks
 			
 			//check morph
-			if (CommonProxy.activeMetamorph) MetamorphHelper.onPlayerTickHelper(event.player, capa);
+			if (CommonProxy.activeMetamorph) MetamorphHelper.onPlayerTickHelper(event.player);
 		}//end player tick phase: START
 	}//end onPlayerTick
 	
@@ -871,6 +883,50 @@ public class EventHandler
 	}
 	
 	/**
+	 * PLAYER SAVE TO FILE EVENT: SERVER SIDE ONLY
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onPlayerSave(PlayerEvent.SaveToFile event)
+	{
+		try
+		{
+			//save morph data to nbt
+			if (event.getEntityPlayer() != null &&
+				CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill)
+			{
+				MetamorphHelper.writeToNBT(event.getEntityPlayer());
+			}
+		}
+		catch (Exception e)
+		{
+			LogHelper.info("EXCEPTION: save morph ship data fail: "+e);
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * PLAYER LOGOUT EVENT: SERVER SIDE ONLY
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void onPlayerSave(PlayerLoggedOutEvent event)
+	{
+		try
+		{
+			//save morph data to nbt
+			if (event.player != null &&
+				CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill)
+			{
+				MetamorphHelper.writeToNBT(event.player);
+			}
+		}
+		catch (Exception e)
+		{
+			LogHelper.info("EXCEPTION: save morph ship data fail: "+e);
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * PLAYER LOGIN EVENT: SERVER SIDE ONLY
 	 * sync server config to client when player login
 	 */
@@ -903,6 +959,8 @@ public class EventHandler
 			//send sync packet
 			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
 			capa.sendSyncPacket(0);
+			
+			if (CommonProxy.activeMetamorph) MetamorphHelper.onPlayerChangeDimHelper(event.player);
 		}//end server side
 	}
 	
@@ -1072,7 +1130,7 @@ public class EventHandler
 		//render something after hotbar
 		if (event.getType() == ElementType.HOTBAR)
 		{
-			RenderHelper.drawMountSkillIcon(event);
+			RenderHelper.drawPlayerSkillIcon(event);
 		}
 	}
 	
@@ -1081,16 +1139,38 @@ public class EventHandler
 	 *******************************************************/
 	
 	/**
-	 * set isMorph = true before morphing, SERVER SIDE ONLY
+	 * tweak nbt data before morphing, SERVER SIDE ONLY
 	 */
 	@Optional.Method(modid = Reference.MOD_ID_Metamorph)
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onMorphPre(MorphEvent.Pre event)
 	{
+		if (event.player == null) return;
+		
+		//check prev morph and save ship data
+		BasicEntityShip ship = MetamorphHelper.getShipMorphEntity(event.player);
+		
+		//prev morph is ship
+		if (ship != null)
+		{
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(event.player);
+			
+			if (capa != null)
+			{
+				//remove morph entity in capa
+				capa.morphEntity = null;
+				//save morph ship data
+				MetamorphHelper.writeToNBT(event.player);
+				//reset HP of player
+				event.player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D);
+			}
+		}
+		
+		//check new morph
 		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
-			EntityLivingBase target = em.getEntity();
+			EntityLivingBase target = (em != null) ? em.getEntity() : null;
 			
 			if (target instanceof IShipMorph)
 			{
@@ -1101,7 +1181,7 @@ public class EventHandler
 				
 				if (nbtAll == null)
 				{
-					nbtAll = new NBTTagCompound();
+					nbtAll = target.serializeNBT();
 					em.setEntityData(nbtAll);
 				}
 				
@@ -1133,10 +1213,17 @@ public class EventHandler
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onMorphPost(MorphEvent.Post event)
 	{
+		//cancel morph, reset HP
+		if (event.isDemorphing())
+		{
+			event.player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D);
+			return;
+		}
+		
 		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
-			EntityLivingBase target = em.getEntity();
+			EntityLivingBase target = (em != null) ? em.getEntity() : null;
 			
 			if (target instanceof BasicEntityShip)
 			{
@@ -1160,6 +1247,7 @@ public class EventHandler
 				//set flags
 				ship.setIsMorph(true);
 				ship.setMorphHost(event.player);
+				ship.canDrop = false;
 				
 				//change some data in nbt tag here
 			}
@@ -1217,10 +1305,11 @@ public class EventHandler
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
 	public void onMorphAction(MorphActionEvent event)
 	{
-		if (event.player != null && !event.player.world.isRemote && event.morph instanceof EntityMorph)
+		if (event.player != null && !event.player.world.isRemote &&
+			event.morph instanceof EntityMorph)
 		{
 			EntityMorph em = (EntityMorph) event.morph;
-			EntityLivingBase target = em.getEntity();
+			EntityLivingBase target = (em != null) ? em.getEntity() : null;
 			
 			if (target instanceof IShipMorph)
 			{

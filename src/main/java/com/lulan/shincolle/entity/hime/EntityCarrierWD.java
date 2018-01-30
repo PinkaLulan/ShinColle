@@ -7,6 +7,7 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
+import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
@@ -15,6 +16,7 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;

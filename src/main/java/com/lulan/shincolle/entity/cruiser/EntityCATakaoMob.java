@@ -81,7 +81,7 @@ public class EntityCATakaoMob extends BasicEntityShipHostile
 	{
 		boolean attack = super.attackEntityFrom(source, atk);
 		
-		if (attack)
+		if (attack && source.getEntity() instanceof EntityLivingBase)
 		{
 			//slow attacker
 			((EntityLivingBase) source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100+this.getScaleLevel()*50, this.getScaleLevel() / 3, false, false));

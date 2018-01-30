@@ -213,7 +213,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 	 * change missile to double missile
 	 */
 	@Override
-	protected void summonMissile(int attackType, float atk, float tarX, float tarY, float tarZ, float targetHeight)
+	public void summonMissile(int attackType, float atk, float tarX, float tarY, float tarZ, float targetHeight)
 	{
 		//發射位置: 左右兩側各一個
 		float[] mPos1 = CalcHelper.rotateXZByAxis(0F, 1F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
@@ -221,6 +221,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 			
 		//missile type
 		float launchPos = (float) posY + height * 0.6F;
+		if (this.isMorph) launchPos += 0.5F;
 		int moveType = CombatHelper.calcMissileMoveType(this, tarY, attackType);
 		
 		MissileData md = this.getMissileData(attackType);

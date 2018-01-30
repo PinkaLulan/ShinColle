@@ -141,6 +141,11 @@ public class GuiHelper
 		 //0:power
 		 {{7,6,20,19}
 		 }
+		},
+		{//gui 7: morph ship inventory
+		 {//0:+ammoL         1:+ammoH          2:grudge+
+		  {7,18,25,35},     {7,36,25,53},     {7,54,25,71}
+		 }
 		}
 	};
 	

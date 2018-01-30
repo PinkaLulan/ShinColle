@@ -186,7 +186,8 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
             //搜尋list, 找出可碰撞目標執行onImpact
             for (Entity ent : hitList)
             { 
-            	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
+            	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) &&
+            		!TargetHelper.isEntityInvulnerable(ent))
             	{
         			boolean attacked = false;
         			
@@ -238,40 +239,35 @@ public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAtt
     	//set attack value
     	float beamAtk = this.atk;
 
-	    //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
 	    TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
     
-    	//check target attackable
-  		if (!TargetHelper.checkUnattackTargetList(target))
-  		{
-  			//calc equip special dmg: AA, ASM
-        	beamAtk = CombatHelper.modDamageByAdditionAttrs(this.host, target, beamAtk, 1);
-        	
-    		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
-    		if (TeamHelper.checkSameOwner(host2, target))
-    		{
-    			beamAtk = 0F;
-        	}
-    		else
-    		{
-    			//roll miss, cri, dhit, thit
-    			beamAtk = CombatHelper.applyCombatRateToDamage(this.host, target, false, 1F, beamAtk);
-    	  		
-    	  		//damage limit on player target
-    			beamAtk = CombatHelper.applyDamageReduceOnPlayer(target, beamAtk);
-    	  		
-    	  		//check friendly fire
-    			if (!TeamHelper.doFriendlyFire(this.host, target)) beamAtk = 0F;
-    		}
-    		
-    		//if attack success
-    	    if (target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk))
-    	    {
-    	    	BuffHelper.applyBuffOnTarget(target, this.host.getAttackEffectMap());
-    	        //send packet to client for display partical effect
-                CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
-    	    }
-  		}//end is attackable
+		//calc equip special dmg: AA, ASM
+    	beamAtk = CombatHelper.modDamageByAdditionAttrs(this.host, target, beamAtk, 1);
+    	
+		//若owner相同, 則傷害設為0 (但是依然觸發擊飛特效)
+		if (TeamHelper.checkSameOwner(host2, target))
+		{
+			beamAtk = 0F;
+    	}
+		else
+		{
+			//roll miss, cri, dhit, thit
+			beamAtk = CombatHelper.applyCombatRateToDamage(this.host, target, false, 1F, beamAtk);
+	  		
+	  		//damage limit on player target
+			beamAtk = CombatHelper.applyDamageReduceOnPlayer(target, beamAtk);
+	  		
+	  		//check friendly fire
+			if (!TeamHelper.doFriendlyFire(this.host, target)) beamAtk = 0F;
+		}
+		
+		//if attack success
+	    if (target.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, host2).setExplosion(), beamAtk))
+	    {
+	    	if (!TeamHelper.checkSameOwner(this.getHostEntity(), target)) BuffHelper.applyBuffOnTarget(target, this.host.getAttackEffectMap());
+	        //send packet to client for display partical effect
+            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
+	    }
     }
 
 	@Override

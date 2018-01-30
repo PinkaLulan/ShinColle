@@ -1,6 +1,9 @@
 package com.lulan.shincolle.network;
 
+import com.lulan.shincolle.entity.IShipMorph;
+import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
@@ -50,6 +53,12 @@ public class S2CSpawnParticle implements IMessage
         this.packetType = PID.Entity_Animate;
         this.setAtkTime = setAtkTime;
         this.particleType = (byte) type;
+        
+        //check morph
+        if (entity instanceof IShipMorph && ((IShipMorph)entity).getMorphHost() != null)
+        {
+        	this.entity = ((IShipMorph)entity).getMorphHost();
+        }
     }
 	
 	/** type 1: spawn particle with entity and position
@@ -68,6 +77,12 @@ public class S2CSpawnParticle implements IMessage
         this.valueFloat1[3] = (float) lookX;
         this.valueFloat1[4] = (float) lookY;
         this.valueFloat1[5] = (float) lookZ;
+        
+        //check morph
+        if (entity instanceof IShipMorph && ((IShipMorph)entity).getMorphHost() != null)
+        {
+        	this.entity = ((IShipMorph)entity).getMorphHost();
+        }
     }
 	
 	/** type 2: spawn particle at position
@@ -88,18 +103,24 @@ public class S2CSpawnParticle implements IMessage
 	
 	/** type 3: spawn particle with host and target entity
 	 */
-	public S2CSpawnParticle(Entity host, Entity target, double par1, double par2, double par3, int type, boolean setAtkTime)
+	public S2CSpawnParticle(Entity entity, Entity target, double par1, double par2, double par3, int type, boolean setAtkTime)
 	{
 		this.packetType = PID.Entity_Target_Animate;
 		this.setAtkTime = setAtkTime;
         this.particleType = (byte) type;
-        this.entityID = host.getEntityId();
+        this.entityID = entity.getEntityId();
         this.entityID2 = target.getEntityId();
         
         this.valueFloat1 = new float[3];
         this.valueFloat1[0] = (float) par1;
         this.valueFloat1[1] = (float) par2;
         this.valueFloat1[2] = (float) par3;
+        
+        //check morph
+        if (entity instanceof IShipMorph && ((IShipMorph)entity).getMorphHost() != null)
+        {
+        	this.entityID = ((IShipMorph)entity).getMorphHost().getEntityId();
+        }
 	}
 	
 	/** type 4: spawn particle with entity and 3 double parms
@@ -114,6 +135,12 @@ public class S2CSpawnParticle implements IMessage
         this.valueFloat1[0] = (float) par1;
         this.valueFloat1[1] = (float) par2;
         this.valueFloat1[2] = (float) par3;
+        
+        //check morph
+        if (entity instanceof IShipMorph && ((IShipMorph)entity).getMorphHost() != null)
+        {
+        	this.entity = ((IShipMorph)entity).getMorphHost();
+        }
     }
 	
 	/** type 5: spawn path indicator particle
@@ -190,7 +217,7 @@ public class S2CSpawnParticle implements IMessage
 		{
 		case PID.Entity_Animate:	//spawn particle with entity
 		{
-			if(this.entity == null) return;
+			if (this.entity == null) return;
 			
 			buf.writeByte(0);	//type 0
 			buf.writeInt(this.entity.getEntityId());
@@ -272,14 +299,19 @@ public class S2CSpawnParticle implements IMessage
 	//packet handle method
 	private static void handle(S2CSpawnParticle msg, MessageContext ctx)
 	{
+		Entity ent = null;
+		
 		switch(msg.packetType)
 		{
 		case PID.Entity_Animate:		//spawn particle with entity
-			ParticleHelper.spawnAttackParticle(EntityHelper.getEntityByID(msg.entityID, 0, true),
-												msg.particleType, msg.setAtkTime);	
+			//apply particle to morph ship if existed
+			ent = MetamorphHelper.getMorphEntityByPlayerEID(msg.entityID, 0, true);
+			ParticleHelper.spawnAttackParticle(ent, msg.particleType, msg.setAtkTime);	
 		break;
 		case PID.Entity_Pos_Look_Animate: //spawn particle with entity and position
-			ParticleHelper.spawnAttackParticleCustomVector(EntityHelper.getEntityByID(msg.entityID, 0, true),
+			//apply particle to morph ship if existed
+			ent = MetamorphHelper.getMorphEntityByPlayerEID(msg.entityID, 0, true);
+			ParticleHelper.spawnAttackParticleCustomVector(ent,
 												msg.valueFloat1[0], msg.valueFloat1[1], msg.valueFloat1[2],
 												msg.valueFloat1[3], msg.valueFloat1[4], msg.valueFloat1[5],
 												msg.particleType, msg.setAtkTime);
@@ -290,13 +322,17 @@ public class S2CSpawnParticle implements IMessage
 												 msg.particleType);
 		break;
 		case PID.Entity_Target_Animate: //spawn particle with position
-			ParticleHelper.spawnAttackParticleAtEntity(EntityHelper.getEntityByID(msg.entityID, 0, true),
+			//apply particle to morph ship if existed
+			ent = MetamorphHelper.getMorphEntityByPlayerEID(msg.entityID, 0, true);
+			ParticleHelper.spawnAttackParticleAtEntity(ent,
 												EntityHelper.getEntityByID(msg.entityID2, 0, true),
 												msg.valueFloat1[0], msg.valueFloat1[1], msg.valueFloat1[2],
 												msg.particleType, msg.setAtkTime);
 		break;
 		case PID.Entity_Par3: 			//spawn particle with entity and 3 parms
-			ParticleHelper.spawnAttackParticleAtEntity(EntityHelper.getEntityByID(msg.entityID, 0, true),
+			//apply particle to morph ship if existed
+			ent = MetamorphHelper.getMorphEntityByPlayerEID(msg.entityID, 0, true);
+			ParticleHelper.spawnAttackParticleAtEntity(ent,
 							msg.valueFloat1[0], msg.valueFloat1[1], msg.valueFloat1[2], msg.particleType);
 		break;
 		case PID.Ints_Path:				//spawn path indicator particle

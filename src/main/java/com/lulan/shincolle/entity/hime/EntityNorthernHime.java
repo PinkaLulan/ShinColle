@@ -127,7 +127,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		            	{
 	            			if (target instanceof EntityPlayer)
 	            			{
-	            				target.heal(1F + this.getLevel() * 0.02F);
+	            				target.heal(1F + target.getMaxHealth() * 0.02F + this.getLevel() * 0.02F);
 	            				canHeal = true;
 		            		}
 		            		else if (target instanceof BasicEntityShip)

@@ -29,6 +29,11 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 		super(world);
 	}
 	
+	public double getLaunchHeight()
+	{
+		return this.launchHeight;
+	}
+	
 	//getter
 	@Override
 	public int getNumAircraftLight()
@@ -109,12 +114,12 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 			delayAircraft--;
 			if (this.delayAircraft <= 0)
 			{
-				//SPD delay
-				delayAircraft = (int)(1200 / (this.getAttrs().getAttackSpeed()));	
-				if (delayAircraft > 1200) delayAircraft = 1200;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
+				//calc delay
+				delayAircraft = (int)((float)ConfigHandler.airplaneDelay / (this.getAttrs().getAttackSpeed()));	
+				if (delayAircraft > ConfigHandler.airplaneDelay) delayAircraft = ConfigHandler.airplaneDelay;	//fix: spd還沒設完值就除 會導致delay變超大 (除以0)
 				
 				//base delay
-				delayAircraft += 400;
+				delayAircraft += 20;
 				
 				this.setNumAircraftLight(this.getNumAircraftLight()+1);
 				this.setNumAircraftHeavy(this.getNumAircraftHeavy()+1);
@@ -160,7 +165,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	}
 	
 	/** get airplane entity: isLightAirplane: is light aircraft attack */
-	protected BasicEntityAirplane getAttackAirplane(boolean isLightAirplane)
+	public BasicEntityAirplane getAttackAirplane(boolean isLightAirplane)
 	{
 		if (isLightAirplane)
 		{
@@ -176,18 +181,16 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	@Override
 	public boolean attackEntityWithAircraft(Entity target)
 	{
+		//light ammo--
+        if (this.getNumAircraftLight() <= 0 ||
+        	!decrAmmoNum(0, 6 * this.getAmmoConsumption())) return false;
+        
 		//50% clear target every attack
 		if (this.rand.nextInt(2) == 0) this.setEntityTarget(null);
 		
 		//num aircraft--, number check in carrier AI
 		this.setNumAircraftLight(this.getNumAircraftLight()-1);
 		
-        //light ammo--
-        if (!decrAmmoNum(0, 6 * this.getAmmoConsumption()))
-        {
-        	return false;
-        }
-        
         //experience++
         addShipExp(ConfigHandler.expGain[3]);
   		
@@ -234,6 +237,10 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 	@Override
 	public boolean attackEntityWithHeavyAircraft(Entity target)
 	{
+		//heavy ammo--
+        if (this.getNumAircraftHeavy() <= 0 ||
+        	!decrAmmoNum(1, 2 * this.getAmmoConsumption())) return false;
+        
 		//50% clear target every attack
 		if (this.rand.nextInt(2) == 0) this.setEntityTarget(null);
 		
@@ -249,12 +256,6 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
   		//morale--
   		decrMorale(4);
   		setCombatTick(this.ticksExisted);
-        
-        //heavy ammo--
-        if (!decrAmmoNum(1, 2 * this.getAmmoConsumption()))
-        {
-        	return false;
-        }
         
         //play attacker effect
         applySoundAtAttacker(4, target);

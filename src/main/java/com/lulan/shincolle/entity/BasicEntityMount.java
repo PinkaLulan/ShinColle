@@ -1064,7 +1064,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
   	    //if attack success
   	    if (isTargetHurt)
   	    {
-  	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
+  	    	if (!TeamHelper.checkSameOwner(this.getHostEntity(), target)) BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
   	    	applySoundAtTarget(0, target);
 	        applyParticleAtTarget(0, target, distVec);
 			this.host.applyEmotesReaction(3);
@@ -1116,7 +1116,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	    //if attack success
 	    if (isTargetHurt)
 	    {
-	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
+	    	if (!TeamHelper.checkSameOwner(this.getHostEntity(), target)) BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        this.host.applyEmotesReaction(3);

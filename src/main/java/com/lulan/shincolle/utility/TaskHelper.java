@@ -14,17 +14,25 @@ import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicItem;
+import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
@@ -35,6 +43,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldServer;
@@ -42,6 +51,11 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
  * helper for cooking, mining, fishing... etc.
@@ -227,15 +241,7 @@ public class TaskHelper
             	canAddExp = true;
             	
             	//move result to chest or drop on ground
-            	if (!InventoryHelper.moveItemstackToInv(chest, resultTemp, null) || resultTemp.stackSize > 0)
-            	{
-            		//put stack on ground
-            		EntityItem entityitem = new EntityItem(host.world, host.posX, host.posY, host.posZ, resultTemp);
-            		entityitem.motionX = host.getRNG().nextGaussian() * 0.08D;
-    	            entityitem.motionY = host.getRNG().nextGaussian() * 0.05D + 0.2D;
-    	            entityitem.motionZ = host.getRNG().nextGaussian() * 0.08D;
-    	            host.world.spawnEntity(entityitem);
-            	}
+            	InventoryHelper.moveItemstackToInv(host, chest, resultTemp, null);
             	
             	//material -1
             	for (int i = 0; i < 9; i++)
@@ -847,9 +853,6 @@ public class TaskHelper
 			
 			for (int i = 1; i < list1.size(); i++)
 			{
-//				LogHelper.debug("DDDDD "+i+" "+list2.get(i - 1)+" "+list1.get(i).itemName+" "+list1.get(i).itemMeta+" "
-//						+list1.get(i).min+" "+list1.get(i).max+" "
-//						+list1.get(i).enchant+" ");
 				list2.add(list2.get(i - 1) + list1.get(i).weight);
 			}
 			
@@ -905,17 +908,7 @@ public class TaskHelper
 			ItemStack stack = new ItemStack(item, stacksize, metadata);
 			
 			//put stack into ship's inventory
-			boolean moved = InventoryHelper.moveItemstackToInv(ship.getCapaShipInventory(), stack, null);
-        	
-			//put stack on ground
-        	if (!moved || stack.stackSize > 0)
-        	{
-        		EntityItem entityitem = new EntityItem(ship.world, ship.posX, ship.posY, ship.posZ, stack);
-        		entityitem.motionX = host.getRNG().nextGaussian() * 0.08D;
-	            entityitem.motionY = host.getRNG().nextGaussian() * 0.05D + 0.2D;
-	            entityitem.motionZ = host.getRNG().nextGaussian() * 0.08D;
-	            ship.world.spawnEntity(entityitem);
-        	}
+    		InventoryHelper.moveItemstackToInv(ship, ship.getCapaShipInventory(), stack, null);
 		}//end host is ship
 	}
 	
@@ -959,22 +952,15 @@ public class TaskHelper
         //generate itemstack
         for (ItemStack itemstack : world.getLootTableManager().getLootTableFromLocation(LootTableList.GAMEPLAY_FISHING).generateLootForPools(host.getRNG(), lootcontext$builder.build()))
         {
-        	boolean moved = false;
-        	
         	//put stack into ship's inventory
         	if (host instanceof BasicEntityShip)
         	{
-        		moved = InventoryHelper.moveItemstackToInv(((BasicEntityShip) host).getCapaShipInventory(), itemstack, null);
+        		InventoryHelper.moveItemstackToInv(host, ((BasicEntityShip) host).getCapaShipInventory(), itemstack, null);
         	}
-        	
-        	//put stack on ground
-        	if (!moved || itemstack.stackSize > 0)
+        	//drop stack on ground
+        	else
         	{
-        		EntityItem entityitem = new EntityItem(world, host.posX, host.posY, host.posZ, itemstack);
-        		entityitem.motionX = host.getRNG().nextGaussian() * 0.08D;
-	            entityitem.motionY = host.getRNG().nextGaussian() * 0.05D + 0.2D;
-	            entityitem.motionZ = host.getRNG().nextGaussian() * 0.08D;
-                world.spawnEntity(entityitem);
+        		InventoryHelper.dropItemOnGround(host, itemstack);
         	}
         }
 	}
@@ -1005,6 +991,190 @@ public class TaskHelper
 		
 		return stack.getItem().getHarvestLevel(stack, type, null, null) >= targetLevel;
 	}
+	
+  	/**
+  	 * pump fluid under ship (wide: 3x3, depth:2)
+  	 */
+  	public static void onUpdatePumping(BasicEntityShip ship)
+  	{
+  		//calc pump speed
+  		int delay = 63;
+  		int level = ship.getLevel();
+  		
+  		if (level >= 145) delay = 3;
+  		else if (level >= 115) delay = 7;
+  		else if (level >= 75) delay = 15;
+  		else if (level >= 30) delay = 31;
+  		
+  		//pump liquid
+  		if ((ship.ticksExisted & delay) == 0)
+  		{
+  			CapaShipInventory inv = ship.getCapaShipInventory();
+  			
+  	  		//check pump equip if not transport ship
+  			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
+  			{
+  				if (!InventoryHelper.checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
+  			}
+  	  		
+  	  		/**
+  	  		 * pump liquid method:
+  	  		 *   1. check 3x3, depth = 0, -1, -2... is fluid
+  	  		 *   2. check fluid container in inventory
+  	  		 *   3. try pump fluid
+  	  		 */
+  	  		//check fluid block
+  	  		BlockPos pos = BlockHelper.getNearbyLiquid(ship, true, false, 3, 0);
+  	  		
+  	  		if (pos != null)
+  	  		{
+  	  			//check player permission
+  	  			EntityPlayer player = EntityHelper.getEntityPlayerByUID(ship.getPlayerUID());
+  	  			
+  	  			if (player != null && player.isAllowEdit() && ship.world.isBlockModifiable(player, pos))
+  	  			{
+  	  				IBlockState state = ship.world.getBlockState(pos);
+  	  				FluidStack fs = null;
+  	  				
+  	             	//block is vanilla liquid (water or lava)
+  	            	if (state.getBlock() instanceof BlockLiquid)
+  	            	{
+  	            		int fluidType = -1;
+  	            		
+  	            		//get water
+  	            		if (state.getMaterial() == Material.WATER && ((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0)
+  	            		{
+  	            			fluidType = 0;
+  	            			fs = new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
+  	            		}
+  	            		//get lava
+  	            		else if (state.getMaterial() == Material.LAVA && ((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0)
+  	            		{
+  	            			fluidType = 1;
+  	            			fs = new FluidStack(FluidRegistry.LAVA, Fluid.BUCKET_VOLUME);
+  	            		}
+
+  	            		//fill successfully
+  	            		if (InventoryHelper.tryFillContainer(inv, fs))
+  	            		{
+  	            			int checkDepth = 10;
+  	            			
+  	            			//clear block
+  	            			if (fluidType >= 0)
+  	            			{
+  	            				checkDepth = ConfigHandler.infLiquid[fluidType];
+  	            			}
+  	            			
+  	            			//can pump infinite liquid checking
+            				if (!BlockHelper.checkBlockNearbyIsSameMaterial(ship.world, state.getMaterial(), pos.getX(), pos.getY(), pos.getZ(), 3, checkDepth))
+            				{
+            					//destroy block
+            					ship.world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
+            					if (ship.getRand().nextInt(3) == 0) ship.playSound(SoundEvents.ITEM_BUCKET_FILL, 0.5F, ship.getRand().nextFloat() * 0.4F + 0.8F);
+            				}
+  	            		}
+  	            	}
+  	            	//hit forge liquid, fill liquid to tank
+  	            	else if (state.getBlock() instanceof IFluidBlock)
+  	            	{
+  	            		IFluidBlock fb = (IFluidBlock) state.getBlock();
+  	            		
+  	            		if (fb.canDrain(ship.world, pos))
+  	            		{
+  	            			fs = fb.drain(ship.world, pos, false);
+  	            			
+  	            			//check can fill
+  	            			if (fs != null && InventoryHelper.tryFillContainer(inv, fs))
+  	            			{
+  	            				//destroy block
+  	                			ship.world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
+  	                			if (ship.getRand().nextInt(3) == 0) ship.playSound(SoundEvents.ITEM_BUCKET_FILL, 0.5F, ship.getRand().nextFloat() * 0.4F + 0.8F);
+  	            			}
+  	            		}
+  	            	}
+  	  			}//end permission
+  	  		}//end get liquid
+  		}//end every x ticks
+  		
+  		//collect xp orb
+  		if ((ship.ticksExisted & 3) == 0)
+  		{
+  			CapaShipInventory inv = ship.getCapaShipInventory();
+			
+	  		//check pump equip if not transport ship
+			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
+			{
+				if (!InventoryHelper.checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
+			}
+			
+			/**
+			 * collect xp orb method:
+			 *   1. get xp orb in 15x15x15
+			 *   2. pull xp orb if dist > 3
+			 *   3. collect xp orb if dist <= 3
+			 *   4. transfer 8 xp to bottle to generate 1 xp bottle
+			 * 
+			 * NOTE: xp will disappear if logout
+			 */
+			//check bootle in inventory
+			ItemStack bot = new ItemStack(Items.GLASS_BOTTLE);
+			int botid = InventoryHelper.matchTargetItemExceptSlots(ship.getCapaShipInventory(), bot, false, false, false, null);
+			if (botid < 0) return;
+			bot = ship.getCapaShipInventory().getStackInSlot(botid);
+			
+			//find xp orb
+			List<EntityXPOrb> getlist = ship.world.getEntitiesWithinAABB(EntityXPOrb.class, ship.getEntityBoundingBox().expand(7D, 7D, 7D));
+			
+			if (getlist.size() > 0)
+			{
+				TargetPoint point = new TargetPoint(ship.dimension, ship.posX, ship.posY, ship.posZ, 64D);
+				
+				for (EntityXPOrb xp : getlist)
+				{
+					double dist = ship.getDistanceSqToEntity(xp);
+					
+					if (dist > 9D)
+					{
+						Dist4d pullvec = CalcHelper.getDistanceFromA2B(ship, xp);
+                		
+						xp.addVelocity(pullvec.x * -0.25D, pullvec.y * -0.25D, pullvec.z * -0.25D);
+						CommonProxy.channelE.sendToAllAround(new S2CEntitySync(xp, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
+					}
+					else
+					{
+						//collect xp orb
+						ship.world.playSound((EntityPlayer)null, ship.posX, ship.posY, ship.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_TOUCH, SoundCategory.PLAYERS, 0.1F, 0.5F * ((ship.getRNG().nextFloat() - ship.getRNG().nextFloat()) * 0.7F + 1.8F));
+						
+		                if (xp.xpValue > 0)
+		                {
+		                    ship.setStateMinor(ID.M.XP, ship.getStateMinor(ID.M.XP) + xp.xpValue);
+		                }
+		                
+		                xp.setDead();
+					}
+				}//end for all xp orb
+			}//end get xp orb entity
+			
+			//transfer xp to bottle (1 bottle per update)
+			int xpvalue = ship.getStateMinor(ID.M.XP);
+			
+			if (xpvalue >= 8)
+			{
+				//xp--
+				ship.setStateMinor(ID.M.XP, xpvalue - 8);
+				
+				//bottle--
+				bot.stackSize--;
+				if (bot.stackSize <= 0) ship.getCapaShipInventory().setStackInSlot(botid, null);
+				
+				//xp bottle++
+				ItemStack xpbot = new ItemStack(Items.EXPERIENCE_BOTTLE);
+				
+				//put stack into ship's inventory
+				InventoryHelper.moveItemstackToInv(ship, ship.getCapaShipInventory(), xpbot, null);
+			}//end xp bottle
+  		}//end xp orb delay
+  	}
 	
 	
 }

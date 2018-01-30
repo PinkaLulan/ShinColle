@@ -4,7 +4,6 @@ import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -192,7 +191,6 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 	
 	//潛艇的輕攻擊一樣使用飛彈
   	@Override
-  	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
   	public boolean attackEntityWithAmmo(Entity target)
   	{	
 		//ammo--

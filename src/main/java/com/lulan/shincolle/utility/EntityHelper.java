@@ -42,7 +42,6 @@ import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 
-import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.settings.GameSettings;
@@ -60,10 +59,7 @@ import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.Path;
@@ -83,10 +79,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -722,13 +715,13 @@ public class EntityHelper
 	@SideOnly(Side.CLIENT)
 	public static RayTraceResult getPlayerMouseOverEntity(double dist, float duringTicks, List<Entity> exlist)
 	{
-		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, exlist);
+		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, exlist, true);
 	}
 	
 	@SideOnly(Side.CLIENT)
 	public static RayTraceResult getPlayerMouseOverEntity(double dist, float duringTicks)
 	{
-		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, null);
+		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, null, true);
 	}
 
 	/**
@@ -742,7 +735,7 @@ public class EntityHelper
 	 * 修改自: EntityRenderer.getMouseOver
 	 */
 	@SideOnly(Side.CLIENT)
-	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick, @Nullable List<Entity> exlist)
+	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick, @Nullable List<Entity> exlist, boolean ignoreInvulnerable)
 	{
 		RayTraceResult lookBlock = null;
 		
@@ -754,21 +747,13 @@ public class EntityHelper
             if (viewer.getRidingEntity() instanceof BasicEntityMount && !ClientProxy.isViewPlayer)
             {
             	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
-            	
-            	if (ship != null)
-            	{
-            		viewer = ship;
-            		vec3 = ship.getPositionEyes(parTick);
-            		lookBlock = ship.rayTrace(dist, parTick);
-            	}
-            }
-            else
-            {
-            	lookBlock = viewer.rayTrace(dist, parTick);
-                vec3 = viewer.getPositionEyes(parTick);
+            	if (ship != null) viewer = ship;
             }
             
-            //if view fail, return
+            lookBlock = BlockHelper.getMouseOverBlock(viewer, dist, parTick, false, true, true);
+            vec3 = viewer.getPositionEyes(parTick);
+            
+            //null check
             if (vec3 == null) return null;
 
             //若有抓到方塊, 則d1改為抓到方塊的距離
@@ -812,8 +797,8 @@ public class EntityHelper
             		if (exequal) continue;
             	}
             	
-            	//check projectile entity
-            	if (TargetHelper.isEntitySpecialCase_Invulnerable(entity)) continue;
+            	//check invulnerable entity
+            	if (ignoreInvulnerable && TargetHelper.isEntityInvulnerable(entity)) continue;
             	
             	//check invisible
             	if (entity.isInvisible()) continue;
@@ -1906,182 +1891,6 @@ public class EntityHelper
 		default:  //leg
 			return ID.Body.Leg;
   		}
-  	}
-  	
-  	/**
-  	 * pump fluid under ship (wide: 3x3, depth:2)
-  	 */
-  	public static void autoPumpFluid(BasicEntityShip ship)
-  	{
-  		//calc pump speed
-  		int delay = 63;
-  		int level = ship.getLevel();
-  		
-  		if (level >= 145) delay = 3;
-  		else if (level >= 115) delay = 7;
-  		else if (level >= 75) delay = 15;
-  		else if (level >= 30) delay = 31;
-  		
-  		if ((ship.ticksExisted & delay) == 0)
-  		{
-  			CapaShipInventory inv = ship.getCapaShipInventory();
-  			
-  	  		//check pump equip if not transport ship
-  			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
-  			{
-  				if (!checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
-  			}
-  	  		
-  	  		/**
-  	  		 * pump method:
-  	  		 *   1. check 3x3, depth = 0, -1, -2... is fluid
-  	  		 *   2. check fluid container in inventory
-  	  		 *   3. try pump fluid
-  	  		 */
-  	  		//check fluid block
-  	  		BlockPos pos = BlockHelper.getNearbyLiquid(ship, true, false, 3, 0);
-  	  		
-  	  		if (pos != null)
-  	  		{
-  	  			//check player permission
-  	  			EntityPlayer player = getEntityPlayerByUID(ship.getPlayerUID());
-  	  			
-  	  			if (player != null && player.isAllowEdit() && ship.world.isBlockModifiable(player, pos))
-  	  			{
-  	  				IBlockState state = ship.world.getBlockState(pos);
-  	  				FluidStack fs = null;
-  	  				
-  	             	//block is vanilla liquid (water or lava)
-  	            	if (state.getBlock() instanceof BlockLiquid)
-  	            	{
-  	            		int fluidType = -1;
-  	            		
-  	            		//get water
-  	            		if (state.getMaterial() == Material.WATER && ((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0)
-  	            		{
-  	            			fluidType = 0;
-  	            			fs = new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME);
-  	            		}
-  	            		//get lava
-  	            		else if (state.getMaterial() == Material.LAVA && ((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0)
-  	            		{
-  	            			fluidType = 1;
-  	            			fs = new FluidStack(FluidRegistry.LAVA, Fluid.BUCKET_VOLUME);
-  	            		}
-
-  	            		//fill successfully
-  	            		if (tryFillContainer(inv, fs))
-  	            		{
-  	            			int checkDepth = 10;
-  	            			
-  	            			//clear block
-  	            			if (fluidType >= 0)
-  	            			{
-  	            				checkDepth = ConfigHandler.infLiquid[fluidType];
-  	            			}
-  	            			
-  	            			//can pump infinite liquid checking
-            				if (!BlockHelper.checkBlockNearbyIsSameMaterial(ship.world, state.getMaterial(), pos.getX(), pos.getY(), pos.getZ(), 3, checkDepth))
-            				{
-            					//destroy block
-            					ship.world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
-            					if (ship.getRand().nextInt(3) == 0) ship.playSound(SoundEvents.ITEM_BUCKET_FILL, 0.5F, ship.getRand().nextFloat() * 0.4F + 0.8F);
-            				}
-  	            		}
-  	            	}
-  	            	//hit forge liquid, fill liquid to tank
-  	            	else if (state.getBlock() instanceof IFluidBlock)
-  	            	{
-  	            		IFluidBlock fb = (IFluidBlock) state.getBlock();
-  	            		
-  	            		if (fb.canDrain(ship.world, pos))
-  	            		{
-  	            			fs = fb.drain(ship.world, pos, false);
-  	            			
-  	            			//check can fill
-  	            			if (fs != null && tryFillContainer(inv, fs))
-  	            			{
-  	            				//destroy block
-  	                			ship.world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
-  	                			if (ship.getRand().nextInt(3) == 0) ship.playSound(SoundEvents.ITEM_BUCKET_FILL, 0.5F, ship.getRand().nextFloat() * 0.4F + 0.8F);
-  	            			}
-  	            		}
-  	            	}
-  	  			}//end permission
-  	  		}//end get liquid
-  		}//end every x ticks
-  	}
-  	
-  	public static boolean tryFillContainer(CapaShipInventory inv, FluidStack fs)
-  	{
-  		if (fs == null) return false;
-  		
-  		ItemStack stack;
-  		int amountMoved = 0;
-  		
-  		//try fill all container in inventory
-  		for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < inv.getSizeInventoryPaged(); i++)
-  		{
-  			stack = inv.getStackInSlotWithPageCheck(i);
-  			
-  			//only for container with stackSize = 1
-  			if (stack != null && stack.stackSize == 1)
-  			{
-  				//check item has fluid capa
-  				if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
-  				{
-  					IFluidHandler fluid = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
-  					amountMoved += fluid.fill(fs, true);
-  				}//end get capa
-  				else if (stack.getItem() instanceof IFluidContainerItem)
-  				{
-  					amountMoved = ((IFluidContainerItem) stack.getItem()).fill(stack, fs, true);
-  				}
-  				
-  				//if fill success
-  				if (amountMoved > 0)
-  				{
-  					fs.amount -= amountMoved;
-  					if (fs.amount <= 0) break;
-  				}
-  			}//end get item
-  		}//end for all slots
-  		
-  		if (amountMoved > 0 && inv.getHost() != null)
-  		{
-  			//add exp to transport ship
-  			if (inv.getHost().getShipType() == ID.ShipType.TRANSPORT)
-  			{
-  				inv.getHost().addShipExp(ConfigHandler.expGain[6]);
-  			}
-  			
-  			//apply particle
-  			TargetPoint tp = new TargetPoint(inv.getHost().dimension, inv.getHost().posX, inv.getHost().posY, inv.getHost().posZ, 48D);
-  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(inv.getHost(), 21, 0D, 0.1D, 0D), tp);
-  			
-  			return true;
-  		}
-  		
-  		return false;
-  	}
-  	
-  	//check ship has itemstack
-  	public static boolean checkItemInShipInventory(CapaShipInventory inv, Item item, int meta, int minSlot, int maxSlot)
-  	{
-  		if (inv != null)
-  		{
-  			for (int i = minSlot; i < maxSlot; i++)
-  			{
-  				ItemStack stack = inv.getStackInSlotWithPageCheck(i);
-  				
-  				if (stack != null && stack.getItem() == item && stack.getItemDamage() == meta)
-				{
-  					return true;
-				}
-  			}
-  		}
-  		
-  		return false;
   	}
   	
   	/** create ship entity, nbt can be null */

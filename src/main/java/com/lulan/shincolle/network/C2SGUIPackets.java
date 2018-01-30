@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
@@ -52,6 +53,7 @@ public class C2SGUIPackets implements IMessage
 		public static final byte ShipBtn = 0;
 		public static final byte TileBtn = 1;
 		public static final byte MorphBtn = 2;
+		public static final byte MorphBtn2 = 3;
 		//pointer gui
 		public static final byte AddTeam = 20;
 		public static final byte AttackTarget = 21;
@@ -153,6 +155,7 @@ public class C2SGUIPackets implements IMessage
 		{
 		case PID.ShipBtn:	//ship entity gui click
 		case PID.MorphBtn:	//morph entity gui click
+		case PID.MorphBtn2:	//morph entity gui click type 2
 			this.valueInt = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.TileBtn:	//tile entity gui click
@@ -209,6 +212,7 @@ public class C2SGUIPackets implements IMessage
 		{
 		case PID.ShipBtn:	//ship entity gui click
 		case PID.MorphBtn:	//morph entity gui click
+		case PID.MorphBtn2:	//morph entity gui click type 2
 		{
 			buf.writeInt(this.entity.getEntityId());
 			buf.writeInt(this.entity.world.provider.getDimension());
@@ -327,6 +331,16 @@ public class C2SGUIPackets implements IMessage
 			}
 		}
 		break;
+		case PID.MorphBtn2:	//morph entity gui click type 2
+		{
+			capa = CapaTeitoku.getTeitokuCapability(msg.valueInt[0], msg.valueInt[1], false);
+			
+			if (capa != null)
+			{
+				MetamorphHelper.handleGUIPacketInput(capa, msg.valueInt[2], msg.valueInt[3]);
+			}
+		}
+		break;
 		case PID.TileBtn:	//tile entity gui click
 		{
 			world = ServerProxy.getServerWorld(msg.valueInt[0]);
@@ -400,7 +414,7 @@ public class C2SGUIPackets implements IMessage
 			if (entity != null && player != null)
 			{
 				//非禁止攻擊目標 or 不同主人 or 敵對/中立陣營才能攻擊
-				if (!TargetHelper.checkUnattackTargetList(entity) &&
+				if (!TargetHelper.isEntityInvulnerable(entity) &&
 					!TeamHelper.checkSameOwner(player, entity) &&
 					!TeamHelper.checkIsAlly(player, entity))
 				{
@@ -721,6 +735,7 @@ public class C2SGUIPackets implements IMessage
 				
 				for (BasicEntityShip s : ships)
 				{
+					if (s == null) continue;
 					EntityHelper.updateNameTag(s);
 					s.sendSyncRequest(1);
 				}

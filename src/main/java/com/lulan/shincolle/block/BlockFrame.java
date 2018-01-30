@@ -6,7 +6,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -14,7 +13,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
@@ -156,65 +154,19 @@ public class BlockFrame extends BasicBlockFacing
 		world.setBlockState(pos, state.withProperty(FACING, getFacingFromEntity(pos, placer)), 2);
 	}
 	
-//	//can leash TODO issue: knot will setDead after 100 ticks
-//	@Override
-//	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitx, float hity, float hitz) {
-//        ItemStack i = player.inventory.getCurrentItem();
-//        
-//		if(i != null && i.getItem() instanceof ItemLead) {
-//			if(world.isRemote) {
-//	        	return true;
-//	        }
-//			else {
-//				//set leash
-//				EntityLeashKnot knot = EntityLeashKnot.getKnotForBlock(world, x, y, z);
-//		        
-//				//get all nearby entity leashed by player
-//				double d0 = 7.0D;
-//		        List<EntityLiving> list = world.getEntitiesWithinAABB(EntityLiving.class, AxisAlignedBB.getBoundingBox((double)x - d0, (double)y - d0, (double)z - d0, (double)x + d0, (double)y + d0, (double)z + d0));
-//
-//		        if(list != null) {
-//		        	for(EntityLiving ent : list) {
-//		        		if(ent.getLeashed() && ent.getLeashedToEntity() == player) {
-//		        			//if no knot, create one
-//		                    if(knot == null) {
-//		                    	knot = EntityLeashKnot.func_110129_a(world, x, y, z);
-//		                    }
-//
-//		                    //leash the entity to knot
-//		                    ent.setLeashedToEntity(knot, true);
-//		                }
-//		        	}
-//		        }
-//		        
-//		        //tweak knot position
-//		        if(knot != null) {
-//		        	switch(side) {
-//		        	case 0:
-//		        		knot.setPosition(knot.posX, knot.posY - 0.5D, knot.posZ);
-//		        		break;
-//		        	case 1:
-//		        		knot.setPosition(knot.posX, knot.posY + 0.5D, knot.posZ);
-//						break;
-//					case 2:
-//						knot.setPosition(knot.posX, knot.posY, knot.posZ - 0.5D);
-//						break;
-//					case 3:
-//						knot.setPosition(knot.posX, knot.posY, knot.posZ + 0.5D);
-//						break;
-//					case 4:
-//						knot.setPosition(knot.posX - 0.5D, knot.posY, knot.posZ);
-//						break;
-//					case 5:
-//						knot.setPosition(knot.posX + 0.5D, knot.posY, knot.posZ);
-//						break;
-//			        }
-//		        }
-//			}//end server side
-//		}//end holding lead
-//		
-//		return false;
-//    }
+	//cancel water block side rendering
+	@Override
+    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)
+    {
+		IBlockState sideState = world.getBlockState(pos.offset(face));
+		
+		if (sideState != null && sideState.getMaterial() != null && sideState.getMaterial().isLiquid())
+		{
+			return true;
+		}
+		
+        return state.isOpaqueCube();
+    }
 	
 	
 }

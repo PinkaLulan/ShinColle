@@ -6,8 +6,11 @@ import javax.annotation.Nullable;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 
@@ -142,11 +145,11 @@ public class RenderHelper
             GlStateManager.popMatrix();
         }
     }
-    
+	
     /**
-     * draw mount skill icon
+     * draw player skill icon
      */
-    public static void drawMountSkillIcon(RenderGameOverlayEvent event)
+    public static void drawPlayerSkillIcon(RenderGameOverlayEvent event)
     {
 		//get mc
 		Minecraft mc = ClientProxy.getMineraft();
@@ -159,30 +162,62 @@ public class RenderHelper
 		
 		//get ship
 		BasicEntityShip ship = null;
-		boolean[] drawBtn = new boolean[4];
-		int[] drawCD = new int[4];
-		int[] drawCDMax = new int[4];
+		boolean isMorph = false;
+		boolean[] drawBtn = new boolean[5];
+		int[] drawCD = new int[5];
+		int[] drawCDMax = new int[5];
+		int[] drawAirNum = new int[2];
 		
+		//if player on ship mounts
 		if (player.getRidingEntity() instanceof BasicEntityMount &&
 			((BasicEntityMount)player.getRidingEntity()).getHostEntity() instanceof BasicEntityShip)
 		{
 			ship = (BasicEntityShip) ((BasicEntityMount) player.getRidingEntity()).getHostEntity();
-			drawBtn[0] = ship.getStateFlag(ID.F.AtkType_Light);
-			drawBtn[1] = ship.getStateFlag(ID.F.AtkType_Heavy);
-			drawBtn[2] = ship.getStateFlag(ID.F.AtkType_AirLight);
-			drawBtn[3] = ship.getStateFlag(ID.F.AtkType_AirHeavy);
-			drawCD[0] = ship.getStateTimer(ID.T.MountSkillCD1);
-			drawCD[1] = ship.getStateTimer(ID.T.MountSkillCD2);
-			drawCD[2] = ship.getStateTimer(ID.T.MountSkillCD3);
-			drawCD[3] = ship.getStateTimer(ID.T.MountSkillCD4);
-			drawCDMax[0] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 1);
-			drawCDMax[1] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 2);
-			drawCDMax[2] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3);
-			drawCDMax[3] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4);
+		}
+		//if player is in morphing (req: Metamorph mod)
+		else if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && ClientProxy.showMorphSkills)
+		{
+			BasicEntityShip morph = MetamorphHelper.getShipMorphEntity(player);
+			
+			if (morph != null)
+			{
+				ship = morph;
+				isMorph = true;
+			}
+			else
+			{
+				return;
+			}
 		}
 		else
 		{
 			return;
+		}
+		
+		//init skill button
+		if (ship != null)
+		{
+			drawBtn[0] = ship.getStateFlag(ID.F.AtkType_Light);
+			drawBtn[1] = ship.getStateFlag(ID.F.AtkType_Heavy);
+			drawBtn[2] = ship.getStateFlag(ID.F.AtkType_AirLight);
+			drawBtn[3] = ship.getStateFlag(ID.F.AtkType_AirHeavy);
+			drawBtn[4] = isMorph;
+			drawCD[0] = ship.getStateTimer(ID.T.MountSkillCD1);
+			drawCD[1] = ship.getStateTimer(ID.T.MountSkillCD2);
+			drawCD[2] = ship.getStateTimer(ID.T.MountSkillCD3);
+			drawCD[3] = ship.getStateTimer(ID.T.MountSkillCD4);
+			drawCD[4] = ship.getStateTimer(ID.T.MountSkillCD5);
+			drawCDMax[0] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 1);
+			drawCDMax[1] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 2);
+			drawCDMax[2] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3);
+			drawCDMax[3] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4);
+			drawCDMax[4] = CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 0);
+			
+			if (ship instanceof BasicEntityShipCV)
+			{
+				drawAirNum[0] = ((BasicEntityShipCV)ship).getNumAircraftLight();
+				drawAirNum[1] = ((BasicEntityShipCV)ship).getNumAircraftHeavy();
+			}
 		}
 		
 		try
@@ -199,7 +234,7 @@ public class RenderHelper
 	        GlStateManager.pushMatrix();
 
 	        //draw mount skill buttons
-	        for (int k = 0; k < 4; k++)
+	        for (int k = 0; k < 5; k++)
 	        {
 	        	if (drawBtn[k])
 	        	{
@@ -219,13 +254,15 @@ public class RenderHelper
 	        		if (len > 0) fr.drawStringWithShadow(String.format("%.1f", (float)drawCD[k] * 0.05F), px2+5, py+18, Enums.EnumColors.YELLOW.getValue());
 	        		//draw click effect
 	        		if (keySet.keyBindsHotbar[k].isKeyDown()) Gui.drawRect(px2, py, px2+18, py+18, 1073741823);
+	        		
+	        		if (k == 2) fr.drawStringWithShadow(String.valueOf(drawAirNum[0]), px2+7, py-8, Enums.EnumColors.GREEN.getValue());
+	        		else if (k == 3) fr.drawStringWithShadow(String.valueOf(drawAirNum[1]), px2+7, py-8, Enums.EnumColors.CYAN.getValue());
 	        	}
 	        }
 	        
 	        //end drawing
 	        mc.getTextureManager().bindTexture(Gui.ICONS);	//reset textures
 	        GlStateManager.color(1F, 1F, 1F, 1F);
-	        GlStateManager.disableBlend();
             GlStateManager.popMatrix();
 		}
 		catch (Exception e)

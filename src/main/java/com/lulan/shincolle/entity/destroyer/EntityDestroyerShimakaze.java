@@ -258,6 +258,18 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	}
   	
   	@Override
+	public void calcShipAttributesAddEquip()
+	{
+		super.calcShipAttributesAddEquip();
+		
+		MissileData md = this.getMissileData(2);
+		
+		md.vel0 += 0.2F;
+		md.accY1 += 0.025F;
+		md.accY2 += 0.025F;
+	}
+  	
+  	@Override
 	public int getNumServant()
   	{
 		return this.numRensouhou;

@@ -8,11 +8,9 @@ import javax.annotation.Nullable;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.render.block.RenderLargeShipyard;
-import com.lulan.shincolle.client.render.block.RenderSmallShipyard;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -232,8 +230,8 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
     {
 		IBlockState sideState = world.getBlockState(pos.offset(face));
 		
-		if (sideState != null && state.getValue(MBS) > 0 &&
-			(sideState.getMaterial() == Material.WATER || sideState.getMaterial() == Material.LAVA))
+		if (sideState != null && state.getValue(MBS) > 0 && sideState.getMaterial() != null &&
+			sideState.getMaterial().isLiquid())
 		{
 			return true;
 		}

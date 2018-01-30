@@ -318,18 +318,12 @@ public class PacketHelper
 		return str;
 	}
 	
-	/** get double array data */
+	/** get double array data, read array length first */
 	public static double[] readDoubleArray(ByteBuf buf)
 	{
 		int length = buf.readInt();
-		double[] array = new double[length];
-		
-		if (length > 0)
-		{
-			array = readDoubleArray(buf, length);
-		}
-		
-		return array;
+		if (length > 0) return readDoubleArray(buf, length);
+		return new double[0];
 	}
 	
 	/** get double array data */
@@ -345,18 +339,12 @@ public class PacketHelper
 		return array;
 	}
 	
-	/** get int array data */
+	/** get int array data, read array length first */
 	public static int[] readIntArray(ByteBuf buf)
 	{
 		int length = buf.readInt();
-		int[] array = new int[length];
-		
-		if (length > 0)
-		{
-			array = readIntArray(buf, length);
-		}
-		
-		return array;
+		if (length > 0) return readIntArray(buf, length);
+		return new int[0];
 	}
 	
 	/** get int array data */
@@ -372,18 +360,12 @@ public class PacketHelper
 		return array;
 	}
 	
-	/** get float array data */
+	/** get float array data, read array length first */
 	public static float[] readFloatArray(ByteBuf buf)
 	{
 		int length = buf.readInt();
-		float[] array = new float[length];
-		
-		if (length > 0)
-		{
-			array = readFloatArray(buf, length);
-		}
-		
-		return array;
+		if (length > 0) return readFloatArray(buf, length);
+		return new float[0];
 	}
 	
 	/** get float array data */
@@ -399,18 +381,12 @@ public class PacketHelper
 		return array;
 	}
 	
-	/** get boolean array data */
+	/** get boolean array data, read array length first */
 	public static boolean[] readBooleanArray(ByteBuf buf)
 	{
 		int length = buf.readInt();
-		boolean[] array = new boolean[length];
-		
-		if (length > 0)
-		{
-			array = readBooleanArray(buf, length);
-		}
-		
-		return array;
+		if (length > 0) return readBooleanArray(buf, length);
+		return new boolean[0];
 	}
 	
 	/** get boolean array data */
@@ -426,18 +402,12 @@ public class PacketHelper
 		return array;
 	}
 	
-	/** get byte array data */
+	/** get byte array data, read array length first */
 	public static byte[] readByteArray(ByteBuf buf)
 	{
 		int length = buf.readInt();
-		byte[] array = new byte[length];
-		
-		if (length > 0)
-		{
-			array = readByteArray(buf, length);
-		}
-		
-		return array;
+		if (length > 0) return readByteArray(buf, length);
+		return new byte[0];
 	}
 	
 	/** get byte array data */

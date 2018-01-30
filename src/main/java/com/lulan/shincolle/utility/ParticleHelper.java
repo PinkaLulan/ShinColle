@@ -47,12 +47,12 @@ public class ParticleHelper
 	private static Random rand = new Random();
 	
   	/** spawn attack text particle on entity, SERVER SIDE
-  	 *  type: 0:miss, 1:critical, 2:double hit, 3:triple hit
+  	 *  type: 0:miss, 1:critical, 2:double hit, 3:triple hit, 4:dodge
   	 */
   	public static void spawnAttackTextParticle(Entity host, int type)
   	{
   		//null check
-  		if (host == null) return;
+  		if (host == null || host.world == null || host.world.isRemote) return;
   		
   		TargetPoint point = new TargetPoint(host.dimension, host.posX, host.posY, host.posZ, 64D);
   		
@@ -60,18 +60,21 @@ public class ParticleHelper
   		{
   		case 0:  //miss
       		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 10, false), point);
-			break;
+		break;
   		case 1:  //critical
       		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 11, false), point);
-  			break;
+		break;
   		case 2:  //double hit
       		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 12, false), point);
-  			break;
+		break;
   		case 3:  //triple hit
       		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 13, false), point);
-  			break;
+		break;
+  		case 4:  //dodge
+      		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(host, 34, false), point);
+		break;
 		default:
-			break;
+		break;
   		}
   	}
   	

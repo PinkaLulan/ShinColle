@@ -106,22 +106,20 @@ public class ClientProxy extends CommonProxy
 	public static final ResourceLocation TextureGuiHUD = new ResourceLocation(Reference.TEXTURES_GUI+"GuiHUD.png");
 	
 	//keys
-	public static int keyGCD;			//key global cooldown
-	public static int[] skillCD;		//mount skill cooldown
-	public static boolean[] skillON;	//mount skill switch
-	public static boolean activeMorphSkills;	//active morph skills for inter-mod: Metamorph
+	public static int keyGCD = 0;			//key global cooldown
+	public static boolean showMorphSkills = false;	//show morph skills icon
 	
 	//keys
 	public static int rideKeys = 0;			//CLIENT SIDE ONLY
 	public static int openGUI = 0;			//CLIENT SIDE ONLY
-	public static int keyMountCD = 0;		//CLIENT SIDE ONLY, key CD for mount movement
-	public static int keyMountSkillCD = 0;	//CLIENT SIDE ONLY, key CD for mount skill
+	public static int keyMountActionCD = 0;	//CLIENT SIDE ONLY, key CD for mount movement
+	public static int keyPlayerSkillCD = 0;	//CLIENT SIDE ONLY, key CD for player skill
 	
 	//render view change
 	public static boolean isViewChanged = false;	//CLIENT SIDE ONLY
 	public static boolean isViewPlayer = false;		//CLIENT SIDE ONLY
 	
-	//for debug usage
+	//debug
 	public static int debugCooldown = 0;	//CLIENT SIDE ONLY
 	public static float field1 = 0F;		//CLIENT SIDE ONLY
 	public static float field2 = 0F;		//CLIENT SIDE ONLY
@@ -133,15 +131,6 @@ public class ClientProxy extends CommonProxy
 	
 	public ClientProxy()
 	{
-		resetKeys();
-	}
-	
-	public static void resetKeys()
-	{
-		keyGCD = 0;
-		skillCD = new int[] {0, 0, 0, 0};
-		skillON = new boolean[] {false, false, false, false};
-		activeMorphSkills = false;
 	}
 	
 	//client world

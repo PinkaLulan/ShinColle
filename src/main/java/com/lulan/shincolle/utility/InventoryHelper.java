@@ -5,23 +5,32 @@ import java.util.Set;
 
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 
 import baubles.api.cap.BaublesCapabilities;
 import baubles.api.cap.IBaublesItemHandler;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
@@ -29,7 +38,7 @@ import net.minecraftforge.oredict.OreDictionary;
  */
 public class InventoryHelper
 {
-
+	
 	
 	public InventoryHelper() {}
 	
@@ -1096,6 +1105,114 @@ public class InventoryHelper
 		
 		return false;
 	}
+	
+  	/**
+  	 * check itemstack in ship inventory simply
+  	 */
+  	public static boolean checkItemInShipInventory(CapaShipInventory inv, Item item, int meta, int minSlot, int maxSlot)
+  	{
+  		if (inv != null)
+  		{
+  			for (int i = minSlot; i < maxSlot; i++)
+  			{
+  				ItemStack stack = inv.getStackInSlotWithPageCheck(i);
+  				
+  				if (stack != null && stack.getItem() == item && stack.getItemDamage() == meta)
+				{
+  					return true;
+				}
+  			}
+  		}
+  		
+  		return false;
+  	}
+  	
+  	/**
+  	 * fill fluid container in ship inventory simply
+  	 */
+  	public static boolean tryFillContainer(CapaShipInventory inv, FluidStack fs)
+  	{
+  		if (fs == null) return false;
+  		
+  		ItemStack stack;
+  		int amountMoved = 0;
+  		
+  		//try fill all container in inventory
+  		for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < inv.getSizeInventoryPaged(); i++)
+  		{
+  			stack = inv.getStackInSlotWithPageCheck(i);
+  			
+  			//only for container with stackSize = 1
+  			if (stack != null && stack.stackSize == 1)
+  			{
+  				//check item has fluid capa
+  				if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
+  				{
+  					IFluidHandler fluid = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+  					amountMoved += fluid.fill(fs, true);
+  				}//end get capa
+  				else if (stack.getItem() instanceof IFluidContainerItem)
+  				{
+  					amountMoved = ((IFluidContainerItem) stack.getItem()).fill(stack, fs, true);
+  				}
+  				
+  				//if fill success
+  				if (amountMoved > 0)
+  				{
+  					fs.amount -= amountMoved;
+  					if (fs.amount <= 0) break;
+  				}
+  			}//end get item
+  		}//end for all slots
+  		
+  		if (amountMoved > 0 && inv.getHost() != null)
+  		{
+  			//add exp to transport ship
+  			if (inv.getHost().getShipType() == ID.ShipType.TRANSPORT)
+  			{
+  				inv.getHost().addShipExp(ConfigHandler.expGain[6]);
+  			}
+  			
+  			//apply particle
+  			TargetPoint tp = new TargetPoint(inv.getHost().dimension, inv.getHost().posX, inv.getHost().posY, inv.getHost().posZ, 48D);
+  			CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(inv.getHost(), 21, 0D, 0.1D, 0D), tp);
+  			
+  			return true;
+  		}
+  		
+  		return false;
+  	}
+  	
+  	/**
+  	 * put itemstack into inventory or drop on ground, return false if drop on ground
+  	 */
+  	public static boolean moveItemstackToInv(Entity host, IInventory inv, ItemStack moveitem, int[] toSlots)
+  	{
+  		if (host == null || host.world == null || inv == null) return false;
+  		
+  		//put stack into ship's inventory
+		boolean moved = moveItemstackToInv(inv, moveitem, null);
+    	
+		//put stack on ground
+    	if (!moved || moveitem.stackSize > 0)
+    	{
+    		dropItemOnGround(host, moveitem);
+    	}
+    	
+    	return true;
+  	}
+  	
+  	/**
+  	 * drop item on ground
+  	 */
+  	public static void dropItemOnGround(Entity host, ItemStack stack)
+  	{
+  		EntityItem entityitem = new EntityItem(host.world, host.posX, host.posY, host.posZ, stack);
+		entityitem.motionX = host.world.rand.nextGaussian() * 0.08D;
+        entityitem.motionY = host.world.rand.nextGaussian() * 0.05D + 0.2D;
+        entityitem.motionZ = host.world.rand.nextGaussian() * 0.08D;
+        host.world.spawnEntity(entityitem);
+  	}
 	
 	
 }

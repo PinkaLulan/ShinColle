@@ -148,7 +148,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 	}
 
 	@Override
-	protected BasicEntityAirplane getAttackAirplane(boolean isLightAirplane)
+	public BasicEntityAirplane getAttackAirplane(boolean isLightAirplane)
 	{
 		if (isLightAirplane)
 		{

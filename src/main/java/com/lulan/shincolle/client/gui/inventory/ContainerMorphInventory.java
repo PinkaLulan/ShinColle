@@ -28,7 +28,6 @@ public class ContainerMorphInventory extends Container
 	private CapaTeitoku capa;
 	private int lenTemp;
 	private int[] valueTemp;
-	private boolean needInit;
 	
 	
 	public ContainerMorphInventory(CapaTeitoku capa, IInventory invPlayer, BasicEntityShip entity)
@@ -38,7 +37,6 @@ public class ContainerMorphInventory extends Container
 		this.entity = entity;
 		this.lenTemp = entity.getFieldCount();
 		this.valueTemp = new int[this.lenTemp];
-		this.needInit = true;
 		
 		//equip from player's capa inventory
 		for (i = 0; i < 6; i++)
@@ -190,43 +188,23 @@ public class ContainerMorphInventory extends Container
             	{
                    	switch (j)
                 	{
-                	case 28:	//show handheld
-                	case 31:	//model state
-                   	case 34:	//no fuel
-                   		listener.sendProgressBarUpdate(this, j, temp);
-               		break;
-//                	case 25:
-//                	case 26:
-//                	case 27:	//發送自訂封包更新
-//                		this.entity.sendSyncPacketGUI();
-//                	break;
-//            		default:	//使用vanilla方法更新, 此數值最大僅能以short發送
-//                    	listener.sendProgressBarUpdate(this, j, temp);
-//            		break;
+                	case 1:  //部份數值超過short能顯示的範圍, 改用自訂封包更新
+                	case 2:
+                	case 25:  
+                	case 26:
+                	case 27:
+                		update = true;
+                	break;
+            		default:	//使用vanilla方法更新, 此數值最大僅能以short發送
+                    	listener.sendProgressBarUpdate(this, j, temp);
+            		break;
                 	}
             	}
             }//end for all value temp
             
-            //first sync
-            if (this.needInit)
-            {
-            	for (int j = 0; j < this.lenTemp; j++)
-                {
-            		temp = this.entity.getField(j);
-            		
-                   	switch (j)
-                	{
-                	case 28:	//show handheld
-                	case 31:	//model state
-                   	case 34:	//no fuel
-                   		listener.sendProgressBarUpdate(this, j, temp);
-               		break;
-                	}
-                }//end for all value temp
-            }//end init sync
+            //發送自訂封包更新
+            if (update) this.entity.sendSyncPacketGUI();
         }//end for all listener
-		
-		this.needInit = false;
 		
 		//更新container內的數值
 		for (int k = 0; k < this.lenTemp; k++)

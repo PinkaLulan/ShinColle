@@ -6,7 +6,6 @@ import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.entity.IShipInvisible;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.ID;
@@ -119,7 +118,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   	//潛艇的輕攻擊一樣使用飛彈
   	@Override
   	public boolean attackEntityWithAmmo(Entity target)
-  	{
+  	{	
 		//ammo--
         if (!decrAmmoNum(0, this.getAmmoConsumption())) return false;
         
@@ -132,16 +131,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		//morale--
   		decrMorale(1);
   		setCombatTick(this.ticksExisted);
-	
-		//get attack value
-		float atk = this.getAttrs().getAttackDamage();
-		float kbValue = 0.15F;
-		
-		//missile type
-		float launchPos = (float) posY + height * 0.5F;
-		int moveType = CombatHelper.calcMissileMoveType(this, target.posY, 1);
-		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
-		
+  		
         //calc dist to target
         Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
         
@@ -163,12 +153,12 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
         	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
         }
         
-        //spawn missile
-        MissileData md = this.getMissileData(1);
-        float[] data = new float[] {0F, kbValue, launchPos, tarX, tarY+target.height*0.1F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
-		EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
-        this.world.spawnEntity(missile);
-        
+        //get attack value
+  		float atk = getAttackBaseDamage(1, target);
+  		
+  		//spawn missile
+  		summonMissile(1, atk, tarX, tarY, tarZ, 1F);
+  		
         //play target effect
         applySoundAtTarget(2, target);
         applyParticleAtTarget(2, target, distVec);
@@ -176,7 +166,27 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
         
         if (ConfigHandler.canFlare) flareTarget(target);
         
+        applyAttackPostMotion(1, this, true, atk);
+        
         return true;
+  	}
+  	
+  	@Override
+  	public float getAttackBaseDamage(int type, Entity target)
+  	{
+  		switch (type)
+  		{
+  		case 1:  //light cannon
+  			return this.shipAttrs.getAttackDamage();
+  		case 2:  //heavy cannon
+  			return this.shipAttrs.getAttackDamageHeavy();
+  		case 3:  //light aircraft
+  			return this.shipAttrs.getAttackDamageAir();
+  		case 4:  //heavy aircraft
+  			return this.shipAttrs.getAttackDamageAirHeavy();
+		default: //melee
+			return this.shipAttrs.getAttackDamage() * 0.125F;
+  		}
   	}
   	
 	//apply additional missile value
@@ -187,9 +197,9 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		
 		MissileData md = this.getMissileData(1);
 		
-		md.vel0 += 0.3F;
-		md.accY1 += 0.06F;
-		md.accY2 += 0.06F;
+		md.vel0 += 0.5F;
+		md.accY1 += 0.08F;
+		md.accY2 += 0.08F;
 	}
   	
   	@Override

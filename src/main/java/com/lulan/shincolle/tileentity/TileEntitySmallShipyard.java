@@ -12,7 +12,6 @@ import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -253,18 +252,6 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 					   FluidContainerRegistry.getFluidForFilledItem(stack) != null ||
 					   stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
 			}
-		}
-		
-		return false;
-	}
-	
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player)
-	{
-		//check tile owner
-		if (BlockHelper.checkTileOwner(player, this))
-		{
-			return super.isUsableByPlayer(player);
 		}
 		
 		return false;

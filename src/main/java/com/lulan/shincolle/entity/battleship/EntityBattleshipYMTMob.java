@@ -129,7 +129,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
   	//TYPE 91 AP FIST
   	@Override
   	public boolean attackEntityWithHeavyAmmo(Entity target)
-  	{	
+  	{
   		//get attack value
   		float atk = CombatHelper.modDamageByAdditionAttrs(this, target, this.getAttackBaseDamage(2, target), 3);
   		
@@ -145,7 +145,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
         if (getStateEmotion(ID.S.Phase) > 0)
         {	//spawn beam particle & entity
             //calc dist to target
-            Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
+            Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPositionVector(), target.getPositionVector().addVector(0D, this.scaleLevel * -0.6D, 0D));
             
         	//shot sound
         	this.playSound(ModSounds.SHIP_YAMATO_SHOT, ConfigHandler.volumeFire, 1F);

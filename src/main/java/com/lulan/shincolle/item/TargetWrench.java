@@ -101,7 +101,7 @@ public class TargetWrench extends BasicItem
     {
 		if (CommonProxy.activeMetamorph)
 		{
-			MetamorphHelper.getShipMorph(player, entity);
+			MetamorphHelper.acquireShipMorph(player, entity);
 			return true;
 		}
 		
@@ -147,7 +147,6 @@ public class TargetWrench extends BasicItem
 		int dx = this.tilePoint[0].getX() - this.tilePoint[1].getX();
 		int dy = this.tilePoint[0].getY() - this.tilePoint[1].getY();
 		int dz = this.tilePoint[0].getZ() - this.tilePoint[1].getZ();
-		int dist = dx * dx + dy * dy + dz * dz;
 		
 		//is same point
 		if (dx == 0 && dy == 0 && dz == 0)
@@ -164,81 +163,49 @@ public class TargetWrench extends BasicItem
 		if (tiles[0] instanceof IInventory && !(tiles[0] instanceof ITileWaypoint) && tiles[1] instanceof ITileWaypoint ||
 			tiles[1] instanceof IInventory && !(tiles[1] instanceof ITileWaypoint) && tiles[0] instanceof ITileWaypoint)
 		{
-			//check dist < ~6 blocks
-			if (dist < 40)
+			BlockPos wpPos = null;
+			BlockPos chestPos = null;
+			
+			//set chest pair
+			if (tiles[0] instanceof ITileWaypoint)
 			{
-				BlockPos wpPos = null;
-				BlockPos chestPos = null;
-				
-				//set chest pair
-				if (tiles[0] instanceof ITileWaypoint)
-				{
-					wpPos = tilePoint[0];
-					chestPos = tilePoint[1];
-				}
-				else
-				{
-					wpPos = tilePoint[1];
-					chestPos = tilePoint[0];
-				}
-				
-				//send pairing request packet
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_ChestSet,
-					uid, wpPos.getX(), wpPos.getY(), wpPos.getZ(),
-					chestPos.getX(), chestPos.getY(), chestPos.getZ()));
-				
-				//clear data
-				resetPos();
-				
-				return true;
+				wpPos = tilePoint[0];
+				chestPos = tilePoint[1];
 			}
-			//send too far away msg
 			else
 			{
-				TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.toofar");
-				str.getStyle().setColor(TextFormatting.YELLOW);
-				player.sendMessage(str);
-				
-				//clear data
-				resetPos();
-				
-				return false;
+				wpPos = tilePoint[1];
+				chestPos = tilePoint[0];
 			}
+			
+			//send pairing request packet
+			CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_ChestSet,
+				uid, wpPos.getX(), wpPos.getY(), wpPos.getZ(),
+				chestPos.getX(), chestPos.getY(), chestPos.getZ()));
+			
+			//clear data
+			resetPos();
+			
+			return true;
 		}
 		//waypoint pairing
 		else if (tiles[0] instanceof ITileWaypoint && tiles[1] instanceof ITileWaypoint)
 		{
-			//dist < 48 blocks
-			if (dist < 2304)
-			{
-				//get waypoint order
-				ITileWaypoint wpFrom = (ITileWaypoint) tiles[this.pointID];
-				BlockPos posF = tilePoint[this.pointID];
-				this.switchPoint();
-				ITileWaypoint wpTo = (ITileWaypoint) tiles[this.pointID];
-				BlockPos posT = tilePoint[this.pointID];
-				
-				//send pairing request packet
-				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_WpSet,
-					uid, posF.getX(), posF.getY(), posF.getZ(), posT.getX(), posT.getY(), posT.getZ()));
-				
-				//clear data
-				resetPos();
-				
-				return true;
-			}
-			//send too far away msg
-			else
-			{
-				TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.wptoofar");
-				str.getStyle().setColor(TextFormatting.YELLOW);
-				player.sendMessage(str);
-				
-				//clear data
-				resetPos();
-				
-				return false;
-			}
+			//get waypoint order
+			ITileWaypoint wpFrom = (ITileWaypoint) tiles[this.pointID];
+			BlockPos posF = tilePoint[this.pointID];
+			this.switchPoint();
+			ITileWaypoint wpTo = (ITileWaypoint) tiles[this.pointID];
+			BlockPos posT = tilePoint[this.pointID];
+			
+			//send pairing request packet
+			CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_WpSet,
+				uid, posF.getX(), posF.getY(), posF.getZ(), posT.getX(), posT.getY(), posT.getZ()));
+			
+			//clear data
+			resetPos();
+			
+			return true;
 		}
 		else
 		{

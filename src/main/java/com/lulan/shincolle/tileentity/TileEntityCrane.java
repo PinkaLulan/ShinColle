@@ -18,7 +18,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EnchantHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.InventoryHelper;
@@ -1784,18 +1783,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	public int getFieldCount()
 	{
 		return 14;
-	}
-	
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player)
-	{
-		//check tile owner
-		if (BlockHelper.checkTileOwner(player, this))
-		{
-			return super.isUsableByPlayer(player);
-		}
-		
-		return false;
 	}
 
 	@Override

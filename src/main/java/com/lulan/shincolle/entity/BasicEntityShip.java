@@ -26,11 +26,9 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
-import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
-import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
@@ -38,10 +36,8 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.item.IShipCombatRation;
-import com.lulan.shincolle.item.IShipFoodItem;
-import com.lulan.shincolle.item.OwnerPaper;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -65,6 +61,7 @@ import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
+import com.lulan.shincolle.utility.InteractHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
@@ -78,7 +75,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -86,15 +82,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -205,7 +196,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				                     -1, 0,  0,  0,  0,
 				                     -1, -1, -1, 0,  0
 				                    };
-		this.StateTimer = new int[20];
+		this.StateTimer = new int[21];
 		this.StateEmotion = new int[8];
 		this.StateFlag = new boolean[] {false, false, false, false, true,
 				                        true, true, true, false, true,
@@ -683,6 +674,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		return shipMoveHelper;
 	}
 	
+	public EntityLivingBase getAITarget()
+	{
+		return aiTarget;
+	}
+	
 	/** 1:cannon only, 2:both, 3:aircraft only */
 	abstract public int getEquipType();
 
@@ -1015,48 +1011,78 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		//null check
 		if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getShipClass());
 		
-		//check morph
-		if (this.isMorph) return;
-		
 		//server side
 		if (!this.world.isRemote)
 		{
-			//recalc raw attrs
-			if ((flag & 1) == 1)
+			//check morph
+			if (this.isMorph)
 			{
-				BuffHelper.updateAttrsRaw(this.shipAttrs, this.getShipClass(), this.getLevel());
-				this.calcShipAttributesAddRaw();
-				this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
+				//recalc raw attrs
+				if ((flag & 1) == 1)
+				{
+					BuffHelper.updateAttrsRaw(this.shipAttrs, this.getShipClass(), this.getLevel());
+					this.calcShipAttributesAddRaw();
+					this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
+					this.setUpdateFlag(ID.FlagUpdate.AttrsBonus, true);
+				}
+				//recalc equips
+				if ((flag & 2) == 2)
+				{
+					EquipCalc.updateAttrsEquipOfMorph(this);
+					this.calcShipAttributesAddEquip();
+					this.setUpdateFlag(ID.FlagUpdate.AttrsEquip, true);
+				}
+				//recalc potion buff
+				if ((flag & 8) == 8)
+				{
+					BuffHelper.updateBuffPotion(this);
+					this.setUpdateFlag(ID.FlagUpdate.AttrsPotion, true);
+				}
+				
+		  		//apply all buff to raw attrs
+				BuffHelper.applyBuffOnAttrs(this);
+				this.calcShipAttributesAdd();
+				this.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, true);
 			}
-			//recalc equips
-			if ((flag & 2) == 2)
+			else
 			{
-				EquipCalc.updateAttrsEquip(this);
-				this.calcShipAttributesAddEquip();
-				this.setUpdateFlag(ID.FlagUpdate.AttrsEquip, true);
+				//recalc raw attrs
+				if ((flag & 1) == 1)
+				{
+					BuffHelper.updateAttrsRaw(this.shipAttrs, this.getShipClass(), this.getLevel());
+					this.calcShipAttributesAddRaw();
+					this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
+				}
+				//recalc equips
+				if ((flag & 2) == 2)
+				{
+					EquipCalc.updateAttrsEquip(this);
+					this.calcShipAttributesAddEquip();
+					this.setUpdateFlag(ID.FlagUpdate.AttrsEquip, true);
+				}
+				//recalc morale buff
+				if ((flag & 4) == 4)
+				{
+					BuffHelper.updateBuffMorale(this.shipAttrs, this.getMorale());
+					this.setUpdateFlag(ID.FlagUpdate.AttrsMorale, true);
+				}
+				//recalc potion buff
+				if ((flag & 8) == 8)
+				{
+					BuffHelper.updateBuffPotion(this);
+					this.setUpdateFlag(ID.FlagUpdate.AttrsPotion, true);
+				}
+				//recalc formation buff
+				if ((flag & 16) == 16)
+				{
+					BuffHelper.updateBuffFormation(this);
+					this.setUpdateFlag(ID.FlagUpdate.AttrsFormation, true);
+				}
+		  		//apply all buff to raw attrs
+				BuffHelper.applyBuffOnAttrs(this);
+				this.calcShipAttributesAdd();
+				this.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, true);
 			}
-			//recalc morale buff
-			if ((flag & 4) == 4)
-			{
-				BuffHelper.updateBuffMorale(this.shipAttrs, this.getMorale());
-				this.setUpdateFlag(ID.FlagUpdate.AttrsMorale, true);
-			}
-			//recalc potion buff
-			if ((flag & 8) == 8)
-			{
-				BuffHelper.updateBuffPotion(this);
-				this.setUpdateFlag(ID.FlagUpdate.AttrsPotion, true);
-			}
-			//recalc formation buff
-			if ((flag & 16) == 16)
-			{
-				BuffHelper.updateBuffFormation(this);
-				this.setUpdateFlag(ID.FlagUpdate.AttrsFormation, true);
-			}
-	  		//apply all buff to raw attrs
-			BuffHelper.applyBuffOnAttrs(this);
-			this.calcShipAttributesAdd();
-			this.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, true);
 			
 //        	float[] raw = this.shipAttrs.getAttrsRaw();  //TODO debug
 //        	float[] eq = this.shipAttrs.getAttrsEquip();
@@ -1076,11 +1102,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				this.sendSyncPacketAttrs();
 			}
 		}
-		//client side
-		else
-		{
-			//NO RECALC!!
-		}
 		
 		//set attrs to entity
 		/**
@@ -1090,6 +1111,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.MOV));
 		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64);
 		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.KB));
+	
+		//apply attrs to player
+		if (this.morphHost != null)
+		{
+			this.morphHost.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D + this.shipAttrs.getAttrsBuffed(ID.Attrs.HP) * ConfigHandler.morphHPRatio);
+		}
 	}
 	
 	/** calc addition attributes */
@@ -1136,8 +1163,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		int capLevel = getStateFlag(ID.F.IsMarried) ? 150 : 100;
 		
+		//check morph
+		if (this.isMorph) exp = (int) ((float)exp * ConfigHandler.expGainPlayerSkill);
+		
 		//apply equip effect
-		exp = (int) (exp * this.shipAttrs.getAttrsBuffed(ID.Attrs.XP));
+		exp = (int) ((float)exp * this.shipAttrs.getAttrsBuffed(ID.Attrs.XP));
 		
 		//level is not cap level
 		if (StateMinor[ID.M.ShipLevel] != capLevel && StateMinor[ID.M.ShipLevel] < 150)
@@ -1195,6 +1225,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		super.setCustomNameTag(str);
     }
 	
+	public void setAITarget(EntityLivingBase target)
+	{
+		this.aiTarget = target;
+	}
+	
 	//called when a mob die near the entity (used in event handler)
 	public void addKills()
 	{
@@ -1205,6 +1240,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		this.StateMinor[ID.M.Morale] += value;
 		if (this.StateMinor[ID.M.Morale] < 0) this.StateMinor[ID.M.Morale] = 0;
+		else if (this.StateMinor[ID.M.Morale] > 16000) this.StateMinor[ID.M.Morale] = 16000;
 	}
 	
 	public void addAmmoLight(int value)
@@ -1221,7 +1257,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	
 	public void setMorale(int value)
 	{
-		if (value < 0) value = 0;
 		this.StateMinor[ID.M.Morale] = value;
 	}
 	
@@ -1579,7 +1614,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			sendSyncPacket(S2CEntitySync.PID.SyncShip_Timer, true);
 		break;
 		case 1:
-			sendSyncPacket(S2CEntitySync.PID.SyncShip_MountSkillTimer, false);
+			sendSyncPacket(S2CEntitySync.PID.SyncShip_PlayerSkillTimer, false);
 		break;
 		}
 	}
@@ -1694,36 +1729,36 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 				//use repair bucket
 				else if (stack.getItem() == ModItems.BucketRepair)
 				{
-					if (interactBucket(player, stack)) return EnumActionResult.SUCCESS;
+					if (InteractHelper.interactBucket(this, player, stack)) return EnumActionResult.SUCCESS;
 				}
 				//use owner paper, owner only
 				else if (stack.getItem() == ModItems.OwnerPaper && TeamHelper.checkSameOwner(this, player) && player.isSneaking())
 				{
-					if (interactOwnerPaper(player, stack)) return EnumActionResult.SUCCESS;
+					if (InteractHelper.interactOwnerPaper(this, player, stack)) return EnumActionResult.SUCCESS;
 				}
 				//use modernization kit
 				else if (stack.getItem() == ModItems.ModernKit)
 				{
-					if (interactModernKit(player, stack)) return EnumActionResult.SUCCESS;
+					if (InteractHelper.interactModernKit(this, player, stack)) return EnumActionResult.SUCCESS;
 				}
 				//use pointer item (caress head mode server side)
 				else if (stack.getItem() == ModItems.PointerItem && stack.getMetadata() > 2 && !player.isSneaking())
 				{
-					interactPointer(player, stack);
+					InteractHelper.interactPointer(this, player, stack);
 					return EnumActionResult.SUCCESS;
 				}
 				//use kaitai hammer, OWNER and OP only
 				else if (stack.getItem() == ModItems.KaitaiHammer && player.isSneaking() &&
 						 (TeamHelper.checkSameOwner(this, player) || EntityHelper.checkOP(player)))
 				{
-					interactKaitaiHammer(player, stack);
+					InteractHelper.interactKaitaiHammer(this, player, stack);
 					return EnumActionResult.SUCCESS;
 				}
 				//use wedding ring
 				else if (stack.getItem() == ModItems.MarriageRing && !this.getStateFlag(ID.F.IsMarried) && 
 						 player.isSneaking() && TeamHelper.checkSameOwner(this, player))
 				{
-					interactWeddingRing(player, stack);
+					InteractHelper.interactWeddingRing(this, player, stack);
 					return EnumActionResult.SUCCESS;
 				}
 				//use book
@@ -1757,7 +1792,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 					return EnumActionResult.SUCCESS;
 		        }
 				//feed
-				else if (interactFeed(player, stack))
+				else if (InteractHelper.interactFeed(this, player, stack))
 				{
 					return EnumActionResult.SUCCESS;
 				}
@@ -1821,522 +1856,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return true;	//client端只回傳true
     }
     
-    /** modern kit interact method */
-	protected boolean interactModernKit(EntityPlayer player, ItemStack stack)
-	{
-		//add 1 random bonus
-		if (this.shipAttrs.addAttrsBonusRandom(this.rand))
-		{
-			if (!player.capabilities.isCreativeMode)
-			{
-                --stack.stackSize;
-                
-                if (stack.stackSize <= 0)
-                {	//物品用完時要設定為null清空該slot
-                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-                }
-            }
-			
-			//set happy emotion
-			this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
-			
-			//play marriage sound
-			this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
-			
-			return true;
-		}
-		
-		return false;
-	}
-    
-    /** pointer interact method */
-	protected boolean interactPointer(EntityPlayer player, ItemStack stack)
-	{
-		//set ai target
-		this.aiTarget = player;
-		
-		//is owner
-		if (TeamHelper.checkSameOwner(player, this) && !this.getStateFlag(ID.F.NoFuel))
-		{
-			if (this.getMorale() < ID.Morale.L_Excited * 1.3F)
-			{
-				this.addMorale(ConfigHandler.baseCaressMorale);
-			}
-
-			//show emotes
-			applyEmotesReaction(0);
-		}
-		//not owner or no fuel
-		else
-		{
-			applyEmotesReaction(1);
-		}
-		
-		//clear ai target
-		this.aiTarget = null;
-		
-		return true;
-	}
-    
-    /** bucket interact method */
-	protected boolean interactBucket(EntityPlayer player, ItemStack stack)
-	{
-		//hp不到max hp時可以使用bucket
-		if (this.getHealth() < this.getMaxHealth())
-		{
-			if (!player.capabilities.isCreativeMode)
-			{  //item-1 in non-creative mode
-				--stack.stackSize;
-            }
-
-            if (this instanceof BasicEntityShipSmall)
-            {
-            	this.heal(this.getMaxHealth() * 0.1F + 5F);	//1 bucket = 10% hp for small ship
-            }
-            else
-            {
-            	this.heal(this.getMaxHealth() * 0.05F + 10F);	//1 bucket = 5% hp for large ship
-            }
-            
-            //airplane++
-            if (this instanceof BasicEntityShipCV)
-            {
-            	BasicEntityShipCV ship = (BasicEntityShipCV) this;
-            	ship.setNumAircraftLight(ship.getNumAircraftLight() + 1);
-            	ship.setNumAircraftHeavy(ship.getNumAircraftHeavy() + 1);
-            }
-            
-            if (stack.stackSize <= 0)
-            {  
-            	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-            }
-            
-            return true;
-        }
-		
-		return false;
-	}
-    
-    /** wedding ring interact method */
-	protected boolean interactWeddingRing(EntityPlayer player, ItemStack stack)
-	{
-		//stack-1 in non-creative mode
-		if (!player.capabilities.isCreativeMode)
-		{
-            --stack.stackSize;
-        }
-
-		//set marriage flag
-        this.setStateFlag(ID.F.IsMarried, true);
-        
-        //player marriage num +1
-		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-		if (capa != null)
-		{
-			capa.setMarriageNum(capa.getMarriageNum() + 1);
-		}
-        
-        //play hearts effect
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
-		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 3, false), point);
-        
-		//play marriage sound
-		this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
-		
-		//add morale
-		this.setMorale(10000);
-		
-		//set shy emotion
-		this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
-        
-        //add 3 random bonus point
-        for (int i = 0; i < 3; ++i)
-        {
-        	this.shipAttrs.addAttrsBonusRandom(this.rand);
-        }
-        
-        //update attrs
-        this.calcShipAttributes(31, true);
-        
-        //物品用完時要設定為null清空該slot
-        if (stack.stackSize <= 0)
-        {
-        	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-        }
-        
-        return true;
-	}
-	
-    /** kattai hammer interact method */
-	protected boolean interactKaitaiHammer(EntityPlayer player, ItemStack stack)
-	{
-		//創造模式不消耗物品
-        if (!player.capabilities.isCreativeMode)
-        {
-        	//damage +1 in non-creative mode
-        	stack.setItemDamage(stack.getItemDamage() + 1);
-            
-            //set item amount
-            ItemStack[] items = ShipCalc.getKaitaiItems(this.getShipClass());
-                        
-            EntityItem entityItem0 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ+0.5D, items[0]);
-            EntityItem entityItem1 = new EntityItem(world, posX+0.5D, posY+0.8D, posZ-0.5D, items[1]);
-            EntityItem entityItem2 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ+0.5D, items[2]);
-            EntityItem entityItem3 = new EntityItem(world, posX-0.5D, posY+0.8D, posZ-0.5D, items[3]);
-
-            world.spawnEntity(entityItem0);
-            world.spawnEntity(entityItem1);
-            world.spawnEntity(entityItem2);
-            world.spawnEntity(entityItem3);
-            
-            //drop inventory item
-        	for (int i = 0; i < this.itemHandler.getSlots(); i++)
-        	{
-				ItemStack invitem = this.itemHandler.getStackInSlot(i);
-
-				if (invitem != null)
-				{
-					//設定要隨機噴出的range
-					float f = rand.nextFloat() * 0.8F + 0.1F;
-					float f1 = rand.nextFloat() * 0.8F + 0.1F;
-					float f2 = rand.nextFloat() * 0.8F + 0.1F;
-
-					while (invitem.stackSize > 0)
-					{
-						int j = rand.nextInt(21) + 10;
-						//如果物品超過一個隨機數量, 會分更多疊噴出
-						if (j > invitem.stackSize)
-						{  
-							j = invitem.stackSize;
-						}
-
-						invitem.stackSize -= j;
-						
-						//將item做成entity, 生成到世界上
-						EntityItem item = new EntityItem(this.world, this.posX+f, this.posY+f1, this.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
-						
-						//如果有NBT tag, 也要複製到物品上
-						if (invitem.hasTagCompound())
-						{
-							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
-						}
-						
-						world.spawnEntity(item);	//生成item entity
-					}
-				}
-			}
-            
-        	//kaitai sound
-        	this.playSound(ModSounds.SHIP_KAITAI, this.getSoundVolume(), this.getSoundPitch());
-        	this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
-        }
-        
-        //物品用完時要設定為null清空該slot
-        if (stack.getItemDamage() >= stack.getMaxDamage())
-        {  //物品耐久度用完時要設定為null清空該slot
-        	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-        }
-        
-        //show emotes
-		applyParticleEmotion(8);
-		
-		//emotes AOE
-		EntityHelper.applyShipEmotesAOE(this.world, this.posX, this.posY, this.posZ, 10D, 6);
-         
-        this.setDead();
-        
-        return true;
-	}
-	
-	/** change owner method:
-	 *  1. check owner paper has 2 signs
-	 *  2. check owner is A or B
-	 *  3. get player entity
-	 *  4. change ship's player UID
-	 *  5. change ship's owner UUID
-	 */
-	protected boolean interactOwnerPaper(EntityPlayer player, ItemStack itemstack)
-	{
-		NBTTagCompound nbt = itemstack.getTagCompound();
-		boolean changeOwner = false;
-		
-		if (nbt != null)
-		{
-			int ida = nbt.getInteger(OwnerPaper.SignIDA);
-			int idb = nbt.getInteger(OwnerPaper.SignIDB);
-			int idtarget = -1;	//target player uid
-			
-			//1. check 2 signs
-			if (ida > 0 && idb > 0)
-			{
-				//2. check owner is A or B
-				if (ida == this.getPlayerUID())
-				{	//A is owner
-					idtarget = idb;
-				}
-				else
-				{	//B is owner
-					idtarget = ida;
-				}
-				
-				//3. check player online
-				EntityPlayer target = EntityHelper.getEntityPlayerByUID(idtarget);
-				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(target);
-				
-				if (capa != null)
-				{
-					//4. change ship's player UID
-					this.setPlayerUID(idtarget);
-					
-					//5. change ship's owner UUID
-					this.setOwnerId(target.getUniqueID());
-					
-					//6. change ship's owner name
-					this.ownerName = target.getName();
-					
-					LogHelper.debug("DEBUG: change owner: from: pid "+this.getPlayerUID()+" uuid "+this.getOwner().getUniqueID());
-					LogHelper.debug("DEBUG: change owner: to: pid "+idtarget+" uuid "+target.getUniqueID().toString());
-					changeOwner = true;
-					
-					//send sync packet
-					this.sendSyncPacket(S2CEntitySync.PID.SyncShip_ID, true);
-					
-					//set cry emotion
-					this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
-				}//end target != null
-			}//end item has 2 signs
-		}//end item has nbt
-		
-		if (changeOwner)
-		{
-			//play marriage sound
-			this.playSound(this.getCustomSound(4, this), this.getSoundVolume(), 1F);
-	        
-			player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/** feed
-	 * 
-	 *  1. morale++
-	 *  2. show emotion
-	 *  3. sometimes reject food
-	 *  4. feed max morale = 4800
-	 */
-	protected boolean interactFeed(EntityPlayer player, ItemStack itemstack)
-	{
-		Item i = itemstack.getItem();
-		int meta = itemstack.getItemDamage();
-		int type = 0;
-		int mfood = 1;
-		int addgrudge = 0;
-		int addammo = 0;
-		int addammoh = 0;
-		int addsatur = 0;
-		
-		//max 4800 or max saturation, reject food
-		if (getFoodSaturation() >= getFoodSaturationMax())
-		{
-			if (this.getEmotesTick() <= 0)
-			{
-				this.setEmotesTick(40);
-				switch (this.rand.nextInt(4))
-				{
-				case 1:
-					applyParticleEmotion(2);  //panic
-					break;
-				case 2:
-					applyParticleEmotion(32);  //hmm
-					break;
-				case 3:
-					applyParticleEmotion(0);  //drop
-					break;
-				default:
-					applyParticleEmotion(11);  //??
-					break;
-				}
-			}
-			
-			return false;
-		}
-		
-		//is food
-		if (i instanceof ItemFood)
-		{
-			type = 1;
-			ItemFood f = (ItemFood) i;
-			float fv = f.getHealAmount(itemstack);			//food value
-			float sv = f.getSaturationModifier(itemstack);  //saturation value
-			if(fv < 1F) fv = 1F;
-			mfood = (int)((fv + this.rand.nextInt((int)fv + 5)) * sv * 20F);
-			addgrudge = mfood;
-		}//end itemfood
-		//is ship food
-		else if (i instanceof IShipFoodItem)
-		{
-			type = 2;
-			int foodv = (int) ((IShipFoodItem) i).getFoodValue(meta);
-			mfood = foodv + this.rand.nextInt(foodv + 1);
-			
-			switch (((IShipFoodItem) i).getSpecialEffect(meta))
-			{
-			case 1:  //grudge
-				addgrudge = 300 + this.rand.nextInt(500);
-				break;
-			case 2:  //abyssium
-				heal(getMaxHealth() * 0.05F + 1F);
-				break;
-			case 3:  //ammo
-				switch (meta)
-				{
-				case 0:
-					addammo = 30 + this.rand.nextInt(10);
-					break;
-				case 1:
-					addammo = 270 + this.rand.nextInt(90);
-					break;
-				case 2:
-					addammoh = 15 + this.rand.nextInt(5);
-					break;
-				case 3:
-					addammoh = 135 + this.rand.nextInt(45);
-					break;
-				}
-				break;
-			case 4:  //polymetal
-				//add airplane if CV
-				if (this instanceof BasicEntityShipCV && this.rand.nextInt(10) > 4)
-				{
-					((BasicEntityShipCV)this).setNumAircraftLight(((BasicEntityShipCV)this).getNumAircraftLight()+1);
-					((BasicEntityShipCV)this).setNumAircraftHeavy(((BasicEntityShipCV)this).getNumAircraftHeavy()+1);
-				}
-				break;
-			case 5:  //toy plane
-				//add airplane if CV
-				if (this instanceof BasicEntityShipCV)
-				{
-					((BasicEntityShipCV)this).setNumAircraftLight(((BasicEntityShipCV)this).getNumAircraftLight()+rand.nextInt(3)+1);
-					((BasicEntityShipCV)this).setNumAircraftHeavy(((BasicEntityShipCV)this).getNumAircraftHeavy()+rand.nextInt(3)+1);
-				}
-				break;
-			case 6:  //combat ration
-				addsatur = 7;
-				addgrudge = mfood;
-				mfood = 0;
-				
-				//add morale to happy (3900 ~ 5100)
-				mfood = ((IShipCombatRation) i).getMoraleValue(meta);
-				
-				//if ice cream, clean debuffs
-				if (meta == 4 || meta == 5)
-				{
-					BuffHelper.removeDebuffs(this);
-				}
-				
-				break;
-			}
-		}//end ship food
-		//is potion
-		else if (i instanceof ItemPotion)
-		{
-			type = 3;
-			mfood = -100;	//ship hate potion
-			addgrudge = Values.N.BaseGrudge;
-		}//end potion
-		
-		//can feed
-		if (type > 0)
-		{
-			//set happy emotion
-			this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
-			
-			//play sound
-			if (this.StateTimer[ID.T.SoundTime] <= 0)
-	    	{
-				this.StateTimer[ID.T.SoundTime] = 20 + this.getRNG().nextInt(20);
-				this.playSound(this.getCustomSound(7, this), this.getSoundVolume(), this.getSoundPitch());
-	    	}
-			
-			//apply potion effect
-			List<PotionEffect> pbuffs = PotionUtils.getEffectsFromStack(itemstack);
-			
-			if (pbuffs.size() >0)
-			{
-				//apply buff/debuff potion
-	            for (PotionEffect pe : pbuffs)
-	            {
-	                this.addPotionEffect(new PotionEffect(pe));
-	            }
-	            
-	            //apply instant potion
-				float hp1p = this.getMaxHealth() * 0.01F;
-	            if (hp1p < 1F) hp1p = 1F;
-	            
-	            //apply heal
-	            int lvPotion = BuffHelper.checkPotionHeal(pbuffs);
-				if (lvPotion > 0) this.heal((hp1p * 2F + 2F) * lvPotion);
-				
-	            //apply damage
-				lvPotion = BuffHelper.checkPotionDamage(pbuffs);
-				if (lvPotion > 0) this.attackEntityFrom(DamageSource.magic, (hp1p * 2F + 2F) * lvPotion);
-	            
-				//update potion buff
-	    		this.calcShipAttributes(8, true);
-			}
-			
-			//morale++
-			this.addMorale(mfood);
-			
-			//saturation++
-			this.setFoodSaturation(this.getFoodSaturation() + 1 + addsatur);
-			
-			//misc++
-			this.addGrudge((int) (addgrudge * this.shipAttrs.getAttrsBuffed(ID.Attrs.GRUDGE)));
-			this.addAmmoLight((int) (addammo * this.shipAttrs.getAttrsBuffed(ID.Attrs.AMMO)));
-			this.addAmmoHeavy((int) (addammoh * this.shipAttrs.getAttrsBuffed(ID.Attrs.AMMO)));
-			
-			//item--
-			if (player != null)
-			{
-				if (!player.capabilities.isCreativeMode)
-				{
-		            if (--itemstack.stackSize <= 0)
-		            {
-		            	//update slot
-		            	itemstack = itemstack.getItem().getContainerItem(itemstack);
-		            	player.inventory.setInventorySlotContents(player.inventory.currentItem, itemstack);
-		            }
-		        }
-			}
-			
-			//show eat emotion
-			if (this.getEmotesTick() <= 0)
-			{
-				this.setEmotesTick(40);
-				
-				switch (this.rand.nextInt(3))
-				{
-				case 1:
-					applyParticleEmotion(9);  //hungry
-					break;
-				case 2:
-					applyParticleEmotion(30); //pif
-					break;
-				default:
-					applyParticleEmotion(1);  //heart
-					break;
-				}
-			}
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
 	/**修改移動方法, 使其water跟lava中移動時像是flying entity
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
@@ -2360,7 +1879,14 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		{
 			return;
 		}
-  		
+		
+		//check morph world (FIX: morph ship's world is different between server and client after change dim)
+		if (this.morphHost != null)
+		{
+			this.world = this.morphHost.world;
+			this.dimension = this.morphHost.dimension;
+		}
+		
 		super.onUpdate();
 		
 		//get depth if in fluid block
@@ -2408,7 +1934,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			updateClientBodyRotate();
 			
 			//update searchlight, CLIENT SIDE ONLY, NO block light value sync!
-			if (!this.isMorph && this.ticksExisted % ConfigHandler.searchlightCD == 0)
+			if (this.ticksExisted % ConfigHandler.searchlightCD == 0)
 			{
         		if (ConfigHandler.canSearchlight && this.isEntityAlive())
         		{
@@ -2546,7 +2072,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	//pump liquid, transport ship has built-in pump equip
         	if (this.StateFlag[ID.F.AutoPump] && !this.isMorph &&
         		this.isEntityAlive() && !this.isSitting() && !this.getStateFlag(ID.F.NoFuel))
-        		EntityHelper.autoPumpFluid(this);
+        		TaskHelper.onUpdatePumping(this);
         	
         	//check every 8 ticks
         	if ((ticksExisted & 7) == 0)
@@ -2586,29 +2112,32 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         		//check every 16 ticks
             	if ((ticksExisted & 15) == 0)
             	{
-            		if (this.isEntityAlive() && !this.isMorph)
+            		if (this.isEntityAlive())
             		{
-                		//waypoint move
-                		if (!(this.getRidingEntity() instanceof BasicEntityMount))
-                		{
-                			if (EntityHelper.updateWaypointMove(this))
-                			{
-                				sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
-                			}
-                		}
-                		
-                		//cancel mounts
-                		if (this.hasShipMounts())
-                		{
-                			if (!this.canSummonMounts())
-                			{
-              	  	  			//cancel riding
-              	  	  			if (this.isRiding() && this.getRidingEntity() instanceof BasicEntityMount)
-              	  	  			{
-              	  	  				this.dismountRidingEntity();
-              	  	  			}
-              	  	  		}
-                		}
+            			if (!this.isMorph)
+            			{
+            				//waypoint move
+                    		if (!(this.getRidingEntity() instanceof BasicEntityMount))
+                    		{
+                    			if (EntityHelper.updateWaypointMove(this))
+                    			{
+                    				sendSyncPacket(S2CEntitySync.PID.SyncShip_Guard, true);
+                    			}
+                    		}
+                    		
+                    		//cancel mounts
+                    		if (this.hasShipMounts())
+                    		{
+                    			if (!this.canSummonMounts())
+                    			{
+                  	  	  			//cancel riding
+                  	  	  			if (this.isRiding() && this.getRidingEntity() instanceof BasicEntityMount)
+                  	  	  			{
+                  	  	  				this.dismountRidingEntity();
+                  	  	  			}
+                  	  	  		}
+                    		}
+            			}
                 		
                 		//update potion buff
                 		BuffHelper.convertPotionToBuffMap(this);
@@ -2656,11 +2185,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                     		//check every 128 ticks
                         	if ((ticksExisted & 127) == 0)
                         	{
+                        		//update state (slow update)
+                        		this.calcShipAttributes(31, true);
+                        		
                         		if (!this.isMorph)
                         		{
-                        			//update state (slow update)
-                            		this.calcShipAttributes(31, true);
-                            		
                             		//check chunk loader
                             		this.updateChunkLoader();
                             		
@@ -2727,17 +2256,17 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         	                        		
         	                        		//update ship cache data
         	                        		updateShipCacheDataWithoutNewID();
-        	                        		
-        	                        		//food saturation--
-                                    		int f = this.getFoodSaturation();
-                                    		if (f > 0)
-                                    		{
-                                    			this.setFoodSaturation(--f);
-                                    		}
                                 		}
                                 		
                                 		//update name string
                                 		EntityHelper.updateNameTag(this);
+                            		}
+                            		
+                            		//food saturation--
+                            		int f = this.getFoodSaturation();
+                            		if (f > 0)
+                            		{
+                            			this.setFoodSaturation(--f);
                             		}
                             	}//end every 256 ticks
                         	}//end every 128 ticks
@@ -2828,7 +2357,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//decr item stacksize
 			ItemStack getItem = this.itemHandler.getStackInSlot(i);
 			
-			interactFeed(null, getItem);
+			InteractHelper.interactFeed(this, null, getItem);
 			
 			getItem.stackSize--;
 			
@@ -2870,7 +2399,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    //target attack effect
 	    if (isTargetHurt)
 	    {
-	    	BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
+	    	if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
 	    	applySoundAtTarget(0, target);
 	        applyParticleAtTarget(0, target, distVec);
 			applyEmotesReaction(3);
@@ -2928,7 +2457,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	    //if attack success
 	    if (isTargetHurt)
 	    {
-	    	BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
+	    	//check owner
+	    	if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        applyEmotesReaction(3);
@@ -3059,10 +2589,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	 * 
 	 * attackType: 0:melee, 1:light, 2:heavy
 	 */
-	protected void summonMissile(int attackType, float atk, float tarX, float tarY, float tarZ, float targetHeight)
+	public void summonMissile(int attackType, float atk, float tarX, float tarY, float tarZ, float targetHeight)
 	{
 		//missile type
 		float launchPos = (float) posY + height * 0.5F;
+		if (this.isMorph) launchPos += 0.5F;
 		int moveType = CombatHelper.calcMissileMoveType(this, tarY, attackType);
 		if (moveType == 0) launchPos = (float) posY + height * 0.3F;
 		
@@ -3086,7 +2617,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public boolean attackEntityFrom(DamageSource source, float atk)
 	{
-		if (this.world.isRemote) return false;
+		if (this.world.isRemote || this.morphHost != null) return false;
 		
 		boolean checkDEF = true;
 
@@ -3108,7 +2639,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 			//set hurt face
 	    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 	    	
-			return super.attackEntityFrom(source, atk);
+    		return super.attackEntityFrom(source, atk);
 		}
 		//out of world
 		else if (source == DamageSource.outOfWorld)
@@ -3247,7 +2778,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	  		//set hurt face
 	    	this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
 	    	
-            return super.attackEntityFrom(source, reducedAtk);
+    		return super.attackEntityFrom(source, reducedAtk);
         }
 		
 		return false;
@@ -3256,6 +2787,8 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** decr morale value, type: 0:melee, 1:light, 2:heavy, 3:light air, 4:light heavy, 5:damaged */
 	public void decrMorale(int type)
 	{
+		if (this.isMorph) return;
+		
 		switch (type)
 		{
 		case 0:  //melee
@@ -3282,6 +2815,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** decr ammo, type: 0:light, 1:heavy */
 	public boolean decrAmmoNum(int type, int amount)
 	{
+		//check morph
+		if (this.isMorph)
+		{
+			return MetamorphHelper.decrAmmoNum(this, type, amount);
+		}
+		
 		int ammoType = ID.M.NumAmmoLight;
 		boolean useItem = !hasAmmoLight();
 		boolean showEmo = false;
@@ -3412,6 +2951,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	//consume grudge with buff and item calculation
 	public void decrGrudgeNum(int value)
 	{
+		//check morph
+		if (this.isMorph)
+		{
+			MetamorphHelper.decrGrudgeNum(this, value);
+			return;
+		}
+				
 		//get grudge magnification
 		float modGrudge = this.shipAttrs.getAttrsBuffed(ID.Attrs.GRUDGE);
 		
@@ -3572,7 +3118,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	{
 		if (nofuel)
 		{
-			this.setMorale(0);
+			setMorale(0);
 			clearAITasks();
 			clearAITargetTasks();
 			sendSyncPacketAllMisc();
@@ -3962,7 +3508,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		}
 		
 		//send sync packet
-		if (!this.world.isRemote && !this.isMorph)
+		if (!this.world.isRemote)
 		{
 			this.sendSyncPacketEmotion();
 		}
@@ -4179,6 +3725,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
   		if (this.StateTimer[ID.T.MountSkillCD2] > 0) this.StateTimer[ID.T.MountSkillCD2]--;
   		if (this.StateTimer[ID.T.MountSkillCD3] > 0) this.StateTimer[ID.T.MountSkillCD3]--;
   		if (this.StateTimer[ID.T.MountSkillCD4] > 0) this.StateTimer[ID.T.MountSkillCD4]--;
+  		if (this.StateTimer[ID.T.MountSkillCD5] > 0) this.StateTimer[ID.T.MountSkillCD5]--;
   	}
   	
   	/** update rotate */

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -99,6 +100,45 @@ public class EquipCalc
 		for (int i = 0; i < ContainerShipInventory.SLOTS_SHIPINV; i++)
 		{
 			calcEquipAttrs(ship, ship.getCapaShipInventory().getStackInSlot(i));
+		}
+		
+		//apply attrs scale
+		float[] equip = attrs.getAttrsEquip();
+		
+		equip[ID.Attrs.HP] *= ConfigHandler.scaleShip[ID.AttrsBase.HP];
+		equip[ID.Attrs.ATK_L] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.ATK_H] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.ATK_AL] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.ATK_AH] *= ConfigHandler.scaleShip[ID.AttrsBase.ATK];
+		equip[ID.Attrs.DEF] *= ConfigHandler.scaleShip[ID.AttrsBase.DEF];
+		equip[ID.Attrs.SPD] *= ConfigHandler.scaleShip[ID.AttrsBase.SPD];
+		equip[ID.Attrs.MOV] *= ConfigHandler.scaleShip[ID.AttrsBase.MOV];
+		equip[ID.Attrs.HIT] *= ConfigHandler.scaleShip[ID.AttrsBase.HIT];
+	}
+	
+	/** calc equip attrs of morph ship */
+	public static void updateAttrsEquipOfMorph(BasicEntityShip ship)
+	{
+		Attrs attrs = ship.getAttrs();
+		
+		//reset equips attrs
+		attrs.resetAttrsEquip();				//reset equip values
+		ship.resetMissileData();				//reset missile data
+		ship.calcShipAttributesAddEffect();		//reset attack effect map
+		ship.setStateMinor(ID.M.DrumState, 0);
+		ship.setStateMinor(ID.M.LevelChunkLoader, 0);
+		ship.setStateMinor(ID.M.LevelFlare, 0);
+		ship.setStateMinor(ID.M.LevelSearchlight, 0);
+		
+		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(ship.getMorphHost());
+		
+		if (capa != null)
+		{
+			//get equips from equip slot
+			for (int i = 0; i < ContainerShipInventory.SLOTS_SHIPINV; i++)
+			{
+				calcEquipAttrs(ship, capa.getStackInSlot(i));
+			}
 		}
 		
 		//apply attrs scale

@@ -13,6 +13,7 @@ import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
+import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAmmo;
@@ -193,10 +194,17 @@ public class BuffHelper
 		//null check
 		if (host == null) return;
 		
+		//check morph host
+		EntityLivingBase host2 = host;
+		if (host instanceof IShipMorph && ((IShipMorph)host).getMorphHost() != null)
+		{
+			host2 = ((IShipMorph)host).getMorphHost();
+		}
+		
 		HashMap<Integer, Integer> buffmap = new HashMap<Integer, Integer>();
 		
 		//potion effects to ship buffs
-    	for (PotionEffect potioneffect : host.getActivePotionEffects())
+    	for (PotionEffect potioneffect : host2.getActivePotionEffects())
         {
     		buffmap.put(Potion.getIdFromPotion(potioneffect.getPotion()), potioneffect.getAmplifier());
         }
@@ -971,7 +979,15 @@ public class BuffHelper
   	{
   		if (host != null)
   		{
-  			Collection<PotionEffect> effects = host.getActivePotionEffects();
+  			//check morph
+  			EntityLivingBase host2 = host;
+  			
+  			if (host instanceof IShipMorph && ((IShipMorph)host).getMorphHost() != null)
+  			{
+  				host2 = ((IShipMorph)host).getMorphHost();
+  			}
+  			
+  			Collection<PotionEffect> effects = host2.getActivePotionEffects();
   			HashMap<Integer, Integer> buffs = host.getBuffMap();
   			List<PotionEffect> remove = new ArrayList<PotionEffect>();
   			
@@ -1005,7 +1021,8 @@ public class BuffHelper
   				int id = Potion.getIdFromPotion(pe.getPotion());
   				
 				//remove potion in effect list
-				host.removePotionEffect(pe.getPotion());
+  				host.removePotionEffect(pe.getPotion());
+  				host2.removePotionEffect(pe.getPotion());
 				effects.remove(pe);
 				
 				//remove potion in buffmap

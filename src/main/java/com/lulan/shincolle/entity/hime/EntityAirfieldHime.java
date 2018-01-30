@@ -13,6 +13,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
+import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
@@ -99,7 +100,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV
 		            	{
 		            		if (target instanceof EntityPlayer)
 	            			{
-	            				target.heal(1F + this.getLevel() * 0.04F);
+	            				target.heal(1F + target.getMaxHealth() * 0.04F + this.getLevel() * 0.04F);
 	            				canHeal = true;
 		            		}
 		            		else if (target instanceof BasicEntityShip)

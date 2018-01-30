@@ -133,93 +133,104 @@ public class CapaShipSavedValues
 		
 		//load minor state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Minor");
-		ship.setStateMinor(ID.M.ShipLevel, nbt_load.getInteger("Level"));
-		ship.setStateMinor(ID.M.Kills, nbt_load.getInteger("Kills"));
-		ship.setStateMinor(ID.M.ExpCurrent, nbt_load.getInteger("Exp"));
-		ship.setStateMinor(ID.M.NumAmmoLight, nbt_load.getInteger("NumAmmoL"));
-		ship.setStateMinor(ID.M.NumAmmoHeavy, nbt_load.getInteger("NumAmmoH"));
-		ship.setStateMinor(ID.M.NumGrudge, nbt_load.getInteger("NumGrudge"));
-		ship.setStateMinor(ID.M.NumAirLight, nbt_load.getInteger("NumAirL"));
-		ship.setStateMinor(ID.M.NumAirHeavy, nbt_load.getInteger("NumAirH"));
-		ship.setStateMinor(ID.M.FollowMin, nbt_load.getInteger("FMin"));
-		ship.setStateMinor(ID.M.FollowMax, nbt_load.getInteger("FMax"));
-		ship.setStateMinor(ID.M.FleeHP, nbt_load.getInteger("FHP"));
-		ship.setStateMinor(ID.M.GuardX, nbt_load.getInteger("GuardX"));
-		ship.setStateMinor(ID.M.GuardY, nbt_load.getInteger("GuardY"));
-		ship.setStateMinor(ID.M.GuardZ, nbt_load.getInteger("GuardZ"));
-		ship.setStateMinor(ID.M.GuardDim, nbt_load.getInteger("GuardDim"));
-		ship.setStateMinor(ID.M.GuardID, nbt_load.getInteger("GuardID"));
-		ship.setStateMinor(ID.M.GuardType, nbt_load.getInteger("GuardType"));
-		ship.setStateMinor(ID.M.PlayerUID, nbt_load.getInteger("PlayerUID"));
-		ship.setStateMinor(ID.M.ShipUID, nbt_load.getInteger("ShipUID"));
-		ship.setStateMinor(ID.M.FormatType, nbt_load.getInteger("FType"));
-		ship.setStateMinor(ID.M.FormatPos, nbt_load.getInteger("FPos"));
-		ship.setStateMinor(ID.M.Morale, nbt_load.getInteger("Morale"));
-		ship.setStateMinor(ID.M.Food, nbt_load.getInteger("Food"));
-		ship.setStateMinor(ID.M.CraneState, nbt_load.getInteger("Crane"));
-		ship.setStateMinor(ID.M.WpStay, nbt_load.getInteger("WpStay"));
-		ship.setStateMinor(ID.M.UseCombatRation, nbt_load.getInteger("AutoCR"));
-		ship.setStateMinor(ID.M.Task, nbt_load.getInteger("Task"));
-		ship.setStateMinor(ID.M.TaskSide, nbt_load.getInteger("Side"));
-		ship.setNameTag(nbt_load.getString("tagName"));
+		
+		if (nbt_load != null)
+		{
+			ship.setStateMinor(ID.M.ShipLevel, nbt_load.getInteger("Level"));
+			ship.setStateMinor(ID.M.Kills, nbt_load.getInteger("Kills"));
+			ship.setStateMinor(ID.M.ExpCurrent, nbt_load.getInteger("Exp"));
+			ship.setStateMinor(ID.M.NumAmmoLight, nbt_load.getInteger("NumAmmoL"));
+			ship.setStateMinor(ID.M.NumAmmoHeavy, nbt_load.getInteger("NumAmmoH"));
+			ship.setStateMinor(ID.M.NumGrudge, nbt_load.getInteger("NumGrudge"));
+			ship.setStateMinor(ID.M.NumAirLight, nbt_load.getInteger("NumAirL"));
+			ship.setStateMinor(ID.M.NumAirHeavy, nbt_load.getInteger("NumAirH"));
+			ship.setStateMinor(ID.M.FollowMin, nbt_load.getInteger("FMin"));
+			ship.setStateMinor(ID.M.FollowMax, nbt_load.getInteger("FMax"));
+			ship.setStateMinor(ID.M.FleeHP, nbt_load.getInteger("FHP"));
+			ship.setStateMinor(ID.M.GuardX, nbt_load.getInteger("GuardX"));
+			ship.setStateMinor(ID.M.GuardY, nbt_load.getInteger("GuardY"));
+			ship.setStateMinor(ID.M.GuardZ, nbt_load.getInteger("GuardZ"));
+			ship.setStateMinor(ID.M.GuardDim, nbt_load.getInteger("GuardDim"));
+			ship.setStateMinor(ID.M.GuardID, nbt_load.getInteger("GuardID"));
+			ship.setStateMinor(ID.M.GuardType, nbt_load.getInteger("GuardType"));
+			ship.setStateMinor(ID.M.PlayerUID, nbt_load.getInteger("PlayerUID"));
+			ship.setStateMinor(ID.M.ShipUID, nbt_load.getInteger("ShipUID"));
+			ship.setStateMinor(ID.M.FormatType, nbt_load.getInteger("FType"));
+			ship.setStateMinor(ID.M.FormatPos, nbt_load.getInteger("FPos"));
+			ship.setStateMinor(ID.M.Morale, nbt_load.getInteger("Morale"));
+			ship.setStateMinor(ID.M.Food, nbt_load.getInteger("Food"));
+			ship.setStateMinor(ID.M.CraneState, nbt_load.getInteger("Crane"));
+			ship.setStateMinor(ID.M.WpStay, nbt_load.getInteger("WpStay"));
+			ship.setStateMinor(ID.M.UseCombatRation, nbt_load.getInteger("AutoCR"));
+			ship.setStateMinor(ID.M.Task, nbt_load.getInteger("Task"));
+			ship.setStateMinor(ID.M.TaskSide, nbt_load.getInteger("Side"));
+			ship.setNameTag(nbt_load.getString("tagName"));
+		}
 		
 		//load display state
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Display");
-		if (nbt_load != null)	//null check for updated version
+		
+		if (nbt_load != null)
 		{
 			ship.setStateEmotion(ID.S.State, nbt_load.getInteger("State"), false);
 			ship.setStateEmotion(ID.S.Emotion, nbt_load.getInteger("Emotion"), false);
 			ship.setStateEmotion(ID.S.Emotion2, nbt_load.getInteger("Emotion2"), false);
 			ship.setStateEmotion(ID.S.Phase, nbt_load.getInteger("Phase"), false);
 		}
-		else
-		{
-			ship.setStateEmotion(ID.S.State, 0, false);
-			ship.setStateEmotion(ID.S.Emotion, 0, false);
-			ship.setStateEmotion(ID.S.Emotion2, 0, false);
-			ship.setStateEmotion(ID.S.Phase, 0, false);
-		}
 		
 		//load bonus point
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Point");
-		Attrs attrs = ship.getAttrs();
-		attrs.setAttrsBonus(ID.AttrsBase.HP, nbt_load.getByte("HP"));
-		attrs.setAttrsBonus(ID.AttrsBase.ATK, nbt_load.getByte("ATK"));
-		attrs.setAttrsBonus(ID.AttrsBase.DEF, nbt_load.getByte("DEF"));
-		attrs.setAttrsBonus(ID.AttrsBase.SPD, nbt_load.getByte("SPD"));
-		attrs.setAttrsBonus(ID.AttrsBase.MOV, nbt_load.getByte("MOV"));
-		attrs.setAttrsBonus(ID.AttrsBase.HIT, nbt_load.getByte("HIT"));
+		
+		if (nbt_load != null)
+		{
+			Attrs attrs = ship.getAttrs();
+			attrs.setAttrsBonus(ID.AttrsBase.HP, nbt_load.getByte("HP"));
+			attrs.setAttrsBonus(ID.AttrsBase.ATK, nbt_load.getByte("ATK"));
+			attrs.setAttrsBonus(ID.AttrsBase.DEF, nbt_load.getByte("DEF"));
+			attrs.setAttrsBonus(ID.AttrsBase.SPD, nbt_load.getByte("SPD"));
+			attrs.setAttrsBonus(ID.AttrsBase.MOV, nbt_load.getByte("MOV"));
+			attrs.setAttrsBonus(ID.AttrsBase.HIT, nbt_load.getByte("HIT"));
+		}
 		
 		//load flags
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("ShipFlags");
-		ship.setStateFlag(ID.F.CanFloatUp, nbt_load.getBoolean("CanFloat"));
-		ship.setStateFlag(ID.F.IsMarried, nbt_load.getBoolean("IsMarried"));
-		ship.setStateFlag(ID.F.NoFuel, nbt_load.getBoolean("NoFuel"));
-		ship.setStateFlag(ID.F.UseMelee, nbt_load.getBoolean("Melee"));
-		ship.setStateFlag(ID.F.UseAmmoLight, nbt_load.getBoolean("AmmoL"));
-		ship.setStateFlag(ID.F.UseAmmoHeavy, nbt_load.getBoolean("AmmoH"));
-		ship.setStateFlag(ID.F.UseAirLight, nbt_load.getBoolean("AirL"));
-		ship.setStateFlag(ID.F.UseAirHeavy, nbt_load.getBoolean("AirH"));
-		ship.setStateFlag(ID.F.UseRingEffect, nbt_load.getBoolean("WedEffect"));
-		ship.setStateFlag(ID.F.CanDrop, nbt_load.getBoolean("CanDrop"));
-		ship.setStateFlag(ID.F.CanFollow, nbt_load.getBoolean("CanFollow"));
-		ship.setStateFlag(ID.F.OnSightChase, nbt_load.getBoolean("OnSight"));
-		ship.setStateFlag(ID.F.PVPFirst, nbt_load.getBoolean("PVPFirst"));
-		ship.setStateFlag(ID.F.AntiAir, nbt_load.getBoolean("AA"));
-		ship.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
-		ship.setStateFlag(ID.F.PassiveAI, nbt_load.getBoolean("PassiveAI"));
-		ship.setStateFlag(ID.F.TimeKeeper, nbt_load.getBoolean("TimeKeeper"));
-		ship.setStateFlag(ID.F.PickItem, nbt_load.getBoolean("PickItem"));
-		ship.setStateFlag(ID.F.ShowHeldItem, nbt_load.getBoolean("HeldItem"));
-		ship.setStateFlag(ID.F.AutoPump, nbt_load.getBoolean("AutoPump"));
-		ship.setIsMorph(nbt_load.getBoolean("IsMorph"));
+		
+		if (nbt_load != null)
+		{
+			ship.setStateFlag(ID.F.CanFloatUp, nbt_load.getBoolean("CanFloat"));
+			ship.setStateFlag(ID.F.IsMarried, nbt_load.getBoolean("IsMarried"));
+			ship.setStateFlag(ID.F.NoFuel, nbt_load.getBoolean("NoFuel"));
+			ship.setStateFlag(ID.F.UseMelee, nbt_load.getBoolean("Melee"));
+			ship.setStateFlag(ID.F.UseAmmoLight, nbt_load.getBoolean("AmmoL"));
+			ship.setStateFlag(ID.F.UseAmmoHeavy, nbt_load.getBoolean("AmmoH"));
+			ship.setStateFlag(ID.F.UseAirLight, nbt_load.getBoolean("AirL"));
+			ship.setStateFlag(ID.F.UseAirHeavy, nbt_load.getBoolean("AirH"));
+			ship.setStateFlag(ID.F.UseRingEffect, nbt_load.getBoolean("WedEffect"));
+			ship.setStateFlag(ID.F.CanDrop, nbt_load.getBoolean("CanDrop"));
+			ship.setStateFlag(ID.F.CanFollow, nbt_load.getBoolean("CanFollow"));
+			ship.setStateFlag(ID.F.OnSightChase, nbt_load.getBoolean("OnSight"));
+			ship.setStateFlag(ID.F.PVPFirst, nbt_load.getBoolean("PVPFirst"));
+			ship.setStateFlag(ID.F.AntiAir, nbt_load.getBoolean("AA"));
+			ship.setStateFlag(ID.F.AntiSS, nbt_load.getBoolean("ASM"));
+			ship.setStateFlag(ID.F.PassiveAI, nbt_load.getBoolean("PassiveAI"));
+			ship.setStateFlag(ID.F.TimeKeeper, nbt_load.getBoolean("TimeKeeper"));
+			ship.setStateFlag(ID.F.PickItem, nbt_load.getBoolean("PickItem"));
+			ship.setStateFlag(ID.F.ShowHeldItem, nbt_load.getBoolean("HeldItem"));
+			ship.setStateFlag(ID.F.AutoPump, nbt_load.getBoolean("AutoPump"));
+			ship.setIsMorph(nbt_load.getBoolean("IsMorph"));
+		}
 		
 		//load timer
 		nbt_load = (NBTTagCompound) nbt_tag.getTag("Timer");
-		ship.setStateTimer(ID.T.CraneTime, nbt_load.getInteger("Crane"));
+		
+		if (nbt_load != null)
+		{
+			ship.setStateTimer(ID.T.CraneTime, nbt_load.getInteger("Crane"));
+		}
 		
 		//load owner name
 		String name = nbt_tag.getString("Owner");
+		
 		if (name != null && name.length() > 0)
 		{
 			ship.ownerName = name;

@@ -15,6 +15,7 @@ import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
+import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
@@ -167,7 +168,8 @@ public class EntityProjectileStatic extends Entity implements IShipOwner, IShipA
                     for (Entity ent : hitList)
                     {
                     	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) &&
-                    		ent.canBePushed() && !TeamHelper.checkSameOwner(this.host2, ent))
+                    		ent.canBePushed() && !TeamHelper.checkSameOwner(this.host2, ent) &&
+                    		!TargetHelper.isEntityInvulnerable(ent))
                     	{
                     		Dist4d dist = CalcHelper.getDistanceFromA2B(this, ent);
                     		

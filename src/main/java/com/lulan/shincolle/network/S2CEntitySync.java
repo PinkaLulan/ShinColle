@@ -25,7 +25,6 @@ import com.lulan.shincolle.utility.PacketHelper;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -74,7 +73,7 @@ public class S2CEntitySync implements IMessage
 		public static final byte SyncShip_ID = 10;
 		public static final byte SyncShip_UnitName = 11;
 		public static final byte SyncShip_Attrs = 12;
-		public static final byte SyncShip_MountSkillTimer = 13;
+		public static final byte SyncShip_PlayerSkillTimer = 13;
 		
 		public static final byte SyncEntity_Emo = 50;
 		public static final byte SyncEntity_PlayerUID = 51;
@@ -209,7 +208,7 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_Timer: //ship timer only
 			this.valueInt = buf.readInt();
 		break;
-		case PID.SyncShip_MountSkillTimer: //ship timer only
+		case PID.SyncShip_PlayerSkillTimer: //ship timer only
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.SyncShip_Riders: //player mount sync
@@ -243,7 +242,7 @@ public class S2CEntitySync implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 4);
 		break;
 		case PID.SyncSystem_Config:	//server config sync to client
-			this.valueInt1 = PacketHelper.readIntArray(buf, ConfigHandler.ringAbility.length);
+			this.valueInt1 = PacketHelper.readIntArray(buf);
 		break;
 		case PID.SyncShip_UnitName:	//sync ship unit names
 			this.valueString1 = PacketHelper.readListString(buf);
@@ -265,13 +264,23 @@ public class S2CEntitySync implements IMessage
 		//send packet and entity id
 		buf.writeByte(this.packetType);
 		
-		if (entity == null)
+		if (this.entity == null)
 		{
 			buf.writeInt(-1);
 		}
 		else
 		{
-			buf.writeInt(entity.getEntityId());
+			//若為morph ship, 則發送player eid
+			if (this.entity instanceof IShipMorph && ((IShipMorph)this.entity).isMorph() &&
+				((IShipMorph)this.entity).getMorphHost() != null)
+			{
+				buf.writeInt(((IShipMorph)this.entity).getMorphHost().getEntityId());
+			}
+			//其他entity
+			else
+			{
+				buf.writeInt(this.entity.getEntityId());
+			}
 		}
 		
 		switch (this.packetType)
@@ -537,7 +546,7 @@ public class S2CEntitySync implements IMessage
 			buf.writeInt(entity.getStateTimer(ID.T.CraneTime));
 		}
 		break;
-		case PID.SyncShip_MountSkillTimer:	//sync mount skill timer only
+		case PID.SyncShip_PlayerSkillTimer:	//sync mount skill timer only
 		{
 			BasicEntityShip entity = (BasicEntityShip) this.entity;
 			
@@ -694,11 +703,7 @@ public class S2CEntitySync implements IMessage
 		break;
 		case PID.SyncSystem_Config:	//server config sync to client
 		{
-			//sync ring ability setting
-			for (int value : ConfigHandler.ringAbility)
-			{
-				buf.writeInt(value);
-			}
+			PacketHelper.sendArrayInt(buf, ConfigHandler.ringAbility);
 		}
 		break;
 		case PID.SyncShip_UnitName:	//sync ship unit names
@@ -747,6 +752,7 @@ public class S2CEntitySync implements IMessage
 		//get target entity
 		Entity entity = null;
 		BasicEntityShip ship = null;
+		CapaTeitoku capa = null;
 		
 		if (msg.entityID > 0)
 		{
@@ -763,13 +769,13 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncShip_Guard:
 		case PID.SyncShip_ID:
 		case PID.SyncShip_Timer:
-		case PID.SyncShip_MountSkillTimer:
+		case PID.SyncShip_PlayerSkillTimer:
 		case PID.SyncShip_Scale:
 		case PID.SyncShip_UnitName:
 		case PID.SyncShip_Buffmap:
 			if (entity instanceof BasicEntityShip ||
 				entity instanceof IShipEmotion ||
-				entity instanceof EntityLiving)
+				entity instanceof EntityLivingBase)
 			{
 				getTarget = true;
 			}
@@ -778,7 +784,7 @@ public class S2CEntitySync implements IMessage
 		case PID.SyncEntity_Emo:
 			if (entity instanceof BasicEntityShip ||
 				entity instanceof IShipEmotion ||
-				entity instanceof EntityLiving)
+				entity instanceof EntityLivingBase)
 			{
 				getTarget = true;
 			}
@@ -811,7 +817,8 @@ public class S2CEntitySync implements IMessage
 			{
 			case PID.SyncShip_AllMisc:	//sync all attr
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateMinor(ID.M.ShipLevel, msg.valueInt1[0]);
 				ship.setStateMinor(ID.M.Kills, msg.valueInt1[1]);
@@ -877,7 +884,9 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_Attrs:	//sync all attrs
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
+				
 				AttrsAdv attrs = (AttrsAdv) ship.getAttrs();
 				int flag = 0;
 				
@@ -911,7 +920,7 @@ public class S2CEntitySync implements IMessage
 				//sync emotion to morph entity
 				else if (entity instanceof EntityPlayer)
 				{
-					CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) entity);
+					capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) entity);
 					
 					if (capa != null && capa.morphEntity instanceof IShipEmotion)
 					{
@@ -934,7 +943,8 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_Flag: //entity flag only
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateFlag(ID.F.CanFloatUp, msg.valueBoolean1[0]);
 				ship.setStateFlag(ID.F.IsMarried, msg.valueBoolean1[1]);
@@ -958,7 +968,8 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_Formation: //ship formation data only
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateMinor(ID.M.GuardX, msg.valueInt1[0]);
 				ship.setStateMinor(ID.M.GuardY, msg.valueInt1[1]);
@@ -972,7 +983,8 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_Minor: //entity minor only
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateMinor(ID.M.ShipLevel, msg.valueInt1[0]);
 				ship.setStateMinor(ID.M.Kills, msg.valueInt1[1]);
@@ -1008,7 +1020,8 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_Guard:  //sync guard for particle display
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateMinor(ID.M.GuardX, msg.valueInt1[0]);
 				ship.setStateMinor(ID.M.GuardY, msg.valueInt1[1]);
@@ -1020,7 +1033,8 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_ID:
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateMinor(ID.M.PlayerUID, msg.valueInt1[0]);
 				ship.setStateMinor(ID.M.ShipUID, msg.valueInt1[1]);
@@ -1029,14 +1043,16 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_Timer: //ship timer only
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateTimer(ID.T.CraneTime, msg.valueInt);
 			}
 			break;
-			case PID.SyncShip_MountSkillTimer: //ship timer only
+			case PID.SyncShip_PlayerSkillTimer: //ship timer only
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
 				
 				ship.setStateTimer(ID.T.MountSkillCD1, msg.valueInt1[0]);
 				ship.setStateTimer(ID.T.MountSkillCD2, msg.valueInt1[1]);
@@ -1192,7 +1208,19 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncSystem_Config:	//server config sync to client
 			{
-				for (int i = 0; i < ConfigHandler.ringAbility.length; i++)
+				if (ConfigHandler.ringAbility != null && msg.valueInt1 != null)
+				{
+					if (ConfigHandler.ringAbility.length != msg.valueInt1.length)
+					{
+						ConfigHandler.ringAbility = new int[msg.valueInt1.length];
+					}
+				}
+				else
+				{
+					ConfigHandler.ringAbility = new int[msg.valueInt1.length];
+				}
+				
+				for (int i = 0; i < msg.valueInt1.length; i++)
 				{
 					ConfigHandler.ringAbility[i] = msg.valueInt1[i];
 				}
@@ -1200,13 +1228,17 @@ public class S2CEntitySync implements IMessage
 			break;
 			case PID.SyncShip_UnitName:	//sync ship unit names
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
+				
 				ship.unitNames = (ArrayList<String>) msg.valueString1;
 			}
 			break;
 			case PID.SyncShip_Buffmap:	//sync buff map
 			{
-				ship = (BasicEntityShip) entity;
+				ship = getShipByEntity(entity);
+				if (ship == null) return;
+				
 				ship.setBuffMap((HashMap<Integer, Integer>) msg.valueMap1);
 			}
 			break;
@@ -1228,6 +1260,32 @@ public class S2CEntitySync implements IMessage
 		{
 			LogHelper.debug("DEBUG: packet handler: S2CEntitySync: entity is null, type: "+
 							msg.packetType+" eid: "+msg.entityID);
+		}
+	}
+	
+	/**
+	 * return ship entity by checking input entity
+	 */
+	public static BasicEntityShip getShipByEntity(Entity target)
+	{
+		//entity is player -> ship is morph ship
+		if (target instanceof EntityPlayer)
+		{
+			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer)target);
+			
+			if (capa != null && capa.morphEntity instanceof BasicEntityShip)
+			{
+				return (BasicEntityShip) capa.morphEntity;
+			}
+			else
+			{
+				return null;
+			}
+		}
+		//entity is ship
+		else
+		{
+			return (BasicEntityShip) target;
 		}
 	}
 	

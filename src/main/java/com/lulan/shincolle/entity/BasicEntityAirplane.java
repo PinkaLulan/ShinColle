@@ -396,7 +396,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 	    //if attack success
 	    if (isTargetHurt)
 	    {
-	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
+	    	if (!TeamHelper.checkSameOwner(this.getHostEntity(), target)) BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(0, target, Dist4d.ONE);
 	        

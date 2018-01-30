@@ -70,8 +70,8 @@ public class BlockPolymetal extends BasicBlockMulti
     {
 		IBlockState sideState = world.getBlockState(pos.offset(face));
 		
-		if (sideState != null && state.getValue(MBS) > 0 &&
-			(sideState.getMaterial() == Material.WATER || sideState.getMaterial() == Material.LAVA))
+		if (sideState != null && state.getValue(MBS) > 0 && sideState.getMaterial() != null &&
+			sideState.getMaterial().isLiquid())
 		{
 			return true;
 		}

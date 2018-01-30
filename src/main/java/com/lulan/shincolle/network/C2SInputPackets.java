@@ -4,14 +4,14 @@ import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.BasicEntitySummon;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.ShipTank;
+import com.lulan.shincolle.playerskill.ShipSkillHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
@@ -24,6 +24,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -221,112 +223,7 @@ public class C2SInputPackets implements IMessage
 			}
 			break;
 			case PID.MountSkill://mounts skill key input packet
-				//set player's mount movement
-				if (player.isRiding() && player.getRidingEntity() instanceof BasicEntityMount)
-				{
-					BasicEntityMount mount = (BasicEntityMount) player.getRidingEntity();
-					BasicEntityShip ship = (BasicEntityShip) mount.getHostEntity();
-					
-					//check ship owner is player
-					if (ship != null && TeamHelper.checkSameOwner(player, ship))
-					{
-						int skill = 0;
-						
-						//check attack type
-						switch (msg.value3[0])
-						{
-						case 0:
-							if (!ship.getStateFlag(ID.F.AtkType_Light)) return;
-							skill = ID.T.MountSkillCD1;
-						break;
-						case 1:
-							if (!ship.getStateFlag(ID.F.AtkType_Heavy)) return;
-							skill = ID.T.MountSkillCD2;
-						break;
-						case 2:
-							if (!ship.getStateFlag(ID.F.AtkType_AirLight)) return;
-							skill = ID.T.MountSkillCD3;
-						break;
-						case 3:
-							if (!ship.getStateFlag(ID.F.AtkType_AirHeavy)) return;
-							skill = ID.T.MountSkillCD4;
-						break;
-						default:
-							return;
-						}
-						
-						//check skill cd
-						if (ship.getStateTimer(skill) > 0) return;
-						
-						//check target exist
-						Entity target = null;
-						BlockPos targetPos = null;
-						float rangeSq = ship.getAttrs().getAttackRange() * ship.getAttrs().getAttackRange();
-						
-						if (msg.value3[2] < 0)
-						{
-							target = EntityHelper.getEntityByID(msg.value3[1], ship.world.provider.getDimension(), false);
-							
-							if (target != null && ship.getDistanceSqToEntity(target) > rangeSq)
-							{
-								target = null;
-							}
-						}
-						else
-						{
-							targetPos = new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]);
-							
-							if (ship.getDistanceSqToCenter(targetPos) > rangeSq)
-							{
-								targetPos = null;
-							}
-						}
-						
-						//check target friendly
-						if (TeamHelper.checkSameOwner(ship, target)) return;
-						
-						//check ammo and attack target
-						switch (msg.value3[0])
-						{
-						case 0:  //light attack
-							if (target != null)
-							{
-								ship.attackEntityWithAmmo(target);
-								ship.setStateTimer(ID.T.MountSkillCD1, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 1));
-								ship.sendSyncPacketTimer(1);
-							}
-						break;
-						case 1:   //heavy attack
-							if (target != null) ship.attackEntityWithHeavyAmmo(target);
-							else if (targetPos != null) ship.attackEntityWithHeavyAmmo(targetPos);
-							
-							if (target != null || targetPos != null)
-							{
-								ship.setStateTimer(ID.T.MountSkillCD2, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 2));
-								ship.sendSyncPacketTimer(1);
-							}
-						break;
-						case 2:   //light air attack
-							if (ship instanceof BasicEntityShipCV && target != null)
-							{
-								((BasicEntityShipCV) ship).attackEntityWithAircraft(target);
-								ship.setStateTimer(ID.T.MountSkillCD3, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3));
-								ship.setStateTimer(ID.T.MountSkillCD4, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 3));
-								ship.sendSyncPacketTimer(1);
-							}
-						break;
-						case 3:   //heavy air attack
-							if (ship instanceof BasicEntityShipCV && target != null)
-							{
-								((BasicEntityShipCV) ship).attackEntityWithHeavyAircraft(target);
-								ship.setStateTimer(ID.T.MountSkillCD3, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4));
-								ship.setStateTimer(ID.T.MountSkillCD4, CombatHelper.getAttackDelay(ship.getAttrs().getAttackSpeed(), 4));
-								ship.sendSyncPacketTimer(1);
-							}
-						break;
-						}
-					}
-				}
+				ShipSkillHandler.handlePlayerSkill(player, msg.value3);
 			break;
 			case PID.SyncHandheld:	//sync current item
 				player.inventory.currentItem = msg.value3[0];
@@ -444,9 +341,24 @@ public class C2SInputPackets implements IMessage
 				
 				if (w != null)
 				{
-					TileEntityHelper.pairingWaypoints(p, msg.value3[0], w,
-							new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
-							new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
+					float dx = msg.value3[1] - msg.value3[4];
+					float dy = msg.value3[2] - msg.value3[5];
+					float dz = msg.value3[3] - msg.value3[6];
+					float dist = (float) Math.sqrt(dx*dx+dy*dy+dz*dz);
+					
+					//check distance
+					if (dist <= ConfigHandler.pairDistWp)
+					{
+						TileEntityHelper.pairingWaypoints(p, msg.value3[0], w,
+								new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
+								new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
+					}
+					else
+					{
+						TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.wptoofar");
+						str.getStyle().setColor(TextFormatting.YELLOW);
+						player.sendMessage(str);
+					}
 				}
 			}
 			break;
@@ -462,9 +374,24 @@ public class C2SInputPackets implements IMessage
 				
 				if (w != null)
 				{
-					TileEntityHelper.pairingWaypointAndChest(p, msg.value3[0], w,
-							new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
-							new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
+					float dx = msg.value3[1] - msg.value3[4];
+					float dy = msg.value3[2] - msg.value3[5];
+					float dz = msg.value3[3] - msg.value3[6];
+					float dist = (float) Math.sqrt(dx*dx+dy*dy+dz*dz);
+					
+					//check distance
+					if (dist <= ConfigHandler.pairDistChest)
+					{
+						TileEntityHelper.pairingWaypointAndChest(p, msg.value3[0], w,
+								new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
+								new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
+					}
+					else
+					{
+						TextComponentTranslation str = new TextComponentTranslation("chat.shincolle:wrench.toofar");
+						str.getStyle().setColor(TextFormatting.YELLOW);
+						player.sendMessage(str);
+					}
 				}
 			}
 			break;

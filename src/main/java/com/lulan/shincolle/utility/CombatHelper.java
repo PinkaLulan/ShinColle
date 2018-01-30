@@ -7,6 +7,7 @@ import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipInvisible;
+import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -197,9 +198,10 @@ public class CombatHelper
 			//roll dodge
 			if (rand.nextFloat() <= dodge)
 			{
+				//check host is morph
+				if (ent2 instanceof IShipMorph && ((IShipMorph)ent2).getMorphHost() != null) ent2 = ((IShipMorph)ent2).getMorphHost();
 				//spawn dodge particle
-				TargetPoint point = new TargetPoint(ent2.dimension, ent2.posX, ent2.posY, ent2.posZ, 32D);
-				CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(ent2, 64, false), point);
+				ParticleHelper.spawnAttackTextParticle(ent2, 4);
 				return true;
 			}
 		}
@@ -329,7 +331,7 @@ public class CombatHelper
 			else if (depth > 0D)
 	        {
 				//target is lower
-				if (tarY <= ((Entity) host).posY)
+				if (tarY <= ((Entity) host).posY || tarY - ((Entity) host).posY < depth)
 				{
 					moveType = 2;
 				}

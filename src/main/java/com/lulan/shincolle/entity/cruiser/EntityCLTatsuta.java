@@ -587,18 +587,17 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 	@Override
   	public float getAttackBaseDamage(int type, Entity target)
   	{
-		return 0;
-//  		switch (type)
-//  		{
-//  		case 1:  //light attack
-//  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
-//  	  	case 2:  //heavy attack: horizontal
-//  			return this.shipAttrs.getAttackDamageHeavy() * 0.5F;
-//  		case 3:  //heavy attack: final
-//  			return this.shipAttrs.getAttackDamageHeavy() * 1.5F;
-//		default: //melee
-//			return this.shipAttrs.getAttackDamage() * 2F;
-//  		}
+  		switch (type)
+  		{
+  		case 1:  //light attack
+  			return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
+  	  	case 2:  //heavy attack: horizontal
+  			return this.shipAttrs.getAttackDamageHeavy() * 0.5F;
+  		case 3:  //heavy attack: final
+  			return this.shipAttrs.getAttackDamageHeavy() * 1.5F;
+		default: //melee
+			return this.shipAttrs.getAttackDamage() * 2F;
+  		}
   	}
 	
 	@Override

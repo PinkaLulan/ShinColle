@@ -177,37 +177,34 @@ public class EntityFloatingFort extends BasicEntityAirplane
         {
         	atk = this.shipAttrs.getAttackDamageHeavy();
         	
-        	//check target attackable
-      		if (!TargetHelper.checkUnattackTargetList(ent))
-      		{
-      			//calc equip special dmg: AA, ASM
+        	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
+        	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) &&
+        		!TargetHelper.isEntityInvulnerable(ent))
+        	{
+        		//calc equip special dmg: AA, ASM
       			atk = CombatHelper.modDamageByAdditionAttrs(this.host, ent, atk, 0);
-            	
-            	//目標可以被碰撞, 且目標不同主人, 則判定可傷害
-            	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent))
+      			
+        		//打到同主人目標, 傷害設為0
+        		if (TeamHelper.checkSameOwner(host2, ent))
+        		{
+        			atk = 0F;
+        		}
+        		
+        		 //roll miss, cri, dhit, thit
+        		atk = CombatHelper.applyCombatRateToDamage(this.host, ent, false, 1F, atk);
+    	  		
+    	  		//damage limit on player target
+        		atk = CombatHelper.applyDamageReduceOnPlayer(ent, atk);
+    	  		
+    	  		//check friendly fire
+    			if (!TeamHelper.doFriendlyFire(this.host, ent)) atk = 0F;
+        		
+        		//對entity造成傷害
+            	if (ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), atk))
             	{
-            		//打到同主人目標, 傷害設為0
-            		if (TeamHelper.checkSameOwner(host2, ent))
-            		{
-            			atk = 0F;
-            		}
-            		
-            		 //roll miss, cri, dhit, thit
-            		atk = CombatHelper.applyCombatRateToDamage(this.host, ent, false, 1F, atk);
-        	  		
-        	  		//damage limit on player target
-            		atk = CombatHelper.applyDamageReduceOnPlayer(ent, atk);
-        	  		
-        	  		//check friendly fire
-        			if (!TeamHelper.doFriendlyFire(this.host, ent)) atk = 0F;
-            		
-            		//對entity造成傷害
-                	if (ent.attackEntityFrom(DamageSource.causeMobDamage(host2).setExplosion(), atk))
-                	{
-                		BuffHelper.applyBuffOnTarget(ent, this.getAttackEffectMap());
-                	}
-            	}//end can be collided with
-      		}//end is attackable
+            		if (!TeamHelper.checkSameOwner(this.getHostEntity(), ent)) BuffHelper.applyBuffOnTarget(ent, this.getAttackEffectMap());
+            	}
+        	}//end can be collided with
         }//end hit target list for loop
 
         //send packet to client for display partical effect

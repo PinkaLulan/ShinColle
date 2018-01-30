@@ -8,6 +8,7 @@ import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.team.TeamData;
+import com.lulan.shincolle.tileentity.BasicTileInventory;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IEntityOwnable;
@@ -246,6 +247,45 @@ public class TeamHelper
 				}
 			}	
 		}
+	}
+	
+	/**
+	 * check block can be used by player
+	 * allowed: tile owner, op, ally
+	 */
+	public static boolean isUsableByPlayer(BasicTileInventory tile, EntityPlayer player)
+	{
+		//null check
+		if (tile == null || player == null) return false;
+		
+		//get tile owner id
+		int tid = 0;
+		
+		if (tile instanceof IShipOwner)
+		{
+			tid = ((IShipOwner) tile).getPlayerUID();
+		}
+		
+		//check owner, op and ally
+		if (BlockHelper.checkTileOwner(player, tile) ||
+			EntityHelper.checkOP(player) ||
+			TeamHelper.checkIsAlly(tid, EntityHelper.getPlayerUID(player)))
+		{
+			//由於會有多個tile entity副本, 要先確認座標相同的副本才能使用
+			//確認player要在該tile entity 8格內
+			//確認該tile entity沒有被標為invalid
+			if (tile.getWorld().getTileEntity(tile.getPos()) == tile && !tile.isInvalid() &&
+				player.getDistanceSq(tile.getPos().getX()+0.5D, tile.getPos().getY()+0.5D, tile.getPos().getZ()+0.5D) <= 64)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+		return false;
 	}
 	
 	

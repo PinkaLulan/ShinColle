@@ -170,7 +170,7 @@ public class BlockWaypoint extends BasicBlockContainer
     {
 		Material mat = world.getBlockState(pos.offset(face)).getMaterial();
 		
-		if (mat == Material.WATER || mat == Material.LAVA)
+		if (mat != null && mat.isLiquid())
 		{
 			return true;
 		}

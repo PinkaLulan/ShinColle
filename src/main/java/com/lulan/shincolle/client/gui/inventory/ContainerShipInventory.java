@@ -220,10 +220,12 @@ public class ContainerShipInventory extends Container
             	{
                    	switch (j)
                 	{
-                	case 25:
+                	case 1:  //部份數值超過short能顯示的範圍, 改用自訂封包更新
+                	case 2:
+                	case 25:  
                 	case 26:
-                	case 27:	//發送自訂封包更新
-                		this.entity.sendSyncPacketGUI();
+                	case 27:
+                		update = true;
                 	break;
             		default:	//使用vanilla方法更新
                     	listener.sendProgressBarUpdate(this, j, temp);
@@ -231,6 +233,9 @@ public class ContainerShipInventory extends Container
                 	}
             	}
             }//end for all value temp
+            
+            //發送自訂封包更新
+    		if (update) this.entity.sendSyncPacketGUI();
         }//end for all listener
 		
 		//更新container內的數值
@@ -238,7 +243,6 @@ public class ContainerShipInventory extends Container
 		{
 			this.valueTemp[k] = this.entity.getField(k);
 		}
-		
     }
 	
 	//client端container接收新值

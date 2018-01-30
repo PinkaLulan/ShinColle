@@ -1,10 +1,10 @@
 package com.lulan.shincolle.item;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
@@ -65,6 +65,17 @@ public class KaitaiHammer extends BasicItem
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
+		//check morph entity
+		if (entity instanceof IShipMorph)
+		{
+			//clear morph entity by left click
+			if (((IShipMorph)entity).isMorph())
+			{
+				entity.setDead();
+				return true;
+			}
+		}
+		
 		//entity is ship
 		if (!player.world.isRemote && entity instanceof BasicEntityShip)
 		{

@@ -300,7 +300,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
                 	hitEntity = hitList.get(i);
                 	
                 	//目標不能是自己 or 主人
-                	if (hitEntity != this && !TargetHelper.checkUnattackTargetList(hitEntity) && hitEntity.canBeCollidedWith())
+                	if (hitEntity != this && !TargetHelper.isEntityInvulnerable(hitEntity) && hitEntity.canBeCollidedWith())
                 	{
                 		//若攻擊到同陣營entity (ex: owner), 則傷害設為0 (但是依然觸發擊飛特效)
                 		if (TeamHelper.checkSameOwner(this, hitEntity))

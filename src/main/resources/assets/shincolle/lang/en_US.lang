@@ -451,7 +451,7 @@ gui.shincolle:book.chap3.text7d0=Owner can adjust some AI in ship's inventory GU
 gui.shincolle:book.chap3.text7d1=§96. Aura Effect§0: Enable special power and wedding ring power.<br><br>§97. Follow (Min)§0: Ship stop following within the min distance.<br><br>§98. Follow (Max)§0: Ship start to follow owner at the max distance.<br><br>§99. Flee HP%%§0: Force the ship to follow owner if HP < Flee HP%%.<br><br>§910. Passive?§0: Only attack back when attacked.
 gui.shincolle:book.chap3.title8=
 gui.shincolle:book.chap3.text8d0=§911. Onsight?§0: Only attack target on sight.<br><br>§912. PVP Mode§0: Attack §cPVP§0 target first.<br><br>§913. Anti-Air§0: Attack §cAircraft§0 first.<br><br>§914. Anti-SS§0: Attack §cSubmarine§0 first.<br>§9Priority§0: §dAnti-Air§0 > §3Anti-SS§0 > §cPVP§0 > Other<br><br>§915. PickItem§0: Some ship will pick item when out of combat.
-gui.shincolle:book.chap3.text8d1=
+gui.shincolle:book.chap3.text8d1=§916. Auto Pump§0: Ship can pump liquid by Abyssal Pumps Station (equip) to Abyssal Fluid Drum. If ship get some glass bottles, she can collect xp orbs too. 
 gui.shincolle:book.chap3.title9=PVP Mode
 gui.shincolle:book.chap3.text9d0=§91.§0 Enable PVP Mode by §cCreating a Fleet§0 in §3Abyssal Adrmiral's Desk§0.<br><br>§92.§0 Default PVP state is §7Neutral§0 to other fleets.<br><br>§93.§0 You can §cAlly/Declare War§0 against other fleets in §3Abyssal Adrmiral's Desk§0.<br><br>§94.§0 Ship will attack other hostile fleets by enabling §cPVP Mode§0 in AI option.<br><br>§95.§0 If §cFriendlyFire§0 = §3false§0, AoE attack will not damage to allies.
 gui.shincolle:book.chap3.text9d1=§96. §cAlly§0 is §3UNILATERAL§0, other side can still be hostile, friendly or neutral.<br><br>§97. §cDeclaration of War§0 is §3BILATERAL§0, other side will be hostile too.<br><br>§98.§0 Other side will become neutral to you when §cBreaking Alliance§0.<br><br>§99.§0 Other side will keep hostile when §cCalling a Truce§0.<br><br>§910.§0 You can not declare war against the fleet in the ally list, vice versa.
@@ -486,8 +486,8 @@ gui.shincolle:book.chap3.title19=Crafting
 gui.shincolle:book.chap3.text19d0=Ship can craft items for owner:<br><br>§91.§0 Use §cCrafting Recipe§0 to set recipe.<br>§92.§0 Click the crafting icon in AI options.<br>§93.§0 Put the recipe to mainhand slot (the most middle and lower slot in the first page).<br>§94.§0 Clear slots in ship's inventory in 3,4,5 row.<br>§95.§0 Move ship to an Abyssal Waypoint.<br>§96.§0 Link the waypoint and a chest block by Target Wrench.<br>§97.§0 Put some materials in chest to start crafting.
 gui.shincolle:book.chap3.text19d1=Ship level will affect the number of items can be crafted at a time.<br><br>NOTE: Ship will drop crafting items if chest is full. 
 gui.shincolle:book.chap3.title20=Metamorph
-gui.shincolle:book.chap3.text20d0=Tweak morph methods of Metamorph mod:<br><br>§91.§0 Left click with §cTarget Wrench§0 on own ships to get morph.<br><br>§92.§0 Kill friendly ship will not drop ghost morph.<br><br>§93.§0 Kill mob ship still drop ghost morph.<br><br>§94.§0 Press §cMorph Action§0 key to open appearance GUI. (Own ship morph only)<br><br>§95.§0 You can't open appearance GUI in mob ship morph.
-gui.shincolle:book.chap3.text20d1=
+gui.shincolle:book.chap3.text20d0=§cReq: Metamorph mod§0<br><br>Features:<br><br>§91.§0 Left click with §cTarget Wrench§0 on own ship to get morph.<br><br>§92.§0 Kill friendly ship will not drop ghost morph.<br><br>§93.§0 Kill mob ship still drop ghost morph.<br><br>§94.§0 Press §cSneaking + Morph Action§0 key to open Morph GUI. (Own ship morph only)<br><br>§95.§0 You can't open Morph GUI in mob ship morph.
+gui.shincolle:book.chap3.text20d1=§96.§0 Player can use ship attack skill in morph, and can add grudge and ammo in Morph GUI.<br><br>§97.§0 Player can level up morph by casting ship attack skill.<br><br>§98.§0 Player can equip ship equipments in Morph GUI, equip slot is shared between all morph ship.<br><br>§99.§0 Press §cMorph Action§0 to toggle skill hotbar.<br><br>NOTE: Move speed will not apply to player (for now).<br>Player can §9Right Click§0 to use Repair Bucket, Combat Ration, Modernization Toolkit and Maintenance Personnel Training Book. 
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List
@@ -860,10 +860,10 @@ chat.shincolle:wrongowner=You do not have ownership:
 chat.shincolle:pointer.settargetclass=Set target type to attack list: %s
 chat.shincolle:pointer.changeformation=Change formation to
 chat.shincolle:wrench.paired=Succeed in Abyssal Crane pairing.
-chat.shincolle:wrench.toofar=Fail in Abyssal Crane pairing: distance > 6 blocks.
+chat.shincolle:wrench.toofar=Fail in Abyssal Crane pairing: too far away.
 chat.shincolle:wrench.wrongtile=Fail in TileEntity pairing, accept only: Chest & Crane, Waypoint & Waypoint or Crane.
 chat.shincolle:wrench.setwp=Succeed in Abyssal Waypoint pairing:
-chat.shincolle:wrench.wptoofar=Fail in Abyssal Waypoint pairing: distance > 48 blocks.
+chat.shincolle:wrench.wptoofar=Fail in Abyssal Waypoint pairing: too far away.
 chat.shincolle:wrench.wplast=Last waypoint: 
 chat.shincolle:wrench.wpnext=Next waypoint:
 chat.shincolle:wrench.samepoint=Same waypoint, reset the record.

@@ -181,7 +181,7 @@ public class EntityRensouhouMob extends BasicEntitySummon
 	    //if attack success
 	    if (isTargetHurt)
 	    {
-	    	BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
+	    	if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.getAttackEffectMap());
 	    	applySoundAtTarget(1, target);
 	        applyParticleAtTarget(1, target, distVec);
 	        
