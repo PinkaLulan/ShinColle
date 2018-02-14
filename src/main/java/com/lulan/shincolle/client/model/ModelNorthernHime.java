@@ -872,6 +872,9 @@ public class ModelNorthernHime extends ShipModelBaseAdv
 	    {	//坐下動作
 	    	GlStateManager.translate(0F, 0.24F, 0F);
 	    	
+	    	//body
+    		this.Head.rotateAngleY *= 0.25F;
+    		
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
 		    	//body

@@ -23,7 +23,7 @@ public class EntityCarrierAkagiMob extends BasicEntityShipHostileCV
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierAkagi);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVAkagi);
         this.launchHeight = this.height * 0.65F;
         
 		//model display

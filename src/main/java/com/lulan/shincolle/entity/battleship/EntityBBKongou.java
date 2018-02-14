@@ -92,7 +92,7 @@ public class EntityBBKongou extends BasicEntityShipSmall
   		//server side
   		else
   		{
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//married effect: apply health boost buff to nearby ships
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
@@ -120,11 +120,7 @@ public class EntityBBKongou extends BasicEntityShipSmall
 	public void calcShipAttributesAddEffect()
 	{
 		super.calcShipAttributesAddEffect();
-		
-		if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect))
-		{
-			this.AttackEffectMap.put(18, new int[] {(int)(this.getLevel() / 60), 100+this.getLevel(), this.getLevel()});
-		}
+		this.AttackEffectMap.put(18, new int[] {(int)(this.getLevel() / 60), 100+this.getLevel(), this.getLevel()});
 	}
 	
 	@Override

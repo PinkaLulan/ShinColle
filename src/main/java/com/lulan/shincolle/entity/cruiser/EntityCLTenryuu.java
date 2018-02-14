@@ -54,7 +54,7 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.75F, 1.65F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.LIGHT_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.LightCruiserTenryuu);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CLTenryuu);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 5);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CL]);

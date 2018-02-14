@@ -15,7 +15,6 @@ import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaTeitoku;
-import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -65,7 +64,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -79,10 +77,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
@@ -393,6 +387,35 @@ public class EntityHelper
 			{
 				LogHelper.info("EXCEPTION: get EntityPlayer by name fail: "+e);
 				e.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
+	
+	/** get cached player entity by player UID, no world id check, SERVER SIDE ONLY */
+	public static EntityPlayer getEntityPlayerByUIDAtClient(int uid)
+	{
+		if (uid > 0)
+		{
+			//get player entity
+			try
+			{
+				//get client worlds
+				World w = ClientProxy.getClientWorld();
+				
+				//check player entity list
+				for (EntityPlayer p : w.playerEntities)
+				{
+					CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(p);
+					if (capa.getPlayerUID() == uid) return p;
+				}
+			}
+			catch (Exception e)
+			{
+				LogHelper.info("EXCEPTION: get EntityPlayer by UID at client fail: "+e);
+				e.printStackTrace();
+				return null;
 			}
 		}
 		
@@ -713,15 +736,21 @@ public class EntityHelper
 	}
 	
 	@SideOnly(Side.CLIENT)
+	public static RayTraceResult getPlayerMouseOverEntity(double dist, float duringTicks, List<Entity> exlist, boolean ignoreInvulnerable, boolean ignoreInvisible)
+	{
+		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, exlist, ignoreInvulnerable, ignoreInvisible);
+	}
+	
+	@SideOnly(Side.CLIENT)
 	public static RayTraceResult getPlayerMouseOverEntity(double dist, float duringTicks, List<Entity> exlist)
 	{
-		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, exlist, true);
+		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, exlist, true, true);
 	}
 	
 	@SideOnly(Side.CLIENT)
 	public static RayTraceResult getPlayerMouseOverEntity(double dist, float duringTicks)
 	{
-		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, null, true);
+		return getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), dist, duringTicks, null, true, true);
 	}
 
 	/**
@@ -735,7 +764,7 @@ public class EntityHelper
 	 * 修改自: EntityRenderer.getMouseOver
 	 */
 	@SideOnly(Side.CLIENT)
-	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick, @Nullable List<Entity> exlist, boolean ignoreInvulnerable)
+	public static RayTraceResult getMouseOverEntity(Entity viewer, double dist, float parTick, @Nullable List<Entity> exlist, boolean ignoreInvulnerable, boolean ignoreInvisible)
 	{
 		RayTraceResult lookBlock = null;
 		
@@ -749,6 +778,9 @@ public class EntityHelper
             	Entity ship = ((BasicEntityMount)viewer.getRidingEntity()).getHostEntity();
             	if (ship != null) viewer = ship;
             }
+            
+            //test partial tick TODO
+            parTick = ClientProxy.getMineraft().getRenderPartialTicks();
             
             lookBlock = BlockHelper.getMouseOverBlock(viewer, dist, parTick, false, true, true);
             vec3 = viewer.getPositionEyes(parTick);
@@ -801,7 +833,7 @@ public class EntityHelper
             	if (ignoreInvulnerable && TargetHelper.isEntityInvulnerable(entity)) continue;
             	
             	//check invisible
-            	if (entity.isInvisible()) continue;
+            	if (ignoreInvisible && entity.isInvisible()) continue;
             	
                 if (entity.canBeCollidedWith())
                 {
@@ -1030,14 +1062,18 @@ public class EntityHelper
   					{
   						entity.setStateMinor(ID.M.CraneState, 1);
   						
-  						//若座騎為BasicEntityMount, 騎乘者為BasicEntityShip, 則解除騎乘並開始裝卸
+  						//若騎乘者為BasicEntityShip, 則解除騎乘並開始裝卸
   						if (!((Entity)entity).getPassengers().isEmpty())
   						{
   							Entity rider = ((Entity)entity).getPassengers().get(0);
   							
-  							if (entity instanceof BasicEntityMount && rider instanceof BasicEntityShip)
+  							if (rider instanceof BasicEntityShip)
   							{
-  								((BasicEntityShip) rider).setStateMinor(ID.M.CraneState, 1);
+  								if (entity instanceof BasicEntityMount)
+  								{
+  									((BasicEntityShip) rider).setStateMinor(ID.M.CraneState, 1);
+  								}
+  								
   								rider.dismountRidingEntity();
   							}
   						}
@@ -2042,6 +2078,9 @@ public class EntityHelper
      */
   	public static boolean applyTeleport(IShipNavigator host, double dist, Vec3d tpPos)
     {
+  		if (!ConfigHandler.canTeleport) return false;
+  		if (host == null) return false;
+  		
   		//check chunk loaded
   		try
   		{
@@ -2073,7 +2112,7 @@ public class EntityHelper
     		((BasicEntityMount) host).setDead();
     		
     		//teleport rider
-    		hostHost.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
+    		hostHost.setPositionAndUpdate(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
     		sendPositionSyncPacket(hostHost);
     		
     		return true;
@@ -2091,7 +2130,7 @@ public class EntityHelper
 
     		//teleport host
     		host.getShipNavigate().clearPathEntity();
-    		host2.setPosition(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
+    		host2.setPositionAndUpdate(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
     		sendPositionSyncPacket(host2);
     		
     		return true;
@@ -2104,7 +2143,7 @@ public class EntityHelper
 	public static void sendPositionSyncPacket(Entity ent)
 	{
 		//for other player, send ship state for display
-		TargetPoint point = new TargetPoint(ent.dimension, ent.posX, ent.posY, ent.posZ, 64D);
+		TargetPoint point = new TargetPoint(ent.dimension, ent.posX, ent.posY, ent.posZ, 256D);
 		CommonProxy.channelE.sendToAllAround(new S2CEntitySync(ent, 0, S2CEntitySync.PID.SyncEntity_PosRot), point);
 	}
 	

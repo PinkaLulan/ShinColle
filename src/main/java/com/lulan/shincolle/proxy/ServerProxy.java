@@ -824,7 +824,7 @@ public class ServerProxy extends CommonProxy
 						if (player != null)
 						{
 							//sync data to player
-							CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncShipList, value), (EntityPlayerMP) player);
+							CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncGUI_ShipList, value), (EntityPlayerMP) player);
 						}
 					});
 

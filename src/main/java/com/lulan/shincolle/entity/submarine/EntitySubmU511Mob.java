@@ -30,7 +30,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineU511);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSU511);
         
 		//model display
         this.setStateEmotion(ID.S.State, rand.nextInt(8), false);

@@ -9,6 +9,7 @@ import java.util.Map;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.proxy.ClientProxy;
+import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.team.TeamData;
@@ -56,6 +57,7 @@ public class S2CGUIPackets implements IMessage
 	private int[] valueInt1;
 	private byte[] valueByte1;
 	private boolean[] valueBoolean1;
+	private float[] valueFloat1;
 	private int[][] valueInt2, valueInt2a;
 	private boolean[][] valueBoolean2;
 	private List<String> valueStrs;
@@ -66,23 +68,27 @@ public class S2CGUIPackets implements IMessage
 		public static final byte TileSmallSY = 0;
 		public static final byte TileLargeSY = 1;
 		public static final byte TileDesk = 2;
-		public static final byte SyncPlayerProp = 3;
-		public static final byte SyncShipInv = 4;
-		public static final byte FlagInitSID = 5;
-		public static final byte SyncShipList = 6;  	//send loaded ship id to client
-		public static final byte SyncPlayerProp_TargetClass = 7;
-		public static final byte SyncPlayerProp_TeamData = 8;
-		public static final byte SyncPlayerProp_Formation = 9;
-		public static final byte SyncPlayerProp_ShipsAll = 10;
-		public static final byte SyncPlayerProp_ShipsInTeam = 11;
-		public static final byte SyncPlayerProp_ColledShip = 12;
-		public static final byte SyncPlayerProp_ColledEquip = 13;
-		public static final byte TileVolCore = 14;
-		public static final byte TileWaypoint = 15;
-		public static final byte TileCrane = 16;
-		public static final byte SyncPlayerProp_Misc = 17;
-		public static final byte SyncPlayerProp_UnitName = 18;
-		public static final byte FlagShowPlayerSkill = 19;
+		public static final byte TileVolCore = 3;
+		public static final byte TileWaypoint = 4;
+		public static final byte TileCrane = 5;
+		
+		public static final byte SyncPlayerProp = 40;
+		public static final byte SyncPlayerProp_TargetClass = 41;
+		public static final byte SyncPlayerProp_TeamData = 42;
+		public static final byte SyncPlayerProp_Formation = 43;
+		public static final byte SyncPlayerProp_ShipsAll = 44;
+		public static final byte SyncPlayerProp_ShipsInTeam = 45;
+		public static final byte SyncPlayerProp_ColledShip = 46;
+		public static final byte SyncPlayerProp_ColledEquip = 47;
+		public static final byte SyncPlayerProp_Misc = 48;
+		public static final byte SyncPlayerProp_UnitName = 49;
+		
+		public static final byte FlagInitSID = 80;
+		public static final byte FlagShowPlayerSkill = 81;
+		
+		public static final byte SyncGUI_ShipInv = 100;
+		public static final byte SyncGUI_ShipList = 101;
+		public static final byte SyncGUI_EntityItemList = 102;
 	}
 	
 	
@@ -135,7 +141,7 @@ public class S2CGUIPackets implements IMessage
 	//sync ship
 	public S2CGUIPackets(BasicEntityShip ship)
 	{
-        this.packetType = PID.SyncShipInv;
+        this.packetType = PID.SyncGUI_ShipInv;
         this.ship = ship;
     }
 	
@@ -152,6 +158,13 @@ public class S2CGUIPackets implements IMessage
 	{
 		this.packetType = type;
 		this.dataList = list;
+	}
+	
+	//sync float array data
+	public S2CGUIPackets(byte type, float[] data)
+	{
+		this.packetType = type;
+		this.valueFloat1 = data;
 	}
 	
 	/** sync int array data
@@ -181,7 +194,7 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 7);
 		break;
 		case PID.TileLargeSY:	//sync large shipyard gui
-			this.valueInt1 = PacketHelper.readIntArray(buf, 11);
+			this.valueInt1 = PacketHelper.readIntArray(buf, 15);
 		break;
 		case PID.TileDesk:		//sync tile desk
 			this.valueInt1 = PacketHelper.readIntArray(buf, 7);
@@ -196,7 +209,7 @@ public class S2CGUIPackets implements IMessage
 			this.valueInt1 = PacketHelper.readIntArray(buf, 16);
 			this.valueByte1 = PacketHelper.readByteArray(buf, 4);
 		break;
-		case PID.SyncShipInv:	//sync ship GUI
+		case PID.SyncGUI_ShipInv:	//sync ship GUI
 			this.valueInt1 = PacketHelper.readIntArray(buf, 6);
 		break;
 		case PID.SyncPlayerProp: //sync player props
@@ -243,7 +256,7 @@ public class S2CGUIPackets implements IMessage
 		case PID.FlagShowPlayerSkill:	//show player skill hotbar
 			this.valueBoolean = buf.readBoolean();
 		break;
-		case PID.SyncShipList:				  //sync loaded ship list
+		case PID.SyncGUI_ShipList:				  //sync loaded ship list
 		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
 		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
 			this.valueInt = buf.readInt();
@@ -364,6 +377,9 @@ public class S2CGUIPackets implements IMessage
 				}
 			}
 		break;
+		case PID.SyncGUI_EntityItemList:
+			this.valueFloat1 = PacketHelper.readFloatArray(buf);
+		break;
 		}//end switch
 	}
 
@@ -403,6 +419,10 @@ public class S2CGUIPackets implements IMessage
 			buf.writeInt(tile2.getMatStock(1));
 			buf.writeInt(tile2.getMatStock(2));
 			buf.writeInt(tile2.getMatStock(3));
+			buf.writeInt(tile2.getMatBuild(0));
+			buf.writeInt(tile2.getMatBuild(1));
+			buf.writeInt(tile2.getMatBuild(2));
+			buf.writeInt(tile2.getMatBuild(3));
 			buf.writeInt(tile2.getPlayerUID());
 		}
 		break;
@@ -572,7 +592,7 @@ public class S2CGUIPackets implements IMessage
 			PacketHelper.sendListString(buf, strlist);
 		}
 		break;
-		case PID.SyncShipInv:	//sync ship inventory GUI: kills and grudge
+		case PID.SyncGUI_ShipInv:	//sync ship inventory GUI: kills and grudge
 			//check ship is morph
 			if (ship.isMorph())
 			{
@@ -602,7 +622,7 @@ public class S2CGUIPackets implements IMessage
 		case PID.FlagShowPlayerSkill:	//show player skill hotbar
 			buf.writeBoolean(this.valueBoolean);
 		break;
-		case PID.SyncShipList:				  //send ship list to client
+		case PID.SyncGUI_ShipList:				  //send ship list to client
 		case PID.SyncPlayerProp_TargetClass:  //sync target class
 		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
 		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
@@ -618,7 +638,7 @@ public class S2CGUIPackets implements IMessage
 				
 				switch (this.packetType)
 				{
-				case PID.SyncShipList:
+				case PID.SyncGUI_ShipList:
 				case PID.SyncPlayerProp_ColledShip:
 				case PID.SyncPlayerProp_ColledEquip:
 					while (iter.hasNext())
@@ -778,6 +798,18 @@ public class S2CGUIPackets implements IMessage
 			}
 		}
 		break;
+		case PID.SyncGUI_EntityItemList:
+		{
+			if (this.valueFloat1 != null)
+			{
+				PacketHelper.sendArrayFloat(buf, this.valueFloat1);
+			}
+			else
+			{
+				buf.writeInt(0);
+			}
+		}
+		break;
 		}//end send packet type switch
 	}
 	
@@ -822,7 +854,11 @@ public class S2CGUIPackets implements IMessage
 				tile2.setMatStock(1, msg.valueInt1[7]);
 				tile2.setMatStock(2, msg.valueInt1[8]);
 				tile2.setMatStock(3, msg.valueInt1[9]);
-				tile2.setPlayerUID(msg.valueInt1[10]);
+				tile2.setMatBuild(0, msg.valueInt1[10]);
+				tile2.setMatBuild(1, msg.valueInt1[11]);
+				tile2.setMatBuild(2, msg.valueInt1[12]);
+				tile2.setMatBuild(3, msg.valueInt1[13]);
+				tile2.setPlayerUID(msg.valueInt1[14]);
 			}
 		}
 		break;
@@ -961,7 +997,7 @@ public class S2CGUIPackets implements IMessage
 			}
 		}
 		break;
-		case PID.SyncShipInv:	//sync ship GUI
+		case PID.SyncGUI_ShipInv:	//sync ship GUI
 		{
 			//set value
 			Entity entity = EntityHelper.getEntityByID(msg.valueInt1[0], 0, true);
@@ -1006,7 +1042,7 @@ public class S2CGUIPackets implements IMessage
 			ClientProxy.showMorphSkills = !ClientProxy.showMorphSkills;
 		}
 		break;
-		case PID.SyncShipList:				  //sync loaded ship list
+		case PID.SyncGUI_ShipList:				  //sync loaded ship list
 		case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
 		case PID.SyncPlayerProp_ColledEquip:  //sync colled equip list
 		{
@@ -1018,7 +1054,7 @@ public class S2CGUIPackets implements IMessage
 				{
 					switch (msg.packetType)
 					{
-					case PID.SyncShipList:				  //sync loaded ship list
+					case PID.SyncGUI_ShipList:				  //sync loaded ship list
 						capa.setShipEIDList((ArrayList<Integer>) msg.dataList);
 						break;
 					case PID.SyncPlayerProp_ColledShip:   //sync colled ship list
@@ -1144,6 +1180,18 @@ public class S2CGUIPackets implements IMessage
 					capa.setSelectState(msg.valueInt1[0], msg.valueBoolean1);
 					capa.setSIDList(msg.valueInt1[0], uids);
 				}
+			}
+		}
+		break;
+		case PID.SyncGUI_EntityItemList:
+		{
+			if (msg.valueFloat1 != null && msg.valueFloat1.length > 1)
+			{
+				CommonProxy.entityItemList = msg.valueFloat1.clone();
+			}
+			else
+			{
+				CommonProxy.entityItemList = new float[0];
 			}
 		}
 		break;

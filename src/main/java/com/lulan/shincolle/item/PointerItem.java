@@ -183,7 +183,7 @@ public class PointerItem extends BasicItem
 				
 				GameSettings keySet = ClientProxy.getGameSetting();
 				CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F, exlist);
+				RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F, exlist, true, false);
 				
 				//hit entity
 				if (hitObj != null)
@@ -425,7 +425,7 @@ public class PointerItem extends BasicItem
 			
 			GameSettings keySet = ClientProxy.getGameSetting();  //get pressed key
 			CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
-			RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F, exlist);
+			RayTraceResult hitObj = EntityHelper.getPlayerMouseOverEntity(64D, 1F, exlist, true, false);
 			
 			//get entity
 			if (hitObj != null && hitObj.typeOfHit == RayTraceResult.Type.ENTITY)
@@ -489,7 +489,7 @@ public class PointerItem extends BasicItem
 					else
 					{
 						//檢查friendly fire, 判定要attack還是要move
-						if (ConfigHandler.friendlyFire)
+						if (ConfigHandler.friendlyFire && !hitObj.entityHit.isInvisible())
 						{
 							//attack target
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AttackTarget, meta, hitObj.entityHit.getEntityId()));
@@ -511,7 +511,7 @@ public class PointerItem extends BasicItem
 					if (hitObj.entityHit instanceof EntityPlayer)
 					{
 						//檢查friendly fire, 判定要attack還是要move
-						if (ConfigHandler.friendlyFire)
+						if (ConfigHandler.friendlyFire && !hitObj.entityHit.isInvisible())
 						{
 							//attack target
 							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AttackTarget, meta, hitObj.entityHit.getEntityId()));
@@ -528,10 +528,13 @@ public class PointerItem extends BasicItem
 					}
 					else
 					{
-						//attack target
-						CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AttackTarget, meta, hitObj.entityHit.getEntityId()));
-						//在目標上畫出標記
-						ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 5D, 0D, (byte)2);
+						if (!hitObj.entityHit.isInvisible())
+						{
+							//attack target
+							CommonProxy.channelG.sendToServer(new C2SGUIPackets(player, C2SGUIPackets.PID.AttackTarget, meta, hitObj.entityHit.getEntityId()));
+							//在目標上畫出標記
+							ParticleHelper.spawnAttackParticleAtEntity(hitObj.entityHit, 0.3D, 5D, 0D, (byte)2);
+						}
 					}
 				}
 			}//end hitObj = entity

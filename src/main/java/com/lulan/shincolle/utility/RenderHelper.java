@@ -174,6 +174,10 @@ public class RenderHelper
 		{
 			ship = (BasicEntityShip) ((BasicEntityMount) player.getRidingEntity()).getHostEntity();
 		}
+		else if (player.getPassengers().size() > 0 && player.getPassengers().get(0) instanceof BasicEntityShip)
+		{
+			ship = (BasicEntityShip) player.getPassengers().get(0);
+		}
 		//if player is in morphing (req: Metamorph mod)
 		else if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && ClientProxy.showMorphSkills)
 		{

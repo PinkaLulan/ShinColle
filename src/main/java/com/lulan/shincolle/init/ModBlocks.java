@@ -10,6 +10,7 @@ import com.lulan.shincolle.block.BlockFrame;
 import com.lulan.shincolle.block.BlockGrudge;
 import com.lulan.shincolle.block.BlockGrudgeHeavy;
 import com.lulan.shincolle.block.BlockGrudgeHeavyDeco;
+import com.lulan.shincolle.block.BlockGrudgeXP;
 import com.lulan.shincolle.block.BlockLightAir;
 import com.lulan.shincolle.block.BlockLightLiquid;
 import com.lulan.shincolle.block.BlockPolymetal;
@@ -35,6 +36,7 @@ public class ModBlocks
 	public static Block BlockDesk;
 	public static Block BlockFrame;
 	public static Block BlockGrudge;
+	public static Block BlockGrudgeXP;
 	public static Block BlockGrudgeHeavy;
 	public static Block BlockGrudgeHeavyDeco;
 	public static Block BlockLightAir;
@@ -60,6 +62,7 @@ public class ModBlocks
 		BlockDesk = initBlocks(BlockDesk.class);
 		BlockFrame = initBlocks(BlockFrame.class);
 		BlockGrudge = initBlocks(BlockGrudge.class);
+		BlockGrudgeXP = initBlocks(BlockGrudgeXP.class);
 		BlockGrudgeHeavy = initBlocks(BlockGrudgeHeavy.class);
 		BlockGrudgeHeavyDeco = initBlocks(BlockGrudgeHeavyDeco.class);
 		BlockLightAir = initBlocks(BlockLightAir.class);

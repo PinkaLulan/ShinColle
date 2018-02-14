@@ -52,7 +52,7 @@ public class EntityCLTenryuuMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.LightCruiserTenryuu);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CLTenryuu);
 		this.targetSelector = new TargetHelper.SelectorForHostile(this);
 		this.remainAttack = 0;
 		this.skillMotion = Vec3d.ZERO;

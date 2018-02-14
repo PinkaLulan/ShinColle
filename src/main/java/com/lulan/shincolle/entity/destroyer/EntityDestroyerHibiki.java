@@ -41,7 +41,7 @@ public class EntityDestroyerHibiki extends BasicEntityShipSmall implements IShip
 		super(world);
 		this.setSize(0.5F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerHibiki);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDHibiki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 5);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);

@@ -66,7 +66,7 @@ public class ConfigHandler
 	public static int shipNumPerPage = 5;
 	public static int chunkloaderMode = 2;
 	public static int deathMaxTick = 400;
-	public static int radarUpdate = 128;	//radar update interval (ticks)
+	public static int radarUpdate = 64;  //radar update interval (ticks)
 	public static int shipAttackPlayer = 0;
 	public static int pairDistChest = 16;
 	public static int pairDistWp = 48;
@@ -230,7 +230,7 @@ public class ConfigHandler
 		polyAsMn = config.getBoolean("Polymetal_as_Mn", CATE_GENERAL, false, "true: Polymetallic Nodules = Manganese Dust, Polymetallic Ore = Manganese Ore");
 		
 		//desk雷達更新間隔
-		radarUpdate = config.getInt("Radar_Update", CATE_GENERAL, 128, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");
+		radarUpdate = config.getInt("Radar_Update", CATE_GENERAL, 64, 20, 6000, "Radar update interval (ticks) in Admiral's Desk GUI");
 		
 		//是否顯示custom name tag
 		showTag = config.getBoolean("NameTag_AlwaysShow", CATE_GENERAL, true, "Always show custom name tag");

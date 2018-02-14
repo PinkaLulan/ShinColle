@@ -30,7 +30,7 @@ public class EntityDestroyerHibikiMob extends BasicEntityShipHostile implements 
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerHibiki);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDHibiki);
         this.ridingState = 0;
         this.smokeX = 0F;
         this.smokeY = 0F;

@@ -1,5 +1,8 @@
 package com.lulan.shincolle.block;
 
+import com.lulan.shincolle.creativetab.CreativeTabSC;
+import com.lulan.shincolle.reference.Reference;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -8,9 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.creativetab.CreativeTabSC;
-import com.lulan.shincolle.reference.Reference;
 
 abstract public class BasicBlock extends Block implements ICustomModels
 {

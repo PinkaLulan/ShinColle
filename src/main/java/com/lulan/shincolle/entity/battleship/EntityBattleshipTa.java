@@ -35,7 +35,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		super(world);
 		this.setSize(0.7F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipTA);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
@@ -74,7 +74,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
   		if (!world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//add num of rensouhou
   				if (this.numRensouhou < 6) numRensouhou++;

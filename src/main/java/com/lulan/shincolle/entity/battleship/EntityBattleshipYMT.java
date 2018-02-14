@@ -40,7 +40,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.8F, 2.1F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipYamato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBYamato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
@@ -112,7 +112,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
   		else
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//married effect: apply str buff to nearby ships
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&

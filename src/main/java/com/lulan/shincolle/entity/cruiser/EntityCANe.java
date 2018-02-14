@@ -36,7 +36,7 @@ public class EntityCANe extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.6F, 1.3F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserNE);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CANE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 0);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
@@ -87,7 +87,7 @@ public class EntityCANe extends BasicEntityShipSmall
     	if(!this.world.isRemote)
     	{
     		//check every 128 ticks
-    		if (this.ticksExisted % 128 == 0 && !this.isMorph)
+    		if (this.ticksExisted % 128 == 0)
     		{
 	    		//apply potion effect in the night
 	        	if (!this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))
@@ -99,7 +99,7 @@ public class EntityCANe extends BasicEntityShipSmall
 	        	//push other people every 256 ticks
 	        	if (this.ticksExisted % 256 == 0)
 	        	{
-	        		if (this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
+	        		if (this.getRNG().nextInt(5) == 0 && !this.isMorph && !this.isSitting() && !this.isRiding() &&
 	        			!this.getStateFlag(ID.F.NoFuel) && !this.getIsLeashed())
 	        		{
 	        			//find target
@@ -109,7 +109,7 @@ public class EntityCANe extends BasicEntityShipSmall
         	}
     		
     		//若要找騎乘目標
-        	if (this.isPushing)
+        	if (this.isPushing && !this.isMorph)
         	{
         		this.tickPush++;
         		

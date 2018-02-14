@@ -25,7 +25,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.9F, 1.7F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerRO);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDRO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);

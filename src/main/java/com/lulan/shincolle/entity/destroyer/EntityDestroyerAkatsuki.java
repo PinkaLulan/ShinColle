@@ -53,7 +53,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		super(world);
 		this.setSize(0.5F, 1.5F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerAkatsuki);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDAkatsuki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
@@ -262,6 +262,14 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   	//檢查是否可以合體
   	public void tryGattai()
   	{
+  		//dismount if craning
+  		if (getStateMinor(ID.M.CraneState) > 0)
+  		{
+  			this.dismountAllRider();
+  			this.dismountRidingEntity();
+  			return;
+  		}
+  		
   		//stop gattai if sit/no fuel/already gattai
   		if (isSitting() || getStateFlag(ID.F.NoFuel) || this.riderType == 7) return;
   		

@@ -1,6 +1,12 @@
 package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.entity.battleship.EntityBBHaruna;
+import com.lulan.shincolle.entity.battleship.EntityBBHarunaMob;
+import com.lulan.shincolle.entity.battleship.EntityBBHiei;
+import com.lulan.shincolle.entity.battleship.EntityBBHieiMob;
+import com.lulan.shincolle.entity.battleship.EntityBBKirishima;
+import com.lulan.shincolle.entity.battleship.EntityBBKirishimaMob;
 import com.lulan.shincolle.entity.battleship.EntityBBKongou;
 import com.lulan.shincolle.entity.battleship.EntityBBKongouMob;
 import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
@@ -49,6 +55,7 @@ import com.lulan.shincolle.entity.hime.EntityHarbourHime;
 import com.lulan.shincolle.entity.hime.EntityIsolatedHime;
 import com.lulan.shincolle.entity.hime.EntityMidwayHime;
 import com.lulan.shincolle.entity.hime.EntityNorthernHime;
+import com.lulan.shincolle.entity.hime.EntitySSNH;
 import com.lulan.shincolle.entity.hime.EntitySubmHime;
 import com.lulan.shincolle.entity.mounts.EntityMountAfH;
 import com.lulan.shincolle.entity.mounts.EntityMountBaH;
@@ -117,6 +124,12 @@ public class ModEntity
 		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
 		createEntity(EntityBBKongou.class, "EntityBattleshipKongou", modEntityID++);
 		createEntity(EntityBBKongouMob.class, "EntityBattleshipKongouMob", modEntityID++);
+		createEntity(EntityBBHiei.class, "EntityBattleshipHiei", modEntityID++);
+		createEntity(EntityBBHieiMob.class, "EntityBattleshipHieiMob", modEntityID++);
+		createEntity(EntityBBHaruna.class, "EntityBattleshipHaruna", modEntityID++);
+		createEntity(EntityBBHarunaMob.class, "EntityBattleshipHarunaMob", modEntityID++);
+		createEntity(EntityBBKirishima.class, "EntityBattleshipKirishima", modEntityID++);
+		createEntity(EntityBBKirishimaMob.class, "EntityBattleshipKirishimaMob", modEntityID++);
 		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
 		createEntity(EntityBattleshipNGTMob.class, "EntityBattleshipNGTMob", modEntityID++);
 		createEntity(EntityBattleshipYMT.class, "EntityBattleshipYMT", modEntityID++);
@@ -165,6 +178,7 @@ public class ModEntity
 		createEntity(EntityRensouhouMob.class, "EntityRensouhouMob", modEntityID++);
 		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
 		createEntity(EntitySubmHime.class, "EntitySubmHime", modEntityID++);
+		createEntity(EntitySSNH.class, "EntitySubmNewHime", modEntityID++);
 		createEntity(EntitySubmKa.class, "EntitySubmKa", modEntityID++);
 		createEntity(EntitySubmYo.class, "EntitySubmYo", modEntityID++);
 		createEntity(EntitySubmSo.class, "EntitySubmSo", modEntityID++);

@@ -123,8 +123,8 @@ public class ShinColle
 //		{	//list all oreDictionary  (DEBUG)
 //			LogHelper.info(oreName);
 //		}
-//		
-//		LogHelper.info("INFO: Post-Init completed.");
+		
+		LogHelper.info("INFO: Post-Init completed.");
 	}
 	
 	/** server about to start

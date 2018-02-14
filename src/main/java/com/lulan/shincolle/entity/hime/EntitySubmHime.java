@@ -36,7 +36,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 		super(world);
 		this.setSize(0.7F, 1.85F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
@@ -78,7 +78,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
   		if (!this.world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				if (getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
   				{

@@ -13,7 +13,9 @@ import javax.annotation.Nullable;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.entity.other.EntityProjectileStatic;
+import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.network.S2CEntitySync;
+import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -872,6 +874,40 @@ public class PacketHelper
 				return null;
             }
         }
+    }
+    
+    /**
+     * send nearby entity item list to player, SERVER SIDE
+     */
+    public static void syncEntityItemListToClient(EntityPlayer player)
+    {
+    	if (player.world != null)
+    	{
+    		//get entity item nearby player
+    		float[] data = null;	//k:x, k+1:y, k+2:z
+    		List<BasicEntityItem> getlist = player.world.getEntitiesWithinAABB(BasicEntityItem.class, player.getEntityBoundingBox().expand(128D, 256D, 128D));
+    		
+    		if (getlist.size() > 0)
+    		{
+    			data = new float[getlist.size() * 3];
+    			BasicEntityItem ei = null;
+    			
+    			for (int i = 0; i < getlist.size(); i++)
+    			{
+    				ei = getlist.get(i);
+    				data[i * 3] = (float) ei.posX;
+    				data[i * 3 + 1] = (float) ei.posY;
+    				data[i * 3 + 2] = (float) ei.posZ;
+    			}
+    		}
+    		else
+    		{
+    			data = new float[] {0F};
+    		}
+    		
+    		//send list to player
+    		CommonProxy.channelG.sendTo(new S2CGUIPackets(S2CGUIPackets.PID.SyncGUI_EntityItemList, data), (EntityPlayerMP) player);
+    	}
     }
 	
 	

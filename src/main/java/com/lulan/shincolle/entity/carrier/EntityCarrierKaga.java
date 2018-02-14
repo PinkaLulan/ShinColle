@@ -30,7 +30,7 @@ public class EntityCarrierKaga extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.6F, 1.875F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierKaga);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVKaga);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 8);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
@@ -67,7 +67,7 @@ public class EntityCarrierKaga extends BasicEntityShipCV
   		else
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//married effect: apply str buff to nearby ships
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&

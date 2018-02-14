@@ -167,6 +167,10 @@ public class EntityFloatingFort extends BasicEntityAirplane
 		BasicEntityShip host2 = (BasicEntityShip) this.host;
 		if (host2 == null) return;
 		
+		//apply 
+		int type = this.getMissileData(2).type;
+		CombatHelper.specialAttackEffect(this.host, type, new float[] {(float)this.posX, (float)this.posY, (float)this.posZ});
+		
 		//calc miss chance, if not miss, calc cri/multi hit
 		//計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
         List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(4.5D, 4.5D, 4.5D));

@@ -153,7 +153,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	/** attack attributes */
 	protected HashMap<Integer, Integer> BuffMap;
 	protected HashMap<Integer, int[]> AttackEffectMap;
-	protected MissileData[] MissileData;
+	protected MissileData[] MissileData;  //0: melee, 1: light, 2: heavy, 3: air-light, 4: air-heavy
 	
 	//for model render
 	protected float[] rotateAngle;		//模型旋轉角度, 用於手持物品render
@@ -2965,12 +2965,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 		if (value > 0)
 		{
 			int level = BuffHelper.getPotionLevel(this, 17);
-			value *= 1 + level;
+			value = (int) ((float)value * (1F + level * 2F));
 		}
 		//if grudge++, check buff: grudge mod
 		else if (value < 0)
 		{
-			value *= modGrudge;
+			value = (int) ((float)value * modGrudge);
 		}
 		
 		//check fuel flag

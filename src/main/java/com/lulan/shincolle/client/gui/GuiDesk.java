@@ -15,6 +15,7 @@ import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.C2SGUIPackets;
+import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums;
@@ -71,7 +72,9 @@ public class GuiDesk extends GuiContainer
 	private static final ResourceLocation guiBook2 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskBook2.png");
 	private static final ResourceLocation guiTeam = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTeam.png");
 	private static final ResourceLocation guiTarget = new ResourceLocation(Reference.TEXTURES_GUI+"GuiDeskTarget.png");
-	private static final ResourceLocation guiNameIcon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
+	private static final ResourceLocation guiNameIcon0 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon0.png");
+	private static final ResourceLocation guiNameIcon1 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon1.png");
+	private static final ResourceLocation guiNameIcon2 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon2.png");
 	
 	private TileEntityDesk tile;
 	public int tickGUI;
@@ -95,7 +98,8 @@ public class GuiDesk extends GuiContainer
 	
 	//radar
 	private int radar_zoomLv;			//0:256x256 1:64x64 2:16x16
-	private List<ShipEntity> shipList;	//ship list
+	private List<RadarEntity> shipList;	//ship list
+	private List<RadarEntity> itemList;	//BasicEntityItem list
 	
 	//book
 	private int book_chapNum;
@@ -123,15 +127,20 @@ public class GuiDesk extends GuiContainer
 	private int[][] iconXY = null;
 	
 	//object: ship entity + pixel position
-	private class ShipEntity
+	private class RadarEntity
 	{
 		public Entity ship;
 		public String name;
 		public double pixelx;	//included guiLeft/guiTop distance
 		public double pixely;
 		public double pixelz;
+		public int posX;		//entity position
+		public int posY;
+		public int posZ;
 		
-		public void setShip(Entity ship)
+		public RadarEntity() {}
+		
+		public RadarEntity(Entity ship)
 		{
 			this.ship = ship;
 			//get name
@@ -143,6 +152,16 @@ public class GuiDesk extends GuiContainer
 			{
 				name = ship.getName();
 			}
+		}
+		
+		public RadarEntity(double pixelx, double pixely, double pixelz, int posX, int posY, int posZ)
+		{
+			this.pixelx = pixelx;
+			this.pixely = pixely;
+			this.pixelz = pixelz;
+			this.posX = posX;
+			this.posY = posY;
+			this.posZ = posZ;
 		}
 	}
 	
@@ -189,6 +208,7 @@ public class GuiDesk extends GuiContainer
 		
 		//radar
 		this.shipList = new ArrayList();
+		this.itemList = new ArrayList();
 		
 		//team
 		this.teamState = 0;
@@ -297,9 +317,10 @@ public class GuiDesk extends GuiContainer
 		switch (this.guiFunc)
 		{
 		case 1:  /** radar */
+			//draw ship name
 			List list = new ArrayList();
 			
-			for (ShipEntity obj : this.shipList)
+			for (RadarEntity obj : this.shipList)
 			{
 				Entity ship = null;
 				
@@ -320,7 +341,23 @@ public class GuiDesk extends GuiContainer
 				}
 			}//end for all obj in shipList
 			
-			//draw string
+			//draw BasicEntityItem list
+			for (RadarEntity obj : this.itemList)
+			{
+				if (obj != null)
+				{
+					//mouse point at light spot icon
+					if (x2 < obj.pixelx+4 && x2 > obj.pixelx-2 &&
+						y2 < obj.pixelz+4 && y2 > obj.pixelz-2)
+					{
+						String strCoord = String.valueOf(obj.posX) + ", " +
+										  String.valueOf(obj.posY) + ", " +
+										  String.valueOf(obj.posZ);
+						list.add(strCoord);
+					}
+				}
+			}//end for all obj in shipList
+			
 			drawHoveringText(list, mx, my, this.fontRendererObj);
 		break;  //end radar
 		case 2:     /** book */
@@ -1087,8 +1124,9 @@ public class GuiDesk extends GuiContainer
 			int dz = 0;
 			int id = 0;
 			this.shipList = new ArrayList();
+			this.itemList = new ArrayList();
 			
-			//set position
+			//set origin position
 			if (this.type == 0)
 			{
 				ox = this.tile.getPos().getX();
@@ -1102,10 +1140,22 @@ public class GuiDesk extends GuiContainer
 				oz = this.player.posZ;
 			}
 			
+			//get scale factor
+			float radarScale = 1F;	//256x256: scale = 0.5 pixel = 1 block
+			switch (this.radar_zoomLv)
+			{
+			case 1:	//64x64
+				radarScale = 2;
+			break;
+			case 2:	//16x16
+				radarScale = 4;
+			break;
+			}
+			
 			//for all ships in ship list
 			for (int eid : ships)
 			{
-				ShipEntity getent = new ShipEntity();
+				RadarEntity getent = null;
 				double px = -1;
 				double py = -1;
 				double pz = -1;
@@ -1114,13 +1164,18 @@ public class GuiDesk extends GuiContainer
 				if (eid > 0)
 				{
 					ship = EntityHelper.getEntityByID(eid, 0, true);
+					
 					if (ship != null)
 					{
-						getent.setShip(ship);
+						getent = new RadarEntity(ship);
 						px = ship.posX;
 						py = ship.posY;
 						pz = ship.posZ;
 					}
+				}
+				else
+				{
+					continue;
 				}
 				
 				//draw ship icon on the radar
@@ -1134,18 +1189,6 @@ public class GuiDesk extends GuiContainer
 					py -= oy;
 					pz -= oz;
 					
-					//get scale factor
-					float radarScale = 1F;	//256x256: scale = 0.5 pixel = 1 block
-					switch (this.radar_zoomLv)
-					{
-					case 1:	//64x64
-						radarScale = 2;
-					break;
-					case 2:	//16x16
-						radarScale = 4;
-					break;
-					}
-					
 					//scale distance
 					px *= radarScale;
 					py *= radarScale;
@@ -1158,9 +1201,9 @@ public class GuiDesk extends GuiContainer
 					if ((int)pz < -64) pz = -64;
 					
 					//add ship to shiplist
-					getent.pixelx = guiLeft+69+px;
+					getent.pixelx = guiLeft + 69 + px;
 					getent.pixely = py;
-					getent.pixelz = guiTop+88+pz;
+					getent.pixelz = guiTop + 88 + pz;
 					this.shipList.add(getent);
 					
 					//select icon
@@ -1185,16 +1228,83 @@ public class GuiDesk extends GuiContainer
 					//draw icon by radar zoom level, radar center = [70,89]
 					if (id == this.listNum[LISTCLICK_RADAR] + this.listClicked[LISTCLICK_RADAR])
 					{
-						drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, 0, 195, 3, 3);
+						GlStateManager.color(1F, 0F, 0F, 1F);
+						drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, 0, 192, 3, 3);
 					}
 					else
 					{
+						GlStateManager.color(1F, 0.684F, 0.788F, 1F);
 						drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, sIcon, 192, 3, 3);
 					}
+					
 					id++;
 				}//end y position > 0
 			}//end for all ship
 			
+			//draw BasicEntityItem list
+			if (CommonProxy.entityItemList != null && CommonProxy.entityItemList.length > 1)
+			{
+				int entlen = CommonProxy.entityItemList.length / 3;
+				
+				for (int i = 0; i < entlen; i++)
+				{
+					double px = CommonProxy.entityItemList[i * 3];
+					double py = CommonProxy.entityItemList[i * 3 + 1];
+					double pz = CommonProxy.entityItemList[i * 3 + 2];
+					int posX = MathHelper.ceil(px);
+					int posY = MathHelper.ceil(py);
+					int posZ = MathHelper.ceil(pz);
+					
+					//change ship position to radar position
+					//zoom lv 0: 128x128: 1 pixel = 1 block
+					//zoom lv 1: 64x64:   2 pixel = 1 block
+					//zoom lv 2: 32x32:   4 pixel = 1 block
+					px -= ox;
+					py -= oy;
+					pz -= oz;
+					
+					//scale distance
+					px *= radarScale;
+					py *= radarScale;
+					pz *= radarScale;
+					
+					//radar display distance limit = 64 pixels
+					if ((int)px > 64) px = 64;
+					if ((int)px < -64) px = -64;
+					if ((int)pz > 64) pz = 64;
+					if ((int)pz < -64) pz = -64;
+					
+					//add ship to shiplist
+					RadarEntity getent = new RadarEntity(guiLeft + 69 + px, py, guiTop + 88 + pz,
+														 posX, posY, posZ);
+					this.itemList.add(getent);
+					
+					//select icon
+					int sIcon = 0;
+					if (MathHelper.abs((int)px) > 48 || MathHelper.abs((int)pz) > 48)
+					{
+						sIcon = (int)(this.tickGUI * 0.125F + 6) % 8 * 3;
+					}
+					else if (MathHelper.abs((int)px) > 32 || MathHelper.abs((int)pz) > 32)
+					{
+						sIcon = (int)(this.tickGUI * 0.125F + 4) % 8 * 3;
+					}
+					else if (MathHelper.abs((int)px) > 16 || MathHelper.abs((int)pz) > 16)
+					{
+						sIcon = (int)(this.tickGUI * 0.125F + 2) % 8 * 3;
+					}
+					else
+					{
+						sIcon = (int)(this.tickGUI * 0.125F) % 8 * 3;
+					}
+					
+					//draw icon by radar zoom level, radar center = [70,89]
+					GlStateManager.color(0F, 1F, 1F, 1F);
+					drawTexturedModalRect(guiLeft+69+(int)px, guiTop+88+(int)pz, sIcon, 192, 3, 3);
+				}
+			}
+			
+			GlStateManager.color(1F, 1F, 1F, 1F);
 			GlStateManager.disableBlend();
 		}//end get player
 		
@@ -1203,7 +1313,7 @@ public class GuiDesk extends GuiContainer
 	//draw morale icon
 	private void drawMoraleIcon()
 	{
-		Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon0);
 		
 		//draw ship list
 		if (this.shipList != null)
@@ -1212,7 +1322,7 @@ public class GuiDesk extends GuiContainer
 			
 			for (int i = this.listNum[LISTCLICK_RADAR]; i < shipList.size() && i < this.listNum[LISTCLICK_RADAR] + 5; ++i) {
 				//get ship
-				ShipEntity s = shipList.get(i);
+				RadarEntity s = shipList.get(i);
 				
 				if (s != null && s.ship instanceof BasicEntityShip)
 				{
@@ -1248,7 +1358,7 @@ public class GuiDesk extends GuiContainer
 	private void drawRadarText()
 	{
 		String str, str2;
-		ShipEntity s;
+		RadarEntity s;
 		BasicEntityShip s2;
 		int texty = 27;
 		
@@ -2041,12 +2151,24 @@ public class GuiDesk extends GuiContainer
 	{
 		super.updateScreen();
 		
+		//update text field cursor
 		this.textField.updateCursorCounter();
 		
+		//close gui if tile broken
 		if (this.type == 0 && this.tile == null)
 		{
             this.mc.player.closeScreen();
         }
+		
+		//every 64 ticks
+		if ((this.tickGUI & 63) == 0)
+		{
+			if (this.player != null)
+			{
+				//send radar entity list request
+				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_EntityItemList, 0));
+			}
+		}//end every 64 ticks
 	}
 	
 	private void setShipModel(int chap, int page)
@@ -2191,25 +2313,37 @@ public class GuiDesk extends GuiContainer
 					}
 				}
 			}
-	    	
-	    	Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon);
-	    	
-	    	//draw ship name icon
-        	try
-        	{
-        		drawTexturedModalRect(guiLeft+23, guiTop+53, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
-
-        		//use name icon file 0
-        		if (iconXY[1][0] == 0)
-        		{
-        			drawTexturedModalRect(guiLeft+30, guiTop+94, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
-        		}
-        	}
-        	catch(Exception e)
-        	{
-        		e.printStackTrace();
-        	}
-
+			
+			try
+	    	{
+		        //draw type icon
+		        Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon0);
+		        
+		        drawTexturedModalRect(guiLeft+23, guiTop+53, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+		        
+		        //draw name icon
+	        	int offx = 0;
+	        	int offy = 0;
+	        	
+	        	if (iconXY[1][0] < 100)
+	            {
+	            	Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon1);
+	            	if (iconXY[1][0] == 4) offy = -10;
+	            }
+	            else
+	            {
+	            	Minecraft.getMinecraft().getTextureManager().bindTexture(guiNameIcon2);
+	            	if (iconXY[1][0] == 6) offy = -10;
+	            	else offy = 10;
+	            }
+	        	
+				drawTexturedModalRect(guiLeft+30+offx, guiTop+94+offy, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
+	    	}
+	    	catch (Exception e)
+	    	{
+	    		LogHelper.info("Exception : desk GUI: get name icon fail "+e);
+	    	}
+			
         	//tick time
         	int modelTicking = this.tickGUI % 3;
         	if (modelTicking == 0)

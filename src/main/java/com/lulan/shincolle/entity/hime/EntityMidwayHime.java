@@ -70,7 +70,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
   		if (!this.world.isRemote)
   		{
   			//every 128 ticks
-        	if ((this.ticksExisted & 127) == 0 && !this.isMorph)
+        	if ((this.ticksExisted & 127) == 0)
         	{
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())
@@ -98,7 +98,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
   					
   					//apply buff to owner
   					EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+  	  				if (player != null && getDistanceSqToEntity(player) < 256D && !this.isMorph)
   	  				{
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 50, false, false));

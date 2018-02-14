@@ -24,7 +24,7 @@ public class EntityDestroyerNi extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.9F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerNI);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDNI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);

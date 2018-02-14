@@ -26,7 +26,7 @@ public class EntityCATakao extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 1.75F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserTakao);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CATakao);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);

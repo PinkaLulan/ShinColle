@@ -33,7 +33,7 @@ public class EntityDestroyerInazumaMob extends BasicEntityShipHostile implements
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerInazuma);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDInazuma);
         this.ridingState = 0;
         this.smokeX = 0F;
         this.smokeY = 0F;

@@ -27,7 +27,7 @@ public class EntityCATakaoMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserTakao);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CATakao);
         
 		//model display
 		this.setStateEmotion(ID.S.State, this.rand.nextInt(16), false);

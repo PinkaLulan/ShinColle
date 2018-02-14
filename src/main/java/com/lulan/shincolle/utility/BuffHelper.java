@@ -56,13 +56,13 @@ import net.minecraftforge.common.util.Constants;
    14 invis:          no special effect (clear invis target every 64 ticks)
    15 blind:          range--
    16 night vision:   night battle effect -80%
-   17 hunger:         grudge consumption +100%/lv (multiplier)
+   17 hunger:         grudge consumption +200%/lv (multiplier)
    18 weak:           dmg, kb
    19 poison:         def, kb
    20 wither:         hurt (1% + 2)/lv until dead
    21 heal boost:     max hp
    22 absorption:     def
-   23 saturation:     morale +N/lv every x ticks
+   23 saturation:     resources gain +50%/lv, morale +N/lv every x ticks
    24 glowing:        no effect
    25 levitation:     dodge, AA, kb
    26 luck:           cri/dhit/thit++
@@ -296,6 +296,10 @@ public class BuffHelper
 				potion[ID.Attrs.HP] += 100F * lv;
 				potion[ID.Attrs.DEF] += 0.2F * lv;
 			break;
+			case 23: //saturation: grudge +50%, ammo +50%
+				potion[ID.Attrs.GRUDGE] += 0.5F * lv;
+				potion[ID.Attrs.AMMO] += 0.5F * lv;
+			break;
 			case 25: //levitation: dodge +0.1, AA +60, kb -0.2
 				potion[ID.Attrs.DODGE] += 0.1F * lv;
 				potion[ID.Attrs.AA] += 20F * lv;
@@ -343,13 +347,14 @@ public class BuffHelper
 			switch(id)
 			{
 			case 10: //regen: heal X every ticking
-				host.heal((hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
+				if (host.getHealth() < host.getMaxHealth()) host.heal((hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
 			break;
 			case 20: //wither: hurt X until dead
 				host.attackEntityFrom(DamageSource.magic, (hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
 			break;
 			case 23: //saturation: morale +N/lv, friendly ship only
-				host.heal((hp1p * 1F + 2F) * (0.8F + (float)lv * 0.2F));
+				if (host.getHealth() < host.getMaxHealth()) host.heal((hp1p * 1F + 2F) * (0.8F + (float)lv * 0.2F));
+				
 				if (host instanceof BasicEntityShip)
 				{
 					BasicEntityShip ship = (BasicEntityShip) host;

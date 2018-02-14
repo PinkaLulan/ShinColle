@@ -22,7 +22,7 @@ public class EntityCARi extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.75F, 1.7F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserRI);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CARI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
@@ -74,7 +74,7 @@ public class EntityCARi extends BasicEntityShipSmall
     	if (!this.world.isRemote)
     	{
     		//every 128 ticks
-    		if (this.ticksExisted % 128 == 0 && !this.isMorph)
+    		if (this.ticksExisted % 128 == 0)
     		{
 	    		//apply potion effect in the night
 	        	if (!this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))

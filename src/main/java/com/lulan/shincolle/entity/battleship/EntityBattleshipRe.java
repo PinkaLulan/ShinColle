@@ -47,7 +47,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.6F, 1.55F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRE);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
@@ -114,7 +114,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
   				}
   				
   				//every 256 ticks
-  	        	if ((this.ticksExisted & 255) == 0)
+  	        	if ((this.ticksExisted & 255) == 0 && !this.isMorph)
   	        	{
   	        		//push other people
   	        		if (this.getRNG().nextInt(5) == 0 && !this.isSitting() && !this.isRiding() &&
@@ -127,7 +127,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
   			}//end every 128 ticks
     		
     		//若要找騎乘目標
-        	if (this.isPushing)
+        	if (this.isPushing && !this.isMorph)
         	{
         		this.tickPush++;
         		

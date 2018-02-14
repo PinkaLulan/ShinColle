@@ -1469,8 +1469,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	//check ship under crane waiting for craning
 	private void checkCraningShip()
 	{
-		AxisAlignedBB box = new AxisAlignedBB(pos.getX() - 7D, pos.getY() - 7D, pos.getZ() - 7D,
-											  pos.getX() + 7D, pos.getY() + 7D, pos.getZ() + 7D);
+		AxisAlignedBB box = new AxisAlignedBB(pos.getX() - 7D, pos.getY() - 8D, pos.getZ() - 7D,
+											  pos.getX() + 7D, pos.getY(), pos.getZ() + 7D);
         List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, box);
 
         if (slist != null && !slist.isEmpty())

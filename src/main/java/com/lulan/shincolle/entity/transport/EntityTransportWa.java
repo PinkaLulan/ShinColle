@@ -29,7 +29,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 1.53F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.TRANSPORT);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.TransportWA);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.APWA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.UNDEFINED);
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.AP]);
@@ -83,23 +83,26 @@ public class EntityTransportWa extends BasicEntityShipSmall
   		else
   		{
   			//check every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
-  				//consume supplies to a fixed level
-  				if (this.getStateMinor(ID.M.NumGrudge) <= 5400)
+  				if (!this.isMorph)
   				{
-  					consumeSupplyItems(0);
+  					//consume supplies to a fixed level
+  	  				if (this.getStateMinor(ID.M.NumGrudge) <= 5400)
+  	  				{
+  	  					consumeSupplyItems(0);
+  	  				}
+  	  				
+  					if (this.getStateMinor(ID.M.NumAmmoLight) <= 540)
+  					{
+  						consumeSupplyItems(1);
+  					}
+  					
+  					if (this.getStateMinor(ID.M.NumAmmoHeavy) <= 270)
+  					{
+  						consumeSupplyItems(2);
+  					}
   				}
-  				
-				if (this.getStateMinor(ID.M.NumAmmoLight) <= 540)
-				{
-					consumeSupplyItems(1);
-				}
-				
-				if (this.getStateMinor(ID.M.NumAmmoHeavy) <= 270)
-				{
-					consumeSupplyItems(2);
-				}
   				
 				//check every 256 ticks
   				if (this.ticksExisted % 256 == 0 && !this.getStateFlag(ID.F.NoFuel))

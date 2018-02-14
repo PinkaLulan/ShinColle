@@ -34,7 +34,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineRo500);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSRo500);
         
 		//model display
         this.setStateEmotion(ID.S.State, rand.nextInt(8), false);

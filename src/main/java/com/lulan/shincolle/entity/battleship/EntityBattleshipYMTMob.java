@@ -37,7 +37,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipYamato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBYamato);
         this.smokeX = 0F;
         this.smokeY = 0F;
         

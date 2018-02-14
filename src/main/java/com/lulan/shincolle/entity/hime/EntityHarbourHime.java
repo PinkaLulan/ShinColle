@@ -72,7 +72,7 @@ public class EntityHarbourHime extends BasicEntityShipCV
   		if (!this.world.isRemote)
   		{
   			//heal effect
-        	if (this.ticksExisted % 128 == 0 && !this.isMorph)
+        	if (this.ticksExisted % 128 == 0)
         	{
         		//1: 增強被動回血
         		if (getStateMinor(ID.M.NumGrudge) > 0 && this.getHealth() < this.getMaxHealth())

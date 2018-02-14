@@ -36,7 +36,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		super(world);
 		this.setSize(0.6F, 1.4F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SubmarineRo500);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSRo500);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
@@ -93,7 +93,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
   		if (!this.world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				if (getStateFlag(ID.F.UseRingEffect) && getStateMinor(ID.M.NumGrudge) > 0)
   				{

@@ -464,6 +464,9 @@ public class ID
 		public static final short OPTool = 74;
 		public static final short AmmoEnchant = 75;
 		public static final short Potions = 76;
+		public static final short GrudgeXP = 77;
+		public static final short GrudgeXPB = 78;
+		public static final short XPBot = 79;
 	}
 	
 	/** hp state index */
@@ -587,83 +590,105 @@ public class ID
 		public static final byte PlayerDD = -15;
 		public static final byte PlayerSS = -16;
 		
-		public static final short DestroyerI = 0;
-		public static final short DestroyerRO = 1;
-		public static final short DestroyerHA = 2;
-		public static final short DestroyerNI = 3;
+		public static final short DDI = 0;
+		public static final short DDRO = 1;
+		public static final short DDHA = 2;
+		public static final short DDNI = 3;
 		
-		public static final short LightCruiserHO = 4;
-		public static final short LightCruiserHE = 5;
-		public static final short LightCruiserTO = 6;
-		public static final short LightCruiserTSU = 7;
+		public static final short CLHO = 4;
+		public static final short CLHE = 5;
+		public static final short CLTO = 6;
+		public static final short CLTSU = 7;
 		
-		public static final short TorpedoCruiserCHI = 8;
-		public static final short HeavyCruiserRI = 9;
-		public static final short HeavyCruiserNE = 10;
+		public static final short CLTCHI = 8;
+		public static final short CARI = 9;
+		public static final short CANE = 10;
 		
-		public static final short LightCarrierNU = 11;
-		public static final short CarrierWO = 12;
+		public static final short CVLNU = 11;
+		public static final short CVWO = 12;
 		
-		public static final short BattleshipRU = 13;
-		public static final short BattleshipTA = 14;
-		public static final short BattleshipRE = 15;
+		public static final short BBRU = 13;
+		public static final short BBTA = 14;
+		public static final short BBRE = 15;
 		
-		public static final short TransportWA = 16;
-		public static final short SubmarineKA = 17;
-		public static final short SubmarineYO = 18;
-		public static final short SubmarineSO = 19;
+		public static final short APWA = 16;
+		public static final short SSKA = 17;
+		public static final short SSYO = 18;
+		public static final short SSSO = 19;
 		
-		public static final short CarrierHime = 20;
+		public static final short CVHime = 20;
 		public static final short AirfieldHime = 21;
-		public static final short ArmoredCarrierHime = 22;
+		public static final short ArmoredCVHime = 22;
 		public static final short AnchorageHime = 23;
 		public static final short HarbourWD = 24;
 		public static final short AnchorageWD = 25;
-		public static final short BattleshipHime = 26;
-		public static final short DestroyerHime = 27;
+		public static final short BBHime = 26;
+		public static final short DDHime = 27;
 		public static final short HarbourHime = 28;
 		public static final short IsolatedHime = 29;
 		public static final short MidwayHime = 30;
 		public static final short NorthernHime = 31;
 		public static final short SouthernHime = 32;
-		public static final short CarrierWD = 33;
-		public static final short LightCruiserDemon = 34;
-		public static final short BattleshipWD = 35;
+		public static final short CVWD = 33;
+		public static final short CLDemon = 34;
+		public static final short BBWD = 35;
 		
-		public static final short DestroyerShimakaze = 36;
-		public static final short BattleshipNagato = 37;
-		public static final short SubmarineU511 = 38;
-		public static final short SubmarineRo500 = 39;
+		public static final short DDShimakaze = 36;
+		public static final short BBNagato = 37;
+		public static final short SSU511 = 38;
+		public static final short SSRo500 = 39;
 		
-		public static final short SeaplaneHime = 40;
+		public static final short STHime = 40;
 		public static final short AirdefenseHime = 41;
 		public static final short PTImp = 42;
-		public static final short LightCruiserHime = 43;
-		public static final short SubmarineHime = 44;
-		public static final short DestroyerWD = 45;
+		public static final short CLHime = 43;
+		public static final short SSHime = 44;
+		public static final short DDWD = 45;
 		
-		public static final short BattleshipYamato = 46;
-		public static final short CarrierKaga = 47;
-		public static final short CarrierAkagi = 48;
+		public static final short BBYamato = 46;
+		public static final short CVKaga = 47;
+		public static final short CVAkagi = 48;
 		
-		public static final short HeavyCruiserHime = 49;
+		public static final short CAHime = 49;
 		public static final short SupplyDepotHime = 50;
 		
-		public static final short DestroyerAkatsuki = 51;
-		public static final short DestroyerHibiki = 52;
-		public static final short DestroyerIkazuchi = 53;
-		public static final short DestroyerInazuma = 54;
+		public static final short DDAkatsuki = 51;
+		public static final short DDHibiki = 52;
+		public static final short DDIkazuchi = 53;
+		public static final short DDInazuma = 54;
 		public static final short Raiden = 55;
 		
-		public static final short LightCruiserTenryuu = 56;
-		public static final short LightCruiserTatsuta = 57;
-		public static final short HeavyCruiserAtago = 58;
-		public static final short HeavyCruiserTakao = 59;
+		public static final short CLTenryuu = 56;
+		public static final short CLTatsuta = 57;
+		public static final short CAAtago = 58;
+		public static final short CATakao = 59;
 		
 		public static final short BBKongou = 60;
 		public static final short BBHiei = 61;
 		public static final short BBHaruna = 62;
 		public static final short BBKirishima = 63;
+		
+		public static final short DDNA = 64;
+		public static final short DDAH = 65;
+		public static final short STWH = 66;
+		public static final short NorthernWH = 67;
+		public static final short JellyfishHime = 68;
+		public static final short EscortHime = 69;
+		public static final short EuropeanHime = 70;
+		public static final short CentralHime = 71;
+		public static final short SSNH = 72;
+		public static final short FrenchHime = 73;
+		public static final short NightStraitHime = 74;
+		public static final short EntombedAAHime = 75;
+		public static final short NorthlandHime = 76;
+		public static final short SupplyDepotSH = 77;
+		public static final short SSSH = 78;
+		public static final short BBSH = 79;
+		public static final short CASH = 80;
+		public static final short CVSH = 81;
+		public static final short HarbourSH = 82;
+		public static final short LycorisHime = 83;
+		public static final short TwinHime = 84;
 	}
 	
 	/** ship misc entity id for renderer */

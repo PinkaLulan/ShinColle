@@ -367,54 +367,57 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
 			break;
     		}
     		
-    		//碰撞判定1: 本體位置碰撞: missile本身位置是固體方塊
-    		IBlockState state = this.world.getBlockState(new BlockPos(this));
-    		if (state.getMaterial().isSolid())
+    		//超過一定時間才能爆炸
+    		if (this.ticksExisted > 5)
     		{
-    			this.onImpact(null);
-    		}
-    		
-    		//碰撞判定2: 移動量投射法: 以1 tick移動的範圍內判定會碰撞到的物體
-    		Vec3d posStart = new Vec3d(this.posX, this.posY, this.posZ);
-            Vec3d posEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            RayTraceResult raytrace = this.world.rayTraceBlocks(posStart, posEnd);          
-            
-            posStart = new Vec3d(this.posX, this.posY, this.posZ);
-            posEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-            
-            if (raytrace != null)
-            {
-            	posEnd = new Vec3d(raytrace.hitVec.xCoord, raytrace.hitVec.yCoord, raytrace.hitVec.zCoord);
+    			//碰撞判定1: 本體位置碰撞: missile本身位置是固體方塊
+        		IBlockState state = this.world.getBlockState(new BlockPos(this));
+        		if (state.getMaterial().isSolid())
+        		{
+        			this.onImpact(null);
+        		}
+        		
+        		//碰撞判定2: 移動量投射法: 以1 tick移動的範圍內判定會碰撞到的物體
+        		Vec3d posStart = new Vec3d(this.posX, this.posY, this.posZ);
+                Vec3d posEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+                RayTraceResult raytrace = this.world.rayTraceBlocks(posStart, posEnd);          
                 
-                if (raytrace.typeOfHit == RayTraceResult.Type.ENTITY)
+                posStart = new Vec3d(this.posX, this.posY, this.posZ);
+                posEnd = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+                
+                if (raytrace != null)
                 {
-                	if (raytrace.entityHit.canBeCollidedWith() && EntityHelper.isNotHost(this, raytrace.entityHit) && !TeamHelper.checkSameOwner(host2, raytrace.entityHit))
+                	posEnd = new Vec3d(raytrace.hitVec.xCoord, raytrace.hitVec.yCoord, raytrace.hitVec.zCoord);
+                    
+                    if (raytrace.typeOfHit == RayTraceResult.Type.ENTITY)
+                    {
+                    	if (raytrace.entityHit.canBeCollidedWith() && EntityHelper.isNotHost(this, raytrace.entityHit) && !TeamHelper.checkSameOwner(host2, raytrace.entityHit))
+                    	{
+                    		this.onImpact(raytrace.entityHit);
+                    		return;
+                    	}
+                    }
+                    else if (raytrace.typeOfHit == RayTraceResult.Type.BLOCK)
+                    {
+                    	this.onImpact(null);
+                    	return;
+                    }
+                }
+                
+                //碰撞判定3: 擴展AABB碰撞: missile擴展1格大小內是否有entity可觸發爆炸
+                List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1.5D, 1D));
+                
+                //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
+                for (Entity ent : hitList)
+                { 
+                	//不會對自己主人觸發爆炸
+                	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) && !TeamHelper.checkSameOwner(host2, ent))
                 	{
-                		this.onImpact(raytrace.entityHit);
+                		this.onImpact(ent);
                 		return;
                 	}
                 }
-                else if (raytrace.typeOfHit == RayTraceResult.Type.BLOCK)
-                {
-                	this.onImpact(null);
-                	return;
-                }
-            }
-            
-            //碰撞判定3: 擴展AABB碰撞: missile擴展1格大小內是否有entity可觸發爆炸
-            List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().expand(1D, 1.5D, 1D));
-            
-            //搜尋list, 找出第一個可以判定的目標, 即傳給onImpact
-            for (Entity ent : hitList)
-            { 
-            	//不會對自己主人觸發爆炸
-            	if (ent.canBeCollidedWith() && EntityHelper.isNotHost(this, ent) && !TeamHelper.checkSameOwner(host2, ent))
-            	{
-            		this.onImpact(ent);
-            		return;
-            	}
-            }
-            
+    		}
     	}//end server side
     	/**********client side***********/
     	else
@@ -623,7 +626,7 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     		float missileAtk = this.attrs.getAttackDamage();
     		
     		//special missile action
-    		this.specialMissileAction(this.type);
+    		CombatHelper.specialAttackEffect(this.host, this.type, new float[] {(float)this.posX, (float)this.posY, (float)this.posZ});
     		
             //計算範圍爆炸傷害: 判定bounding box內是否有可以吃傷害的entity
             List<Entity> hitList = this.world.getEntitiesWithinAABB(Entity.class,
@@ -676,27 +679,6 @@ public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs
     	}//end if server side
     }
     
-    //special missile action
-    protected void specialMissileAction(int type)
-    {
-    	switch (type)
-    	{
-    	case 5:   //black hole
-    	{
-    		if (this.host == null) return;
-    		
-    		EntityProjectileStatic beam = new EntityProjectileStatic(this.world);
-    		double[] data = new double[] {this.posX, this.posY, this.posZ,
-    				20D+host.getLevel()*0.125D,
-    				0.12D+host.getLevel()*0.00075D,
-    				4D+host.getLevel()*0.035D};
-            beam.initAttrs(this.host, 0, data);
-            this.world.spawnEntity(beam);
-    	}
-		break;
-    	}
-    }
-
 	//儲存entity的nbt
     @Override
 	public void writeEntityToNBT(NBTTagCompound nbt) {}

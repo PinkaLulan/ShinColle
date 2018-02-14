@@ -47,6 +47,8 @@ public class ModRecipes
 		ItemStack grudeBlock = new ItemStack(ModBlocks.BlockGrudge);
 		ItemStack grudeBlock2 = new ItemStack(ModBlocks.BlockGrudge,2,0);
 		ItemStack grudeBlock9 = new ItemStack(ModBlocks.BlockGrudge,9,0);
+		ItemStack grudeXPStack = new ItemStack(ModItems.Grudge, 1, 1);
+		ItemStack grudeXPBlock = new ItemStack(ModBlocks.BlockGrudgeXP);
 		ItemStack grudeHeavyBlock = new ItemStack(ModBlocks.BlockGrudgeHeavy);
 		ItemStack grudeHeavyBlockDeco = new ItemStack(ModBlocks.BlockGrudgeHeavyDeco);
 		ItemStack gunpowderStack = new ItemStack(Items.GUNPOWDER);
@@ -74,6 +76,7 @@ public class ModRecipes
 		ItemStack shipEggL = new ItemStack(ModItems.ShipSpawnEgg, 1, 1);
 		ItemStack smallshipyardStack = new ItemStack(ModBlocks.BlockSmallShipyard);
 		ItemStack toyplane = new ItemStack(ModItems.ToyAirplane);
+		ItemStack trainbook = new ItemStack(ModItems.TrainingBook);
 		ItemStack wrench = new ItemStack(ModItems.TargetWrench);
 		ItemStack volblock = new ItemStack(ModBlocks.BlockVolBlock);
 		ItemStack volcore = new ItemStack(ModBlocks.BlockVolCore);
@@ -114,7 +117,6 @@ public class ModRecipes
 		//misc
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat8, kaitaiHammerAll, shipEggS));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(instantMat32, kaitaiHammerAll, shipEggL));
-		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg, shipEgg));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ownerPaper, grudeStack, Items.PAPER));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(waypoint, grudeStack, Items.STICK));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(recipepaper, grudeStack, Items.PAPER, "gemLapis"));
@@ -130,6 +132,9 @@ public class ModRecipes
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration3, ration2, ModBlocks.BlockGrudge, ModBlocks.BlockPolymetalGravel));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration4, Items.SNOWBALL, Items.SNOWBALL, Items.SNOWBALL, Items.SNOWBALL, Items.MILK_BUCKET, ModItems.Grudge));
 		GameRegistry.addRecipe(new ShapelessOreRecipe(ration5, ration4, ModBlocks.BlockGrudge));
+		//xp item
+		GameRegistry.addRecipe(new ShapelessOreRecipe(modernKit, kaitaiHammerAll, wrench, grudeXPBlock, grudeXPBlock, grudeXPBlock, grudeXPBlock));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(trainbook, kaitaiHammerAll, modernKit, Items.WRITABLE_BOOK, grudeXPBlock, grudeXPBlock, grudeXPBlock, grudeXPBlock));
 		
 		//SHAPED RECIPE
 		//ammo material: copper/tin/bronze=8 iron/lead=16 abyssium/steel/gold/silver=32 diamond/uranium=64
@@ -215,6 +220,9 @@ public class ModRecipes
 		GameRegistry.addRecipe(new ShapedOreRecipe(shiptank3,"mtm","mtm","mtm",'m',grudeHeavyBlock,'t',shiptank2));
 		//enchant shell
 		GameRegistry.addRecipe(new RecipeEnchantShell());
+		//xp item
+		GameRegistry.addRecipe(new ShapedOreRecipe(grudeXPStack,"xxx","xgx","xxx",'g',grudeStack,'x',Items.EXPERIENCE_BOTTLE));
+		GameRegistry.addRecipe(new ShapedOreRecipe(grudeXPBlock,"xxx","xxx","xxx",'x',grudeXPStack));
 	}
 
 	

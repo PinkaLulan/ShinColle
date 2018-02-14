@@ -50,7 +50,7 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.LightCruiserTatsuta);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CLTatsuta);
 		this.targetSelector = new TargetHelper.SelectorForHostile(this);
 		this.remainAttack = 0;
 		this.skillMotion = Vec3d.ZERO;

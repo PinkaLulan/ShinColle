@@ -62,8 +62,9 @@ public class C2SInputPackets implements IMessage
 		public static final byte Request_ChestSet = 9;
 		public static final byte Request_UnitName = 10;
 		public static final byte Request_Buffmap = 11;
-		public static final byte MountSkill = 12;
+		public static final byte PlayerSkill = 12;
 		public static final byte MorphGUI = 13;
+		public static final byte Request_EntityItemList = 14;
 	}
 	
 	
@@ -97,7 +98,7 @@ public class C2SInputPackets implements IMessage
 		case PID.MountMove:			//mount move key
 		case PID.MountGUI:			//mount GUI key
 		case PID.MorphGUI:			//morph GUI key
-		case PID.MountSkill:		//mount skill  key
+		case PID.PlayerSkill:		//mount skill  key
 		case PID.SyncHandheld:		//sync current item
 		case PID.CmdChOwner:    	//command: change owner
 		case PID.CmdShipAttr:   	//command: set ship attrs
@@ -108,6 +109,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 		case PID.Request_UnitName:	//ship unit name
 		case PID.Request_Buffmap:	//buff map
+		case PID.Request_EntityItemList://entity item list for radar
 			try
 			{
 				this.value = buf.readInt();  //int array length
@@ -139,7 +141,7 @@ public class C2SInputPackets implements IMessage
 		case PID.MountMove:		//mount move key
 		case PID.MountGUI:		//mount GUI key
 		case PID.MorphGUI:		//morph GUI key
-		case PID.MountSkill:	//mount skill key
+		case PID.PlayerSkill:	//mount skill key
 		case PID.SyncHandheld:	//sync current item
 		case PID.CmdChOwner:    //command: change owner
 		case PID.CmdShipAttr:   //command: set ship attrs
@@ -150,6 +152,7 @@ public class C2SInputPackets implements IMessage
 		case PID.Request_PlaceFluid://ship tank place fluid packet
 		case PID.Request_UnitName:	//ship unit name
 		case PID.Request_Buffmap:	//buff map
+		case PID.Request_EntityItemList://entity item list for radar
 			//send int array
 			if (this.value3 != null)
 			{
@@ -210,6 +213,17 @@ public class C2SInputPackets implements IMessage
 						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, mount.getHostEntity().getEntityId(), 0, 0);
 					}
 				}
+				else if (player.getPassengers().size() > 0 && player.getPassengers().get(0) instanceof BasicEntityShip)
+				{
+					BasicEntityShip ship = (BasicEntityShip) player.getPassengers().get(0);
+					
+					//check ship owner is player
+					if (TeamHelper.checkSameOwner(player, ship))
+					{
+						//open ship GUI
+						FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, player.world, ship.getEntityId(), 0, 0);
+					}
+				}
 			break;
 			case PID.MorphGUI:	//mounts open GUI
 			{
@@ -222,7 +236,7 @@ public class C2SInputPackets implements IMessage
 				}
 			}
 			break;
-			case PID.MountSkill://mounts skill key input packet
+			case PID.PlayerSkill://player skill key input packet
 				ShipSkillHandler.handlePlayerSkill(player, msg.value3);
 			break;
 			case PID.SyncHandheld:	//sync current item
@@ -439,6 +453,15 @@ public class C2SInputPackets implements IMessage
 				{
 					BasicEntityShip ship = (BasicEntityShip) entity;
 					if (!ship.isMorph()) ship.sendSyncPacketBuffMap();
+				}
+			}
+			break;
+			case PID.Request_EntityItemList://entity item list for radar
+			{
+				//send entity item list to client
+				if (player != null)
+				{
+					PacketHelper.syncEntityItemListToClient(player);
 				}
 			}
 			break;

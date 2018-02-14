@@ -37,7 +37,7 @@ public class GuiFormation extends GuiContainer
 {
 
 	private static final ResourceLocation guiFormat = new ResourceLocation(Reference.TEXTURES_GUI+"GuiFormation.png");
-	private static final ResourceLocation guiNameIcon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
+	private static final ResourceLocation guiNameIcon = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon0.png");
 	
 	private int xClick, yClick, xMouse, yMouse,
 				tickGUI, tickTooltip, tickWaitSync,

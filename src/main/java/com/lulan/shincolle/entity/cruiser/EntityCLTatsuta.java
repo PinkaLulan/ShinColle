@@ -50,7 +50,7 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.75F, 1.65F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.LIGHT_CRUISER);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.LightCruiserTatsuta);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CLTatsuta);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CL]);

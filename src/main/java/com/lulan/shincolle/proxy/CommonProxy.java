@@ -38,10 +38,17 @@ public abstract class CommonProxy implements IProxy
 	public static SimpleNetworkWrapper channelP;
 	public static SimpleNetworkWrapper channelI;
 
+	/** MP flag */
 	public static boolean isMultiplayer = false;	//the world is MP or SP
+	
+	/** inter-mod */
 	public static boolean activeBaubles = false;	//mod Baubles active flag
 	public static boolean activeIC2 = false;		//mod IC2 active flag
 	public static boolean activeMetamorph = false;	//mod Metamorph active flag
+	
+	/** common value */
+	//BasicEntityItem list for radar display, id: k:x, k+1:y, k+2:z
+	public static float[] entityItemList = null;
 	
 	
 	public CommonProxy() {}

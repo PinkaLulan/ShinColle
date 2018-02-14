@@ -27,7 +27,7 @@ public class EntityCAAtagoMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.HeavyCruiserAtago);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CAAtago);
         
 		//model display
 		this.setStateEmotion(ID.S.State, this.rand.nextInt(16), false);

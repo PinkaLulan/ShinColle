@@ -47,7 +47,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 2F);	//碰撞大小 跟模型大小無關
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipNagato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 2);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
@@ -112,7 +112,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
   		//server side
   		else
   		{
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//add morale if DD or Hoppo nearby
   				addMoraleSpecialEvent(this);
@@ -142,6 +142,8 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	//add morale if DD or Hoppo nearby, add 150 per ship found
   	protected static void addMoraleSpecialEvent(BasicEntityShip host)
   	{
+  		if (host.isMorph()) return;
+  		
 		//get nearby ship
 		List<EntityLivingBase> slist = host.world.getEntitiesWithinAABB(EntityLivingBase.class, host.getEntityBoundingBox().expand(16D, 12D, 16D));
 		List<EntityLivingBase> target = new ArrayList<EntityLivingBase>();

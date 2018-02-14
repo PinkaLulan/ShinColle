@@ -452,7 +452,6 @@ public class MetamorphHelper
 			shipFlag.setBoolean("NoFuel", false);
 			shipFlag.setBoolean("CanDrop", false);
 			shipFlag.setBoolean("CanFollow", true);
-			shipFlag.setBoolean("WedEffect", true);
 			shipFlag.setBoolean("IsMarried", true);
 			shipFlag.setBoolean("OnSight", true);
 			shipFlag.setBoolean("TimeKeeper", false);
@@ -881,6 +880,16 @@ public class MetamorphHelper
     			shipPoint.setByte("SPD", morph.getAttrs().getAttrsBonus(ID.AttrsBase.SPD));
     			shipPoint.setByte("MOV", morph.getAttrs().getAttrsBonus(ID.AttrsBase.MOV));
     			shipPoint.setByte("HIT", morph.getAttrs().getAttrsBonus(ID.AttrsBase.HIT));
+    			
+    			NBTTagCompound shipFlag = (NBTTagCompound) shipData.getTag("ShipFlags");
+    			if (shipFlag == null)
+    			{
+    				shipFlag = new NBTTagCompound();
+    				shipData.setTag("ShipFlags", shipFlag);
+    			}
+    			
+    			shipFlag.setBoolean("NoFuel", morph.getStateFlag(ID.F.NoFuel));
+    			shipFlag.setBoolean("WedEffect", morph.getStateFlag(ID.F.UseRingEffect));
         	}
         }
 	}

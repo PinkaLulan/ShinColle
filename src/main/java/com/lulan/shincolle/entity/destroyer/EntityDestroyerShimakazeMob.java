@@ -36,7 +36,7 @@ public class EntityDestroyerShimakazeMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DestroyerShimakaze);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDShimakaze);
 		this.numRensouhou = 10;
 		
 		//model display

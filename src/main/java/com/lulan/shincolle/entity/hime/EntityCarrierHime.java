@@ -32,7 +32,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
@@ -74,7 +74,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
   		if (!world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//married effect: apply str buff to nearby ships
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&

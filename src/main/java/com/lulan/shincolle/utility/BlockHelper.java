@@ -488,6 +488,9 @@ public class BlockHelper
 	{
 		if (viewer == null) return null;
 		
+		//test partial tick TODO
+		duringTicks = ClientProxy.getMineraft().getRenderPartialTicks();
+		
 		Vec3d vec3 = viewer.getPositionEyes(duringTicks);
 	    Vec3d vec31 = viewer.getLook(duringTicks);
 	    Vec3d vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);

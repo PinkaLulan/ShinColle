@@ -38,7 +38,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 		super(world);
 		this.setSize(0.7F, 1.8F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipRU);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBRU);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
@@ -110,7 +110,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 					}
 					
 					//every 128 ticks
-		    		if ((this.ticksExisted & 127) == 0 && !this.isMorph)
+		    		if ((this.ticksExisted & 127) == 0)
 		    		{
 			    		//apply potion effect in the night
 			        	if (this.world.isDaytime() && this.getStateFlag(ID.F.UseRingEffect))

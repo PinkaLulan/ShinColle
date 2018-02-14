@@ -55,7 +55,7 @@ public class GuiBook
 	public static int PageTLX = 13;			//left page X pos for text
 	public static int PageTRX = 162;		//right page X pos for text
 	public static int PageTY = 58;			//page Y pos for text
-	public static final int[] PageLimit = new int[] {1,28,6,20,25,16,4};  //max page number
+	public static final int[] PageLimit = new int[] {1,28,6,20,26,19,4};  //max page number
 	
 	public GuiBook() {}
 	
@@ -186,12 +186,12 @@ public class GuiBook
 						if (getc[1] == PageLeftCurrent || getc[1] == PageRightCurrent)
 							drawBookIcon(getc[1], getc[2], getc[3], getc[4]);
 					break;
-					/** page setting: random page number, ex:
-					 *    cont = {3, left page max random number, right page max random number}
+					/** page setting: polling page number, ex:
+					 *    cont = {3, left page max number (must be EVEN), right page max number (must be ODD)}
 					 *    cont = {3, 2, 3} => left page will be 0 or 2, right page will be 1 or 3
 					 *    cont = {3, 8, 7} => left = 0,2,4,6,8, right = 1,3,5,7
 					 */
-					case 3:		//
+					case 3:
 						leftRand = getc[1];
 						rightRand = getc[2];
 					break;

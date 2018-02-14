@@ -40,14 +40,17 @@ import net.minecraft.util.text.TextFormatting;
  */
 public class GuiMorphInventory extends GuiContainer
 {
-
+	
+	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipMorph.png");
+	private static final ResourceLocation TEXTURE_ICON0 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon0.png");
+	private static final ResourceLocation TEXTURE_ICON1 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon1.png");
+	private static final ResourceLocation TEXTURE_ICON2 = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon2.png");
+	
 	public BasicEntityShip entity;
 	public CapaTeitoku capa;
 	public InventoryPlayer invPlayer;
 	private BasicEntityShip[] shipRiding = new BasicEntityShip[3];	//0:host, 1:rider, 2:mount
 	private AttrsAdv attrs;
-	private static final ResourceLocation TEXTURE_BG = new ResourceLocation(Reference.TEXTURES_GUI+"GuiShipMorph.png");
-	private static final ResourceLocation TEXTURE_ICON = new ResourceLocation(Reference.TEXTURES_GUI+"GuiNameIcon.png");
 	private static String lvMark, hpMark, strAttrATK, strAttrAIR, strAttrDEF, strAttrSPD, strAttrMOV,
 	  strAttrHIT, strAttrCri, strAttrDHIT, strAttrTHIT, strAttrAA, strAttrASM, strAttrMiss,
 	  strAttrMissR, strAttrDodge, strAttrFPos, strAttrFormat, strAttrWedding,
@@ -285,7 +288,7 @@ public class GuiMorphInventory extends GuiContainer
             this.switchPage1a[2] = this.entity.getStateEmotion(ID.S.Emotion) > 0 ? true : false;
             this.switchPage1a[3] = this.entity.getStateEmotion(ID.S.Emotion4) > 0 ? true : false;
 //            this.switchPage1a[4] = this.entity.getStateFlag(ID.F.UseAirHeavy);
-//            this.switchPage1a[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
+            this.switchPage1a[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
             
             //get button display flag
         	this.switchPage1b[0] = true;
@@ -293,7 +296,7 @@ public class GuiMorphInventory extends GuiContainer
             this.switchPage1b[2] = true;
             this.switchPage1b[3] = true;
             this.switchPage1b[4] = false;
-            this.switchPage1b[5] = false;
+            this.switchPage1b[5] = true;
             
             //draw button
             int iconY = 131;
@@ -452,55 +455,44 @@ public class GuiMorphInventory extends GuiContainer
         //draw AI page indicator
         drawTexturedModalRect(guiLeft + this.pageIndicator, guiTop + this.pageIndicatorAI, 74, 214, 6, 11);
         
-        //draw level, ship type/name icon
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON);
-        
-        if (entity.getStateMinor(ID.M.ShipLevel) > 99)
-        {
-        	//draw level background
-        	drawTexturedModalRect(guiLeft+165, guiTop+18, 0, 0, 40, 42);
+        try
+    	{
+	        //draw type icon
+	        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON0);
+	        
+	        if (entity.getStateMinor(ID.M.ShipLevel) > 99)
+	        {
+	        	drawTexturedModalRect(guiLeft+165, guiTop+18, 0, 0, 40, 42);
+	    		drawTexturedModalRect(guiLeft+167, guiTop+22, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+	        }
+	        else
+	        {
+	        	drawTexturedModalRect(guiLeft+165, guiTop+18, 0, 43, 30, 30);
+	        	drawTexturedModalRect(guiLeft+165, guiTop+18, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
+	        }
+	        
+	        //draw name icon
+        	int offx = 0;
+        	int offy = 0;
         	
-        	try
-        	{
-        		//draw ship type icon
-        		drawTexturedModalRect(guiLeft+167, guiTop+22, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
-
-        		//use name icon file 0
-        		if (iconXY[1][0] == 0)
-        		{
-        			//draw ship name icon
-        			drawTexturedModalRect(guiLeft+176, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
-        		}
-        	}
-        	catch (Exception e)
-        	{
-        		LogHelper.info("Exception : get name icon fail "+e);
-        		e.printStackTrace();
-        	}
-        }
-        else
-        {
-        	//draw level background
-        	drawTexturedModalRect(guiLeft+165, guiTop+18, 0, 43, 30, 30);
+        	if (iconXY[1][0] < 100)
+            {
+            	Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON1);
+            	if (iconXY[1][0] == 4) offy = -10;
+            }
+            else
+            {
+            	Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE_ICON2);
+            	if (iconXY[1][0] == 6) offy = -10;
+            	else offy = 10;
+            }
         	
-        	try
-        	{
-        		//draw ship type icon
-        		drawTexturedModalRect(guiLeft+165, guiTop+18, this.iconXY[0][0], this.iconXY[0][1], 28, 28);
-        		
-        		//use name icon file 0
-        		if (iconXY[1][0] == 0)
-        		{
-        			//draw ship name icon
-        			drawTexturedModalRect(guiLeft+176, guiTop+63, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
-        		}
-        	}
-        	catch (Exception e)
-        	{
-        		LogHelper.info("Exception : get name icon fail "+e);
-        		e.printStackTrace();
-        	}
-        }
+			drawTexturedModalRect(guiLeft+176+offx, guiTop+63+offy, this.iconXY[1][1], this.iconXY[1][2], 11, 59);
+    	}
+    	catch (Exception e)
+    	{
+    		LogHelper.info("Exception : ship GUI: get name icon fail "+e);
+    	}
         
         //draw entity model                                            guiLeft + 200 - xMouse  guiTop + 50 - yMouse
         drawEntityModel(guiLeft+218, guiTop+100, entity.getModelPos(), guiLeft+215-xMouse, guiTop+60-yMouse, this.shipRiding);
@@ -769,7 +761,7 @@ public class GuiMorphInventory extends GuiContainer
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[1].getShipClass() == ID.ShipClass.DestroyerIkazuchi)
+			if (entity[1].getShipClass() == ID.ShipClass.DDIkazuchi)
 			{
 				if (entity[0].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -793,7 +785,7 @@ public class GuiMorphInventory extends GuiContainer
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[2].getShipClass() == ID.ShipClass.DestroyerInazuma)
+			if (entity[2].getShipClass() == ID.ShipClass.DDInazuma)
 			{
 				if (entity[2].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -995,7 +987,7 @@ public class GuiMorphInventory extends GuiContainer
 			this.fontRendererObj.drawString(strEmoFlag1, 187, 159, 0);
 			this.fontRendererObj.drawString(strEmoFlag2, 187, 172, 0);
 //			this.fontRendererObj.drawString(strASM, 187, 185, 0);
-//			this.fontRendererObj.drawString(strTimeKeep, 187, 198, 0);
+			this.fontRendererObj.drawString(auraEffect, 187, 198, 0);
 		}
 		break;
 		case 6:		//AI page 6
@@ -1132,6 +1124,10 @@ public class GuiMorphInventory extends GuiContainer
         case 8:	//AI operation 5
         	switch (this.showPageAI)
         	{
+        	case 1:		//page 1: enable aura effect
+        		this.switchPage1a[5] = this.entity.getStateFlag(ID.F.UseRingEffect);
+        		CommonProxy.channelG.sendToServer(new C2SGUIPackets(this.invPlayer.player, C2SGUIPackets.PID.MorphBtn, ID.B.ShipInv_AuraEffect, getInverseInt(this.switchPage1a[5])));
+    		break;
         	case 6:		//page 6: model display switch button 12~15
         		if (this.xClick < btCols[0])
         		{

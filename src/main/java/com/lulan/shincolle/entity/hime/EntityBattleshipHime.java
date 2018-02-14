@@ -34,7 +34,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		super(world);
 		this.setSize(0.7F, 2.05F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipHime);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
@@ -97,7 +97,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
   		if (!world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//married effect: apply str buff to nearby ships
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&

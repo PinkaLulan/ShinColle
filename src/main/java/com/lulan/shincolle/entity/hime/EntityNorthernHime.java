@@ -50,7 +50,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 	public EntityNorthernHime(World world)
 	{
 		super(world);
-		this.setSize(0.6F, 1F);
+		this.setSize(0.5F, 0.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
@@ -93,10 +93,10 @@ public class EntityNorthernHime extends BasicEntityShipCV
   		if (!this.world.isRemote)
   		{
   			//every 64 ticks
-        	if (this.ticksExisted % 64 == 0 && !this.isMorph)
+        	if (this.ticksExisted % 64 == 0)
         	{
         		//increase morale when riding
-        		if (this.isRiding())
+        		if (this.isRiding() && !this.isMorph)
         		{
         			if (this.getMorale() < (int)(ID.Morale.L_Excited * 1.5F)) this.addMorale(150);
         		}
@@ -150,7 +150,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 	        	if (this.ticksExisted % 256 == 0)
 	        	{
 	        		//每一段時間檢查是否要騎乘其他entity
-	        		if (this.rand.nextInt(3) == 0)
+	        		if (this.rand.nextInt(3) == 0 && !this.isMorph)
 	        		{
 	        			this.checkRiding();
 	        		}
@@ -158,7 +158,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
         	}//end 64 ticks
         	
         	//若要找騎乘目標
-        	if (this.goRiding)
+        	if (this.goRiding && !this.isMorph)
         	{
         		this.goRidingTicks++;
         		

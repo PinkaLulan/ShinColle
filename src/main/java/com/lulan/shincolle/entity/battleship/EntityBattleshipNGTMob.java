@@ -42,7 +42,7 @@ public class EntityBattleshipNGTMob extends BasicEntityShipHostile
 		super(world);
 		
 		//init values
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BattleshipNagato);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBNagato);
         this.smokeX = 0F;
         this.smokeY = 0F;
         

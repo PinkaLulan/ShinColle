@@ -38,7 +38,7 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		super(world);
 		this.setSize(0.7F, 1.9F);
 		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
-		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CarrierWD);
+		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 2);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
@@ -80,7 +80,7 @@ public class EntityCarrierWD extends BasicEntityShipCV
   		if (!world.isRemote)
   		{
   			//every 128 ticks
-  			if (this.ticksExisted % 128 == 0 && !this.isMorph)
+  			if (this.ticksExisted % 128 == 0)
   			{
   				//married effect: apply str buff to nearby ships
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&

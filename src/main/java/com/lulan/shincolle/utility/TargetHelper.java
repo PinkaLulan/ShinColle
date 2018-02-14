@@ -657,7 +657,7 @@ public class TargetHelper
 			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))
 			{
 				ClientProxy.debugCooldown = 5;
-				RayTraceResult hitObj = EntityHelper.getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), 32D, 1F, null, false);
+				RayTraceResult hitObj = EntityHelper.getMouseOverEntity(ClientProxy.getMineraft().getRenderViewEntity(), 32D, 1F, null, false, false);
 				
 				//hit entity
 				if (hitObj != null && hitObj.entityHit != null)

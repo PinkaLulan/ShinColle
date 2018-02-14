@@ -8,9 +8,8 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.IShipMorph;
+import com.lulan.shincolle.entity.other.EntityProjectileStatic;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.network.S2CSpawnParticle;
-import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.unitclass.Attrs;
@@ -18,7 +17,6 @@ import com.lulan.shincolle.reference.unitclass.Attrs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
  * helper for combat calculation
@@ -389,6 +387,33 @@ public class CombatHelper
 		}
 		
 		return moveType;
+    }
+    
+    /**
+     * special attack effect
+     * 
+     * type:
+     *   5: black hole, data: 0: posX, 1: posY, 2: posZ
+     */
+    public static void specialAttackEffect(IShipAttackBase host, int type, float[] data)
+    {
+    	switch (type)
+    	{
+    	case 5:   //black hole
+    	{
+    		if (!(host instanceof Entity)) return;
+    		
+    		Entity host2 = (Entity) host;
+    		EntityProjectileStatic beam = new EntityProjectileStatic(host2.world);
+    		double[] holedata = new double[] {data[0], data[1], data[2],
+    				20D+host.getLevel()*0.125D,
+    				0.12D+host.getLevel()*0.00075D,
+    				4D+host.getLevel()*0.035D};
+            beam.initAttrs(host, 0, holedata);
+            host2.world.spawnEntity(beam);
+    	}
+		break;
+    	}
     }
 	
 	

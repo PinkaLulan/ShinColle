@@ -209,7 +209,7 @@ public class LargeRecipes
 						return true;
 					}
 					//is ship spawn egg
-					else if (stack.getItem() instanceof ShipSpawnEgg && stack.getItemDamage() > 1)
+					else if (stack.getItem() instanceof ShipSpawnEgg)
 					{
 						//get ship recycle items
 						ItemStack[] items = ShipCalc.getKaitaiItems(stack.getItemDamage() - 2);
