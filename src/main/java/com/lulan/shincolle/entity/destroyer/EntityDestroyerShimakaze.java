@@ -24,6 +24,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -115,6 +116,9 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   	@Override
   	public boolean attackEntityWithAmmo(Entity target)
   	{
+  		//light ammo--
+        if (!decrAmmoNum(0, 4 * this.getAmmoConsumption())) return false;
+        
   		//check num rensouhou
   		if  (this.numRensouhou <= 0)
   		{
@@ -135,9 +139,6 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   		decrMorale(1);
   		setCombatTick(this.ticksExisted);
   		
-  		//light ammo--
-        if (!decrAmmoNum(0, 4 * this.getAmmoConsumption())) return false;
-        
         //play attack sound
 		if (this.rand.nextInt(10) > 7)
 		{
@@ -167,6 +168,92 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
     	
     	if (ConfigHandler.canFlare) this.flareTarget(target);
     	
+        return true;
+	}
+  	
+  	@Override
+  	public boolean attackEntityWithHeavyAmmo(BlockPos target)
+	{
+  		//get attack value
+		float atk = this.getAttackBaseDamage(2, null) * 0.3F;
+		float kbValue = 0.15F;
+		
+		//missile type
+		float launchPos = (float) posY + height * 0.7F;
+		int moveType = CombatHelper.calcMissileMoveType(this, target.getY(), 2);
+		if (moveType == 1) moveType = 0;
+		
+        //calc dist to target
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPosition(), target);
+        
+		//experience++
+		addShipExp(ConfigHandler.expGain[2]);
+		
+		//grudge--
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+		
+  		//morale--
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
+	
+		//play cannon fire sound at attacker
+  		applySoundAtAttacker(2, this);
+  		this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.8F);
+  		this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.9F);
+        
+        //heavy ammo--
+        if(!decrAmmoNum(1, this.getAmmoConsumption())) return false;
+        
+	    float tarX = (float) target.getX();
+	    float tarY = (float) target.getY();
+	    float tarZ = (float) target.getZ();
+	    
+	    //if too close, extend target position
+	    if (distVec.d < 6D)
+	    {
+	    	tarX += distVec.x * (6D - distVec.d);
+	    	tarY += distVec.y * (6D - distVec.d);
+	    	tarZ += distVec.z * (6D - distVec.d);
+	    }
+	    
+	    //calc miss rate
+        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
+        {
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
+        	
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
+        }
+        
+        //發射者煙霧特效 (不使用特效, 但是要發送封包來設定attackTime)
+        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 32D);
+		CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
+		
+        //spawn missile
+		MissileData md = this.getMissileData(2);
+		float[] data = new float[] {atk, kbValue, launchPos, tarX, tarY+0.2F, tarZ, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile1 = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
+		data = new float[] {atk, kbValue, launchPos, tarX+3.5F, tarY+0.2F, tarZ+3.5F, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile2 = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
+		data = new float[] {atk, kbValue, launchPos, tarX+3.5F, tarY+0.2F, tarZ-3.5F, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile3 = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
+		data = new float[] {atk, kbValue, launchPos, tarX-3.5F, tarY+0.2F, tarZ+3.5F, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile4 = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
+		data = new float[] {atk, kbValue, launchPos, tarX-3.5F, tarY+0.2F, tarZ-3.5F, 160, 0.25F, md.vel0, md.accY1, md.accY2};
+		EntityAbyssMissile missile5 = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
+		
+        this.world.spawnEntity(missile1);
+        this.world.spawnEntity(missile2);
+        this.world.spawnEntity(missile3);
+        this.world.spawnEntity(missile4);
+        this.world.spawnEntity(missile5);
+        
+        //show emotes
+      	applyEmotesReaction(3);
+      	
+      	if (ConfigHandler.canFlare) flareTarget(target);
+      	
         return true;
 	}
   	

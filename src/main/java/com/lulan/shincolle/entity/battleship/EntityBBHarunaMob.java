@@ -5,6 +5,7 @@ import java.util.HashMap;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.network.S2CSpawnParticle;
+import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -51,31 +52,23 @@ public class EntityBBHarunaMob extends BasicEntityShipHostile
 		{
 		case 3:
 			this.setSize(2.4F, 7.5F);
-			this.smokeX1 = -1.64F;
-			this.smokeY1 = 4.74F;
-			this.smokeX2 = -2.61F;
-			this.smokeY2 = 4.27F;
+			this.smokeX1 = -2.36F;
+			this.smokeY1 = 4.6F;
 		break;
 		case 2:
 			this.setSize(1.8F, 5.625F);
-			this.smokeX1 = -1.25F;
-			this.smokeY1 = 3.57F;
-			this.smokeX2 = -1.98F;
-			this.smokeY2 = 3.18F;
+			this.smokeX1 = -1.76F;
+			this.smokeY1 = 3.4F;
 		break;
 		case 1:
 			this.setSize(1.2F, 3.75F);
-			this.smokeX1 = -0.82F;
-			this.smokeY1 = 2.47F;
-			this.smokeX2 = -1.33F;
-			this.smokeY2 = 2.21F;
+			this.smokeX1 = -1.16F;
+			this.smokeY1 = 2.3F;
 		break;
 		default:
 			this.setSize(0.6F, 1.875F);
-			this.smokeX1 = -0.7F;
+			this.smokeX1 = -0.6F;
 			this.smokeY1 = 1.17F;
-			this.smokeX2 = -0.45F;
-			this.smokeY2 = 1.32F;
 		break;
 		}
 	}
@@ -121,9 +114,7 @@ public class EntityBBHarunaMob extends BasicEntityShipHostile
   				{
   					//計算煙霧位置
   					float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX1, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + this.smokeY1, posZ+partPos[0], 1D, 0D, 0D, (byte)43);
-  	  				partPos = CalcHelper.rotateXZByAxis(this.smokeX2, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + this.smokeY2, posZ+partPos[0], 1D, 0D, 0D, (byte)43);
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + this.smokeY1, posZ+partPos[0], 1D + this.scaleLevel * 1D, 0D, 0D, (byte)43);
 				}
   			}//end 4 ticks
   		}

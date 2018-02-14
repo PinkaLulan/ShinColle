@@ -28,7 +28,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  */
 public class EntityBBHaruna extends BasicEntityShipSmall
 {
-
+	
+	
 	public EntityBBHaruna(World world)
 	{
 		super(world);

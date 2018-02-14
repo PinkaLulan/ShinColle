@@ -120,7 +120,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 		        	}//end every 128 ticks
 				}//end every 64 ticks
 			}//end every 16 ticks
-		}
+		}//end client side
 		//server side
 		else
 		{
@@ -129,7 +129,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 			{
 				this.updateSkillEffect();
 			}
-		}
+		}//end server side
 	}
 	
 	private void updateSkillEffect()
@@ -192,6 +192,65 @@ public class EntityBattleshipRu extends BasicEntityShip
   		{
   			return this.height * 0.72F;
   		}
+	}
+	
+	public boolean attackEntityWithHeavyAmmo(BlockPos target)
+	{
+		//ammo--
+        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
+        
+		//experience++
+		addShipExp(ConfigHandler.expGain[2]);
+		
+		//grudge--
+		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
+		
+  		//morale--
+		decrMorale(2);
+  		setCombatTick(this.ticksExisted);
+	
+		//飛彈是否採用直射
+		boolean isDirect = false;
+		float launchPos = (float) posY + height * 0.75F;
+		
+        //calc dist to target
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPosition(), target);
+		
+	    float tarX = (float) target.getX();
+	    float tarY = (float) target.getY();
+	    float tarZ = (float) target.getZ();
+	    
+	    //if miss
+	    if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
+	    {
+        	tarX = tarX - 5F + this.rand.nextFloat() * 10F;
+        	tarY = tarY + this.rand.nextFloat() * 5F;
+        	tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
+        	
+        	ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
+        }
+        
+		if (this.StateEmotion[ID.S.Phase] == 0)
+		{
+			//play sound at attacker
+			this.playSound(ModSounds.SHIP_HITMETAL, ConfigHandler.volumeFire, 1F);
+			
+  			if (this.rand.nextInt(10) > 7)
+  			{
+  				this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+  	        }
+  			
+  			applyParticleAtAttacker(2, this, Dist4d.ONE);
+  			
+  			//charging
+  			this.StateEmotion[ID.S.Phase] = 1;
+  			this.remainAttack += 5 + (int)(this.getLevel() * 0.035F);
+  			this.skillTarget = new BlockPos(tarX, tarY + 0.5D, tarZ);
+		}
+        
+        if (ConfigHandler.canFlare) flareTarget(target);
+        
+        return true;
 	}
 	
 	//shot a lotsssss missiles

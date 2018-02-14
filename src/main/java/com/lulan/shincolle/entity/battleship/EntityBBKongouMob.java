@@ -122,9 +122,9 @@ public class EntityBBKongouMob extends BasicEntityShipHostile
   				{
   					//計算煙霧位置
   					float[] partPos = CalcHelper.rotateXZByAxis(this.smokeX1, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + this.smokeY1, posZ+partPos[0], 1D, 0D, 0D, (byte)43);
+  	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + this.smokeY1, posZ+partPos[0], 1D + this.scaleLevel * 1D, 0D, 0D, (byte)43);
   	  				partPos = CalcHelper.rotateXZByAxis(this.smokeX2, 0F, (this.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
-	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + this.smokeY2, posZ+partPos[0], 1D, 0D, 0D, (byte)43);
+	  				ParticleHelper.spawnAttackParticleAt(posX+partPos[1], posY + this.smokeY2, posZ+partPos[0], 1D + this.scaleLevel * 1D, 0D, 0D, (byte)43);
 				}
   			}//end 4 ticks
   		}

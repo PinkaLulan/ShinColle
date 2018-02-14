@@ -272,6 +272,8 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 	@Override
 	public boolean attackEntityWithHeavyAmmo(Entity target)
 	{
+		if (this.isMorph) return super.attackEntityWithHeavyAmmo(target);
+		
 		//ammo--
         if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
         

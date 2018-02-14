@@ -114,7 +114,10 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 	@Override
 	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
 	public boolean attackEntityWithAmmo(Entity target)
-	{	
+	{
+		//light ammo--
+        if (!decrAmmoNum(0, 4 * this.getAmmoConsumption())) return false;
+        
 		//check num rensouhou
   		if (this.numRensouhou <= 0)
   		{
@@ -129,12 +132,6 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		if (this.rand.nextInt(10) > 7)
 		{
 			this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-        }
-        
-        //light ammo--
-        if (!decrAmmoNum(0, 4 * this.getAmmoConsumption()))
-        {	//not enough ammo
-        	return false;
         }
         
         //experience++

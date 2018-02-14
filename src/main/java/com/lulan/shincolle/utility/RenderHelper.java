@@ -244,10 +244,10 @@ public class RenderHelper
 	        	{
 	        		//set color and texture before every drawTexturedModalRect()
 	        		GlStateManager.color(1F, 1F, 1F, 1F);
-	        		mc.getTextureManager().bindTexture(ClientProxy.TextureGuiHUD);
 	        		GlStateManager.enableBlend();
 	    	        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-
+	    	        mc.getTextureManager().bindTexture(ClientProxy.TextureGuiHUD);
+	    	        
 	    	        int px2 = px-40+k*21;
 	        		int len = (int)((float)drawCD[k] / (float)drawCDMax[k] * 18F);
 	        		//draw button icon
@@ -263,6 +263,11 @@ public class RenderHelper
 	        		else if (k == 3) fr.drawStringWithShadow(String.valueOf(drawAirNum[1]), px2+7, py-8, Enums.EnumColors.CYAN.getValue());
 	        	}
 	        }
+	        
+	        //draw cross
+	        mc.getTextureManager().bindTexture(ClientProxy.TextureGuiHUD);
+	        RenderHelper.drawTexturedModalRect((int)(i * 0.5F), (int)(j * 0.5F) - 4, 0, 7, 1, 9, 0);
+	        RenderHelper.drawTexturedModalRect((int)(i * 0.5F) - 4, (int)(j * 0.5F), 7, 0, 9, 1, 0);
 	        
 	        //end drawing
 	        mc.getTextureManager().bindTexture(Gui.ICONS);	//reset textures

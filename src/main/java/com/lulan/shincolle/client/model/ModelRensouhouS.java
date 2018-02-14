@@ -170,7 +170,7 @@ public class ModelRensouhouS extends ModelBase
 		  
 		IShipEmotion ent = (IShipEmotion)entity;
 		
-		GlStateManager.translate(0F, 1F, 0F);
+		GlStateManager.translate(0F, 0.75F, 0F);
 		
 		float angleX = MathHelper.cos(f2 * 0.1F);
 			
