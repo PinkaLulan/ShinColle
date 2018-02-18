@@ -55,7 +55,11 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     {
         ShipPath path = this.host2.getShipNavigate().getPath();
         
+<<<<<<< HEAD
         if (!this.host.collidedHorizontally)
+=======
+        if (!this.host.isCollidedHorizontally)
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
         {
         	return false;
         }
@@ -94,7 +98,11 @@ public class EntityAIShipOpenDoor extends EntityAIBase
     }
 
     @Override
+<<<<<<< HEAD
     public boolean shouldContinueExecuting()
+=======
+    public boolean continueExecuting()
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     {
     	//若需要關門, 則等待delay時間到
         return this.closeDoor && this.delay > 0 && !this.hasPassed;

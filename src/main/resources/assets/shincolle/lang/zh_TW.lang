@@ -491,7 +491,11 @@ gui.shincolle:book.chap3.text19d0=船艦們現在可以幫主人合成物品：<
 gui.shincolle:book.chap3.text19d1=船艦的等級會影響一次可合成的物品個數。<br><br>注意若目標箱子滿了，則合成好的物品會被丟到地上。
 gui.shincolle:book.chap3.title20=Metamorph
 gui.shincolle:book.chap3.text20d0=§c需求：Metamorph mod§0<br><br>主人可以變身為所擁有的棲艦，並且能額外使用攻擊技能：<br><br>§91.§0 對所擁有的船艦以§c目標設定扳手§0左鍵點擊一次取得變身。<br><br>§92.§0 擊殺所擁有的船艦將不會再掉落變身。<br><br>§93.§0 擊殺野生船艦依然會掉落變身。<br><br>§94.§0 變身為所擁有的船艦時，以§c蹲下+Morph Action§0按鍵可以開啟變身GUI。<br><br>§95.§0 變身為野生船艦時不能使用該GUI。
+<<<<<<< HEAD
 gui.shincolle:book.chap3.text20d1=§96.§0 變身後可以使用船艦的攻擊技能，需消耗怨念及彈藥，可以透過GUI來增加。<br><br>§97.§0 攻擊技能的屬性數值以該變身為準，使用攻擊技能可以獲得經驗以及升級該變身。<br><br>§98.§0 可以在GUI中裝備船艦專用裝備，此裝備欄為全部變身共通。<br><br>§99.§0 按下§cMorph Action§0可以開關攻擊技能列。<br><br>注意：移動速度目前沒有作用，改修工具、訓練書、戰鬥糧食、修復桶直接以右鍵使用。<br><br>請關閉內建的血量調整或者自行設定血量。(在Metamorph設定檔中將B:disable_health設為true)
+=======
+gui.shincolle:book.chap3.text20d1=§96.§0 變身後可以使用船艦的攻擊技能，需消耗怨念及彈藥，可以透過GUI來增加。<br><br>§97.§0 攻擊技能的屬性數值以該變身為準，使用攻擊技能可以獲得經驗以及升級該變身。<br><br>§98.§0 可以在GUI中裝備船艦專用裝備，此裝備欄為全部變身共通。<br><br>§99.§0 按下§cMorph Action§0可以開關攻擊技能列。<br><br>注意：移動速度目前沒有作用，改修工具、訓練書、戰鬥糧食、修復桶直接以右鍵使用。
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=深海棲艦列表

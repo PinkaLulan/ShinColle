@@ -37,7 +37,11 @@ public class EntityAIShipSit extends EntityAIBase
 	public void updateTask()
     {
 //    	LogHelper.info("DEBUG : exec sitting");
+<<<<<<< HEAD
     	this.host.getNavigator().clearPath();    
+=======
+    	this.host.getNavigator().clearPathEntity();    
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
         this.host.setAttackTarget(null);
         this.host.setEntityTarget(null);
     }

@@ -61,7 +61,11 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase
     }
 
     @Override
+<<<<<<< HEAD
 	public boolean shouldContinueExecuting()
+=======
+	public boolean continueExecuting()
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     {
     	return shouldExecute();
     }

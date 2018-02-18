@@ -36,9 +36,14 @@ public class EntityAIShipLookIdle extends EntityAIBase
     	
         return this.host.getRNG().nextFloat() < 0.02F;
     }
+<<<<<<< HEAD
     
     @Override
     public boolean shouldContinueExecuting()
+=======
+
+    public boolean continueExecuting()
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     {
         return this.idleTime >= 0;
     }

@@ -491,7 +491,11 @@ gui.shincolle:book.chap3.text19d0=Ship can craft items for owner:<br><br>§91.§
 gui.shincolle:book.chap3.text19d1=Ship level will affect the number of items can be crafted at a time.<br><br>NOTE: Ship will drop crafting items if chest is full. 
 gui.shincolle:book.chap3.title20=Metamorph
 gui.shincolle:book.chap3.text20d0=§cReq: Metamorph mod§0<br><br>Features:<br><br>§91.§0 Left click with §cTarget Wrench§0 on own ship to get morph.<br><br>§92.§0 Kill friendly ship will not drop ghost morph.<br><br>§93.§0 Kill mob ship still drop ghost morph.<br><br>§94.§0 Press §cSneaking + Morph Action§0 key to open Morph GUI. (Own ship morph only)<br><br>§95.§0 You can't open Morph GUI in mob ship morph.
+<<<<<<< HEAD
 gui.shincolle:book.chap3.text20d1=§96.§0 Player can use ship attack skill in morph, and can add grudge and ammo in Morph GUI.<br><br>§97.§0 Player can level up morph by casting ship attack skill.<br><br>§98.§0 Player can equip ship equipments in Morph GUI, equip slot is shared between all morph ship.<br><br>§99.§0 Press §cMorph Action§0 to toggle skill hotbar.<br><br>NOTE: Move speed will not apply to player (for now).<br>Player can §9Right Click§0 to use Repair Bucket, Combat Ration, Modernization Toolkit and Maintenance Personnel Training Book.<br><br>Please set "B:disable_health = true" for auto HP calculation or tweak ship HP in Metamorph config.
+=======
+gui.shincolle:book.chap3.text20d1=§96.§0 Player can use ship attack skill in morph, and can add grudge and ammo in Morph GUI.<br><br>§97.§0 Player can level up morph by casting ship attack skill.<br><br>§98.§0 Player can equip ship equipments in Morph GUI, equip slot is shared between all morph ship.<br><br>§99.§0 Press §cMorph Action§0 to toggle skill hotbar.<br><br>NOTE: Move speed will not apply to player (for now).<br>Player can §9Right Click§0 to use Repair Bucket, Combat Ration, Modernization Toolkit and Maintenance Personnel Training Book. 
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 
 # GUI: Book Text Chap 4
 gui.shincolle:book.chap4.title=Ship List

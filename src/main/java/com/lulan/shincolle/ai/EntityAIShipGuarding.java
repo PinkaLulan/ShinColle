@@ -131,7 +131,11 @@ public class EntityAIShipGuarding extends EntityAIBase
 
     //目標還沒接近min dist或者距離超過TP_DIST時繼續AI
     @Override
+<<<<<<< HEAD
 	public boolean shouldContinueExecuting()
+=======
+	public boolean continueExecuting()
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     {
     	if (host != null)
     	{

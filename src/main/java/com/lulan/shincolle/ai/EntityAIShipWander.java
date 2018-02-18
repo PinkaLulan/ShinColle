@@ -75,9 +75,15 @@ public class EntityAIShipWander extends EntityAIBase
             }
             else
             {
+<<<<<<< HEAD
                 this.xPosition = vec3.x;
                 this.yPosition = vec3.y;
                 this.zPosition = vec3.z;
+=======
+                this.xPosition = vec3.xCoord;
+                this.yPosition = vec3.yCoord;
+                this.zPosition = vec3.zCoord;
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
                 return true;
             }
         }
@@ -86,8 +92,12 @@ public class EntityAIShipWander extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
+<<<<<<< HEAD
     @Override
     public boolean shouldContinueExecuting()
+=======
+    public boolean continueExecuting()
+>>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     {
         return !this.host.getShipNavigate().noPath();
     }
