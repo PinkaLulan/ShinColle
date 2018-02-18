@@ -1,0 +1,13 @@
+{
+  "parent": "shincolle:block/cubeHori",
+  
+  "textures": {
+    "particle": "shincolle:blocks/BlockFrameTop",
+    "down": "shincolle:blocks/BlockFrameBtm",
+    "up": "shincolle:blocks/BlockFrameTop",
+    "east": "shincolle:blocks/BlockFrame2",
+    "west": "shincolle:blocks/BlockFrame3",
+    "north": "shincolle:blocks/BlockFrame4",
+    "south": "shincolle:blocks/BlockFrame5"
+  }
+}

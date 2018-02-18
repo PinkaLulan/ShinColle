@@ -1,0 +1,12 @@
+{
+  "forge_marker": 1,
+  
+  "defaults": {
+    "model": "shincolle:BlockPolymetalOre"
+  },
+  
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}]
+  }
+}
