@@ -79,11 +79,7 @@ public class EntityAIShipAircraftAttack extends EntityAIBase
 
     //判定是否繼續AI： 有target就繼續, 或者已經移動完畢就繼續
     @Override
-<<<<<<< HEAD
 	public boolean shouldContinueExecuting()
-=======
-	public boolean continueExecuting()
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     {
     	//no ammo, go home
     	if (!this.host.canFindTarget()) return false;

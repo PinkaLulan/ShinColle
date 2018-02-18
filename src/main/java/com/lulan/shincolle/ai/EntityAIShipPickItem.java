@@ -8,10 +8,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-<<<<<<< HEAD
-=======
-import com.lulan.shincolle.utility.LogHelper;
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 import com.lulan.shincolle.utility.TargetHelper;
 
 import net.minecraft.entity.Entity;
@@ -140,7 +136,6 @@ public class EntityAIShipPickItem extends EntityAIBase
     			this.pickDelay = this.pickDelayMax;
     			
     			//get item if close to 9D (3 blocks)
-<<<<<<< HEAD
     			if ((this.hostMount != null && this.hostMount.getDistanceSq(this.entItem) < 9D) ||
     				(this.hostShip != null && this.hostShip.getDistanceSq(this.entItem) < 9D))
     			{
@@ -148,15 +143,6 @@ public class EntityAIShipPickItem extends EntityAIBase
     				EntityItem entitem = (EntityItem) this.entItem;
     				ItemStack itemstack = entitem.getItem();
     				int i = itemstack.getCount();
-=======
-    			if ((this.hostMount != null && this.hostMount.getDistanceSqToEntity(this.entItem) < 9D) ||
-    				(this.hostShip != null && this.hostShip.getDistanceSqToEntity(this.entItem) < 9D))
-    			{
-    				//add item to inventory
-    				EntityItem entitem = (EntityItem) this.entItem;
-    				ItemStack itemstack = entitem.getEntityItem();
-    				int i = itemstack.stackSize;
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     				
     				if (!entitem.cannotPickup() &&
     					this.hostShip.getCapaShipInventory().addItemStackToInventory(itemstack))
@@ -183,11 +169,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     					this.hostShip.addShipExp(ConfigHandler.expGain[6]);
     					
     					//clear entity item if no leftover item
-<<<<<<< HEAD
     	                if (itemstack.getCount() <= 0)
-=======
-    	                if (itemstack.stackSize <= 0)
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     	                {
     	                	entitem.setDead();
     	                	this.entItem = null;

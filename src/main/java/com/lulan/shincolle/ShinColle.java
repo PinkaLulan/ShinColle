@@ -33,11 +33,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 @Mod(modid = Reference.MOD_ID,
 	 name = Reference.MOD_NAME,
 	 version = Reference.MOD_VERSION,
-<<<<<<< HEAD
 	 dependencies="required-after:Forge@[14.23.2.2611,)",
-=======
-	 dependencies="required-after:Forge@[12.18.3.2185,)",
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 	 guiFactory = "com.lulan.shincolle.config.ConfigGuiFactory")
 public class ShinColle
 {

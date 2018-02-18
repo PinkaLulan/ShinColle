@@ -5,10 +5,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.reference.ID;
-<<<<<<< HEAD
-=======
-import com.lulan.shincolle.utility.LogHelper;
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -150,11 +146,7 @@ public class EntityAIShipFloating extends EntityAIBase
 			//若守衛entity, 檢查entity距離
 			if (host.getGuardedEntity() != null)
 			{
-<<<<<<< HEAD
 				double distSq = ((Entity)host).getDistanceSq(host.getGuardedEntity());
-=======
-				double distSq = ((Entity)host).getDistanceSqToEntity(host.getGuardedEntity());
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 				if (distSq < fMin) return true;
 			}
 			//若守衛某地點, 則檢查與該點距離
@@ -172,11 +164,7 @@ public class EntityAIShipFloating extends EntityAIBase
 			
 			if (host.getHostEntity() != null)
 			{
-<<<<<<< HEAD
 				if (host.getHostEntity().getDistanceSq((Entity)host) <= fMax) return true;
-=======
-				if (host.getHostEntity().getDistanceSqToEntity((Entity)host) <= fMax) return true;
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 			}
 		}
 		

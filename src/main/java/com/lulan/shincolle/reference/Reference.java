@@ -7,11 +7,7 @@ public class Reference
 	//peth, modid
 	public static final String MOD_ID = "shincolle";
 	public static final String MOD_NAME = "Shinkeiseikan Collection";
-<<<<<<< HEAD
-	public static final String MOD_VERSION = "1.12.2.1.0";
-=======
 	public static final String MOD_VERSION = "1.10.2.7.1";
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
 	public static final String CLIENT_PROXY = "com.lulan.shincolle.proxy.ClientProxy";
 	public static final String SERVER_PROXY = "com.lulan.shincolle.proxy.ServerProxy";
 	public static final String GUI_FACTORY = "com.lulan.shincolle.client.gui.GuiFactory";

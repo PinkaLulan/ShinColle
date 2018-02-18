@@ -92,11 +92,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase
 
     //判定是否繼續AI： 有target就繼續, 或者還在移動中則繼續
     @Override
-<<<<<<< HEAD
 	public boolean shouldContinueExecuting()
-=======
-	public boolean continueExecuting()
->>>>>>> 8bca563b5e56e269d98396bfc3b36106947317fc
     {
     	if (host != null)
     	{
