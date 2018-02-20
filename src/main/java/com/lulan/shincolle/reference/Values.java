@@ -38,20 +38,12 @@ public class Values
 													1048576, 2097152, 4194304, 8388608, 16777216};
 	}
 	
+	
 	/**SHIP ATTRIBUTES MAP
 	 * index by {@link ID.AttrsBase}
 	 */
 	public static final Map<Integer, float[]> ShipAttrMap = Collections.unmodifiableMap(new HashMap<Integer, float[]>()
 	{{
-		//player NO USE FOR NOW                                HP    ATK  DEF     SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT
-		put((int)ID.ShipClass.PlayerBASE,         new float[] {20F,  3F,  0.08F,  1.0F, 0.38F, 6F,  0.3F,  0.25F, 0.10F, 0.5F,  0.8F,  0.5F});
-		put((int)ID.ShipClass.PlayerBB,           new float[] {40F,  6F,  0.20F,  1.0F, 0.30F, 8F,  0.6F,  0.45F, 0.20F, 0.65F, 0.6F,  0.6F});
-		put((int)ID.ShipClass.PlayerBBV,          new float[] {35F,  4F,  0.16F,  1.0F, 0.32F, 8F,  0.5F,  0.35F, 0.16F, 0.6F,  0.7F,  0.6F});
-		put((int)ID.ShipClass.PlayerCL,           new float[] {25F,  4F,  0.10F,  1.0F, 0.40F, 6F,  0.35F, 0.35F, 0.10F, 0.6F,  0.8F,  0.5F});
-		put((int)ID.ShipClass.PlayerCV,           new float[] {30F,  5F,  0.12F,  1.0F, 0.32F, 15F, 0.4F,  0.4F,  0.12F, 0.55F, 0.7F,  0.8F});
-		put((int)ID.ShipClass.PlayerDD,           new float[] {20F,  3F,  0.08F,  1.0F, 0.5F,  5F,  0.3F,  0.3F,  0.08F, 0.55F, 1F,    0.45F});
-		put((int)ID.ShipClass.PlayerSS,           new float[] {15F,  8F,  0.05F,  1.0F, 0.30F, 4F,  0.25F, 0.6F,  0.05F, 0.6F,  0.6F,  0.4F});
-				
 		//destroyer                                            HP    ATK  DEF     SPD   MOV    HIT  HP     ATK    DEF    SPD    MOV    HIT     
 		put((int)ID.ShipClass.DDI,                new float[] {20F,  3F,  0.05F,  1.0F, 0.5F,  6F,  0.3F,  0.25F, 0.11F, 0.5F,  1F,    0.4F});
 		put((int)ID.ShipClass.DDRO,               new float[] {22F,  4F,  0.06F,  1.0F, 0.5F,  6F,  0.32F, 0.28F, 0.12F, 0.5F,  1F,    0.4F});
@@ -131,7 +123,8 @@ public class Values
 		//carrier
 		put((int)ID.ShipClass.CVKaga,             new float[] {70F,  22F, 0.21F,  1.0F, 0.34F, 16F, 0.65f, 0.6F,  0.23F, 0.6F,  0.72F, 0.6F});
 		put((int)ID.ShipClass.CVAkagi,            new float[] {75F,  22F, 0.20F,  1.0F, 0.32F, 16F, 0.65f, 0.6F,  0.23F, 0.6F,  0.72F, 0.6F});
-		
+		//support
+		put((int)ID.ShipClass.APMamiya,           new float[] {90F,  3F,  0.10F,  1.0F, 0.3F,  8F,  0.7F,  0.25F, 0.16F, 0.35F, 0.6F,  0.3F});
 	}});
 	
 	/**HOSTILE SHIP ATTRIBUTES MAP
@@ -163,6 +156,8 @@ public class Values
 		//carrier
 		put((int)ID.ShipClass.CVKaga,      new float[] {0.8F,  0.8F,  0.8F,  0.75F, 0.8F,  1.2F});
 		put((int)ID.ShipClass.CVAkagi,     new float[] {0.8F,  0.8F,  0.8F,  0.75F, 0.8F,  1.2F});
+		//support
+		put((int)ID.ShipClass.APMamiya,    new float[] {0.35F, 0.35F, 0.35F, 1F,    0.8F,  0.7F});
 	}});
 	
 	/** SHIP LEASH HEIGHT
@@ -173,81 +168,83 @@ public class Values
 	public static final Map<Integer, float[]> ShipLeashHeight = Collections.unmodifiableMap(new HashMap<Integer, float[]>()
 	{{
 		//destroyer
-		put((int)ID.ShipClass.DDI,       new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F});
-		put((int)ID.ShipClass.DDRO,		new float[] {1.2F, 0.8F, 0.8F, 0.8F, 0.7F});
-		put((int)ID.ShipClass.DDHA,		new float[] {1.5F, 0.8F, 0.8F, 0.8F, 0.8F});
-		put((int)ID.ShipClass.DDNI,		new float[] {0.5F, 0.9F, 0.9F, 0.9F, 0.9F});
+		put((int)ID.ShipClass.DDI,            new float[] {0.8F, 0.8F, 0.8F, 0.8F, 0.8F});
+		put((int)ID.ShipClass.DDRO,           new float[] {1.2F, 0.8F, 0.8F, 0.8F, 0.7F});
+		put((int)ID.ShipClass.DDHA,           new float[] {1.5F, 0.8F, 0.8F, 0.8F, 0.8F});
+		put((int)ID.ShipClass.DDNI,           new float[] {0.5F, 0.9F, 0.9F, 0.9F, 0.9F});
 		//cruiser
-//		put((int)ID.Ship.LightCruiserHO,		new float[] {});
-//		put((int)ID.Ship.LightCruiserHE,		new float[] {});
-//		put((int)ID.Ship.LightCruiserTO,		new float[] {});
-//		put((int)ID.Ship.LightCruiserTSU,	new float[] {});
-//		put((int)ID.Ship.TorpedoCruiserCHI,	new float[] {});
-		put((int)ID.ShipClass.CARI,	new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
-		put((int)ID.ShipClass.CANE,	new float[] {0.5F, 1.1F, 1.1F, 1.1F, 0.85F});
+//		put((int)ID.Ship.LightCruiserHO,      new float[] {});
+//		put((int)ID.Ship.LightCruiserHE,      new float[] {});
+//		put((int)ID.Ship.LightCruiserTO,      new float[] {});
+//		put((int)ID.Ship.LightCruiserTSU,     new float[] {});
+//		put((int)ID.Ship.TorpedoCruiserCHI,   new float[] {});
+		put((int)ID.ShipClass.CARI,           new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
+		put((int)ID.ShipClass.CANE,           new float[] {0.5F, 1.1F, 1.1F, 1.1F, 0.85F});
 		//carrier
 //		put((int)ID.Ship.LightCarrierNU,		new float[] {});
-		put((int)ID.ShipClass.CVWO,		new float[] {0.1F, 0.2F, 0.2F, 0.2F, 0.15F});
+		put((int)ID.ShipClass.CVWO,           new float[] {0.1F, 0.2F, 0.2F, 0.2F, 0.15F});
 		//battleship
-		put((int)ID.ShipClass.BBRU,		new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.15F});
-		put((int)ID.ShipClass.BBTA,		new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.15F});
-		put((int)ID.ShipClass.BBRE,		new float[] {0.1F, 0.45F, 0.45F, 0.65F, 0.45F});
+		put((int)ID.ShipClass.BBRU,           new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.15F});
+		put((int)ID.ShipClass.BBTA,           new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.15F});
+		put((int)ID.ShipClass.BBRE,           new float[] {0.1F, 0.45F, 0.45F, 0.65F, 0.45F});
 		//transport
-		put((int)ID.ShipClass.APWA,		new float[] {0.2F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put((int)ID.ShipClass.APWA,           new float[] {0.2F, 0.8F, 0.8F, 0.8F, 0.3F});
 		//submarine
-		put((int)ID.ShipClass.SSKA,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
-		put((int)ID.ShipClass.SSYO,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
-		put((int)ID.ShipClass.SSSO,		new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
+		put((int)ID.ShipClass.SSKA,           new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
+		put((int)ID.ShipClass.SSYO,           new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
+		put((int)ID.ShipClass.SSSO,           new float[] {0.2F, 0.7F, 0.8F, 0.8F, 0.2F});
 		//hime
-		put((int)ID.ShipClass.CVHime,		new float[] {0.1F, 0.95F, 0.85F, 0.9F, 0.15F});
-		put((int)ID.ShipClass.AirfieldHime,		new float[] {0.1F, 1.2F, 1.5F, 0.7F, 0.2F});
-//		put((int)ID.Ship.ArmoredCarrierHime,	new float[] {});
-//		put((int)ID.Ship.AnchorageHime,		new float[] {});
-//		put((int)ID.Ship.LightCruiserDemon,	new float[] {});
-//		put((int)ID.Ship.AirdefenseHime,		new float[] {});
-		put((int)ID.ShipClass.BBHime,	new float[] {0.1F, 0.3F, 0.8F, 0.7F, 0.1F});
-		put((int)ID.ShipClass.DDHime,	new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.35F});
-		put((int)ID.ShipClass.HarbourHime,		new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
-		put((int)ID.ShipClass.IsolatedHime,	    new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.35F});
-		put((int)ID.ShipClass.MidwayHime,		new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
-		put((int)ID.ShipClass.NorthernHime,		new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.5F});
-//		put((int)ID.Ship.SouthernHime,		new float[] {});
-//		put((int)ID.Ship.SeaplaneHime,		new float[] {});
-		put((int)ID.ShipClass.CVWD,		new float[] {0.1F, 0.95F, 0.85F, 0.9F, 0.15F});
-//		put((int)ID.Ship.BattleshipWD,		new float[] {});
-//		put((int)ID.Ship.AnchorageWD,		new float[] {});
-//		put((int)ID.Ship.HarbourWD,			new float[] {});
-//		put((int)ID.Ship.DestroyerWD,		new float[] {});
-//		put((int)ID.Ship.LightCruiserHime,	new float[] {});
-		put((int)ID.ShipClass.CAHime,	new float[] {0.5F, 1.1F, 1.1F, 1.1F, 0.85F});
-		put((int)ID.ShipClass.SSHime,	new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
-//		put((int)ID.Ship.SupplyDepotHime,	new float[] {});
-		put((int)ID.ShipClass.SSNH,		new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.5F});
+		put((int)ID.ShipClass.CVHime,         new float[] {0.1F, 0.95F, 0.85F, 0.9F, 0.15F});
+		put((int)ID.ShipClass.AirfieldHime,   new float[] {0.1F, 1.2F, 1.5F, 0.7F, 0.2F});
+//		put((int)ID.Ship.ArmoredCarrierHime,  new float[] {});
+//		put((int)ID.Ship.AnchorageHime,       new float[] {});
+//		put((int)ID.Ship.LightCruiserDemon,   new float[] {});
+//		put((int)ID.Ship.AirdefenseHime,      new float[] {});
+		put((int)ID.ShipClass.BBHime,         new float[] {0.1F, 0.3F, 0.8F, 0.7F, 0.1F});
+		put((int)ID.ShipClass.DDHime,         new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.35F});
+		put((int)ID.ShipClass.HarbourHime,    new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
+		put((int)ID.ShipClass.IsolatedHime,   new float[] {0.1F, 0.85F, 0.85F, 0.85F, 0.35F});
+		put((int)ID.ShipClass.MidwayHime,     new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
+		put((int)ID.ShipClass.NorthernHime,   new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.5F});
+//		put((int)ID.Ship.SouthernHime,        new float[] {});
+//		put((int)ID.Ship.SeaplaneHime,        new float[] {});
+		put((int)ID.ShipClass.CVWD,           new float[] {0.1F, 0.95F, 0.85F, 0.9F, 0.15F});
+//		put((int)ID.Ship.BattleshipWD,        new float[] {});
+//		put((int)ID.Ship.AnchorageWD,         new float[] {});
+//		put((int)ID.Ship.HarbourWD,           new float[] {});
+//		put((int)ID.Ship.DestroyerWD,         new float[] {});
+//		put((int)ID.Ship.LightCruiserHime,    new float[] {});
+		put((int)ID.ShipClass.CAHime,         new float[] {0.5F, 1.1F, 1.1F, 1.1F, 0.85F});
+		put((int)ID.ShipClass.SSHime,         new float[] {0F, 1.5F, 2.1F, 1.1F, 0.15F});
+//		put((int)ID.Ship.SupplyDepotHime,     new float[] {});
+		put((int)ID.ShipClass.SSNH,           new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.5F});
 		//hostile ship
 		//DD
-		put((int)ID.ShipClass.DDAkatsuki,    new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
-		put((int)ID.ShipClass.DDHibiki,	    new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
-		put((int)ID.ShipClass.DDIkazuchi,    new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
-		put((int)ID.ShipClass.DDInazuma,	    new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
-		put((int)ID.ShipClass.DDShimakaze,   new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
+		put((int)ID.ShipClass.DDAkatsuki,     new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put((int)ID.ShipClass.DDHibiki,       new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put((int)ID.ShipClass.DDIkazuchi,     new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put((int)ID.ShipClass.DDInazuma,      new float[] {0.1F, 0.8F, 0.8F, 0.8F, 0.3F});
+		put((int)ID.ShipClass.DDShimakaze,    new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.4F});
 		//CL
-		put((int)ID.ShipClass.CLTenryuu,  new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
-		put((int)ID.ShipClass.CLTatsuta,  new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
-		put((int)ID.ShipClass.CAAtago,    new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.CATakao,    new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.CLTenryuu,      new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
+		put((int)ID.ShipClass.CLTatsuta,      new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.25F});
+		put((int)ID.ShipClass.CAAtago,        new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.CATakao,        new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.2F});
 		//BB
-		put((int)ID.ShipClass.BBNagato,	    new float[] {0.1F, 0.95F, 0.95F, 0.95F, 0.1F});
-		put((int)ID.ShipClass.BBYamato,	    new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.15F});
-		put((int)ID.ShipClass.BBKongou,     new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.BBHiei,       new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.BBHaruna,     new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.BBKirishima,  new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBNagato,       new float[] {0.1F, 0.95F, 0.95F, 0.95F, 0.1F});
+		put((int)ID.ShipClass.BBYamato,       new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.15F});
+		put((int)ID.ShipClass.BBKongou,       new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBHiei,         new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBHaruna,       new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.BBKirishima,    new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
 		//SS
-		put((int)ID.ShipClass.SSU511,	    new float[] {0.1F, 1F, 1F, 1F, 0.35F});
-		put((int)ID.ShipClass.SSRo500,	    new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.35F});
+		put((int)ID.ShipClass.SSU511,         new float[] {0.1F, 1F, 1F, 1F, 0.35F});
+		put((int)ID.ShipClass.SSRo500,        new float[] {0.1F, 0.9F, 0.9F, 0.9F, 0.35F});
 		//CV
-		put((int)ID.ShipClass.CVKaga,		    new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
-		put((int)ID.ShipClass.CVAkagi,		    new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.CVKaga,         new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		put((int)ID.ShipClass.CVAkagi,        new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
+		//AP
+		put((int)ID.ShipClass.APMamiya,       new float[] {0.1F, 0.85F, 0.85F, 0.9F, 0.2F});
 	}});
 	
 	
@@ -389,7 +386,7 @@ public class Values
 		put((int)ID.ShipClass.BBKirishima,       new int[] {101, 187, 0});
 		put((int)ID.ShipClass.SSU511,            new int[] {101, 198, 0});
 		put((int)ID.ShipClass.SSRo500,           new int[] {101, 209, 0});
-//		put((int)ID.ShipClass,new int[] {101, 220, 0});
+		put((int)ID.ShipClass.APMamiya,          new int[] {101, 220, 0});
 //		put((int)ID.ShipClass,new int[] {101, 231, 0});
 //		put((int)ID.ShipClass,new int[] {101, 242, 0});
 		//line 2
@@ -573,6 +570,7 @@ public class Values
 		add((int)ID.ShipClass.BBHiei);
 		add((int)ID.ShipClass.BBHaruna);
 		add((int)ID.ShipClass.BBKirishima);
+		add((int)ID.ShipClass.APMamiya);
 	}});
 	
 	

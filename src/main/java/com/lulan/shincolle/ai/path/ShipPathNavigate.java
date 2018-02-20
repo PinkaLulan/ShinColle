@@ -117,12 +117,12 @@ public class ShipPathNavigate
         }
         
         this.targetPos = pos;
-        this.world.theProfiler.startSection("pathfind");
+        this.world.profiler.startSection("pathfind");
         BlockPos hostPos = new BlockPos(entity);
         int i = (int)(range + 8.0F);
         ChunkCache chunkcache = new ChunkCache(this.world, hostPos.add(-i, -i, -i), hostPos.add(i, i, i), 0);
         ShipPath pathentity = (new ShipPathFinder(chunkcache, canFly)).findPath(entity, x, y, z, range);
-        this.world.theProfiler.endSection();
+        this.world.profiler.endSection();
         return pathentity;
     }
 
@@ -144,12 +144,12 @@ public class ShipPathNavigate
         }
     	
         this.targetPos = pos;
-        this.world.theProfiler.startSection("pathfind");
+        this.world.profiler.startSection("pathfind");
         BlockPos hostPos = (new BlockPos(entity)).up();
         int i = (int)(range + 16.0F);
         ChunkCache chunkcache = new ChunkCache(this.world, hostPos.add(-i, -i, -i), hostPos.add(i, i, i), 0);
         ShipPath pathentity = (new ShipPathFinder(chunkcache, canFly)).findPath(entity, targetEntity, range);
-        this.world.theProfiler.endSection();
+        this.world.profiler.endSection();
         return pathentity;
     }
     
@@ -256,7 +256,7 @@ public class ShipPathNavigate
                         BlockPos blockPos = (new BlockPos(vec3)).down();
                         AxisAlignedBB blockAABB = this.world.getBlockState(blockPos).getBoundingBox(this.world, blockPos);
                         vec3 = vec3.subtract(0.0D, 1.0D - blockAABB.maxY, 0.0D);
-                        this.hostShip.getShipMoveHelper().setMoveTo(vec3.xCoord, vec3.yCoord + 0.1D, vec3.zCoord, this.speed);
+                        this.hostShip.getShipMoveHelper().setMoveTo(vec3.x, vec3.y + 0.1D, vec3.z, this.speed);
                     }
                 }
             }
@@ -275,7 +275,7 @@ public class ShipPathNavigate
         //找出y高度不同於host所在高度的點
         for (int j = this.currentPath.getCurrentPathIndex(); j < this.currentPath.getCurrentPathLength(); ++j)
         {
-            if ((double)this.currentPath.getPathPointFromIndex(j).yCoord != Math.floor(hostPos.yCoord))
+            if ((double)this.currentPath.getPathPointFromIndex(j).yCoord != Math.floor(hostPos.y))
             {
                 i = j;
                 break;
@@ -285,7 +285,7 @@ public class ShipPathNavigate
         Vec3d nowPos = this.currentPath.getCurrentPos();
         
         //若host成功到達目標路徑點, 則目標繼續設為下一個路徑點
-        if (MathHelper.abs((float)(this.host.posX - nowPos.xCoord - 0.5D)) < this.maxDistanceToWaypoint && MathHelper.abs((float)(this.host.posZ - nowPos.zCoord - 0.5D)) < this.maxDistanceToWaypoint)
+        if (MathHelper.abs((float)(this.host.posX - nowPos.x - 0.5D)) < this.maxDistanceToWaypoint && MathHelper.abs((float)(this.host.posZ - nowPos.z - 0.5D)) < this.maxDistanceToWaypoint)
         {
             this.currentPath.setCurrentPathIndex(this.currentPath.getCurrentPathIndex() + 1);
         }
@@ -323,8 +323,8 @@ public class ShipPathNavigate
         		//嘗試跳躍 + 左右隨機移動來脫離卡住狀態
             	if (!currentPath.isFinished())
             	{
-            		float dx = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).xCoord - host.posX);
-                	float dz = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).zCoord - host.posZ);
+            		float dx = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).x - host.posX);
+                	float dz = (float) (currentPath.getVectorFromIndex(this.host, currentPath.getCurrentPathIndex()).z - host.posZ);
                 	double targetX = 0D;
                 	double targetZ = 0D;
                 	
@@ -494,15 +494,15 @@ public class ShipPathNavigate
     private boolean isDirectPathBetweenPoints(Vec3d pos1, Vec3d pos2, int sizeX, int sizeY, int sizeZ)
     {
 //    	//method 1: use raytrace
-//    	RayTraceResult trace = this.world.rayTraceBlocks(pos1, new Vec3d(pos2.xCoord, pos2.yCoord + this.host.height * 0.5D, pos2.zCoord), false, true, false);
+//    	RayTraceResult trace = this.world.rayTraceBlocks(pos1, new Vec3d(pos2.x, pos2.y + this.host.height * 0.5D, pos2.z), false, true, false);
 
     	//method 2: check all block on path
-        int x1 = MathHelper.floor(pos1.xCoord);
-        int y1 = (int) pos1.yCoord;
-        int z1 = MathHelper.floor(pos1.zCoord);
-        double xOffset = pos2.xCoord - pos1.xCoord;
-        double yOffset = pos2.xCoord - pos1.xCoord;
-        double zOffset = pos2.zCoord - pos1.zCoord;
+        int x1 = MathHelper.floor(pos1.x);
+        int y1 = (int) pos1.y;
+        int z1 = MathHelper.floor(pos1.z);
+        double xOffset = pos2.x - pos1.x;
+        double yOffset = pos2.x - pos1.x;
+        double zOffset = pos2.z - pos1.z;
         double offsetSq = xOffset * xOffset + zOffset * zOffset + yOffset * yOffset;
 
         if (offsetSq < 1.0E-8D)				//若距離極小, 則判定不須跳點
@@ -533,9 +533,9 @@ public class ShipPathNavigate
                 double unitY = 1D / Math.abs(yOffset);
                 double unitZ = 1D / Math.abs(zOffset);
                 
-                double proX = (double)x1 - pos1.xCoord;		//取xyz方向小數部位作為xyz方向起始的進度值
-                double proY = (double)y1 - pos1.yCoord;
-                double proZ = (double)z1 - pos1.zCoord;
+                double proX = (double)x1 - pos1.x;		//取xyz方向小數部位作為xyz方向起始的進度值
+                double proY = (double)y1 - pos1.y;
+                double proZ = (double)z1 - pos1.z;
 
                 if (xOffset >= 0D) ++proX;					//若xyz為正方向, 則起始值+1變回正數
                 if (yOffset >= 0D) ++proY;
@@ -549,9 +549,9 @@ public class ShipPathNavigate
                 int dirY = yOffset < 0D ? -1 : 1;
                 int dirZ = zOffset < 0D ? -1 : 1;
                 
-                int x2 = MathHelper.floor(pos2.xCoord);		//取得pos2整數座標
-                int y2 = MathHelper.floor(pos2.yCoord);
-                int z2 = MathHelper.floor(pos2.zCoord);
+                int x2 = MathHelper.floor(pos2.x);		//取得pos2整數座標
+                int y2 = MathHelper.floor(pos2.y);
+                int z2 = MathHelper.floor(pos2.z);
                 
                 int xIntOffset = x2 - x1;					//計算pos1到pos2的整數距離
                 int yIntOffset = y2 - y1;
@@ -619,8 +619,8 @@ public class ShipPathNavigate
             {
                 for (int z1 = zSize2; z1 < zSize2 + zSize; ++z1)
                 {
-                    double x2 = x1 + 0.5D - orgPos.xCoord;
-                    double z2 = z1 + 0.5D - orgPos.zCoord;
+                    double x2 = x1 + 0.5D - orgPos.x;
+                    double z2 = z1 + 0.5D - orgPos.z;
 
                     //檢查底下方塊種類
                     if (x2 * vecX + z2 * vecZ >= 0D)
@@ -648,8 +648,8 @@ public class ShipPathNavigate
     	//考慮host大小後, 檢查host身體佔據的範圍是否有方塊是實體不能通過
         for (BlockPos blockpos : BlockPos.getAllInBox(new BlockPos(xOffset, yOffset, zOffset), new BlockPos(xOffset + xSize - 1, yOffset + ySize - 1, zOffset + zSize - 1)))
         {
-            double d0 = (double)blockpos.getX() + 0.5D - orgPos.xCoord;
-            double d1 = (double)blockpos.getZ() + 0.5D - orgPos.zCoord;
+            double d0 = (double)blockpos.getX() + 0.5D - orgPos.x;
+            double d1 = (double)blockpos.getZ() + 0.5D - orgPos.z;
 
             if (d0 * vecX + d1 * vecZ >= 0D)
             {

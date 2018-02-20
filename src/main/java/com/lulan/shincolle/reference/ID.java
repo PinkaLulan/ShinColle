@@ -1,5 +1,9 @@
 package com.lulan.shincolle.reference;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 //for array ID
 public class ID
 {
@@ -582,14 +586,6 @@ public class ID
 	/** ship class id */
 	public static final class ShipClass
 	{
-		public static final byte PlayerBASE = -10;
-		public static final byte PlayerBB = -11;
-		public static final byte PlayerBBV = -12;
-		public static final byte PlayerCL = -13;
-		public static final byte PlayerCV = -14;
-		public static final byte PlayerDD = -15;
-		public static final byte PlayerSS = -16;
-		
 		public static final short DDI = 0;
 		public static final short DDRO = 1;
 		public static final short DDHA = 2;
@@ -640,7 +636,7 @@ public class ID
 		
 		public static final short STHime = 40;
 		public static final short AirdefenseHime = 41;
-		public static final short PTImp = 42;
+		public static final short APMamiya = 42;
 		public static final short CLHime = 43;
 		public static final short SSHime = 44;
 		public static final short DDWD = 45;
@@ -689,6 +685,167 @@ public class ID
 		public static final short HarbourSH = 82;
 		public static final short LycorisHime = 83;
 		public static final short TwinHime = 84;
+	}
+	
+	/**SHIP REGISTER NAME MAP
+	 * index by {@link ID.ShipClass}
+	 */
+	public static final Map<Short, String> NameMap = Collections.unmodifiableMap(new HashMap<Short, String>()
+	{{
+		put(ID.ShipClass.DDI, "EntityDestroyerI");
+		put(ID.ShipClass.DDRO, "EntityDestroyerRo");
+		put(ID.ShipClass.DDHA, "EntityDestroyerHa");
+		put(ID.ShipClass.DDNI, "EntityDestroyerNi");
+		put(ID.ShipClass.DDNA, "EntityDestroyerNa");
+		
+		put(ID.ShipClass.CLHO, "EntityLightCruiserHo");
+		put(ID.ShipClass.CLHE, "EntityLightCruiserHe");
+		put(ID.ShipClass.CLTO, "EntityLightCruiserTo");
+		put(ID.ShipClass.CLTSU, "EntityLightCruiserTsu");
+		put(ID.ShipClass.CLTCHI, "EntityLightCruiserChi");
+		put(ID.ShipClass.CARI, "EntityHeavyCruiserRi");
+		put(ID.ShipClass.CANE, "EntityHeavyCruiserNe");
+		
+		put(ID.ShipClass.CVLNU, "EntityCarrierNu");
+		put(ID.ShipClass.CVWO, "EntityCarrierWo");
+		
+		put(ID.ShipClass.BBRU, "EntityBattleshipRu");
+		put(ID.ShipClass.BBTA, "EntityBattleshipTa");
+		put(ID.ShipClass.BBRE, "EntityBattleshipRe");
+		
+		put(ID.ShipClass.APWA, "EntityTransportWa");
+		put(ID.ShipClass.SSKA, "EntitySubmKa");
+		put(ID.ShipClass.SSYO, "EntitySubmYo");
+		put(ID.ShipClass.SSSO, "EntitySubmSo");
+		
+		put(ID.ShipClass.CLDemon, "EntityLightCruiserDemon");
+		
+		put(ID.ShipClass.AirdefenseHime, "EntityAirdefenseHime");
+		put(ID.ShipClass.DDHime, "EntityDestroyerHime");
+		put(ID.ShipClass.EntombedAAHime, "EntityEntombedAAHime");
+		put(ID.ShipClass.DDAH, "EntityDestroyerAH");
+		put(ID.ShipClass.DDWD, "EntityDestroyerWD");
+		
+		put(ID.ShipClass.CLHime, "EntityCLHime");
+		put(ID.ShipClass.CAHime, "EntityCAHime");
+		put(ID.ShipClass.CASH, "EntityCASH");
+		
+		put(ID.ShipClass.ArmoredCVHime, "EntityArmoredCarrierHime");
+		put(ID.ShipClass.CVHime, "EntityCarrierHime");
+		put(ID.ShipClass.JellyfishHime, "EntityJellyfishHime");
+		put(ID.ShipClass.STHime, "EntitySeaplaneHime");
+		put(ID.ShipClass.EscortHime, "EntityEscortHime");
+		put(ID.ShipClass.CVSH, "EntityCarrierSH");
+		put(ID.ShipClass.CVWD, "EntityCarrierWD");
+		put(ID.ShipClass.STWH, "EntitySeaplaneWH");
+		
+		put(ID.ShipClass.AnchorageHime, "EntityAnchorageHime");
+		put(ID.ShipClass.AirfieldHime, "EntityAirfieldHime");
+		put(ID.ShipClass.HarbourHime, "EntityHarbourHime");
+		put(ID.ShipClass.IsolatedHime, "EntityIsolatedHime");
+		put(ID.ShipClass.MidwayHime, "EntityMidwayHime");
+		put(ID.ShipClass.NorthernHime, "EntityNorthernHime");
+		put(ID.ShipClass.SouthernHime, "EntitySouthernHime");
+		put(ID.ShipClass.SupplyDepotHime, "EntitySDHime");
+		put(ID.ShipClass.CentralHime, "EntityCentralHime");
+		put(ID.ShipClass.NorthlandHime, "EntityNorthlandHime");
+		put(ID.ShipClass.LycorisHime, "EntityLycorisHime");
+		put(ID.ShipClass.SupplyDepotSH, "EntitySDSH");
+		put(ID.ShipClass.HarbourSH, "EntityHarbourSH");
+		put(ID.ShipClass.AnchorageWD, "EntityAnchorageWD");
+		put(ID.ShipClass.HarbourWD, "EntityHarbourWD");
+		put(ID.ShipClass.NorthernWH, "EntityNorthernWH");
+		
+		put(ID.ShipClass.BBHime, "EntityBattleshipHime");
+		put(ID.ShipClass.EuropeanHime, "EntityEuropeanHime");
+		put(ID.ShipClass.FrenchHime, "EntityFrenchHime");
+		put(ID.ShipClass.NightStraitHime, "EntityNightStraitHime");
+		put(ID.ShipClass.TwinHime, "EntityTwinHime");
+		put(ID.ShipClass.BBSH, "EntityBattleshipSH");
+		put(ID.ShipClass.BBWD, "EntityBattleshipWD");
+		
+		put(ID.ShipClass.SSHime, "EntitySubmHime");
+		put(ID.ShipClass.SSNH, "EntitySubmNewHime");
+		put(ID.ShipClass.SSSH, "EntitySubmSH");
+		
+		put(ID.ShipClass.DDShimakaze, "EntityDestroyerShimakaze");
+		put((short)(ID.ShipClass.DDShimakaze+2000), "EntityDestroyerShimakazeMob");
+		put(ID.ShipClass.DDAkatsuki, "EntityDestroyerAkatsuki");
+		put((short)(ID.ShipClass.DDAkatsuki+2000), "EntityDestroyerAkatsukiMob");
+		put(ID.ShipClass.DDHibiki, "EntityDestroyerHibiki");
+		put((short)(ID.ShipClass.DDHibiki+2000), "EntityDestroyerHibikiMob");
+		put(ID.ShipClass.DDIkazuchi, "EntityDestroyerIkazuchi");
+		put((short)(ID.ShipClass.DDIkazuchi+2000), "EntityDestroyerIkazuchiMob");
+		put(ID.ShipClass.DDInazuma, "EntityDestroyerInazuma");
+		put((short)(ID.ShipClass.DDInazuma+2000), "EntityDestroyerInazumaMob");
+		put(ID.ShipClass.Raiden, "Entity");
+		
+		put(ID.ShipClass.CLTenryuu, "EntityCruiserTenryuu");
+		put((short)(ID.ShipClass.CLTenryuu+2000), "EntityCruiserTenryuuMob");
+		put(ID.ShipClass.CLTatsuta, "EntityCruiserTatsuta");
+		put((short)(ID.ShipClass.CLTatsuta+2000), "EntityCruiserTatsutaMob");
+		put(ID.ShipClass.CAAtago, "EntityCruiserAtago");
+		put((short)(ID.ShipClass.CAAtago+2000), "EntityCruiserAtagoMob");
+		put(ID.ShipClass.CATakao, "EntityCruiserTakao");
+		put((short)(ID.ShipClass.CATakao+2000), "EntityCruiserTakaoMob");
+		
+		put(ID.ShipClass.CVKaga, "EntityCarrierKaga");
+		put((short)(ID.ShipClass.CVKaga+2000), "EntityCarrierKagaMob");
+		put(ID.ShipClass.CVAkagi, "EntityCarrierAkagi");
+		put((short)(ID.ShipClass.CVAkagi+2000), "EntityCarrierAkagiMob");
+		
+		put(ID.ShipClass.BBNagato, "EntityBattleshipNGT");
+		put((short)(ID.ShipClass.BBNagato+2000), "EntityBattleshipNGTMob");
+		put(ID.ShipClass.BBYamato, "EntityBattleshipYMT");
+		put((short)(ID.ShipClass.BBYamato+2000), "EntityBattleshipYMTMob");
+		put(ID.ShipClass.BBKongou, "EntityBattleshipKongou");
+		put((short)(ID.ShipClass.BBKongou+2000), "EntityBattleshipKongouMob");
+		put(ID.ShipClass.BBHiei, "EntityBattleshipHiei");
+		put((short)(ID.ShipClass.BBHiei+2000), "EntityBattleshipHieiMob");
+		put(ID.ShipClass.BBHaruna, "EntityBattleshipHaruna");
+		put((short)(ID.ShipClass.BBHaruna+2000), "EntityBattleshipHarunaMob");
+		put(ID.ShipClass.BBKirishima, "EntityBattleshipKirishima");
+		put((short)(ID.ShipClass.BBKirishima+2000), "EntityBattleshipKirishimaMob");
+		
+		put(ID.ShipClass.SSU511, "EntitySubmU511");
+		put((short)(ID.ShipClass.SSU511+2000), "EntitySubmU511Mob");
+		put(ID.ShipClass.SSRo500, "EntitySubmRo500");
+		put((short)(ID.ShipClass.SSRo500+2000), "EntitySubmRo500Mob");
+		
+		put(ID.ShipClass.APMamiya, "EntityAPMamiya");
+		put((short)(ID.ShipClass.APMamiya+2000), "EntityAPMamiyaMob");
+	}});
+	
+	/** ship summons entity name */
+	public static final class NameMinions
+	{
+		//mounts
+		public static final String MountAfH = "EntityMountAfH";
+		public static final String MountBaH = "EntityMountBaH";
+		public static final String MountCaH = "EntityMountCaH";
+		public static final String MountCaWD = "EntityMountCaWD";
+		public static final String MountHbH = "EntityMountHbH";
+		public static final String MountIsH = "EntityMountIsH";
+		public static final String MountMiH = "EntityMountMiH";
+		public static final String MountSuH = "EntityMountSuH";
+		//projectile
+		public static final String AbyssMissile = "EntityAbyssMissile";
+		public static final String ProjectileBeam = "EntityProjectileBeam";
+		public static final String ProjectileStatic = "EntityProjectileStatic";
+		public static final String ShipFishingHook = "EntityShipFishingHook";
+		//summons
+		public static final String Rensouhou = "EntityRensouhou";
+		public static final String RensouhouMob = "EntityRensouhouMob";
+		public static final String RensouhouS = "EntityRensouhouS";
+		public static final String Airplane = "EntityAirplane";
+		public static final String AirplaneTakoyaki = "EntityAirplaneTakoyaki";
+		public static final String AirplaneT = "EntityAirplaneT";
+		public static final String AirplaneZero = "EntityAirplaneZero";
+		public static final String AirplaneTMob = "EntityAirplaneTMob";
+		public static final String AirplaneZeroMob = "EntityAirplaneZeroMob";
+		public static final String FloatingFort = "EntityFloatingFort";
+		//item entity
+		public static final String BasicEntityItem = "BasicEntityItem";
 	}
 	
 	/** ship misc entity id for renderer */
