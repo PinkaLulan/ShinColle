@@ -1,7 +1,6 @@
 package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -26,14 +25,17 @@ public class ItemBlockWaypoint extends BasicItemBlock
 	
 	//waypoint can place on water, air, ...etc.
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
 	{
 		//server side
 		if (!world.isRemote)
 		{
+			ItemStack stack = player.getHeldItem(hand);
+			if (stack == null) return new ActionResult(EnumActionResult.PASS, stack);
+			
 			//get ray trace block
 	    	RayTraceResult hitobj = EntityHelper.getMouseoverTarget(world, player, 6D, true, false, false);
-	        
+
 	    	if (hitobj != null)
 	    	{
 	        	//get block
@@ -55,11 +57,11 @@ public class ItemBlockWaypoint extends BasicItemBlock
 	                    pos = pos.offset(hitobj.sideHit);
 	                }
 	                
-	                if (stack.stackSize != 0)
+	                if (stack.getCount() != 0)
 	                {
 	                    //check metadata
 	                    int i = this.getMetadata(stack.getMetadata());
-	                    IBlockState state = this.block.getStateForPlacement(world, pos, hitobj.sideHit, 0F, 0F, 0F, i, player, stack);
+	                    IBlockState state = this.block.getStateForPlacement(world, pos, hitobj.sideHit, 0F, 0F, 0F, i, player, hand);
 
 	                    //place block
 	                    if (placeBlockAt(stack, player, world, pos, hitobj.sideHit, 0F, 0F, 0F, state))
@@ -70,7 +72,7 @@ public class ItemBlockWaypoint extends BasicItemBlock
 	                        //if creative mode, item not consumed
 	                        if (!player.capabilities.isCreativeMode)
 	                        {
-	                            --stack.stackSize;
+	                            stack.grow(-1);
 	                        }
 	                    }
 
@@ -84,7 +86,7 @@ public class ItemBlockWaypoint extends BasicItemBlock
 	        }//end get target
 		}
     	
-    	return super.onItemRightClick(stack, world, player, hand);
+    	return super.onItemRightClick(world, player, hand);
 	}
 	
 	

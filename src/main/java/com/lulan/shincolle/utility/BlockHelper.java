@@ -3,11 +3,13 @@ package com.lulan.shincolle.utility;
 import java.util.HashSet;
 import java.util.Random;
 
+import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntityLightBlock;
 
 import net.minecraft.block.Block;
@@ -17,8 +19,11 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -799,6 +804,33 @@ public class BlockHelper
   		}
   		
   		return null;
+	}
+	
+	/**
+	 * used in Block::onBlockActivated
+	 */
+	public static boolean handleBlockClick(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	{
+		//client端: 只需要收到true
+        if (world.isRemote)
+        {
+            return true;
+        }
+        
+        //server端: 若玩家不是sneaking, 則開啟gui
+        if (!player.isSneaking())
+        {
+        	TileEntity tile = world.getTileEntity(pos);
+        	
+        	//open gui
+        	if (tile instanceof BasicTileEntity && ((BasicTileEntity) tile).getGuiIntID() >= 0)
+        	{
+        		player.openGui(ShinColle.instance, ((BasicTileEntity) tile).getGuiIntID(), world, pos.getX(), pos.getY(), pos.getZ());
+                return true;
+        	}
+        }
+
+		return false;
 	}
 	
 	

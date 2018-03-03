@@ -11,6 +11,7 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipMorph;
+import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEquip;
@@ -34,6 +35,7 @@ import mchorse.metamorph.api.events.MorphActionEvent;
 import mchorse.metamorph.api.events.MorphEvent;
 import mchorse.metamorph.api.events.SpawnGhostEvent;
 import mchorse.metamorph.api.morphs.EntityMorph;
+import net.minecraft.block.Block;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.FogMode;
@@ -50,11 +52,14 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogDensity;
@@ -64,6 +69,7 @@ import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityEvent.EnteringChunk;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -74,6 +80,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -87,6 +94,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -100,6 +108,56 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EventHandler
 {
 	
+	/**
+	 * register blocks
+	 * @throws Exception 
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void registerBlocks(RegistryEvent.Register<Block> event) throws Exception
+	{
+		LogHelper.info("INFO: register: blocks: side: "+FMLCommonHandler.instance().getSide());
+		ModBlocks.register(event);
+	}
+	
+	/**
+	 * register items
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void registerItems(RegistryEvent.Register<Item> event)
+	{
+		LogHelper.info("INFO: register: items: side: "+FMLCommonHandler.instance().getSide());
+//	    event.getRegistry().registerAll(block1, block2, ...);
+	}
+	
+	/**
+	 * register entities
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void registerEntities(RegistryEvent.Register<EntityEntry> event)
+	{
+		LogHelper.info("INFO: register: entities: side: "+FMLCommonHandler.instance().getSide());
+//	    event.getRegistry().registerAll(block1, block2, ...);
+	}
+	
+	/**
+	 * register sounds
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void registerSounds(RegistryEvent.Register<SoundEvent> event)
+	{
+		LogHelper.info("INFO: register: sounds: side: "+FMLCommonHandler.instance().getSide());
+//	    event.getRegistry().registerAll(block1, block2, ...);
+	}
+	
+	/**
+	 * register recipes
+	 */
+	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event)
+	{
+		LogHelper.info("INFO: register: recipes: side: "+FMLCommonHandler.instance().getSide());
+//	    event.getRegistry().registerAll(block1, block2, ...);
+	}
 	
 	//change vanilla mob drop (add grudge), this is SERVER event
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
@@ -221,7 +279,7 @@ public class EventHandler
 	    	}
 
 			//add kills number
-			Entity ent = event.getSource().getSourceOfDamage();
+			Entity ent = event.getSource().getTrueSource();
 			
 	    	//由本體擊殺
 	    	if (ent instanceof BasicEntityShip)
@@ -420,8 +478,8 @@ public class EventHandler
 	public void onEntityAttack(LivingAttackEvent event)
 	{
 		Entity target = event.getEntity();								//entity been attacked
-		Entity attacker = event.getSource().getEntity();				//attacker or summons
-		Entity attackerSource = event.getSource().getSourceOfDamage();	//attacker or summoner
+		Entity attacker = event.getSource().getImmediateSource();		//summons
+		Entity attackerSource = event.getSource().getTrueSource();		//summoner
 		
 		//server side only
 		if(target != null && !target.world.isRemote)
@@ -430,8 +488,8 @@ public class EventHandler
 			if (target instanceof EntityPlayer)
 			{
 				if (target.getRidingEntity() instanceof BasicEntityMount &&
-					(event.getSource() == DamageSource.fall ||
-					 event.getSource() == DamageSource.inWall))
+					(event.getSource() == DamageSource.FALL ||
+					 event.getSource() == DamageSource.IN_WALL))
 				{
 					event.setCanceled(true);
 					return;
@@ -452,7 +510,7 @@ public class EventHandler
 			//other damage
 			if (attackerSource != null)
 			{
-				double dist = target.getDistanceSqToEntity(attackerSource);
+				double dist = target.getDistanceSq(attackerSource);
 				
 				//check attacker
 				//attacker is player

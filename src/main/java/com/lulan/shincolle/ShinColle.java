@@ -55,13 +55,13 @@ public class ShinColle
 		//config inti
 		ConfigHandler.init(event);	//load config file
 		
-		ModItems.init();
-
-		ModBlocks.init();
-
-		ModEntity.init();
-		
-		ModSounds.init();
+//		ModItems.init();  //TODO dep
+//
+//		ModBlocks.init();
+//
+//		ModEntity.init();
+//		
+//		ModSounds.init();
 		
 		//render & model register
 		proxy.registerRender();

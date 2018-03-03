@@ -1,7 +1,5 @@
 package com.lulan.shincolle.block;
 
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
@@ -111,12 +109,6 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
     }
 	
 	@Override
-    public boolean isBlockSolid(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
-    {
-        return true;
-    }
-    
-	@Override
     public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
     {
         return false;
@@ -189,7 +181,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
 	//右鍵點到方塊時呼叫此方法
 	//參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack item, EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
 		//client端只需要收到true
 		if(world.isRemote)

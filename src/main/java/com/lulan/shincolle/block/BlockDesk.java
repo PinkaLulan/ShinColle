@@ -6,13 +6,11 @@ import com.lulan.shincolle.tileentity.TileEntityDesk;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,10 +29,6 @@ public class BlockDesk extends BasicBlockFacingContainer
 		this.setHardness(1F);
 		this.setResistance(60F);
 	    this.setHarvestLevel("pickaxe", 0);
-	    
-        GameRegistry.register(this);
-        GameRegistry.register(new ItemBlock(this), this.getRegistryName());
-        GameRegistry.registerTileEntity(TileEntityDesk.class, TILENAME);
 	}
 	
 	@Override

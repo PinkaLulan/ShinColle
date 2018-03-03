@@ -7,13 +7,11 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,10 +29,6 @@ public class BlockLightAir extends BlockAir implements ITileEntityProvider, ICus
 		this.setRegistryName(NAME);
 		this.setTickRandomly(false);
 		this.setLightLevel(1F);
-	    
-        GameRegistry.register(this);
-        GameRegistry.register(new ItemBlock(this), this.getRegistryName());
-        GameRegistry.registerTileEntity(TileEntityLightBlock.class, TILENAME);
 	}
 	
 	@SideOnly(Side.CLIENT)

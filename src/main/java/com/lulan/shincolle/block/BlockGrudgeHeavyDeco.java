@@ -4,7 +4,6 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 
 public class BlockGrudgeHeavyDeco extends BasicBlock
@@ -23,9 +22,6 @@ public class BlockGrudgeHeavyDeco extends BasicBlock
 	    this.setLightLevel(1F);
 	    this.setResistance(300F);
 	    this.setSoundType(SoundType.SAND);
-	    
-        GameRegistry.register(this);
-        GameRegistry.register(new ItemBlockResourceBlock(this), this.getRegistryName());
 	}
 	
 	@Override
