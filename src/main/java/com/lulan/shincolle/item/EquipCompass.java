@@ -2,14 +2,16 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.world.World;
 
 /**meta:
  *    0: normal drum
@@ -25,8 +27,6 @@ public class EquipCompass extends BasicEquip
 		super();
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override
@@ -63,17 +63,11 @@ public class EquipCompass extends BasicEquip
 	}
 	
 	@Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
-	{  		
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    {  		
 		list.add(TextFormatting.GRAY + I18n.format("gui.shincolle:compass"));
-		super.addInformation(itemstack, player, list, par4);
+		super.addInformation(stack, world, list, flag);
 	}
 	
 
 }
-
-
-
-
-
-

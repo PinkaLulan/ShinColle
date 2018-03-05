@@ -1,13 +1,10 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.util.NonNullList;
 
 /**meta:
  *    0:  Torpedo Bomber Mk.I
@@ -45,40 +42,38 @@ public class EquipAirplane extends BasicEquip
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	/** rearrange item order in creative tab */
 	@Override
-	public void getSubItems(Item item, CreativeTabs tab, List list)
-	{
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
+    {
 		//T
-		list.add(new ItemStack(item, 1, 0));
-		list.add(new ItemStack(item, 1, 1));
-		list.add(new ItemStack(item, 1, 2));
-		list.add(new ItemStack(item, 1, 3));
-		list.add(new ItemStack(item, 1, 15));
+		list.add(new ItemStack(this, 1, 0));
+		list.add(new ItemStack(this, 1, 1));
+		list.add(new ItemStack(this, 1, 2));
+		list.add(new ItemStack(this, 1, 3));
+		list.add(new ItemStack(this, 1, 15));
 		//F
-		list.add(new ItemStack(item, 1, 4));
-		list.add(new ItemStack(item, 1, 5));
-		list.add(new ItemStack(item, 1, 6));
-		list.add(new ItemStack(item, 1, 7));
-		list.add(new ItemStack(item, 1, 8));
-		list.add(new ItemStack(item, 1, 18));
-		list.add(new ItemStack(item, 1, 16));
-		list.add(new ItemStack(item, 1, 21));
+		list.add(new ItemStack(this, 1, 4));
+		list.add(new ItemStack(this, 1, 5));
+		list.add(new ItemStack(this, 1, 6));
+		list.add(new ItemStack(this, 1, 7));
+		list.add(new ItemStack(this, 1, 8));
+		list.add(new ItemStack(this, 1, 18));
+		list.add(new ItemStack(this, 1, 16));
+		list.add(new ItemStack(this, 1, 21));
 		//B
-		list.add(new ItemStack(item, 1, 9));
-		list.add(new ItemStack(item, 1, 10));
-		list.add(new ItemStack(item, 1, 11));
-		list.add(new ItemStack(item, 1, 12));
-		list.add(new ItemStack(item, 1, 17));
-		list.add(new ItemStack(item, 1, 19));
-		list.add(new ItemStack(item, 1, 20));
+		list.add(new ItemStack(this, 1, 9));
+		list.add(new ItemStack(this, 1, 10));
+		list.add(new ItemStack(this, 1, 11));
+		list.add(new ItemStack(this, 1, 12));
+		list.add(new ItemStack(this, 1, 17));
+		list.add(new ItemStack(this, 1, 19));
+		list.add(new ItemStack(this, 1, 20));
 		//R
-		list.add(new ItemStack(item, 1, 13));
-		list.add(new ItemStack(item, 1, 14));
+		list.add(new ItemStack(this, 1, 13));
+		list.add(new ItemStack(this, 1, 14));
 	}
 	
 	/** T=5, F=8, B=7, R=2 */

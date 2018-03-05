@@ -13,6 +13,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -123,17 +124,17 @@ public class EventHandler
 	 * register items
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void registerItems(RegistryEvent.Register<Item> event)
+	public void registerItems(RegistryEvent.Register<Item> event) throws Exception
 	{
 		LogHelper.info("INFO: register: items: side: "+FMLCommonHandler.instance().getSide());
-//	    event.getRegistry().registerAll(block1, block2, ...);
+		ModItems.register(event);
 	}
 	
 	/**
 	 * register entities
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void registerEntities(RegistryEvent.Register<EntityEntry> event)
+	public void registerEntities(RegistryEvent.Register<EntityEntry> event) throws Exception
 	{
 		LogHelper.info("INFO: register: entities: side: "+FMLCommonHandler.instance().getSide());
 //	    event.getRegistry().registerAll(block1, block2, ...);
@@ -143,17 +144,17 @@ public class EventHandler
 	 * register sounds
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void registerSounds(RegistryEvent.Register<SoundEvent> event)
+	public void registerSounds(RegistryEvent.Register<SoundEvent> event) throws Exception
 	{
 		LogHelper.info("INFO: register: sounds: side: "+FMLCommonHandler.instance().getSide());
-//	    event.getRegistry().registerAll(block1, block2, ...);
+		ModSounds.register(event);
 	}
 	
 	/**
 	 * register recipes
 	 */
 	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
-	public void registerRecipes(RegistryEvent.Register<IRecipe> event)
+	public void registerRecipes(RegistryEvent.Register<IRecipe> event) throws Exception
 	{
 		LogHelper.info("INFO: register: recipes: side: "+FMLCommonHandler.instance().getSide());
 //	    event.getRegistry().registerAll(block1, block2, ...);

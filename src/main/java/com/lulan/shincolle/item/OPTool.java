@@ -2,11 +2,13 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,8 +33,6 @@ public class OPTool extends BasicItem
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(1);
 		this.setFull3D();
-        
-        GameRegistry.register(this);
 	}
 	
 	//item glow effect
@@ -44,8 +44,8 @@ public class OPTool extends BasicItem
     }
 	
 	@Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
-	{
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    {
     	list.add(TextFormatting.RED + I18n.format("gui.shincolle:optool1"));
     	list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:optool2"));
 	}

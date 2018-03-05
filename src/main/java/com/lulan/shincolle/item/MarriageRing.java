@@ -2,18 +2,20 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +27,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -42,14 +43,14 @@ public class MarriageRing extends BasicItem implements IBauble
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(1);
-        
-        GameRegistry.register(this);
 	}
 	
 	//activate or deactivate ring
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
-	{	//right click to launch	
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
+    {
+		ItemStack stack = player.getHeldItem(hand);
+		
 		if (!world.isRemote)
 		{
 			//change ring state
@@ -186,9 +187,9 @@ public class MarriageRing extends BasicItem implements IBauble
 	
 	//show ability text, this is CLIENT side
 	@Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
-	{  		
-		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(player);
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    {  		
+		CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
 		
 		if (capa != null)
 		{

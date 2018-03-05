@@ -1,7 +1,5 @@
 package com.lulan.shincolle.item;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 /**meta:
  * 0: abyssium ingot
  * 1: polymetallic nodules
@@ -19,8 +17,6 @@ public class AbyssMetal extends BasicItem implements IShipResourceItem, IShipFoo
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override

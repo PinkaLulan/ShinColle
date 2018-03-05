@@ -3,7 +3,6 @@ package com.lulan.shincolle.item;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**meta:
  *    0:  Abyssal Boiler
@@ -24,8 +23,6 @@ public class EquipTurbine extends BasicEquip
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override
@@ -87,4 +84,3 @@ public class EquipTurbine extends BasicEquip
 
 
 }
-

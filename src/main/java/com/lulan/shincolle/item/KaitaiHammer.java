@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class KaitaiHammer extends BasicItem
 {
@@ -29,8 +28,6 @@ public class KaitaiHammer extends BasicItem
 		this.setFull3D();
 		this.setNoRepair();
 		this.setHasSubtypes(false);
-        
-        GameRegistry.register(this);
 	}
 	
 	//此鎚子可用於合成其他道具, 且不為消耗品, 故ContainerItem為耐久度-1的自己本身
@@ -46,10 +43,10 @@ public class KaitaiHammer extends BasicItem
 	{
 		//耐久度--
 		int meta = stack.getItemDamage() + 1;
-		stack.stackSize = 0;
+		stack.setCount(0);
 		
 		//物品達到耐久度上限, 回傳空物品
-		if (meta >= this.getMaxDamage(stack)) return null;
+		if (meta >= this.getMaxDamage(stack)) return ItemStack.EMPTY;
 		
 		return new ItemStack(ModItems.KaitaiHammer, 1, meta);
 	}

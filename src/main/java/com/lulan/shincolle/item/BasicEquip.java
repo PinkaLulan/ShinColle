@@ -2,6 +2,8 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.input.Keyboard;
 
 import com.lulan.shincolle.crafting.EquipCalc;
@@ -10,15 +12,15 @@ import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EnchantHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -117,7 +119,7 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
 	
 	//display equip information
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
     {
     	if (stack != null && stack.getItem() != null)
     	{
@@ -133,19 +135,19 @@ abstract public class BasicEquip extends BasicItem implements IShipResourceItem
             	}
             	
             	//has flags, change flag by player key input
-            	int flag = nbt.getInteger("HideFlags");
+            	int hideflag = nbt.getInteger("HideFlags");
             	
             	if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ||
             		Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))	//if press CTRL, show enchantments
             	{
-            		flag = 0;
+            		hideflag = 0;
             	}
             	else											//hide enchantments by default
             	{
-            		flag = 1;
+            		hideflag = 1;
             	}
             	
-            	nbt.setInteger("HideFlags", flag);
+            	nbt.setInteger("HideFlags", hideflag);
             }
     		
             float[] main = Values.EquipAttrsMain.get(((BasicEquip)stack.getItem()).getEquipID(stack.getItemDamage()));

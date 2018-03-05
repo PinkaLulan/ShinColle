@@ -1,7 +1,5 @@
 package com.lulan.shincolle.item;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 /** meta:
  *     0: grudge
  *     1: experience grudge
@@ -19,8 +17,6 @@ public class Grudge extends BasicItem implements IShipResourceItem, IShipFoodIte
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override

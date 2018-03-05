@@ -10,7 +10,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class DeskItemBook extends BasicItem
 {
@@ -24,20 +23,19 @@ public class DeskItemBook extends BasicItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(1);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
 		if (player != null)
 		{	//開啟方塊GUI 參數:玩家, mod instance, gui ID, world, 自訂參數1,2,3
+			ItemStack stack = player.getHeldItem(hand);
 			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.ADMIRALDESK, world, 2, 0, 0);
 			return new ActionResult(EnumActionResult.SUCCESS, stack);
 		}
 		
-        return new ActionResult(EnumActionResult.PASS, stack);
+        return new ActionResult(EnumActionResult.PASS, null);
     }
 	
 	

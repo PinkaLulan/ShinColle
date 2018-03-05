@@ -7,7 +7,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +16,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BucketRepair extends BasicItem
 {
@@ -31,14 +29,14 @@ public class BucketRepair extends BasicItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(16);
-        
-        GameRegistry.register(this);
 	}
 	
 	//start use item
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
+		ItemStack stack = player.getHeldItem(hand);
+		
 		if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && hand == EnumHand.MAIN_HAND)
         {
             player.setActiveHand(hand);
@@ -46,7 +44,7 @@ public class BucketRepair extends BasicItem
         }
         else
         {
-            return new ActionResult(EnumActionResult.FAIL, stack);
+            return new ActionResult(EnumActionResult.PASS, stack);
         }
     }
 	
@@ -91,7 +89,7 @@ public class BucketRepair extends BasicItem
 					//item-1 in non-creative mode
 					if (!player.capabilities.isCreativeMode)
 					{
-						--stack.stackSize;
+						stack.grow(-1);
 		            }
 					
 					//1 bucket = 10% hp

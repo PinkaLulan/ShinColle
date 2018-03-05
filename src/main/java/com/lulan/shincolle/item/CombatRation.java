@@ -13,6 +13,7 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.InteractHelper;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +24,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 
 public class CombatRation extends BasicItem implements IShipCombatRation
@@ -39,8 +39,6 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(16);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override
@@ -107,8 +105,10 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 	
 	//start use item
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
+		ItemStack stack = player.getHeldItem(hand);
+		
 		if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && hand == EnumHand.MAIN_HAND)
         {
             player.setActiveHand(hand);
@@ -177,7 +177,7 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 	              		if (s != null && s.isEntityAlive() && !s.getStateFlag(ID.F.NoFuel) &&
 	              			!s.isSitting() && !s.isRiding())
 	              		{
-              				if (player.getDistanceSqToEntity(s) > 4D)
+              				if (player.getDistanceSq(s) > 4D)
 	              			{
               					s.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
 	              				s.getShipNavigate().tryMoveToEntityLiving(player, 0.75D);
@@ -209,11 +209,11 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 	
 	//display equip information
     @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List<String> list, boolean par4)
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
     {
-    	if (itemstack != null)
+    	if (stack != null)
     	{
-    		int meta = itemstack.getItemDamage();
+    		int meta = stack.getItemDamage();
     		String str = I18n.format("gui.shincolle:combatration"+meta);
     		String[] strs =  CalcHelper.stringConvNewlineToArray(str);
     		

@@ -2,6 +2,8 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -10,6 +12,7 @@ import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -22,7 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /** target selector for OP only
  * 
@@ -44,8 +46,6 @@ public class TargetWrench extends BasicItem
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(1);
 		this.setFull3D();
-        
-        GameRegistry.register(this);
 		
 		this.tilePoint = new BlockPos[] {BlockPos.ORIGIN, BlockPos.ORIGIN};
 		this.pointID = 0;
@@ -56,7 +56,7 @@ public class TargetWrench extends BasicItem
 	 * sneaking: pair Chest, Crane and Waypoint
 	 */
 	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
 	{
 		if (player != null)
 		{
@@ -109,8 +109,8 @@ public class TargetWrench extends BasicItem
     }
 	
 	@Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
-	{
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    {
     	list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:wrench3"));
 	}
 	

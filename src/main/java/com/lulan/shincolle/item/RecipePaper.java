@@ -2,10 +2,13 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,7 +20,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class RecipePaper extends BasicItem
 {
@@ -31,28 +33,27 @@ public class RecipePaper extends BasicItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(1);
-        
-        GameRegistry.register(this);
 	}
 	
 	//開啟GUI 參數:玩家, mod instance, gui ID, world, 自訂參數1,2,3
 	@Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
 		if (player != null)
 		{
+			ItemStack stack = player.getHeldItem(hand);
 			FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.RECIPE, world, 0, 0, 0);
 			return new ActionResult(EnumActionResult.SUCCESS, stack);
 		}
 		
-        return new ActionResult(EnumActionResult.PASS, stack);
+        return new ActionResult(EnumActionResult.PASS, null);
     }
 	
 	//show recipe content
     @Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean advanced)
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
     {
-    	super.addInformation(stack, player, list, advanced);
+    	super.addInformation(stack, world, list, flag);
     	
     	if(stack.hasTagCompound())
     	{
@@ -71,7 +72,7 @@ public class RecipePaper extends BasicItem
 	                
 	                if (slot >= 0 && slot < 10)
 	                {
-	                	stacks[slot] = ItemStack.loadItemStackFromNBT(itemTags);
+	                	stacks[slot] = new ItemStack(itemTags);
 	                }
 	            }
 	    		

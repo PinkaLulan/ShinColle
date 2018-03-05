@@ -1,7 +1,5 @@
 package com.lulan.shincolle.item;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 /** meta:
  *     0: ammo 
  *     1: ammo container
@@ -21,8 +19,6 @@ public class Ammo extends BasicItem implements IShipResourceItem, IShipFoodItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override

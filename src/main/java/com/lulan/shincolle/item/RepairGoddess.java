@@ -2,11 +2,13 @@ package com.lulan.shincolle.item;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -21,17 +23,8 @@ public class RepairGoddess extends BasicItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
 		this.setMaxStackSize(16);
-        
-        GameRegistry.register(this);
 	}
 
-	//display equip information
-    @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
-    {  	
-    	list.add(TextFormatting.RED + I18n.format("gui.shincolle:repairgoddess"));
-    }
-    
 	//item glow effect
   	@Override
   	@SideOnly(Side.CLIENT)
@@ -39,6 +32,13 @@ public class RepairGoddess extends BasicItem
   	{
   		return true;
 	}
-
+  	
+	//display equip information
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    {  	
+    	list.add(TextFormatting.RED + I18n.format("gui.shincolle:repairgoddess"));
+    }
+    
   	
 }

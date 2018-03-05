@@ -1,7 +1,5 @@
 package com.lulan.shincolle.item;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 /** metal nugget
  * 
  */
@@ -17,8 +15,6 @@ public class AbyssNugget extends BasicItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override

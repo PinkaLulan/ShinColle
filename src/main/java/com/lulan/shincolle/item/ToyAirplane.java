@@ -1,7 +1,5 @@
 package com.lulan.shincolle.item;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 public class ToyAirplane extends BasicItem implements IShipFoodItem
 {
 	
@@ -12,8 +10,6 @@ public class ToyAirplane extends BasicItem implements IShipFoodItem
 		super();
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override

@@ -41,6 +41,8 @@ import com.lulan.shincolle.item.ToyAirplane;
 import com.lulan.shincolle.item.TrainingBook;
 import com.lulan.shincolle.utility.LogHelper;
 
+import net.minecraft.item.Item;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -93,64 +95,70 @@ public class ModItems
 	
 	
 	//item instance init, used in MOD PREINIT
-	public static void init() throws Exception
+	public static void register(RegistryEvent.Register<Item> event) throws Exception
 	{
 		ListItems = new ArrayList();
 		
 		//spawn egg
-		ShipSpawnEgg = initItems(ShipSpawnEgg.class);
+		ShipSpawnEgg = initItems(event, ShipSpawnEgg.class);
 		
 		//materials
-		AbyssMetal = initItems(AbyssMetal.class);
-		AbyssNugget = initItems(AbyssNugget.class);
-		Ammo = initItems(Ammo.class);
-		Grudge = initItems(Grudge.class);
+		AbyssMetal = initItems(event, AbyssMetal.class);
+		AbyssNugget = initItems(event, AbyssNugget.class);
+		Ammo = initItems(event, Ammo.class);
+		Grudge = initItems(event, Grudge.class);
 		
 		//equip	
-		EquipAirplane = initItems(EquipAirplane.class);
-		EquipAmmo = initItems(EquipAmmo.class);
-		EquipArmor = initItems(EquipArmor.class);
-		EquipCannon = initItems(EquipCannon.class);
-		EquipCatapult = initItems(EquipCatapult.class);
-		EquipCompass = initItems(EquipCompass.class);
-		EquipDrum = initItems(EquipDrum.class);
-		EquipFlare = initItems(EquipFlare.class);
-		EquipMachinegun = initItems(EquipMachinegun.class);
-		EquipRadar = initItems(EquipRadar.class);
-		EquipSearchlight = initItems(EquipSearchlight.class);
-		EquipTorpedo = initItems(EquipTorpedo.class);
-		EquipTurbine = initItems(EquipTurbine.class);
+		EquipAirplane = initItems(event, EquipAirplane.class);
+		EquipAmmo = initItems(event, EquipAmmo.class);
+		EquipArmor = initItems(event, EquipArmor.class);
+		EquipCannon = initItems(event, EquipCannon.class);
+		EquipCatapult = initItems(event, EquipCatapult.class);
+		EquipCompass = initItems(event, EquipCompass.class);
+		EquipDrum = initItems(event, EquipDrum.class);
+		EquipFlare = initItems(event, EquipFlare.class);
+		EquipMachinegun = initItems(event, EquipMachinegun.class);
+		EquipRadar = initItems(event, EquipRadar.class);
+		EquipSearchlight = initItems(event, EquipSearchlight.class);
+		EquipTorpedo = initItems(event, EquipTorpedo.class);
+		EquipTurbine = initItems(event, EquipTurbine.class);
 		
 		//misc
-		BucketRepair = initItems(BucketRepair.class);
-		CombatRation = initItems(CombatRation.class);
-		DeskItemBook = initItems(DeskItemBook.class);
-		DeskItemRadar = initItems(DeskItemRadar.class);
-		InstantConMat = initItems(InstantConMat.class);
-		KaitaiHammer = initItems(KaitaiHammer.class);
-		MarriageRing = initItems(MarriageRing.class);
-		ModernKit = initItems(ModernKit.class);
-		OwnerPaper = initItems(OwnerPaper.class);
-		OPTool = initItems(OPTool.class);
-		PointerItem = initItems(PointerItem.class);
-		RecipePaper = initItems(RecipePaper.class);
-		RepairGoddess = initItems(RepairGoddess.class);
-		ShipTank = initItems(ShipTank.class);
-		TargetWrench = initItems(TargetWrench.class);
-		TrainingBook = initItems(TrainingBook.class);
+		BucketRepair = initItems(event, BucketRepair.class);
+		CombatRation = initItems(event, CombatRation.class);
+		DeskItemBook = initItems(event, DeskItemBook.class);
+		DeskItemRadar = initItems(event, DeskItemRadar.class);
+		InstantConMat = initItems(event, InstantConMat.class);
+		KaitaiHammer = initItems(event, KaitaiHammer.class);
+		MarriageRing = initItems(event, MarriageRing.class);
+		ModernKit = initItems(event, ModernKit.class);
+		OwnerPaper = initItems(event, OwnerPaper.class);
+		OPTool = initItems(event, OPTool.class);
+		PointerItem = initItems(event, PointerItem.class);
+		RecipePaper = initItems(event, RecipePaper.class);
+		RepairGoddess = initItems(event, RepairGoddess.class);
+		ShipTank = initItems(event, ShipTank.class);
+		TargetWrench = initItems(event, TargetWrench.class);
+		TrainingBook = initItems(event, TrainingBook.class);
 		
 		//toy
-		ToyAirplane = initItems(ToyAirplane.class);
-		
+		ToyAirplane = initItems(event, ToyAirplane.class);
 	}
 	
 	//create instance and add instance to list
-	private static BasicItem initItems(Class<? extends BasicItem> itemClass) throws Exception
+	private static BasicItem initItems(RegistryEvent.Register<Item> event,
+									   Class<? extends BasicItem> itemClass) throws Exception
 	{
 		try
 		{
+			//new instance
 			BasicItem i = itemClass.newInstance();
+			
+			//add item to list (for model init)
 			ListItems.add(i);
+			
+			//register item
+			event.getRegistry().register(i);
 			return i;
 		}
 		catch (Exception e)

@@ -3,13 +3,15 @@ package com.lulan.shincolle.item;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.world.World;
 
 /**meta:
  *    0:  21inch Torpedo Mk.I
@@ -32,8 +34,6 @@ public class EquipTorpedo extends BasicEquip implements IShipEffectItem
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override
@@ -133,9 +133,9 @@ public class EquipTorpedo extends BasicEquip implements IShipEffectItem
 	}
 	
 	@Override
-    public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4)
+	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
     {
-		super.addInformation(stack, player, list, par4);
+		super.addInformation(stack, world, list, flag);
 		
 		int level = getMissileSpeedLevel(stack.getMetadata());
 		

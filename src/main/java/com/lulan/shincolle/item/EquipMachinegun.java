@@ -3,7 +3,6 @@ package com.lulan.shincolle.item;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**meta:
  *    0:  3-Inch Single High-Angle Gun Mount
@@ -26,8 +25,6 @@ public class EquipMachinegun extends BasicEquip
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
-        
-        GameRegistry.register(this);
 	}
 	
 	@Override

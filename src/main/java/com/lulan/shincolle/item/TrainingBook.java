@@ -11,6 +11,7 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.proxy.CommonProxy;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -21,7 +22,6 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class TrainingBook extends BasicItem
 {
@@ -33,21 +33,21 @@ public class TrainingBook extends BasicItem
 		super();
 		this.setUnlocalizedName(NAME);
 		this.setRegistryName(NAME);
-        
-        GameRegistry.register(this);
 	}
 	
 	//display equip information
     @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
     {  	
     	list.add(TextFormatting.GOLD + I18n.format("gui.shincolle:trainingbook"));
     }
     
 	//start use item
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
+		ItemStack stack = player.getHeldItem(hand);
+		
 		if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && hand == EnumHand.MAIN_HAND)
         {
             player.setActiveHand(hand);
@@ -105,7 +105,7 @@ public class TrainingBook extends BasicItem
 					ship.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_PLAYER_LEVELUP, ship.getSoundCategory(), 0.75F, 1F);
 					
 					//item--
-					if (!player.capabilities.isCreativeMode) --stack.stackSize;
+					if (!player.capabilities.isCreativeMode) stack.grow(-1);
 				}
 				
 			}

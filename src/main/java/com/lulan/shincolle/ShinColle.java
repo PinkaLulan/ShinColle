@@ -4,13 +4,8 @@ import com.lulan.shincolle.handler.ChunkLoaderHandler;
 import com.lulan.shincolle.handler.CommandHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.GuiHandler;
-import com.lulan.shincolle.init.ModBlocks;
-import com.lulan.shincolle.init.ModEntity;
 import com.lulan.shincolle.init.ModEvents;
-import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModOres;
-import com.lulan.shincolle.init.ModRecipes;
-import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.init.ModWorldGen;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.IProxy;
@@ -55,14 +50,6 @@ public class ShinColle
 		//config inti
 		ConfigHandler.init(event);	//load config file
 		
-//		ModItems.init();  //TODO dep
-//
-//		ModBlocks.init();
-//
-//		ModEntity.init();
-//		
-//		ModSounds.init();
-		
 		//render & model register
 		proxy.registerRender();
 		
@@ -88,7 +75,7 @@ public class ShinColle
 		
 		ModEvents.init();
 		
-		ModRecipes.init();
+//		ModRecipes.init(); //TODO dep
 		
 		LogHelper.info("INFO: Init completed.");
 		

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -17,22 +19,22 @@ import com.lulan.shincolle.utility.LogHelper;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -55,8 +57,6 @@ public class ShipSpawnEgg extends BasicItem
 		this.setRegistryName(NAME);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
-        
-        GameRegistry.register(this);
         
         //init egg list
         initEggList();
@@ -283,11 +283,11 @@ public class ShipSpawnEgg extends BasicItem
   	
   	//for list all same id items
   	@Override
-  	public void getSubItems(Item item, CreativeTabs tab, List list)
-  	{
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
+    {
   		for (int meta : shipList)
   		{
-  			list.add(new ItemStack(item, 1, meta));
+  			list.add(new ItemStack(this, 1, meta));
   		}
   	}
   	
@@ -486,8 +486,10 @@ public class ShipSpawnEgg extends BasicItem
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
+    	ItemStack stack = player.getHeldItem(hand);
+    	
     	//client side
     	if (world.isRemote)
     	{
@@ -546,7 +548,7 @@ public class ShipSpawnEgg extends BasicItem
                         }
                         	
                         //item -1
-                        --stack.stackSize;
+                        stack.grow(-1);
                     }
                     
                     //spawn entity in front of player (1 block)
@@ -594,13 +596,13 @@ public class ShipSpawnEgg extends BasicItem
   	
     //display egg information
     @Override
-    public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean par4)
+    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
     {
     	int[] material = new int[4];
 
-    	if (itemstack.hasTagCompound())
+    	if (stack.hasTagCompound())
     	{ 	//正常製造egg, 會有四個材料tag	
-    		NBTTagCompound nbt = itemstack.getTagCompound();
+    		NBTTagCompound nbt = stack.getTagCompound();
 
     		if (nbt.hasKey("Attrs"))
     		{
@@ -623,10 +625,10 @@ public class ShipSpawnEgg extends BasicItem
     		}
     		else
     		{
-    			material[0] = itemstack.getTagCompound().getInteger("Grudge");
-        		material[1] = itemstack.getTagCompound().getInteger("Abyssium");
-        		material[2] = itemstack.getTagCompound().getInteger("Ammo");
-        		material[3] = itemstack.getTagCompound().getInteger("Polymetal");
+    			material[0] = stack.getTagCompound().getInteger("Grudge");
+        		material[1] = stack.getTagCompound().getInteger("Abyssium");
+        		material[2] = stack.getTagCompound().getInteger("Ammo");
+        		material[3] = stack.getTagCompound().getInteger("Polymetal");
         		
         		list.add(TextFormatting.WHITE + "" + material[0] + " " + I18n.format("item.shincolle:Grudge.name"));
                 list.add(TextFormatting.RED + "" + material[1] + " " + I18n.format("item.shincolle:AbyssMetal.name"));

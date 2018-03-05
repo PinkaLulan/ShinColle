@@ -1,7 +1,5 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
 import com.lulan.shincolle.block.ICustomModels;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.reference.Reference;
@@ -11,6 +9,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -37,22 +36,20 @@ abstract public class BasicItem extends Item implements ICustomModels
 	
 	/** add item to creative tabs according to type value */
 	@Override
-	public void getSubItems(Item item, CreativeTabs tab, List list)
-	{
-		if (item == null) return;
-		
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
+    {
 		if (getTypes() <= 1)
 		{
-			list.add(new ItemStack(item));
+			list.add(new ItemStack(this));
 		}
 		else
 		{
 			for (int i = 0; i < getTypes(); i++)
 			{
-				list.add(new ItemStack(item, 1, i));
+				list.add(new ItemStack(this, 1, i));
 			}
 		}
-	}
+    }
 	
 	//name設定用方法: 去掉.之前的字串 以便另外串上mod名稱形成的字串
 	protected String getUnwrappedUnlocalizedName(String unlocalizedName)
