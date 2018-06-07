@@ -1,0 +1,27 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "resources",
+    "pattern":
+    [
+        "xxx",
+        "xgx",
+        "xxx"
+    ],
+    "key":
+    {
+        "g":
+        {
+            "item": "shincolle:Grudge",
+            "data": 0
+        },
+        "x":
+        {
+            "item": "minecraft:experience_bottle"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:Grudge",
+        "data": 1
+    }
+}

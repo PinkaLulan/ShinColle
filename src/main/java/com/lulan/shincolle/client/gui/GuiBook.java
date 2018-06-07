@@ -269,7 +269,7 @@ public class GuiBook
 		{
 			//drawSplitString(string, x, y, split width, color)
 			font.drawSplitString(s, x, newY, PageWidth, 0);
-			newY += font.splitStringWidth(s, PageWidth);
+			newY += font.getWordWrappedHeight(s, PageWidth);
 		}
 		
 		GlStateManager.popMatrix();

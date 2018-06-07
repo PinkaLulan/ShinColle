@@ -3,7 +3,9 @@ package com.lulan.shincolle.utility;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.lulan.shincolle.capability.CapaShipInventory;
+import javax.annotation.Nonnull;
+
+import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -24,6 +26,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -31,6 +35,11 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.VanillaDoubleChestItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.oredict.OreDictionary;
 
 /**
@@ -113,115 +122,71 @@ public class InventoryHelper
 		return true;
 	}
 	
-	/**
-	 * check all itemstack in the inventory is full, empty or not fluid container
-	 * 
-	 * checkFull:
-	 *   true: check all container is full or not container
-	 *   false: check all container is empty or not container
-	 */
-	public static boolean checkFluidContainer(IInventory inv, FluidStack targetFluid, boolean checkFull)
+	/** inventory wrapper for {@link #checkInventoryFluidContainer(IItemHandler inv, FluidStack targetFluid, boolean checkFull)} */
+	public static boolean checkInventoryFluidContainerFromObj(Object inv, FluidStack targetFluid, boolean checkFull)
 	{
-		if (inv == null) return true;
+		//null check
+		if (inv == null || targetFluid == null) return true;
 		
-		//inventory is ship inv
-		if(inv instanceof CapaShipInventory)
+		//check IItemhandler
+		if (inv instanceof ICapabilityProvider && ((ICapabilityProvider) inv).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
 		{
-			CapaShipInventory shipInv = (CapaShipInventory) inv;
-			
-			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
-			{
-				//check all slots are full
-				if (checkFull)
-				{
-					if (!checkFluidContainer(shipInv.getStackInSlotWithPageCheck(i), targetFluid, true))
-						return false;
-				}
-				//check all slots are empty
-				else
-				{
-					if (!checkFluidContainer(shipInv.getStackInSlotWithPageCheck(i), targetFluid, false))
-						return false;
-				}
-			}
+			return checkInventoryFluidContainer(((ICapabilityProvider) inv).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), targetFluid, checkFull);
 		}
-		//inventory is vanilla chest
+		//check vanilla chest
 		else if (inv instanceof TileEntityChest)
 		{
-			//check main chest
-			for (int i = 0; i < inv.getSizeInventory(); i++)
-			{
-				//check all slots are full
-				if (checkFull)
-				{
-					if (!checkFluidContainer(inv.getStackInSlot(i), targetFluid, true))
-						return false;
-				}
-				//check all slots are empty
-				else
-				{
-					if (!checkFluidContainer(inv.getStackInSlot(i), targetFluid, false))
-						return false;
-				}
-			}
-			
-			//check adj chest
-			TileEntityChest chest2 = TileEntityHelper.getAdjChest((TileEntityChest) inv);
-			
-			if (chest2 != null)
-			{
-				for (int i = 0; i < chest2.getSizeInventory(); i++)
-				{
-					//check all slots are full
-					if (checkFull)
-					{
-						if (!checkFluidContainer(chest2.getStackInSlot(i), targetFluid, true))
-							return false;
-					}
-					//check all slots are empty
-					else
-					{
-						if (!checkFluidContainer(chest2.getStackInSlot(i), targetFluid, false))
-							return false;
-					}
-				}
-			}
+			return checkInventoryFluidContainer(VanillaDoubleChestItemHandler.get((TileEntityChest) inv), targetFluid, checkFull);
 		}
-		//other inventory
-		else
+		//check other IInventory
+		else if (inv instanceof IInventory)
 		{
-			for (int i = 0; i < inv.getSizeInventory(); i++)
-			{
-				//check all slots are full
-				if (checkFull)
-				{
-					if (!checkFluidContainer(inv.getStackInSlot(i), targetFluid, true))
-						return false;
-				}
-				//check all slots are empty
-				else
-				{
-					if (!checkFluidContainer(inv.getStackInSlot(i), targetFluid, false))
-						return false;
-				}
-			}
+			return checkInventoryFluidContainer(new InvWrapper(((IInventory) inv)), targetFluid, checkFull);
 		}
-
+		
 		return true;
 	}
 	
 	/**
-	 * checkFull = TRUE:  return FALSE if itemstack can accept target fluid
-	 *           = FALSE: return FALSE if itemstack can not accept target fluid
+	 * check fluid container in the inventory is full or empty<br>
+	 * 
+	 * @param inv IItemHandler of inventory
+	 * @param targetFluid target want to check
+	 * @param checkFull
+	 *   true: check all container is full or not container
+	 *   false: check all container is empty or not container
 	 */
-	public static boolean checkFluidContainer(ItemStack stack, FluidStack targetFluid, boolean checkFull)
+	public static boolean checkInventoryFluidContainer(IItemHandler inv, FluidStack targetFluid, boolean checkFull)
 	{
-		if (stack != null)
+		if (inv == null || targetFluid == null) return true;
+		
+		//if inventory is ship inv, skip equip slots
+		int i = 0;
+		if (inv instanceof CapaInventoryExtend) i = CapaInventoryExtend.SLOTS_EQUIP;
+		
+		for (; i < inv.getSlots(); i++)
+		{
+			//check all slots are full (checkFull = true) or empty (checkFull = false)
+			if (!checkFluidContainer(inv.getStackInSlot(i), targetFluid, checkFull))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * if checkFull = 
+	 *   TRUE: return FALSE if itemstack can accept target fluid
+	 *   FALSE: return FALSE if itemstack can not accept target fluid
+	 */
+	public static boolean checkFluidContainer(@Nonnull ItemStack stack, FluidStack targetFluid, boolean checkFull)
+	{
+		if (!stack.isEmpty())
 		{
 			//if item has fluid capability
-			if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
+			if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null))
 			{
-				IFluidHandler fh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
+				IFluidHandler fh = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
 				if (fh == null) return true;	//is same with non fluid container
 				
 				IFluidTankProperties[] tanks = fh.getTankProperties();
@@ -258,214 +223,182 @@ public class InventoryHelper
 		return true;
 	}
 	
-	/** check inventory is full */
-	public static boolean checkInventoryFull(IInventory inv)
+	/** inventory wrapper for {@link #checkInventoryFull(IItemHandler inv)} */
+	public static boolean checkInventoryFullFromObj(Object inv)
 	{
+		//null check
 		if (inv == null) return true;
 		
-		int i = 0;
-		
-		//inventory is ship inv
-		if(inv instanceof CapaShipInventory)
+		//check IItemhandler
+		if (inv instanceof ICapabilityProvider && ((ICapabilityProvider) inv).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
 		{
-			CapaShipInventory shipInv = (CapaShipInventory) inv;
-			
-			//get any empty slot = false
-			for (i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
-			{
-				if (shipInv.getStackInSlotWithPageCheck(i) == null) return false;
-			}
+			return checkInventoryFull(((ICapabilityProvider) inv).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
 		}
-		//inventory is vanilla chest
+		//check vanilla chest
 		else if (inv instanceof TileEntityChest)
 		{
-			//check main chest
-			for (i = 0; i < inv.getSizeInventory(); i++)
-			{
-				if (inv.getStackInSlot(i) == null) return false;
-			}
-			
-			//check adj chest
-			TileEntityChest chest2 = TileEntityHelper.getAdjChest((TileEntityChest) inv);
-			
-			if (chest2 != null)
-			{
-				for (i = 0; i < chest2.getSizeInventory(); i++)
-				{
-					if (chest2.getStackInSlot(i) == null) return false;
-				}
-			}
+			return checkInventoryFull(VanillaDoubleChestItemHandler.get((TileEntityChest) inv));
 		}
-		//other inventory
-		else
+		//check other IInventory
+		else if (inv instanceof IInventory)
 		{
-			for (i = 0; i < inv.getSizeInventory(); i++)
-			{
-				if (inv.getStackInSlot(i) == null) return false;
-			}
+			return checkInventoryFull(new InvWrapper(((IInventory) inv)));
 		}
 		
 		return true;
 	}
 	
 	/**
-	 * check inventory is empty
+	 * check inventory is full
 	 * 
-	 * if targetStacks is null = check all slots is null
-	 * if targetStacks isn't null = check no specified itemstack in inventory
-	 * 
-	 * modeStacks = TRUE: itemstack is NOT mode
-	 *              FALSE: itemstack is NORMAL mode
+	 * @return true if no empty slot or inventory is null
 	 */
-	public static boolean checkInventoryEmpty(IInventory inv, ItemStack[] tempStacks, boolean[] modeStacks, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
+	public static boolean checkInventoryFull(IItemHandler inv)
 	{
+		//null check
 		if (inv == null) return true;
+		
+		//get any empty slot = false
+		int startSlot = 0;
+		if (inv instanceof CapaInventoryExtend) startSlot = CapaInventoryExtend.SLOTS_EQUIP;
+		
+		if (getFirstSlotEmpty(inv, startSlot, inv.getSlots()) >= 0) return false;
+		
+		return true;
+	}
+	
+	/** inventory wrapper for {@link #checkInventoryEmpty(IItemHandler, ItemStack[], boolean[], boolean, boolean, boolean)} */
+	public static boolean checkInventoryEmptyFromObj(Object inv, @Nonnull NonNullList<ItemStack> tempStacks, @Nonnull boolean[] modeStacks, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
+	{
+		//null check
+		if (inv == null) return true;
+		
+		//check IItemhandler
+		if (inv instanceof ICapabilityProvider && ((ICapabilityProvider) inv).hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+		{
+			return checkInventoryEmpty(((ICapabilityProvider) inv).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null), tempStacks, modeStacks, checkMetadata, checkNbt, checkOredict);
+		}
+		//check vanilla chest
+		else if (inv instanceof TileEntityChest)
+		{
+			return checkInventoryEmpty(VanillaDoubleChestItemHandler.get((TileEntityChest) inv), tempStacks, modeStacks, checkMetadata, checkNbt, checkOredict);
+		}
+		//check other IInventory
+		else if (inv instanceof IInventory)
+		{
+			return checkInventoryEmpty(new InvWrapper(((IInventory) inv)), tempStacks, modeStacks, checkMetadata, checkNbt, checkOredict);
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * check inventory is empty or no specified item
+	 * 
+	 * @param tempStacks
+	 *   if null = check all slots empty;
+	 *   if not null = check no specified itemstack in inventory
+	 * 
+	 * @param modeStacks
+	 *   TRUE: itemstack is NOT mode (ignore or as empty);
+	 *   FALSE: itemstack is NORMAL mode (have to match);
+	 *   
+	 * @return true if inventory is empty or no specified item
+	 */
+	public static boolean checkInventoryEmpty(IItemHandler inv, @Nonnull NonNullList<ItemStack> tempStacks, @Nonnull boolean[] modeStacks, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
+	{
+		//null check
+		if (inv == null || tempStacks.size() != modeStacks.length) return true;
 		
 		boolean noTempItem = true;
 		
-		//null cehck
-		if (tempStacks == null || tempStacks.length != 9 || modeStacks == null || modeStacks.length != 9)
-		{
-			return isAllSlotNull(inv, tempStacks, modeStacks, checkMetadata, checkNbt, checkOredict);
-		}
 		//check specified itemstack in inventory
-		else
+		for (int i = 0; i < tempStacks.size(); i++)
 		{
-			for (int i = 0; i < 9; i++)
+			if (!tempStacks.get(i).isEmpty())
 			{
-				if (tempStacks[i] != null)
-				{
-					noTempItem = false;
-					
-					//ignore NOT mode item
-					if (!modeStacks[i])
-					{
-						//stack found, chest is not empty
-						if (matchTargetItem(inv, tempStacks[i], checkMetadata, checkNbt, checkOredict))
-							return false;
-					}
-				}
+				noTempItem = false;
 				
-				//if no specified itemstack, check all slot is null
-				if (i == 8 && noTempItem)
+				//ignore NOT mode item
+				if (!modeStacks[i])
 				{
-					return isAllSlotNull(inv, tempStacks, modeStacks, checkMetadata, checkNbt, checkOredict);
-				}//end temp all null
-			}//end loop all temp slots
+					//stack found, chest is not empty
+					if (matchTargetItem(inv, tempStacks.get(i), checkMetadata, checkNbt, checkOredict))
+						return false;
+				}
+			}
+			
+			//if no specified itemstack, check all slot is null
+			if (i == (tempStacks.size() - 1) && noTempItem)
+			{
+				return isSlotEmpty(inv, inv instanceof CapaInventoryExtend ? CapaInventoryExtend.SLOTS_EQUIP : 0, inv.getSlots());
+			}//end temp all null
+		}//end loop all temp slots
+		
+		return true;
+	}
+	
+	/** check slots are all empty (excluding endSlot) */
+	public static boolean isSlotEmpty(IItemHandler inv, int startSlot, int endSlot)
+	{
+		for (int i = startSlot; i < endSlot; i++)
+		{
+			if (!inv.getStackInSlot(i).isEmpty()) return false;
 		}
 		
 		return true;
 	}
 	
-	/**
-	 * return TRUE if all slot is null or NOT mode item
-	 */
-	public static boolean isAllSlotNull(IInventory inv, ItemStack[] targetStacks, boolean[] modeStacks, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
-	{
-		//inventory is ship inv
-		if(inv instanceof CapaShipInventory)
-		{
-			CapaShipInventory shipInv = (CapaShipInventory) inv;
-			
-			//get any empty slot = false
-			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
-			{
-				if (shipInv.getStackInSlotWithPageCheck(i) != null) return false;
-			}
-		}
-		//inventory is vanilla chest
-		else if (inv instanceof TileEntityChest)
-		{
-			//check main chest
-			for (int i = 0; i < inv.getSizeInventory(); i++)
-			{
-				if (inv.getStackInSlot(i) != null) return false;
-			}
-			
-			//check adj chest
-			TileEntityChest chest2 = TileEntityHelper.getAdjChest((TileEntityChest) inv);
-			
-			if (chest2 != null)
-			{
-				for (int i = 0; i < chest2.getSizeInventory(); i++)
-				{
-					if (chest2.getStackInSlot(i) != null) return false;
-				}
-			}
-		}
-		//other inventory
-		else
-		{
-			for (int i = 0; i < inv.getSizeInventory(); i++)
-			{
-				if (inv.getStackInSlot(i) != null) return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * calculate the total "STACK NUMBER" of target item, not item amount!!
-	 * 
-	 * return TRUE if total stack number = temp stackSize
-	 */
-	public static int calcItemStackAmount(IInventory inv, ItemStack temp, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
-	{
-		int targetAmount = 0;
-		
-		//inventory is ship inv
-		if(inv instanceof CapaShipInventory)
-		{
-			CapaShipInventory shipInv = (CapaShipInventory) inv;
-			
-			//get any empty slot = false
-			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
-			{
-				if (matchTargetItem(shipInv.getStackInSlotWithPageCheck(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
-			}
-		}
-		//inventory is vanilla chest
-		else if (inv instanceof TileEntityChest)
-		{
-			//check main chest
-			for (int i = 0; i < inv.getSizeInventory(); i++)
-			{
-				if (matchTargetItem(inv.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
-			}
-			
-			//check adj chest
-			TileEntityChest chest2 = TileEntityHelper.getAdjChest((TileEntityChest) inv);
-			
-			if (chest2 != null)
-			{
-				for (int i = 0; i < chest2.getSizeInventory(); i++)
-				{
-					if (matchTargetItem(chest2.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
-				}
-			}
-		}
-		//other inventory
-		else
-		{
-			for (int i = 0; i < inv.getSizeInventory(); i++)
-			{
-				if (matchTargetItem(inv.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
-			}
-		}
-		
-		return targetAmount;
-	}
+	/** get first empty slot (excluding endSlot) */
+  	public static int getFirstSlotEmpty(@Nonnull IItemHandler inv, int startSlot, int endSlot)
+  	{
+  		for (int i = startSlot; i < endSlot; i++)
+  		{
+  			if (inv.getStackInSlot(i).isEmpty()) return i;
+  		}
+  		
+  		return -1;
+  	}
+  	
+  	/** get first stackable slot (excluding endSlot) */
+  	public static int getFirstSlotStackable(@Nonnull IItemHandler inv, @Nonnull ItemStack stack, int startSlot, int endSlot)
+    {
+  		//null check
+  		if (stack.isEmpty()) return -1;
+  		
+  		//loop all slots
+        for (int i = startSlot; i < endSlot; i++)
+        {
+  			ItemStack slotstack = inv.getStackInSlot(i);
+  			
+  			//check same item, same meta, same nbt tag and has free space
+            if (!slotstack.isEmpty() && slotstack.getItem() == stack.getItem() &&
+            	slotstack.isStackable() && stack.getCount() <= (getStackLimit(inv, i, stack) - slotstack.getCount()) &&
+                slotstack.getItemDamage() == stack.getItemDamage() &&
+                ItemStack.areItemStackTagsEqual(slotstack, stack))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+  	
+  	/** get max stacksize of the slot */
+  	public static int getStackLimit(@Nonnull IItemHandler inv, int slot, @Nonnull ItemStack stack)
+    {
+        return Math.min(inv.getSlotLimit(slot), stack.getMaxStackSize());
+    }
 	
 	/**
 	 * check inventory has temp stack, return TRUE if item found
 	 */
-	public static boolean matchTargetItem(IInventory inv, ItemStack temp, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
+	public static boolean matchTargetItem(@Nonnull IItemHandler inv, @Nonnull ItemStack temp, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
 	{
 		//inventory is ship inv
-		if(inv instanceof CapaShipInventory)
+		if(inv instanceof CapaInventoryExtend)
 		{
-			CapaShipInventory shipInv = (CapaShipInventory) inv;
+			CapaInventoryExtend shipInv = (CapaInventoryExtend) inv;
 			
 			//get any empty slot = false
 			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
@@ -515,9 +448,9 @@ public class InventoryHelper
 		if (temp == null) return -1;
 		
 		//inventory is ship inv
-		if (inv instanceof CapaShipInventory)
+		if (inv instanceof CapaInventoryExtend)
 		{
-			CapaShipInventory shipInv = (CapaShipInventory) inv;
+			CapaInventoryExtend shipInv = (CapaInventoryExtend) inv;
 			
 			//get any empty slot = false
 			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
@@ -541,6 +474,58 @@ public class InventoryHelper
 		}
 		
 		return -1;
+	}
+	
+	/**
+	 * calculate the total "STACK NUMBER" of target item, not item amount!!
+	 * 
+	 * return TRUE if total stack number = temp stackSize
+	 */
+	public static int calcItemStackAmount(IItemHandler inv, ItemStack temp, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
+	{
+		int targetAmount = 0;
+		
+		//inventory is ship inv
+		if(inv instanceof CapaInventoryExtend)
+		{
+			CapaInventoryExtend shipInv = (CapaInventoryExtend) inv;
+			
+			//get any empty slot = false
+			for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < shipInv.getSizeInventoryPaged(); i++)
+			{
+				if (matchTargetItem(shipInv.getStackInSlotWithPageCheck(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
+			}
+		}
+		//inventory is vanilla chest
+		else if (inv instanceof TileEntityChest)
+		{
+			//check main chest
+			for (int i = 0; i < inv.getSizeInventory(); i++)
+			{
+				if (matchTargetItem(inv.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
+			}
+			
+			//check adj chest
+			TileEntityChest chest2 = TileEntityHelper.getAdjChest((TileEntityChest) inv);
+			
+			if (chest2 != null)
+			{
+				for (int i = 0; i < chest2.getSizeInventory(); i++)
+				{
+					if (matchTargetItem(chest2.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
+				}
+			}
+		}
+		//other inventory
+		else
+		{
+			for (int i = 0; i < inv.getSizeInventory(); i++)
+			{
+				if (matchTargetItem(inv.getStackInSlot(i), temp, checkMetadata, checkNbt, checkOredict)) targetAmount++;
+			}
+		}
+		
+		return targetAmount;
 	}
 	
 	/**
@@ -772,12 +757,17 @@ public class InventoryHelper
 		return getItem;
 	}
 	
-	/**
-	 * check target stack is same with temp stack
-	 */
+	/** check target stack is same with temp stack */
 	public static boolean matchTargetItem(ItemStack target, ItemStack temp, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
 	{
-		if (temp != null && target != null)
+		//null check
+		if ((temp == ItemStack.EMPTY && target == ItemStack.EMPTY) ||
+			(temp == null && target == null))
+		{
+			return true;
+		}
+		else if (temp != null && target != null &&
+				 temp != ItemStack.EMPTY && target != ItemStack.EMPTY)
 		{
 			//check item type
 			if (target.getItem() == temp.getItem())
@@ -810,52 +800,19 @@ public class InventoryHelper
 				//check ore dict
 				if (checkOredict)
 				{
-					int[] a = OreDictionary.getOreIDs(target);
-					int[] b = OreDictionary.getOreIDs(temp);
+					HashSet<Integer> set1 = CalcHelper.intArrayToSet(OreDictionary.getOreIDs(target));
+					HashSet<Integer> set2 = CalcHelper.intArrayToSet(OreDictionary.getOreIDs(temp));
 					
-					if (a.length > 0 && b.length > 0 && a[0] == b[0])
-					{
-						return true;
-					}
+					//intersection
+					set1.retainAll(set2);
+					
+					//match all ids
+					if (set1.size() > 0) return true;
 				}
 			}
-		}
-		else if (temp == null && target == null)
-		{
-			return true;
-		}
+		}//end null check
 		
 		return false;
-	}
-	
-	/**
-	 * check slot is NOT mode, return TRUE = NOT MODE
-	 * 
-	 * itemMode: right most bits are slots mode: 1 = NOT MODE, 0 = NORMAL MODE
-	 *     bits: 17 16 15 ... 3 2 1 0 = (18 slots)
-	 */
-	public static boolean getItemMode(int slotID, int stackMode)
-	{
-		return ((stackMode >> slotID) & 1) == 1 ? true : false;
-	}
-	
-	/** set item mode, return new stackMode (INT 32 bits = max 32 slots) */
-	public static int setItemMode(int slotID, int stackMode, boolean notMode)
-	{
-		int slot = 1 << slotID;
-		
-		//set bit to 1
-		if (notMode)
-		{
-			stackMode = stackMode | slot;
-		}
-		//set bit to 0
-		else
-		{
-			stackMode = stackMode & (~slot);
-		}
-		
-		return stackMode;
 	}
 	
 	/**
@@ -946,7 +903,7 @@ public class InventoryHelper
 		if (moveitem != null)
 		{
 			//invTo is ship inv
-			if (inv instanceof CapaShipInventory)
+			if (inv instanceof CapaInventoryExtend)
 			{
 				moved = mergeItemStack(inv, moveitem, toSlots);
 			}
@@ -996,13 +953,13 @@ public class InventoryHelper
         //init slots id
         if (slots == null)
         {
-        	if(inv instanceof CapaShipInventory)
+        	if(inv instanceof CapaInventoryExtend)
             {
             	//start at inv slots
             	startid = ContainerShipInventory.SLOTS_SHIPINV;
             	
             	//get slot size by pages
-            	maxSize = ((CapaShipInventory) inv).getSizeInventoryPaged();
+            	maxSize = ((CapaInventoryExtend) inv).getSizeInventoryPaged();
             }
         }
         else
@@ -1024,7 +981,7 @@ public class InventoryHelper
             	else j = k;
             	
             	//get stack in slot
-				if (inv instanceof CapaShipInventory) slotstack = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(j);
+				if (inv instanceof CapaInventoryExtend) slotstack = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(j);
 				else slotstack = inv.getStackInSlot(j);
 
                 //if same item, merge to slot
@@ -1068,13 +1025,13 @@ public class InventoryHelper
             	else j = k;
             	
             	//get stack in slot
-				if (inv instanceof CapaShipInventory) slotstack = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(j);
+				if (inv instanceof CapaInventoryExtend) slotstack = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(j);
 				else slotstack = inv.getStackInSlot(j);
 
                 //find empty slot
                 if (slotstack == null)
                 {
-					if (inv instanceof CapaShipInventory) ((CapaShipInventory) inv).setInventorySlotWithPageCheck(j, itemstack.copy());
+					if (inv instanceof CapaInventoryExtend) ((CapaInventoryExtend) inv).setInventorySlotWithPageCheck(j, itemstack.copy());
 					else inv.setInventorySlotContents(j, itemstack.copy());
                     itemstack.stackSize = 0;
                     movedItem = true;
@@ -1109,7 +1066,7 @@ public class InventoryHelper
   	/**
   	 * check itemstack in ship inventory simply
   	 */
-  	public static boolean checkItemInShipInventory(CapaShipInventory inv, Item item, int meta, int minSlot, int maxSlot)
+  	public static boolean checkItemInShipInventory(CapaInventoryExtend inv, Item item, int meta, int minSlot, int maxSlot)
   	{
   		if (inv != null)
   		{
@@ -1130,7 +1087,7 @@ public class InventoryHelper
   	/**
   	 * fill fluid container in ship inventory simply
   	 */
-  	public static boolean tryFillContainer(CapaShipInventory inv, FluidStack fs)
+  	public static boolean tryFillContainer(CapaInventoryExtend inv, FluidStack fs)
   	{
   		if (fs == null) return false;
   		
@@ -1213,6 +1170,99 @@ public class InventoryHelper
         entityitem.motionZ = host.world.rand.nextGaussian() * 0.08D;
         host.world.spawnEntity(entityitem);
   	}
+  	
+  	/**
+  	 * insert item into target inventory, ref: {mcf}.items.wrapper.SidedInvWrapper
+  	 */
+    @Override
+    @Nonnull
+    public static ItemStack insertItem(IItemHandler fromInv, IItemHandler toInv, int slot, @Nonnull ItemStack stack, boolean simulate)
+    {
+    	//null check
+        if (stack.isEmpty())
+            return ItemStack.EMPTY;
+
+        ItemStack stackInSlot = toInv.getStackInSlot(slot);
+
+        int m;
+        if (!stackInSlot.isEmpty())
+        {
+            if (stackInSlot.getCount() >= Math.min(stackInSlot.getMaxStackSize(), getSlotLimit(slot)))
+                return stack;
+
+            if (!ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))
+                return stack;
+
+            if (!getInv().isItemValidForSlot(slot, stack))
+                return stack;
+
+            m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot)) - stackInSlot.getCount();
+
+            if (stack.getCount() <= m)
+            {
+                if (!simulate)
+                {
+                    ItemStack copy = stack.copy();
+                    copy.grow(stackInSlot.getCount());
+                    getInv().setInventorySlotContents(slot, copy);
+                    getInv().markDirty();
+                }
+
+                return ItemStack.EMPTY;
+            }
+            else
+            {
+                // copy the stack to not modify the original one
+                stack = stack.copy();
+                if (!simulate)
+                {
+                    ItemStack copy = stack.splitStack(m);
+                    copy.grow(stackInSlot.getCount());
+                    getInv().setInventorySlotContents(slot, copy);
+                    getInv().markDirty();
+                    return stack;
+                }
+                else
+                {
+                    stack.shrink(m);
+                    return stack;
+                }
+            }
+        }
+        else
+        {
+            if (!getInv().isItemValidForSlot(slot, stack))
+                return stack;
+
+            m = Math.min(stack.getMaxStackSize(), getSlotLimit(slot));
+            if (m < stack.getCount())
+            {
+                // copy the stack to not modify the original one
+                stack = stack.copy();
+                if (!simulate)
+                {
+                    getInv().setInventorySlotContents(slot, stack.splitStack(m));
+                    getInv().markDirty();
+                    return stack;
+                }
+                else
+                {
+                    stack.shrink(m);
+                    return stack;
+                }
+            }
+            else
+            {
+                if (!simulate)
+                {
+                    getInv().setInventorySlotContents(slot, stack);
+                    getInv().markDirty();
+                }
+                return ItemStack.EMPTY;
+            }
+        }
+
+    }
 	
 	
 }

@@ -1,0 +1,19 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "misc",
+    "ingredients":
+    [
+        {
+            "item": "shincolle:ShipSpawnEgg",
+            "data": 0
+        },
+        {
+            "item": "shincolle:KaitaiHammer"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:InstantConMat",
+        "count": 8
+    }
+}

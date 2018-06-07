@@ -1,0 +1,27 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "transport",
+    "pattern":
+    [
+        "mtm",
+        "mtm",
+        "mtm"
+    ],
+    "key":
+    {
+        "m":
+        {
+            "item": "shincolle:BlockAbyssium"
+        },
+        "t":
+        {
+            "item": "shincolle:ShipTank",
+            "data": 1
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:ShipTank",
+        "data": 2
+    }
+}

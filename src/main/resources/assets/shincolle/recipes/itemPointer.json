@@ -1,0 +1,26 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "tool",
+    "pattern":
+    [
+        "  g",
+        " p ",
+        "p  "
+    ],
+    "key":
+    {
+        "g":
+        {
+            "item": "shincolle:BlockGrudge"
+        },
+        "p":
+        {
+            "item": "shincolle:AbyssMetal",
+            "data": 1
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:PointerItem"
+    }
+}

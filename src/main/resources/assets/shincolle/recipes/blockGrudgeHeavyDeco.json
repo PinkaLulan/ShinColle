@@ -1,0 +1,17 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "resources",
+    "ingredients":
+    [
+        {
+            "item": "shincolle:BlockGrudge"
+        },
+        {
+            "item": "shincolle:BlockGrudge"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:BlockGrudgeHeavyDeco"
+    }
+}

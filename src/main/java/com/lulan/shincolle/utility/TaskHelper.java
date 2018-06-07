@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.config.ConfigMining;
 import com.lulan.shincolle.config.ConfigMining.ItemEntry;
 import com.lulan.shincolle.crafting.InventoryCraftingFake;
@@ -110,7 +110,7 @@ public class TaskHelper
 		if (host == null) return;
 		
 		//check held item is recipe paper
-		CapaShipInventory invShip = host.getCapaShipInventory();
+		CapaInventoryExtend invShip = host.getCapaShipInventory();
 		ItemStack paper = host.getHeldItemMainhand();
 		if (paper == null || paper.getItem() != ModItems.RecipePaper) return;
 		
@@ -629,7 +629,7 @@ public class TaskHelper
 		ItemStack targetStack = null;
 		ItemStack fuelStack = null;
 		ItemStack ouputStack = null;
-		CapaShipInventory inv = host.getCapaShipInventory();
+		CapaInventoryExtend inv = host.getCapaShipInventory();
 		int taskSide = host.getStateMinor(ID.M.TaskSide);
 		boolean checkMetadata = (taskSide & Values.N.Pow2[18]) == Values.N.Pow2[18];
 		boolean checkOredict = (taskSide & Values.N.Pow2[19]) == Values.N.Pow2[19];
@@ -1009,7 +1009,7 @@ public class TaskHelper
   		//pump liquid
   		if ((ship.ticksExisted & delay) == 0)
   		{
-  			CapaShipInventory inv = ship.getCapaShipInventory();
+  			CapaInventoryExtend inv = ship.getCapaShipInventory();
   			
   	  		//check pump equip if not transport ship
   			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
@@ -1099,7 +1099,7 @@ public class TaskHelper
   		//collect xp orb
   		if ((ship.ticksExisted & 3) == 0)
   		{
-  			CapaShipInventory inv = ship.getCapaShipInventory();
+  			CapaInventoryExtend inv = ship.getCapaShipInventory();
 			
 	  		//check pump equip if not transport ship
 			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))

@@ -1,0 +1,17 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "resources",
+    "ingredients":
+    [
+        {
+            "item": "shincolle:AbyssMetal",
+            "data": 0
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:AbyssNugget",
+        "data": 0,
+        "count": 9
+    }
+}

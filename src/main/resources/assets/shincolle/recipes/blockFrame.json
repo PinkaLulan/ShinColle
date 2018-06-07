@@ -1,0 +1,28 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "misc",
+    "pattern":
+    [
+        "a a",
+        " i ",
+        "a a"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "shincolle:AbyssMetal",
+            "data": 0
+        },
+        "i":
+        {
+            "type": "forge:ore_dict",
+            "ore": "obsidian"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:BlockFrame",
+        "count": 16
+    }
+}

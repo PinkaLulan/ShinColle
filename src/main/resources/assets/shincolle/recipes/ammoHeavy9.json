@@ -1,0 +1,17 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "supplies",
+    "ingredients":
+    [
+        {
+            "item": "shincolle:Ammo",
+            "data": 3
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:Ammo",
+        "data": 2,
+        "count": 9
+    }
+}

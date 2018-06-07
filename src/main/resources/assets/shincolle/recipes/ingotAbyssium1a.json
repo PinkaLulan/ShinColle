@@ -1,0 +1,19 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "resources",
+    "ingredients":
+    [
+        {
+            "type": "forge:ore_dict",
+            "ore": "ingotIron"
+        },
+        {
+            "item": "shincolle:Grudge"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:AbyssMetal",
+        "data": 0
+    }
+}

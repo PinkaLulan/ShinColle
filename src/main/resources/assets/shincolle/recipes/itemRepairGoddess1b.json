@@ -1,0 +1,30 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "supplies",
+    "pattern":
+    [
+        "ghg",
+        "hdh",
+        "ghg"
+    ],
+    "key":
+    {
+        "h":
+        {
+            "item": "shincolle:BlockGrudgeHeavy"
+        },
+        "g":
+        {
+            "item": "shincolle:BlockGrudge"
+        },
+        "d":
+        {
+            "type": "forge:ore_dict",
+            "ore": "blockDiamond"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:RepairGoddess"
+    }
+}

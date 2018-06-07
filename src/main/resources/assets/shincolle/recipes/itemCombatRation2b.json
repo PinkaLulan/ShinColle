@@ -1,0 +1,57 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "supplies",
+    "ingredients":
+    [
+        {
+            "type": "forge:ore_dict",
+            "ore": "cookedRice"
+        },
+        [
+            {
+                "item": "minecraft:cod"
+            },
+            {
+                "item": "minecraft:cooked_cod"
+            },
+            {
+                "item": "minecraft:salmon"
+            },
+            {
+                "item": "minecraft:cooked_salmon"
+            },
+            {
+                "item": "minecraft:pufferfish"
+            },
+            {
+                "item": "minecraft:clownfish"
+            },
+            {
+                "item": "minecraft:cooked_chicken"
+            },
+            {
+                "item": "minecraft:cooked_beef"
+            },
+            {
+                "item": "minecraft:cooked_rabbit"
+            },
+            {
+                "item": "minecraft:cooked_mutton"
+            },
+            {
+                "item": "minecraft:cooked_porkchop"
+            }
+        ],
+        {
+            "item": "shincolle:Grudge"
+        },
+        {
+            "item": "minecraft:golden_carrot"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:CombatRation",
+        "data": 2
+    }
+}

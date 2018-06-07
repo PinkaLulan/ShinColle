@@ -1,0 +1,17 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "supplies",
+    "ingredients":
+    [
+        {
+            "item": "minecraft:lava_bucket"
+        },
+        {
+            "item": "shincolle:Grudge"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:BucketRepair"
+    }
+}

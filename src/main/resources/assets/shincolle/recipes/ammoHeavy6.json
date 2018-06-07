@@ -1,0 +1,32 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "supplies",
+    "pattern":
+    [
+        "iii",
+        "iai",
+        "ibi"
+    ],
+    "key":
+    {
+        "i":
+        {
+            "item": "shincolle:AbyssMetal",
+            "data": 0
+        },
+        "a":
+        {
+            "item": "shincolle:Grudge"
+        },
+        "b":
+        {
+            "item": "minecraft:blaze_powder"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:Ammo",
+        "data": 2,
+        "count": 6
+    }
+}

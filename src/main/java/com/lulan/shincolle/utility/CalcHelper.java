@@ -199,22 +199,40 @@ public class CalcHelper
     	return new int[] {};
     }
     
+    /** int[] to Set<Integer> */
+    public static HashSet<Integer> intArrayToSet(int[] iarray)
+    {
+    	if (iarray != null && iarray.length > 0)
+    	{
+    		HashSet<Integer> temp = new HashSet<Integer>();
+    		
+    		for (int i = 0; i < iarray.length; ++i)
+    		{
+    			temp.add(iarray[i]);
+    		}
+    		
+    		return temp;
+    	}
+    	
+    	return new HashSet<Integer>();
+    }
+    
     /** int[] to List<Integer> */
     public static ArrayList<Integer> intArrayToList(int[] iarray)
     {
     	if (iarray != null && iarray.length > 0)
     	{
-    		ArrayList<Integer> ilist = new ArrayList();
+    		ArrayList<Integer> temp = new ArrayList();
     		
     		for (int i = 0; i < iarray.length; ++i)
     		{
-    			ilist.add(iarray[i]);
+    			temp.add(iarray[i]);
     		}
     		
-    		return ilist;
+    		return temp;
     	}
     	
-    	return new ArrayList();
+    	return new ArrayList<Integer>();
     }
     
     /** List<Integer> to int[] */

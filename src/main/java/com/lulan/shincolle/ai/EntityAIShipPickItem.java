@@ -76,7 +76,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     		}
     		
     		//check inventory space
-    		if (this.hostShip.getCapaShipInventory().getFirstSlotForItem() > 0) return true;
+    		if (this.hostShip.getCapaShipInventory().getFirstSlotEmpty() >= 0) return true;
     	}
     	//mount類
     	else if (this.hostMount != null && this.hostShip != null)
@@ -93,7 +93,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     		}
 			
 			//check inventory space
-    		if(this.hostShip.getCapaShipInventory().getFirstSlotForItem() > 0) return true;
+    		if(this.hostShip.getCapaShipInventory().getFirstSlotEmpty() > 0) return true;
 		}
 
     	return false;

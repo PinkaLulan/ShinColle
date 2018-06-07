@@ -1,0 +1,30 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "machine",
+    "pattern":
+    [
+        "omo",
+        "mgm",
+        "omo"
+    ],
+    "key":
+    {
+        "m":
+        {
+            "item": "shincolle:BlockVolBlock"
+        },
+        "g":
+        {
+            "item": "shincolle:BlockGrudgeHeavy"
+        },
+        "o":
+        {
+            "type": "forge:ore_dict",
+            "ore": "obsidian"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:BlockVolCore"
+    }
+}

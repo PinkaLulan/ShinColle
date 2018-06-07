@@ -36,7 +36,7 @@ public class ConfigHandler
 	   propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
 	   propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
 	   propInfLiquid, propShipTeleport, propFishing, propMining, propTask,
-	   propGrudgeTask, propPosHUD;
+	   propGrudgeTask, propPosHUD, propShipTank;
 	
 	/********************* GENERAL **********************/
 	public static boolean debugMode = false;
@@ -78,6 +78,9 @@ public class ConfigHandler
 	
 	//crane setting                            liquid tank capa, EU capa
 	public static int[] tileCrane = new int[] {2048000,         160000000};
+	
+	//ship tank setting                           0      1       2       3
+	public static int[] itemShipTank = new int[] {32000, 128000, 512000, 2048000};
 	
 	/********************* INTER-MOD **********************/
 	public static boolean enableIC2 = true;
@@ -154,6 +157,7 @@ public class ConfigHandler
 	public static int searchlightCD = 4;
 	public static int maxLevel = 150;   //TODO not configurable now
 	public static int airplaneDelay = 2400;	//airplane recovery base delay ticks
+	public static int baseSlotNumber = 18;  //base item inventory slots number
 	
 	public static boolean timeKeeping = true;
 	public static boolean canFlare = true;
@@ -282,6 +286,7 @@ public class ConfigHandler
 		modernLimit = config.getInt("Attrs_Limit_Modernization", CATE_SHIP, 3, 3, 100, "Max upgrade level by Modernization Toolkit");
 		searchlightCD = config.getInt("CD_SearchLight", CATE_SHIP, 4, 1, 256, "Cooldown for placing light block of searchlight");
 		airplaneDelay = config.getInt("CD_AirplaneRecovery", CATE_SHIP, 3600, 1, 30000, "Base cooldown for airplane recovery, actual recovery time = CD_AirplaneRecovery / attack speed + 20");
+		baseSlotNumber = config.getInt("Base_Slots", CATE_SHIP, 18, 18, 1800, "Base slot number of ship inventory");
 		
 		//array data
 		propShip = config.get(CATE_SHIP, "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
@@ -313,6 +318,7 @@ public class ConfigHandler
 		propRingAbility = config.get(CATE_GENERAL, "Ring_Ability", ringAbility, "Ring ability related married number, -1 = disable, 0~N = active or max limit number: water breath (active number), fly in water (active number), dig speed boost (max limit number), fog in liquid (max limit number), immune to fire (active number)");
 		propInfLiquid = config.get(CATE_GENERAL, "Infinite_Pump", infLiquid, "Can ship pump infinite water or lava without destroying block: min water depth, min lava depth");
 		propPosHUD = config.get(CATE_GENERAL, "Position_HUD", posHUD, "HUD position of mounts skills: x, y (0.5D = middle of window)");
+		propShipTank = config.get(CATE_GENERAL, "Item_FluidDrum", itemShipTank, "Fluid Drum: fluid capacity (mB) for S, M, L, XL");
 		
 		//ship vs ship damage modifier
 		dmgSvS = config.getInt("DmgTaken_SvS", CATE_SHIP, 100, 0, 10000, "Ship vs Ship damage modifier, 20 = damage * 20% ");
@@ -353,6 +359,7 @@ public class ConfigHandler
 		tickMining = getIntArrayFromConfig(tickMining, propMining);
 		enableTask = getBooleanArrayFromConfig(enableTask, propTask);
 		posHUD = getDoubleArrayFromConfig(posHUD, propPosHUD);
+		itemShipTank = getIntArrayFromConfig(itemShipTank, propShipTank);
 		
 		checkChange(config);
 	}

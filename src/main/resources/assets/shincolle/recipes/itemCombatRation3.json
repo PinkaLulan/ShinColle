@@ -1,0 +1,22 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "supplies",
+    "ingredients":
+    [
+        {
+            "item": "shincolle:CombatRation",
+            "data": 2
+        },
+        {
+            "item": "shincolle:BlockGrudge"
+        },
+        {
+            "item": "shincolle:BlockPolymetalGravel"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:CombatRation",
+        "data": 3
+    }
+}

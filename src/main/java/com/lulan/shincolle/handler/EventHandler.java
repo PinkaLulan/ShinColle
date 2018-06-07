@@ -13,6 +13,7 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.init.ModRecipes;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEquip;
@@ -137,7 +138,7 @@ public class EventHandler
 	public void registerEntities(RegistryEvent.Register<EntityEntry> event) throws Exception
 	{
 		LogHelper.info("INFO: register: entities: side: "+FMLCommonHandler.instance().getSide());
-//	    event.getRegistry().registerAll(block1, block2, ...);
+//	    event.getRegistry().registerAll(block1, block2, ...); TODO
 	}
 	
 	/**
@@ -157,7 +158,7 @@ public class EventHandler
 	public void registerRecipes(RegistryEvent.Register<IRecipe> event) throws Exception
 	{
 		LogHelper.info("INFO: register: recipes: side: "+FMLCommonHandler.instance().getSide());
-//	    event.getRegistry().registerAll(block1, block2, ...);
+	    ModRecipes.register(event);
 	}
 	
 	//change vanilla mob drop (add grudge), this is SERVER event

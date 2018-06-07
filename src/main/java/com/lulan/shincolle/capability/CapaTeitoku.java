@@ -23,12 +23,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.ItemStackHandler;
 
 /**
@@ -39,10 +36,11 @@ import net.minecraftforge.items.ItemStackHandler;
  * 
  * TODO: remove this capa, move to ServerProxy world data
  */
-public class CapaTeitoku implements ICapaTeitoku, IInventory
+public class CapaTeitoku implements ICapaTeitoku
 {
 	public static final String CAPA_KEY = "TeitokuExtProps";
 	public static final String INV_KEY = "CpInv";
+	public static final int SLOTS_MAX = 6;
 	public EntityPlayer player;
 	public String playerName;
 	
@@ -126,7 +124,7 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		
 		//inter-mod
 		this.morphEntity = null;
-		this.itemHandler = new ItemStackHandler(this.getSizeInventory());
+		this.itemHandler = new ItemStackHandler(this.SLOTS_MAX);
 		this.shipMinor = new int[3];
 		
 		//need init
@@ -221,7 +219,7 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		
 		/** inter-mod */
 		//save ship inventory
-		if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.getSizeInventory());
+		if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.SLOTS_MAX);
 		nbtExt.setTag(CapaTeitoku.INV_KEY, this.itemHandler.serializeNBT());
 		
 		//save ship minor data
@@ -311,7 +309,7 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 			//load ship inventory
 	        if (nbtExt.hasKey(CapaTeitoku.INV_KEY))
 	        {
-	        	if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.getSizeInventory());
+	        	if (this.itemHandler == null) this.itemHandler = new ItemStackHandler(this.SLOTS_MAX);
 	        	this.itemHandler.deserializeNBT((NBTTagCompound) nbtExt.getTag(CapaTeitoku.INV_KEY));
         	}
 	        
@@ -1647,148 +1645,6 @@ public class CapaTeitoku implements ICapaTeitoku, IInventory
 		}
 		
 		return tid;
-	}
-
-	@Override
-	public String getName()
-	{
-		return null;
-	}
-
-	@Override
-	public boolean hasCustomName()
-	{
-		return false;
-	}
-
-	@Override
-	public ITextComponent getDisplayName()
-	{
-		return null;
-	}
-
-	@Override
-	public int getSizeInventory()
-	{
-		return 6;
-	}
-
-	@Override
-	public ItemStack getStackInSlot(int index)
-	{
-		return this.itemHandler.getStackInSlot(index);
-	}
-
-	@Override
-	public ItemStack decrStackSize(int id, int count)
-	{
-		try
-		{
-  			if (id >= 0 && id < itemHandler.getSlots() &&
-  				itemHandler.getStackInSlot(id) != null && count > 0)
-  	        {
-  	            ItemStack itemstack = itemHandler.getStackInSlot(id).splitStack(count);
-
-  	            if (itemHandler.getStackInSlot(id).stackSize == 0)
-  	            {
-  	            	itemHandler.setStackInSlot(id, null);
-  	            }
-
-  	            return itemstack;
-  	        }
-  	        else
-  	        {
-  	            return null;
-  	        }
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public ItemStack removeStackFromSlot(int index)
-	{
-		return null;
-	}
-
-	@Override
-	public void setInventorySlotContents(int id, ItemStack stack)
-	{
-		if (itemHandler != null && itemHandler.getSlots() > id)
-		{
-  			itemHandler.setStackInSlot(id, stack);
-			
-			//若手上物品超過該格子限制數量, 則只能放進限制數量
-	  		if (stack != null && stack.stackSize > getInventoryStackLimit())
-	  		{
-	  			stack.stackSize = getInventoryStackLimit();
-	  		}
-	  		
-	  		//check item in equip slot
-			if (this.player != null && this.player.world != null && !this.player.world.isRemote &&
-				id < 6 && this.morphEntity instanceof BasicEntityShip)
-			{
-				((BasicEntityShip)this.morphEntity).calcShipAttributes(2, true);  //update equip and attribute value
-			}
-		}
-	}
-
-	@Override
-	public int getInventoryStackLimit()
-	{
-		return 1;
-	}
-
-	@Override
-	public void markDirty()
-	{
-	}
-
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player)
-	{
-		return true;
-	}
-
-	@Override
-	public void openInventory(EntityPlayer player)
-	{
-	}
-
-	@Override
-	public void closeInventory(EntityPlayer player)
-	{
-	}
-
-	@Override
-	public boolean isItemValidForSlot(int index, ItemStack stack)
-	{
-		return true;
-	}
-
-	@Override
-	public int getField(int id)
-	{
-		return 0;
-	}
-
-	@Override
-	public void setField(int id, int value)
-	{
-	}
-
-	@Override
-	public int getFieldCount()
-	{
-		return 0;
-	}
-
-	@Override
-	public void clear()
-	{
 	}
 	
 	/**

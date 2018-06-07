@@ -1,0 +1,23 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "resources",
+    "pattern":
+    [
+        "aaa",
+        "aaa",
+        "aaa"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "shincolle:AbyssNugget",
+            "data": 0
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:AbyssMetal",
+        "data": 0
+    }
+}

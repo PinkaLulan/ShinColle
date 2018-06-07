@@ -1,0 +1,21 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "resources",
+    "pattern":
+    [
+        "aaa",
+        "aaa",
+        "aaa"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "shincolle:BlockGrudge"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:BlockGrudgeHeavy"
+    }
+}

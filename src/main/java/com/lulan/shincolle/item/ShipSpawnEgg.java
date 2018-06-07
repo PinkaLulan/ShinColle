@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
@@ -351,12 +351,12 @@ public class ShipSpawnEgg extends BasicItem
 			
 			if (nbt != null)
 			{
-				CapaShipInventory capa = entity.getCapaShipInventory();
+				CapaInventoryExtend capa = entity.getCapaShipInventory();
 				
 				//load inventory
-		        if (nbt.hasKey(CapaShipInventory.InvName))
+		        if (nbt.hasKey(CapaInventoryExtend.InvName))
 		        {
-		        	capa.deserializeNBT((NBTTagCompound) nbt.getTag(CapaShipInventory.InvName));
+		        	capa.deserializeNBT((NBTTagCompound) nbt.getTag(CapaInventoryExtend.InvName));
 		        }
 				
 				//load ship attributes

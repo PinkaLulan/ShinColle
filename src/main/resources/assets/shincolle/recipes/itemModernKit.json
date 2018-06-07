@@ -1,0 +1,29 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "misc",
+    "ingredients":
+    [
+        {
+            "item": "shincolle:BlockGrudgeXP"
+        },
+        {
+            "item": "shincolle:BlockGrudgeXP"
+        },
+        {
+            "item": "shincolle:BlockGrudgeXP"
+        },
+        {
+            "item": "shincolle:BlockGrudgeXP"
+        },
+        {
+            "item": "shincolle:TargetWrench"
+        },
+        {
+            "item": "shincolle:KaitaiHammer"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:ModernKit"
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "misc",
+    "pattern":
+    [
+        "mom",
+        "ogo",
+        "mom"
+    ],
+    "key":
+    {
+        "m":
+        {
+            "item": "minecraft:magma_block"
+        },
+        "g":
+        {
+            "item": "shincolle:BlockGrudge"
+        },
+        "o":
+        {
+            "type": "forge:ore_dict",
+            "ore": "obsidian"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:BlockVolBlock"
+    }
+}

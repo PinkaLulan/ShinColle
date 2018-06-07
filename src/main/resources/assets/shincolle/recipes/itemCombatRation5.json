@@ -1,0 +1,19 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "supplies",
+    "ingredients":
+    [
+        {
+            "item": "shincolle:CombatRation",
+            "data": 4
+        },
+        {
+            "item": "shincolle:BlockGrudge"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:CombatRation",
+        "data": 5
+    }
+}

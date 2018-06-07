@@ -1,0 +1,30 @@
+{
+    "type": "forge:ore_shapeless",
+    "group": "supplies",
+    "ingredients":
+    [
+        {
+            "item": "minecraft:milk_bucket"
+        },
+        {
+            "item": "minecraft:snowball"
+        },
+        {
+            "item": "minecraft:snowball"
+        },
+        {
+            "item": "minecraft:snowball"
+        },
+        {
+            "item": "minecraft:snowball"
+        },
+        {
+            "item": "shincolle:Grudge"
+        }
+    ],
+    "result":
+    {
+        "item": "shincolle:CombatRation",
+        "data": 4
+    }
+}

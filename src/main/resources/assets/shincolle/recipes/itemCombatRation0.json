@@ -1,0 +1,44 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "supplies",
+    "pattern":
+    [
+        "bcg",
+        "www"
+    ],
+    "key":
+    {
+        "w":
+        {
+            "type": "forge:ore_dict",
+            "ore": "cropWheat"
+        },
+        "b":
+        [
+            {
+                "item": "minecraft:bread"
+            },
+            {
+                "type": "forge:ore_dict",
+                "ore": "foodFlour"
+            },
+            {
+                "type": "forge:ore_dict",
+                "ore": "cookedRice"
+            }
+        ],
+        "g":
+        {
+            "item": "shincolle:Grudge"
+        },
+        "c":
+        {
+            "item": "minecraft:golden_carrot"
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:CombatRation",
+        "data": 0
+    }
+}

@@ -2,10 +2,13 @@ package com.lulan.shincolle.tileentity;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.lulan.shincolle.block.BlockCrane;
 import com.lulan.shincolle.block.ItemBlockWaypoint;
 import com.lulan.shincolle.capability.CapaInventory;
-import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -33,6 +36,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -40,7 +44,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -79,7 +82,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	//target
 	public EntityPlayer owner;
 	private BasicEntityShip ship;
-	private IInventory chest;
+	private TileEntity chest;
 	
 	//fluid tank
 	protected FluidTank tank;
@@ -143,14 +146,6 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		}
 		
 		return -1;
-	}
-	
-	//依照輸出入口設定, 決定漏斗等裝置如何輸出入物品到特定slot中
-	//注意: 此設定必須跟getCapability相同以免出現bug
-	@Override
-	public int[] getSlotsForFace(EnumFacing side)
-	{
-		return NOSLOT;
 	}
 	
 	//讀取nbt資料
@@ -229,63 +224,40 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
     {
+    	//disable itemhandler for external use
     	if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return false;
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+        //enable fluidhandler for external use
+    	return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
+    @Nullable
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
+    	//disable itemhandler for external use
     	if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) return null;
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing != EnumFacing.DOWN) return (T) tank;
+    	//enable fluidhandler for external use
+    	if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing != EnumFacing.DOWN) return (T) tank;
         return super.getCapability(capability, facing);
     }
-	
-	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack itemstack)
-	{
-		return true;
-	}
-	
-  	@Override
-  	public boolean canInsertItem(int slot, ItemStack item, EnumFacing face)
-  	{
-  		return false;
-  	}
-	
-	//使用管線/漏斗輸出時呼叫, 不適用於手動置入
-	@Override
-	public boolean canExtractItem(int slot, ItemStack item, EnumFacing face)
-	{
-		return false;
-	}
-	
-	//get paired chest
+    
+	/** check paired chest */
 	public void checkPairedChest()
 	{
 		if (this.isPaired)
 		{
-			//get chest if no chest tile entity
-			if (this.chest == null)
-			{
-				TileEntity tile = this.world.getTileEntity(this.chestPos);
-				
-				if (tile instanceof IInventory)
-				{
-					this.chest = (IInventory) tile;
-				}
-			}
+			boolean shouldReset = (this.chest != null);
 			
 			//check chest valid
-			if (this.chest instanceof IInventory && !((TileEntity) this.chest).isInvalid())
-			{
-				return;
-			}
+			TileEntity tile = TileEntityHelper.getTileInventory(this.world, this.chestPos);
+			this.chest = tile;
 			
-			//tile lost, reset
-			clearPairedChest();
-			sendSyncPacket();
+			//chest lost, reset
+			if (shouldReset && this.chest == null)
+			{
+				clearPairedChest();
+				sendSyncPacket();
+			}
 		}
 	}
 	
@@ -347,17 +319,16 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 				this.tickRedstone--;
 				if (this.tickRedstone <= 0)
 				{
-					this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
+					this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane, false);
 				}
 			}
 			
-			//check owner
-			//get owner entity
-			if ((this.tick & 15) == 0 && this.owner == null && this.playerUID > 0)
+			//get owner for sync packet for client GUI display
+			if ((this.tick & 31) == 0 && this.owner == null && this.playerUID > 0)
 			{
 				this.owner = EntityHelper.getEntityPlayerByUID(this.playerUID);
 			}
-
+			
 			//can work
 			if (this.isActive && this.isPaired)
 			{
@@ -372,7 +343,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 					if (this.modeRedstone == 1 && this.ship != null)
 					{
 						this.tickRedstone = 18;
-						this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
+						this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane, false);
 					}
 					
 					//crane <-> chest liquid transfer
@@ -437,7 +408,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 								if (this.modeRedstone == 2)
 								{
 									this.tickRedstone = 2;
-									this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane);
+									this.world.notifyNeighborsOfStateChange(this.pos, ModBlocks.BlockCrane, false);
 								}
 								
 								//set crane state
@@ -621,13 +592,13 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		}
 	}
 	
-	/** check wait mode: until full
-	 *  loading: ship full
-	 *  unloading: chest full
-	 *  fluid/EU loading: all container in ship is full or no container
-	 *  fluid/EU unloading: all container in chest is full or no container
+	/** check wait mode: until full<br>
+	 *    loading: ship full<br>
+	 *    unloading: chest full<br>
+	 *    fluid/EU loading: all container in ship is full or no container<br>
+	 *    fluid/EU unloading: all container in chest is full or no container<br>
 	 *  
-	 *  return: TRUE = is full
+	 *  @return true = is full
 	 */
 	private boolean isInventoryFull()
 	{
@@ -638,14 +609,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		else fullList[0] = true;
 		
 		//unloading item: check chest full
-		if (this.enabUnload && this.chest != null) fullList[1] = InventoryHelper.checkInventoryFull(this.chest);
+		if (this.enabUnload && this.chest != null) fullList[1] = InventoryHelper.checkInventoryFullFromObj(this.chest);
 		else fullList[1] = true;
 		
 		//loading fluid: check ship full
 		if (this.modeLiquid == 1 && this.tank != null)
 		{
 			FluidStack fs = this.tank.getFluid() == null ? null : this.tank.getFluid().copy();
-			if (this.ship != null) fullList[2] = InventoryHelper.checkFluidContainer(this.ship.getCapaShipInventory(), fs, true);
+			if (this.ship != null) fullList[2] = InventoryHelper.checkInventoryFluidContainer(this.ship.getCapaShipInventory(), fs, true);
 			else fullList[2] = true;
 		}
 		else
@@ -657,7 +628,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		if (this.modeLiquid == 2 && this.tank != null)
 		{
 			FluidStack fs = this.tank.getFluid() == null ? null : this.tank.getFluid().copy();
-			if (this.chest != null) fullList[3] = InventoryHelper.checkFluidContainer(this.chest, fs, true);
+			if (this.chest != null) fullList[3] = InventoryHelper.checkInventoryFluidContainerFromObj(this.chest, fs, true);
 			else fullList[3] = true;
 		}
 		else
@@ -691,7 +662,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		boolean[] emptyList = new boolean[6];
 		
 		//loading item: check chest empty
-		if (this.enabLoad && this.chest != null) emptyList[0] = InventoryHelper.checkInventoryEmpty(this.chest, this.getItemstackTemp(true), this.getItemMode(true), checkMetadata, checkNbt, checkOredict);
+		if (this.enabLoad && this.chest != null) emptyList[0] = InventoryHelper.checkInventoryEmptyFromObj(this.chest, this.getItemstackTemp(true), this.getItemMode(true), checkMetadata, checkNbt, checkOredict);
 		else emptyList[0] = true;
 		
 		//unloading item: check ship empty
@@ -702,7 +673,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		if (this.modeLiquid == 1 && this.tank != null)
 		{
 			FluidStack fs = this.tank.getFluid() == null ? null : this.tank.getFluid().copy();
-			if (this.chest != null) emptyList[2] = InventoryHelper.checkFluidContainer(this.chest, fs, false);
+			if (this.chest != null) emptyList[2] = InventoryHelper.checkInventoryFluidContainer(this.chest, fs, false);
 			else emptyList[2] = true;
 		}
 		else
@@ -714,7 +685,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		if (this.modeLiquid == 2 && this.tank != null)
 		{
 			FluidStack fs = this.tank.getFluid() == null ? null : this.tank.getFluid().copy();
-			if (this.ship != null) emptyList[3] = InventoryHelper.checkFluidContainer(this.ship.getCapaShipInventory(), fs, false);
+			if (this.ship != null) emptyList[3] = InventoryHelper.checkInventoryFluidContainer(this.ship.getCapaShipInventory(), fs, false);
 			else emptyList[3] = true;
 		}
 		else
@@ -985,7 +956,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	//fill container, return remaining fluid
 	private static FluidStack tryFillContainer(BasicEntityShip ship, FluidStack fstack)
 	{
-		CapaShipInventory inv = ship.getCapaShipInventory();
+		CapaInventoryExtend inv = ship.getCapaShipInventory();
 		ItemStack stack;
 		int amount;
 		
@@ -1025,7 +996,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	//drain container, return remaining fluid
 	private static FluidStack tryDrainContainer(BasicEntityShip ship, FluidStack targetFluid, int maxDrain)
 	{
-		CapaShipInventory inv = ship.getCapaShipInventory();
+		CapaInventoryExtend inv = ship.getCapaShipInventory();
 		ItemStack stack;
 		FluidStack drainTemp;
 		FluidStack drainTotal = null;
@@ -1190,14 +1161,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 				if (canMove && slotid >= 0)
 				{
 					//move item
-					if (invFrom instanceof CapaShipInventory) moveitem = ((CapaShipInventory) invFrom).getStackInSlotWithPageCheck(slotid);
+					if (invFrom instanceof CapaInventoryExtend) moveitem = ((CapaInventoryExtend) invFrom).getStackInSlotWithPageCheck(slotid);
 					else moveitem = invFrom.getStackInSlot(slotid);
 					moved = InventoryHelper.moveItemstackToInv(invTo, moveitem, null);
 					
 					//check item size
 					if (moved && moveitem.stackSize <= 0)
 					{
-						if (invFrom instanceof CapaShipInventory) ((CapaShipInventory) invFrom).setInventorySlotWithPageCheck(slotid, null);
+						if (invFrom instanceof CapaInventoryExtend) ((CapaInventoryExtend) invFrom).setInventorySlotWithPageCheck(slotid, null);
 						else invFrom.setInventorySlotContents(slotid, null);
 					}
 					
@@ -1228,14 +1199,14 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 					if (slotid >= 0)
 					{
 						//move item
-						if (invFrom instanceof CapaShipInventory) moveitem = ((CapaShipInventory) invFrom).getStackInSlotWithPageCheck(slotid);
+						if (invFrom instanceof CapaInventoryExtend) moveitem = ((CapaInventoryExtend) invFrom).getStackInSlotWithPageCheck(slotid);
 						else moveitem = invFrom.getStackInSlot(slotid);
 						moved = InventoryHelper.moveItemstackToInv(invTo, moveitem, null);
 						
 						//check item size
 						if (moved && moveitem.stackSize <= 0)
 						{
-							if (invFrom instanceof CapaShipInventory) ((CapaShipInventory) invFrom).setInventorySlotWithPageCheck(slotid, null);
+							if (invFrom instanceof CapaInventoryExtend) ((CapaInventoryExtend) invFrom).setInventorySlotWithPageCheck(slotid, null);
 							else invFrom.setInventorySlotContents(slotid, null);
 						}
 					}
@@ -1247,14 +1218,15 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	}
 	
 	//get itemstack temp from loading or unloading slots
-	private ItemStack[] getItemstackTemp(boolean isLoadingTemp)
+	@Nonnull
+	private NonNullList<ItemStack> getItemstackTemp(boolean isLoadingTemp)
 	{
-		ItemStack[] temp = new ItemStack[9];
+		NonNullList<ItemStack> temp = NonNullList.<ItemStack>withSize(9, ItemStack.EMPTY);
 		int start = isLoadingTemp ? 0 : 9;
 		
 		for (int i = 0; i < 9; i++)
 		{
-			temp[i] = this.itemHandler.getStackInSlot(i + start);
+			temp.set(i, this.itemHandler.getStackInSlot(i + start));
 		}
 		
 		return temp;
@@ -1290,13 +1262,13 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		int maxSize = inv.getSizeInventory();
 		
 		//init slots for ship inventory
-        if (inv instanceof CapaShipInventory)
+        if (inv instanceof CapaInventoryExtend)
         {
         	//start at inv slots
         	startid = ContainerShipInventory.SLOTS_SHIPINV;
         	
         	//get max size by page
-        	maxSize = ((CapaShipInventory) inv).getSizeInventoryPaged();
+        	maxSize = ((CapaInventoryExtend) inv).getSizeInventoryPaged();
         }
 		
 		//match taget item
@@ -1305,7 +1277,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 			//check slots
 			for (slotid = startid; slotid < maxSize; slotid++)
 			{
-				if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(slotid);
+				if (inv instanceof CapaInventoryExtend) getitem = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(slotid);
 				else getitem = inv.getStackInSlot(slotid);
 				
 				if (getitem != null)
@@ -1357,7 +1329,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		{
 			for (slotid = startid; slotid < maxSize; slotid++)
 			{
-				if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(slotid);
+				if (inv instanceof CapaInventoryExtend) getitem = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(slotid);
 				else getitem = inv.getStackInSlot(slotid);
 				
 				if (getitem != null)
@@ -1379,18 +1351,18 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		int maxSize = inv.getSizeInventory();
 		
 		//init slots for ship inventory
-        if (inv instanceof CapaShipInventory)
+        if (inv instanceof CapaInventoryExtend)
         {
         	//start at inv slots
         	startid = ContainerShipInventory.SLOTS_SHIPINV;
         	
         	//get max size by page
-        	maxSize = ((CapaShipInventory) inv).getSizeInventoryPaged();
+        	maxSize = ((CapaInventoryExtend) inv).getSizeInventoryPaged();
         }
         
 		for (slotid = startid; slotid < maxSize; slotid++)
 		{
-			if (inv instanceof CapaShipInventory) getitem = ((CapaShipInventory) inv).getStackInSlotWithPageCheck(slotid);
+			if (inv instanceof CapaInventoryExtend) getitem = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(slotid);
 			else getitem = inv.getStackInSlot(slotid);
 			
 			if (getitem != null)
@@ -1540,7 +1512,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	protected int[] calcDrumLevel(BasicEntityShip ship, int type)
 	{
 		int[] num = new int[] {0, 0};
-		CapaShipInventory inv = ship.getCapaShipInventory();
+		CapaInventoryExtend inv = ship.getCapaShipInventory();
 		
 		//transport ship will get built-in pump station
 		if (ship.getShipType() == ID.ShipType.TRANSPORT && ship.getStateFlag(ID.F.IsMarried))
@@ -1641,10 +1613,22 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 	/** set slot is NOT loading/unloading mode */
 	public void setItemMode(int slotID, boolean notMode)
 	{
-		this.modeItem = InventoryHelper.setItemMode(slotID, this.modeItem, notMode);
+		int slot = 1 << slotID;
+		
+		//set bit to 1
+		if (notMode)
+		{
+			this.modeItem = this.modeItem | slot;
+		}
+		//set bit to 0
+		else
+		{
+			this.modeItem = this.modeItem & (~slot);
+		}
 	}
 	
 	/** get slot item mode array */
+	@Nonnull
 	public boolean[] getItemMode(boolean isLoadingTemp)
 	{
 		int start = isLoadingTemp ? 0 : 9;
@@ -1652,16 +1636,21 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
 		
 		for (int i = 0; i < 9; i++)
 		{
-			temp[i] = ((this.modeItem >> (i + start)) & 1) == 1 ? true : false;
+			temp[i] = getItemMode(i + start);
 		}
 		
 		return temp;
 	}
 	
-	/** check slot is notMode, return TRUE = NOT MODE ITEM */
+	/**
+	 * check slot is NOT mode, return TRUE = NOT MODE
+	 * 
+	 * itemMode: right most bits are slots mode: 1 = NOT MODE, 0 = NORMAL MODE
+	 *     bits: 17 16 15 ... 3 2 1 0 = (18 slots)
+	 */
 	public boolean getItemMode(int slotID)
 	{
-		return InventoryHelper.getItemMode(slotID, this.modeItem);
+		return ((this.modeItem >> slotID) & 1) == 1 ? true : false;
 	}
 	
 	//getter, setter

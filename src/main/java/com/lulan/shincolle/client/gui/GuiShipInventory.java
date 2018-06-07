@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
@@ -723,7 +723,7 @@ public class GuiShipInventory extends GuiContainer
 				drawTexturedModalRect(guiLeft + 25, guiTop + 107, 33, 225, 18, 18);
 				drawTexturedModalRect(guiLeft + 26, guiTop + 109, 199, 236, 18, 18);
 				
-				CapaShipInventory inv = this.entity.getCapaShipInventory();
+				CapaInventoryExtend inv = this.entity.getCapaShipInventory();
 				for (int i = 0; i < 9; i++)
 				{
 					if (inv.getStackInSlot(i + 12) == null)

@@ -12,6 +12,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+/**
+ * basic tile entity
+ */
 abstract public class BasicTileEntity extends TileEntity
 {
 	
@@ -23,8 +26,9 @@ abstract public class BasicTileEntity extends TileEntity
 		this.syncTime = 0;
     }
 	
-	/** get block meta for render, if tile is item, return meta = -1
-	 *  used only in TESR with special custom model
+	/**
+	 * get block meta for render, if tile is item, return meta = -1
+	 * used only in TESR with special custom model
 	 */
 	public int getRenderMetadata()
 	{
@@ -38,7 +42,7 @@ abstract public class BasicTileEntity extends TileEntity
 		}
 	}
 	
-	//sync data for GUI display
+	/** sync data for GUI display */
 	public void sendSyncPacket()
 	{
 		if (!this.world.isRemote && this.getPacketID(0) >= 0)
@@ -48,10 +52,10 @@ abstract public class BasicTileEntity extends TileEntity
 		}
 	}
 	
-	//sync data client to server
+	/** sync data client to server */
 	public void sendSyncPacketC2S() {}
 	
-	//dont refresh tile entity!!!
+	/** dont refresh tile entity!!! */
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
     {
@@ -68,7 +72,7 @@ abstract public class BasicTileEntity extends TileEntity
 	 * sync packet ID
 	 * 
 	 * type:
-	 * 0:server to client GUI packet
+	 *   0:server to client GUI packet
 	 * 
 	 */
 	public byte getPacketID(int type)

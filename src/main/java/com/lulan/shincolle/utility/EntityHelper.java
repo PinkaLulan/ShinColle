@@ -13,7 +13,7 @@ import com.lulan.shincolle.ai.path.ShipPath;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.capability.CapaInventory;
-import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -2155,7 +2155,7 @@ public class EntityHelper
 	{
 		//get ship data
     	NBTTagCompound nbt = new NBTTagCompound();
-    	CapaShipInventory shipInv = ship.getCapaShipInventory();
+    	CapaInventoryExtend shipInv = ship.getCapaShipInventory();
     	String ownerUUID = EntityHelper.getPetPlayerUUID(ship);
     	String name = EntityHelper.getOwnerName(ship);
     	Attrs attrs = ship.getAttrs();

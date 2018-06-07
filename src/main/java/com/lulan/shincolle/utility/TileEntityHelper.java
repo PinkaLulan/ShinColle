@@ -4,7 +4,6 @@ import com.lulan.shincolle.tileentity.BasicTileInventory;
 import com.lulan.shincolle.tileentity.ITileFurnace;
 import com.lulan.shincolle.tileentity.ITileLiquidFurnace;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
-import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +23,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class TileEntityHelper
 {
@@ -257,6 +257,25 @@ public class TileEntityHelper
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * check and get chest tile, now accept IInventory or IItemHandler
+	 * 
+	 * @return TileEntity if inventory found, otherwise null
+	 */
+	public static TileEntity getTileInventory(World world, BlockPos pos)
+	{
+		//null check
+		if (pos == null) return null;
+		
+		//check tile entity
+		TileEntity te = world.getTileEntity(pos);
+		
+		if (te != null && !te.isInvalid() && (te instanceof IInventory ||
+			te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))) return te;
+		
+		return null;
 	}
 	
 	/**增減large shipyard的matBuild[] */

@@ -2,7 +2,7 @@ package com.lulan.shincolle.client.gui.inventory;
 
 import javax.annotation.Nullable;
 
-import com.lulan.shincolle.capability.CapaShipInventory;
+import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.item.BasicEquip;
 
 import net.minecraft.inventory.Slot;
@@ -18,9 +18,9 @@ public class SlotShipInventory extends Slot
 {
 
 	private int slotIndex;  //slot index
-	private CapaShipInventory capa;
+	private CapaInventoryExtend capa;
 
-	public SlotShipInventory(CapaShipInventory capa, int slotIndex, int x, int y)
+	public SlotShipInventory(CapaInventoryExtend capa, int slotIndex, int x, int y)
 	{
 		super(capa, slotIndex, x, y);
 		this.capa = capa;

@@ -92,7 +92,7 @@ public class CapaFluidContainer implements IFluidHandler, ICapabilityProvider
     {
     	this.initCapacity();
     	
-        if (stack.stackSize != 1 || resource == null || resource.amount <= 0 || !canFillFluidType(resource))
+        if (stack.getCount() != 1 || resource == null || resource.amount <= 0 || !canFillFluidType(resource))
         {
             return 0;
         }
@@ -135,7 +135,7 @@ public class CapaFluidContainer implements IFluidHandler, ICapabilityProvider
     {
     	this.initCapacity();
     	
-        if (stack.stackSize != 1 || resource == null || resource.amount <= 0 || !resource.isFluidEqual(getFluid()))
+        if (stack.getCount() != 1 || resource == null || resource.amount <= 0 || !resource.isFluidEqual(getFluid()))
         {
             return null;
         }
@@ -148,7 +148,7 @@ public class CapaFluidContainer implements IFluidHandler, ICapabilityProvider
     {
     	this.initCapacity();
     	
-        if (stack.stackSize != 1 || maxDrain <= 0)
+        if (stack.getCount() != 1 || maxDrain <= 0)
         {
             return null;
         }

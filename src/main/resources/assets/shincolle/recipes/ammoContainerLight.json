@@ -1,0 +1,23 @@
+{
+    "type": "forge:ore_shaped",
+    "group": "supplies",
+    "pattern":
+    [
+        "aaa",
+        "aaa",
+        "aaa"
+    ],
+    "key":
+    {
+        "a":
+        {
+            "item": "shincolle:Ammo",
+            "data": 0
+        }
+    },
+    "result":
+    {
+        "item": "shincolle:Ammo",
+        "data": 1
+    }
+}

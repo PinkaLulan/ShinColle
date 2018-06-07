@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.capability.CapaFluidContainer;
+import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 
@@ -77,13 +78,13 @@ public class ShipTank extends BasicItem
 		switch (meta)
 		{
 		case 1:
-			return 128000;
+			return ConfigHandler.itemShipTank[1];
 		case 2:
-			return 512000;
+			return ConfigHandler.itemShipTank[2];
 		case 3:
-			return 2048000;
+			return ConfigHandler.itemShipTank[3];
 		default:
-			return 32000;
+			return ConfigHandler.itemShipTank[0];
 		}
 	}
 	
