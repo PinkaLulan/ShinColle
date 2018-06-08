@@ -59,7 +59,7 @@ public class EntityCLTenryuu extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.NumState, 5);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CL]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CL]);
-		this.ModelPos = new float[] {0F, 22F, 0F, 42F};
+		this.modelPosInGUI = new float[] {0F, 22F, 0F, 42F};
 		this.targetSelector = new TargetHelper.Selector(this);
 		this.remainAttack = 0;
 		this.skillMotion = Vec3d.ZERO;

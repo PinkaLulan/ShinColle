@@ -3,6 +3,7 @@ package com.lulan.shincolle.tileentity;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.capability.CapaInventory;
+import com.lulan.shincolle.entity.IShipInventory;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.utility.PacketHelper;
 
@@ -15,7 +16,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 /**
  * tile with inventory
  */
-abstract public class BasicTileInventory extends BasicTileEntity implements IShipOwner
+abstract public class BasicTileInventory extends BasicTileEntity implements IShipOwner, IShipInventory
 {
 	
 	protected CapaInventory itemHandler;
@@ -129,6 +130,12 @@ abstract public class BasicTileInventory extends BasicTileEntity implements IShi
 	{
 		return null;
 	}
+
+    @Override
+    public void onContentChanged(int slot)
+    {
+        this.markDirty();
+    }
 	
 	
 }

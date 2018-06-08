@@ -52,7 +52,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
-		this.ModelPos = new float[] {-6F, 25F, 0F, 40F};
+		this.modelPosInGUI = new float[] {-6F, 25F, 0F, 40F};
 		this.launchHeight = this.height * 0.8F;
 		
 		this.postInit();

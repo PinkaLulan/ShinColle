@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
@@ -1164,12 +1165,27 @@ public class InventoryHelper
   	 */
   	public static void dropItemOnGround(Entity host, ItemStack stack)
   	{
-  		EntityItem entityitem = new EntityItem(host.world, host.posX, host.posY, host.posZ, stack);
-		entityitem.motionX = host.world.rand.nextGaussian() * 0.08D;
-        entityitem.motionY = host.world.rand.nextGaussian() * 0.05D + 0.2D;
-        entityitem.motionZ = host.world.rand.nextGaussian() * 0.08D;
-        host.world.spawnEntity(entityitem);
+  	    dropItemOnGround(host.world, stack, host.posX, host.posY, host.posZ);
   	}
+  	
+  	/**
+     * drop item on ground
+     */
+    public static void dropItemOnGround(World w, ItemStack stack, double x, double y, double z)
+    {
+        float f = w.rand.nextFloat() * 0.8F + 0.1F;
+        float f1 = w.rand.nextFloat() * 0.8F + 0.1F;
+        float f2 = w.rand.nextFloat() * 0.8F + 0.1F;
+
+        while (!stack.isEmpty())
+        {
+            EntityItem entityitem = new EntityItem(w, x + (double)f, y + (double)f1, z + (double)f2, stack);
+            entityitem.motionX = w.rand.nextGaussian() * 0.07D;
+            entityitem.motionY = w.rand.nextGaussian() * 0.25D;
+            entityitem.motionZ = w.rand.nextGaussian() * 0.07D;
+            w.spawnEntity(entityitem);
+        }
+    }
   	
   	/**
   	 * insert item into target inventory, ref: {mcf}.items.wrapper.SidedInvWrapper

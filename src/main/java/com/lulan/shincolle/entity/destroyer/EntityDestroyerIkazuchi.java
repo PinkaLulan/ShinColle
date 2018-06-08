@@ -50,7 +50,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 		this.setStateMinor(ID.M.NumState, 2);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
+		this.modelPosInGUI = new float[] {0F, 25F, 0F, 50F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;

@@ -39,7 +39,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
-		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
+		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;

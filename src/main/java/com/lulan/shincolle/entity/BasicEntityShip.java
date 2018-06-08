@@ -24,7 +24,9 @@ import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
+import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaInventoryExtend;
+import com.lulan.shincolle.capability.CapaInventoryPaged;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.render.IShipCustomTexture;
@@ -101,66 +103,72 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating, IShipCustomTexture, IShipMorph
+public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating, IShipCustomTexture, IShipMorph, IStateHandler, IShipInventory
 {
 
-    //basic attribute
+    //override attribute
     protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
     
-    protected CapaInventoryExtend itemHandler;
-    protected ShipPathNavigate shipNavigator;    //水空移動用navigator
-    protected ShipMoveHelper shipMoveHelper;
-    protected EntityLivingBase aiTarget;        //target for AI
-    protected Entity guardedEntity;                //guarding target
-    protected Entity atkTarget;                    //attack target
-    protected Entity rvgTarget;                    //revenge target
-    public EntityShipFishingHook fishHook;        //fishing hook
-    
-    //for AI calc
-    protected double ShipDepth;            //水深, 用於水中高度判定
-    protected double ShipPrevX;            //ship posX 5 sec ago
-    protected double ShipPrevY;            //ship posY 5 sec ago
-    protected double ShipPrevZ;            //ship posZ 5 sec ago
-    /**
-     * ship attributes: hp, def, atk, ...
-     */
+    /** item slot, get from null side */
+    protected CapaInventoryExtend invItem;
+    /** equip slot, get from horizontal side */
+    protected CapaInventoryPaged invEquip;
+    /** handheld slot, get from vertical side */
+    protected CapaInventory invHand;
+    /** ship attributes: hp, def, atk, ... */
     protected AttrsAdv shipAttrs;
+    /** ship states: flags, minor values, ... */
+    protected ShipStateHandler shipStates;
+    //moving handler
+    protected ShipPathNavigate shipNavigator;
+    protected ShipMoveHelper shipMoveHelper;
+    //target
+    protected EntityLivingBase aiTarget;       //target for AI
+    protected Entity guardedEntity;            //guarding target
+    protected Entity atkTarget;                //attack target
+    protected Entity rvgTarget;                //revenge target
+    public EntityShipFishingHook fishHook;     //fishing hook
+    
+    /** stop onUpdate, onLivingUpdate flag */
+    public static boolean stopAI = false;
+    public boolean stopAIindivdual = false;
+    /** initial flag */
+    private boolean initAI, initWaitAI;        //init flag
+    private boolean isUpdated;                 //updated ship id/owner id tag
+    private int updateTime = 16;               //update check interval
     /** BodyHeightRange: */
-    protected byte[] BodyHeightStand;
-    protected byte[] BodyHeightSit;
+    protected byte[] bodyHeightStand;
+    protected byte[] bodyHeightSit;
     /** ModelPos: posX, posY, posZ, scale (in ship inventory) */
-    protected float[] ModelPos;
+    protected float[] modelPosInGUI;
     /** waypoints: 0:last wp */
     protected BlockPos[] waypoints;
     /** owner name */
     public String ownerName;
     /** unit names */
     public ArrayList<String> unitNames;
-    /** attack attributes */
+    /** buffs */
     protected HashMap<Integer, Integer> BuffMap;
     protected HashMap<Integer, int[]> AttackEffectMap;
-    protected MissileData[] MissileData;  //0: melee, 1: light, 2: heavy, 3: air-light, 4: air-heavy
+    /** 0: melee, 1: light, 2: heavy, 3: air-light, 4: air-heavy */
+    protected MissileData[] MissileData;
+    /** hand held item rotate angle */
+    protected float[] rotateAngle;
+    /** ship prev pos X ticks ago */
+    protected double shipPrevX;
+    protected double shipPrevY;
+    protected double shipPrevZ;
     
-    //for model render
-    protected float[] rotateAngle;        //模型旋轉角度, 用於手持物品render
-    
-    //for initial
-    private boolean initAI, initWaitAI;    //init flag
-    private boolean isUpdated;            //updated ship id/owner id tag
-    private int updateTime = 16;        //update check interval
-    
-    //chunk loader
+    /** chunk loader */
     private Ticket chunkTicket;
     private Set<ChunkPos> chunks;
     
-    //misc flags
-    public static boolean stopAI = false;  //stop onUpdate, onLivingUpdate (for all ship entity)
-    
-    //for inter-mod
+    /** inter-mod */
     protected boolean isMorph = false;        //is a morph entity, for Metamorph mod
     protected EntityPlayer morphHost;
     
@@ -168,36 +176,32 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     public BasicEntityShip(World world)
     {
         super(world);
+        
+        //init parent value
         this.ignoreFrustumCheck = true;  //即使不在視線內一樣render
         this.maxHurtResistantTime = 2;   //受傷無敵時間降為2 ticks
-        this.ownerName = "";
-        this.unitNames = new ArrayList<String>();
-        //init value
-        this.itemHandler = new CapaInventoryExtend(CapaInventoryExtend.SLOTS_MAX, this);
         this.isImmuneToFire = true;    //set ship immune to lava
-        this.BodyHeightStand = new byte[] {92, 78, 73, 58, 47, 37};
-        this.BodyHeightSit = new byte[] {64, 49, 44, 29, 23, 12};
-        this.ModelPos = new float[] {0F, 0F, 0F, 50F};
+        this.stepHeight = 1F;
+        
+        //init ship value
+        this.invItem = new CapaInventoryExtend(ConfigHandler.baseSlotNumber, this);
+        this.invHand = new CapaInventory(2, this);
+        this.invEquip = new CapaInventoryPaged();
+        this.bodyHeightStand = new byte[] {92, 78, 73, 58, 47, 37};
+        this.bodyHeightSit = new byte[] {64, 49, 44, 29, 23, 12};
+        this.modelPosInGUI = new float[] {0F, 0F, 0F, 50F};
         this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
         this.BuffMap = new HashMap<Integer, Integer>();
         this.resetMissileData();
-        
-        //for AI
-        this.ShipDepth = 0D;                //water block above ship (within ship position)
-        this.ShipPrevX = posX;                //ship position 5 sec ago
-        this.ShipPrevY = posY;
-        this.ShipPrevZ = posZ;
-        this.stepHeight = 1F;
-        
-        //for render
+        this.ownerName = "";
+        this.unitNames = new ArrayList<String>();
+        this.shipPrevX = posX;                //ship position 5 sec ago
+        this.shipPrevY = posY;
+        this.shipPrevZ = posZ;
         this.rotateAngle = new float[3];    //model rotate angle (right hand)
-        
-        //for init
         this.initAI = false;                //normal init
         this.initWaitAI = false;            //slow init after player entity loaded
         this.isUpdated = false;
-        
-        //chunk loader
         this.chunkTicket = null;
         this.chunks = null;
         
@@ -861,7 +865,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     @Override
     public double getShipDepth()
     {
-        return ShipDepth;
+        return shipDepth;
     }
     
     @Override
@@ -876,12 +880,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             }
             else
             {
-                return this.ShipDepth;
+                return this.shipDepth;
             }
         case 2:
             return 0D;
         default:
-            return this.ShipDepth;
+            return this.shipDepth;
         }
     }
     
@@ -933,7 +937,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     /** get model position in GUI */
     public float[] getModelPos()
     {
-        return ModelPos;
+        return modelPosInGUI;
     }
     
     /** grudge consumption when IDLE */
@@ -1164,7 +1168,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     @Override
     public void setShipDepth(double par1)
     {
-        this.ShipDepth = par1;
+        this.shipDepth = par1;
     }
     
     //called when entity level up
@@ -1843,10 +1847,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     public void onUpdate()
     {
         /** BOTH SIDE */
-        if (stopAI)
-        {
-            return;
-        }
+        if (this.stopAI || this.stopAIindivdual) return;
         
         //check morph world (FIX: morph ship's world is different between server and client after change dim)
         if (this.morphHost != null)
@@ -3521,13 +3522,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         if (!this.hasAmmoHeavy()) { this.decrAmmoNum(1, 0); }
         
         //calc move distance
-        double distX = posX - ShipPrevX;
-        double distY = posY - ShipPrevY;
-        double distZ = posZ - ShipPrevZ;
+        double distX = posX - shipPrevX;
+        double distY = posY - shipPrevY;
+        double distZ = posZ - shipPrevZ;
         
         //calc total consumption
         int valueConsume = (int) MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        if (ShipPrevY <= 0D) valueConsume = 0;  //do not decrGrudge if ShipPrev not inited
+        if (shipPrevY <= 0D) valueConsume = 0;  //do not decrGrudge if ShipPrev not inited
         
         //morale-- per 2 blocks
         int m = (int)((float)valueConsume * 0.5F);
@@ -3553,9 +3554,9 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         decrGrudgeNum(valueConsume);
         
         //update pos
-        ShipPrevX = posX;
-        ShipPrevY = posY;
-        ShipPrevZ = posZ;
+        shipPrevX = posX;
+        shipPrevY = posY;
+        shipPrevZ = posZ;
       }
       
       /** morale value
@@ -5521,12 +5522,12 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     
     public byte[] getBodyHeightStand()
     {
-        return this.BodyHeightStand;
+        return this.bodyHeightStand;
     }
     
     public byte[] getBodyHeightSit()
     {
-        return this.BodyHeightSit;
+        return this.bodyHeightSit;
     }
     
       public Enums.BodyHeight getBodyIDFromHeight()
@@ -5650,6 +5651,46 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     public void setMorphHost(EntityPlayer player)
     {
         this.morphHost = player;
+    }
+    
+    /**
+     * IItemHandler getter:
+     *   from null: get item slots
+     *   from UP/DOWN: get hand slots
+     *   from NEWS: get equip slots
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    @Nullable
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
+    {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
+            if (facing == null) return (T) this.invItem;
+            else if (facing.getAxis().isVertical()) return (T) this.invHand;
+            else if (facing.getAxis().isHorizontal()) return (T) this.invEquip;
+        }
+        return super.getCapability(capability, facing);
+    }
+    
+    /**
+     * if change equips => update attrs
+     */
+    @Override
+    public void onContentChanged(int slot, CapaInventory cpInv)
+    {
+        if (!this.world.isRemote && cpInv.getInvName().equals(ID.InvName.EquipSlot))
+        {
+            this.calcShipAttributes(2, true);
+        }
+    }
+    
+    @Override
+    public StateHandler getStateHandler()
+    {
+        if (this.shipStates == null) this.shipStates = new ShipStatesHandler(this);
+        
+        return this.shipStates;
     }
     
     

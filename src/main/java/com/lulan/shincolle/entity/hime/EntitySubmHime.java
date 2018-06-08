@@ -41,7 +41,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
-		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
+		this.modelPosInGUI = new float[] {0F, 25F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;

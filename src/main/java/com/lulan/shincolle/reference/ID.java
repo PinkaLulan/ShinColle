@@ -441,6 +441,14 @@ public class ID
         public static final short XPBot = 79;
     }
     
+    /** inventory name for NBT tags */
+    public static final class InvName
+    {
+        public static final String ItemSlot = "CpInv";
+        public static final String HandSlot = "HandInv";
+        public static final String EquipSlot = "EquipInv";
+    }
+    
     /** value of hp state */
     public static final class HPState
     {
@@ -486,7 +494,7 @@ public class ID
         public static final short DamageType = 129;         //damage type
         public static final short FormatType = 130;         //formation type
         public static final short FormatPos = 131;          //formation position
-//        public static final short NO_USE = 132;
+        public static final short ShipDepth = 132;          //height below water block (double)
         public static final short Task = 133;               //doing task id
         public static final short TaskSide = 134;           //side setting for task
         public static final short TaskTime = 135;           //SERVER: task start time
@@ -503,6 +511,7 @@ public class ID
         public static final short IsAntiSS = 146;
         public static final short IsPassive = 147;
         public static final short IsTimeKeeper = 148;
+        
         //model and emotion
         public static final short ShowHeldItem = 300;
         public static final short ModelStateNum = 301;      //total model state number

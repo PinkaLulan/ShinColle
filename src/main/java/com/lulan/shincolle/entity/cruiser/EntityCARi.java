@@ -27,7 +27,7 @@ public class EntityCARi extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.NumState, 4);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
-		this.ModelPos = new float[] {0F, 20F, 0F, 40F};
+		this.modelPosInGUI = new float[] {0F, 20F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;

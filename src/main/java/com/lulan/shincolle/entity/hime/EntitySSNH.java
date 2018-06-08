@@ -59,7 +59,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
-		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
+		this.modelPosInGUI = new float[] {-6F, 8F, 0F, 50F};
 		this.goRidingTicks = 0;
 		this.goRideEntity = null;
 		this.goRiding = false;

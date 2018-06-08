@@ -34,7 +34,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 		this.setStateMinor(ID.M.NumState, 5);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
-		this.ModelPos = new float[] {0F, 20F, 0F, 30F};
+		this.modelPosInGUI = new float[] {0F, 20F, 0F, 30F};
 		this.launchHeight = this.height * 0.9F;
 		
 		//set attack type

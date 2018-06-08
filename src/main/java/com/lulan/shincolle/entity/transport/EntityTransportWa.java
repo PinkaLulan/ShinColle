@@ -34,7 +34,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.NumState, 3);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.AP]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.AP]);
-		this.ModelPos = new float[] {-3F, 20F, 0F, 45F};
+		this.modelPosInGUI = new float[] {-3F, 20F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_Light] = false;

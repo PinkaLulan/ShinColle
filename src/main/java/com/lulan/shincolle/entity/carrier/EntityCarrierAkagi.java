@@ -36,7 +36,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		this.setStateMinor(ID.M.NumState, 8);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
-		this.ModelPos = new float[] {0F, 20F, 0F, 40F};
+		this.modelPosInGUI = new float[] {0F, 20F, 0F, 40F};
 		this.launchHeight = this.height * 0.65F;
 		
 		//set attack type

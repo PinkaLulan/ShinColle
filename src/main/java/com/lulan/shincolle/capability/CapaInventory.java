@@ -1,7 +1,6 @@
 package com.lulan.shincolle.capability;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.tileentity.BasicTileInventory;
+import com.lulan.shincolle.entity.IShipInventory;
 
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -11,56 +10,48 @@ import net.minecraftforge.items.ItemStackHandler;
  * 2018/6/5<br>
  *   remove IInventory system<br>
  */
-public class CapaInventory<T> extends ItemStackHandler
+public class CapaInventory<T extends IShipInventory> extends ItemStackHandler
 {
-	
-	//ship inventory nbt tag name
-	public static final String InvName = "CpInv";
-	
-	//host type:  -1:null host  0:ship  1:tile entity
-	protected int hostType = -1;
-	protected T host;
-	
-	
-    public CapaInventory(int size, T host)
+    
+    //ship inventory nbt tag name
+    private String invName;
+    protected T host;
+    
+    
+    public CapaInventory(int size, T host, String invName)
     {
         super(size);
         this.host = host;
-        
-        //check host
-        if (this.host instanceof BasicEntityShip) { hostType = 0; }
-        else if (this.host instanceof BasicTileInventory) { hostType = 1; }
-        else { hostType = -1; }  //null host
+        this.invName = invName;
     }
     
     public T getHost()
     {
-    	return this.host;
+        return this.host;
     }
     
-    /** sync method */
+    /** inv name for NBT data handler */
+    public String getInvName()
+    {
+        return this.invName;
+    }
+    
+    /** sync on general value changed */
     protected void onContentsChanged()
-	{
-        switch (hostType)
-        {
-        case 0:  //ship
-        	//TODO send sync packet
-    	break;
-        case 1:  //tile
-        	((BasicTileInventory) this.host).markDirty();
-        break;
-        }
+    {
+        if (this.host != null) this.host.onContentChanged(this);
     }
     
-	/** sync method for slot */
-	@Override
+    /** sync on itemstack changed */
+    @Override
     protected void onContentsChanged(int slot)
-	{
+    {
+        if (this.host != null) this.host.onContentChanged(slot, this);
     }
-	
-	/** after nbt data loaded, put some init method here */
-	@Override
-	protected void onLoad() {}
-	
-	
+    
+    /** after nbt data loaded, put some init method here */
+    @Override
+    protected void onLoad() {}
+    
+    
 }

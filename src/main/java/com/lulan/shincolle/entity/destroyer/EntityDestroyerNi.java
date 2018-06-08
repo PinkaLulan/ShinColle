@@ -29,7 +29,7 @@ public class EntityDestroyerNi extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.NumState, 1);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
+		this.modelPosInGUI = new float[] {0F, 0F, 0F, 25F};
 		
 		//higher step
 		stepHeight = 2F;

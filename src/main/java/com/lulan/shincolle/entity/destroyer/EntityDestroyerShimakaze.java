@@ -49,7 +49,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.setStateMinor(ID.M.NumState, 6);
 		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
+		this.modelPosInGUI = new float[] {0F, 25F, 0F, 45F};
 		
 		this.numRensouhou = 6;
 		
