@@ -35,7 +35,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 	{
 		super(world);
 		this.setSize(0.6F, 1.4F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSRo500);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 3);
@@ -48,7 +48,7 @@ public class EntitySubmRo500 extends BasicEntityShipSmall implements IShipInvisi
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

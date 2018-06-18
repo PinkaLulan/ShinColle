@@ -37,7 +37,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 	{
 		super(world);
 		this.setSize(0.7F, 1.8F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBRU);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 4);
@@ -52,7 +52,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 		this.remainAttack = 0;
 		this.skillTarget = BlockPos.ORIGIN;
 		
-		this.postInit();
+		this.initPre();
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

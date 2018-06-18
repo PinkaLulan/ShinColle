@@ -34,7 +34,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 	{
 		super(world);
 		this.setSize(0.7F, 1.8F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 3);
@@ -46,7 +46,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

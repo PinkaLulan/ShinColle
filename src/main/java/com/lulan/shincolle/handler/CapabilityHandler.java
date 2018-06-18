@@ -18,27 +18,23 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  */
 public class CapabilityHandler
 {
-	
-	public static final ResourceLocation CAPA_TEITOKU_NAME = new ResourceLocation(Reference.MOD_ID, CapaTeitoku.CAPA_KEY);
-
-	
-	/**
-	 * attach capability event
-	 */
-	@SubscribeEvent
-	public void attachCapability(AttachCapabilitiesEvent<Entity> event)
-	{
-//		if (event.getObject() instanceof EntityPlayer)
-//		if (!(event.getObject() instanceof FakePlayer) &&
-//			(event.getObject() instanceof EntityPlayerMP ||
-//			 event.getObject() instanceof EntityPlayerSP))
-		if (event.getObject() instanceof EntityPlayer &&
-			!(event.getObject() instanceof FakePlayer))
-		{
-			//attach capability
-			event.addCapability(CAPA_TEITOKU_NAME, new CapaTeitokuProvider());
-		}
-	}
-	
-	
+    
+    public static final ResourceLocation CAPA_TEITOKU_NAME = new ResourceLocation(Reference.MOD_ID, CapaTeitoku.CAPA_KEY);
+    
+    
+    /**
+     * attach capability event
+     */
+    @SubscribeEvent
+    public void attachCapability(AttachCapabilitiesEvent<Entity> event)
+    {
+        if (event.getObject() instanceof EntityPlayer &&
+            !(event.getObject() instanceof FakePlayer))
+        {
+            //attach capability
+            event.addCapability(CAPA_TEITOKU_NAME, new CapaTeitokuProvider());
+        }
+    }
+    
+    
 }

@@ -49,7 +49,7 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.75F, 1.65F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.LIGHT_CRUISER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.LIGHT_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CLTatsuta);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 3);
@@ -68,7 +68,7 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(12);
 		
-		this.postInit();
+		this.initPre();
 	}
 	
 	@Override

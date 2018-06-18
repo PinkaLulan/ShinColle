@@ -39,7 +39,7 @@ public class EntityCAHime extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 1.2F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CAHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 5);
@@ -54,7 +54,7 @@ public class EntityCAHime extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(17);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

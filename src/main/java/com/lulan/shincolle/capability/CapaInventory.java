@@ -1,6 +1,6 @@
 package com.lulan.shincolle.capability;
 
-import com.lulan.shincolle.entity.IShipInventory;
+import com.lulan.shincolle.handler.IInventoryShip;
 
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -10,7 +10,7 @@ import net.minecraftforge.items.ItemStackHandler;
  * 2018/6/5<br>
  *   remove IInventory system<br>
  */
-public class CapaInventory<T extends IShipInventory> extends ItemStackHandler
+public class CapaInventory<T extends IInventoryShip> extends ItemStackHandler
 {
     
     //ship inventory nbt tag name
@@ -39,14 +39,14 @@ public class CapaInventory<T extends IShipInventory> extends ItemStackHandler
     /** sync on general value changed */
     protected void onContentsChanged()
     {
-        if (this.host != null) this.host.onContentChanged(this);
+        if (this.host != null) this.host.getItemHandler().onContentChanged(this);
     }
     
     /** sync on itemstack changed */
     @Override
     protected void onContentsChanged(int slot)
     {
-        if (this.host != null) this.host.onContentChanged(slot, this);
+        if (this.host != null) this.host.getItemHandler().onContentChanged(slot, this);
     }
     
     /** after nbt data loaded, put some init method here */

@@ -44,7 +44,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 	{
 		super(world);
 		this.setSize(0.5F, 1.5F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDIkazuchi);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 2);
@@ -61,7 +61,7 @@ public class EntityDestroyerIkazuchi extends BasicEntityShipSmall implements ISh
 		this.isRaiden = false;
 		this.ridingState = 0;
 		
-		this.postInit();
+		this.initPre();
 	}
 	
 	//for morph

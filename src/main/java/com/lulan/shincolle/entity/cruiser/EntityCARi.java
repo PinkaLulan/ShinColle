@@ -21,7 +21,7 @@ public class EntityCARi extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.75F, 1.7F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CARI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 4);
@@ -36,7 +36,7 @@ public class EntityCARi extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(14);
 		
-		this.postInit();
+		this.initPre();
 	}
 	
 	@Override

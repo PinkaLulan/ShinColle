@@ -46,7 +46,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.6F, 1.55F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 3);
@@ -55,7 +55,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.modelPosInGUI = new float[] {-6F, 25F, 0F, 40F};
 		this.launchHeight = this.height * 0.8F;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

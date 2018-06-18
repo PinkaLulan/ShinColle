@@ -37,7 +37,7 @@ public class EntityCarrierWD extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.7F, 1.9F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.DEMON);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DEMON);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 2);
@@ -52,7 +52,7 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(30);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

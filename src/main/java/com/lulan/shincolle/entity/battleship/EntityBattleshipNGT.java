@@ -46,7 +46,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 2F);	//碰撞大小 跟模型大小無關
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 2);
@@ -61,7 +61,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(20);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -154,7 +154,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         	for (EntityLivingBase ent : slist)
         	{
         		if (ent instanceof EntityNorthernHime || (ent instanceof IShipEmotion &&
-        			((IShipEmotion)ent).getStateMinor(ID.M.ShipType) == ID.ShipType.DESTROYER))
+        			((IShipEmotion)ent).getStateMinor(ID.M.ShipType) == ID.ShipIconType.DESTROYER))
         		{
         			target.add(ent);
         		}

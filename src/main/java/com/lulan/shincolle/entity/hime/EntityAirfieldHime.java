@@ -33,7 +33,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.7F, 1.9F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.AirfieldHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 4);
@@ -45,7 +45,7 @@ public class EntityAirfieldHime extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(16);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

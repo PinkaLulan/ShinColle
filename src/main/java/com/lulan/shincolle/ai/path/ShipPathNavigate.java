@@ -3,7 +3,7 @@ package com.lulan.shincolle.ai.path;
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipNavigator;
+import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -31,7 +31,7 @@ public class ShipPathNavigate
 	private static int UpdatePathDelay = 20;
     private EntityLiving host;
     /** The entity using ship path navigate */
-    private IShipNavigator hostShip;
+    private IMoveShip hostShip;
     private World world;
     /** The PathEntity being followed. */
     @Nullable
@@ -59,7 +59,7 @@ public class ShipPathNavigate
     public ShipPathNavigate(EntityLiving entity)
     {
         this.host = entity;
-        this.hostShip = (IShipNavigator) entity;
+        this.hostShip = (IMoveShip) entity;
         this.world = entity.world;
         
         this.maxDistanceToWaypoint = (float) MathHelper.absMax(this.host.width * 0.75D, 0.75D);

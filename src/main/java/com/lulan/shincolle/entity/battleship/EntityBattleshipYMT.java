@@ -39,7 +39,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.8F, 2.1F);	//碰撞大小 跟模型大小無關
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBYamato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 4);
@@ -54,7 +54,7 @@ public class EntityBattleshipYMT extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(30);
 		
-		this.postInit();
+		this.initPre();
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

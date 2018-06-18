@@ -33,7 +33,7 @@ public class EntityBBHiei extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.6F, 1.875F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBHiei);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 2);
@@ -48,7 +48,7 @@ public class EntityBBHiei extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(19);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

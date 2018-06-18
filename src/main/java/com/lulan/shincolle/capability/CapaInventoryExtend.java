@@ -2,8 +2,7 @@ package com.lulan.shincolle.capability;
 
 import java.util.ArrayList;
 
-import com.lulan.shincolle.entity.IShipInventory;
-import com.lulan.shincolle.entity.IStateHandler;
+import com.lulan.shincolle.handler.IInventoryShip;
 import com.lulan.shincolle.utility.InventoryHelper;
 
 import net.minecraft.entity.Entity;
@@ -26,19 +25,25 @@ import net.minecraft.world.World;
  * 2018/6/5
  *   remove IInventory system
  */
-public class CapaInventoryExtend<T extends IStateHandler & IShipInventory> extends CapaInventory<T>
+public class CapaInventoryExtend<T extends IInventoryShip> extends CapaInventory<T>
 {
     
     /** current inventory line/page/...etc number for GUI display */
-    protected int currentExtendNumber = 0;
+    protected int currentExtendNumber;
     /** slots per line/page/...etc */
     protected int slotsPerExtend;
+    /** base slot index */
+    protected int baseSlotIndex;
     
     
     public CapaInventoryExtend(int size, int slotsPerExtend, T host, String invName)
     {
         super(size, host, invName);
+        
+        //init
         this.slotsPerExtend = slotsPerExtend;
+        this.currentExtendNumber = 0;
+        this.baseSlotIndex = 0;
     }
     
     /** get current extend number for GUI display, ex: lines, pages, ... */
@@ -51,18 +56,23 @@ public class CapaInventoryExtend<T extends IStateHandler & IShipInventory> exten
     public void setCurrentExtendNumber(int value)
     {
         this.currentExtendNumber = value;
+        this.baseSlotIndex = this.currentExtendNumber * this.slotsPerExtend;
         this.onContentsChanged();
     }
     
     /** get base slot index for GUI display */
     public int getBaseSlotIndex()
     {
-        return this.currentExtendNumber * this.slotsPerExtend;
+        return this.baseSlotIndex;
     }
     
     /** change inventory size, drop items on floor if size decreased */
     public void resize(int size)
     {
+        //reset value
+        this.currentExtendNumber = 0;
+        this.baseSlotIndex = 0;
+        
         //save old items
         ArrayList<ItemStack> oldList = new ArrayList<ItemStack>();
         
@@ -113,6 +123,9 @@ public class CapaInventoryExtend<T extends IStateHandler & IShipInventory> exten
                 InventoryHelper.dropItemOnGround(w, s, x, y, z);
             }
         }
+        
+        //send update
+        this.onContentsChanged();
     }
     
     

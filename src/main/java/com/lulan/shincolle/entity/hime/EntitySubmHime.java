@@ -35,7 +35,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 	{
 		super(world);
 		this.setSize(0.7F, 1.85F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 3);
@@ -48,7 +48,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

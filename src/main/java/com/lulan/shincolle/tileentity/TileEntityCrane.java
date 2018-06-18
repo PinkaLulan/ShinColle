@@ -60,7 +60,7 @@ import net.minecraftforge.oredict.OreDictionary;
  */
 public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint, ITickable
 {
-
+    
     private int tick, partDelay, modeItem, modeRedstone, tickRedstone, craneTime, modeLiquid,
                 modeEnergy, rateLiquid, rateEU;
     private boolean isActive, isPaired, checkMetadata, checkOredict, checkNbt, enabLoad, enabUnload;
@@ -257,8 +257,8 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
             //chest lost, reset
             if (shouldReset && this.chest == null)
             {
-                clearPairedChest();
-                sendSyncPacket();
+                this.clearPairedChest();
+                this.sendSyncPacket();
             }
         }
     }
@@ -1069,15 +1069,26 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
     }
     
     /**
+     * LOADING: transfer item from CHEST to SHIP
+     * 
+     * @return <tt>true</tt> if item moved, <tt>false</tt> if no item can move
+     */
+    private boolean applyItemTransferLoading()
+    {
+        invFrom = this.chest;
+        invTo = this.ship.getCapaShipInventory();
+        
+        return applyItemTransfer(true, );
+    }
+    
+    /**
      * item loading / unloading
      * 
      * @param isLoading is loading item from chest to ship
      * @return <tt>true</tt> if item moved, <tt>false</tt> if no item can move
      */
-    private boolean applyItemTransfer(boolean isLoading)
+    private boolean applyItemTransfer(boolean isLoading, IItemHandler invFrom, IItemHandler invTo)
     {
-        IItemHandler invFrom = null;
-        IItemHandler invTo = null;
         ItemStack tempitem = null;
         ItemStack moveitem = null;
         boolean allEmpty = true;  //all temp slots are null = move all items
@@ -1092,8 +1103,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
             //set inv
             if (isLoading)
             {
-                invFrom = this.chest;
-                invTo = this.ship.getCapaShipInventory();
+                
             }
             else
             {
@@ -1236,217 +1246,11 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         return temp;
     }
     
-    //get itemstack temp from loading or unloading slots without NOT mode slot
-    private ItemStack getItemstackTemp(int i, boolean isLoadingTemp)
-    {
-        //if slot is notMode, return null
-        if (this.getItemMode(isLoadingTemp ? i : i + 9))
-        {
-            return null;
-        }
-        
-        //get loading temp
-        if (isLoadingTemp)
-        {
-            return this.itemHandler.getStackInSlot(i);
-        }
-        //get unloading temp
-        else
-        {
-            return this.itemHandler.getStackInSlot(i + 9);
-        }
-    }
-    
-    //get slot id in inventory that match target item
-    private int matchTempItem(IInventory inv, ItemStack target)
-    {
-        ItemStack getitem = null;
-        int slotid = 0;
-        int startid = 0;
-        int maxSize = inv.getSizeInventory();
-        
-        //init slots for ship inventory
-        if (inv instanceof CapaInventoryExtend)
-        {
-            //start at inv slots
-            startid = ContainerShipInventory.SLOTS_SHIPINV;
-            
-            //get max size by page
-            maxSize = ((CapaInventoryExtend) inv).getSizeInventoryPaged();
-        }
-        
-        //match taget item
-        if (target != null)
-        {
-            //check slots
-            for (slotid = startid; slotid < maxSize; slotid++)
-            {
-                if (inv instanceof CapaInventoryExtend) getitem = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(slotid);
-                else getitem = inv.getStackInSlot(slotid);
-                
-                if (getitem != null)
-                {
-                    //check item type
-                    if (getitem.getItem() == target.getItem())
-                    {
-                        //check both nbt and meta
-                        if (checkNbt && checkMetadata)
-                        {
-                            if (ItemStack.areItemStackTagsEqual(getitem, target) &&
-                                getitem.getItemDamage() == target.getItemDamage())
-                            {
-                                return slotid;
-                            }
-                        }
-                        //check nbt only
-                        else if (checkNbt)
-                        {
-                            if (ItemStack.areItemStackTagsEqual(getitem, target)) return slotid;
-                        }
-                        //check meta only
-                        else if (checkMetadata)
-                        {
-                            if (getitem.getItemDamage() == target.getItemDamage()) return slotid;
-                        }
-                        //dont check nbt and meta
-                        else
-                        {
-                            return slotid;
-                        }
-                    }
-                    else
-                    {
-                        //check ore dict
-                        if (checkOredict)
-                        {
-                            int[] a = OreDictionary.getOreIDs(target);
-                            int[] b = OreDictionary.getOreIDs(getitem);
-                            
-                            if (a.length > 0 && b.length > 0 && a[0] == b[0]) return slotid;
-                        }
-                    }
-                }//end get chest item
-            }//for all slots in chest
-        }
-        //temp null, get any item
-        else
-        {
-            for (slotid = startid; slotid < maxSize; slotid++)
-            {
-                if (inv instanceof CapaInventoryExtend) getitem = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(slotid);
-                else getitem = inv.getStackInSlot(slotid);
-                
-                if (getitem != null)
-                {
-                    return slotid;
-                }
-            }
-        }
-        
-        return -1;
-    }
-    
-    //get any item except NotMode item
-    private int matchAnyItemExceptNotModeItem(IInventory inv, boolean isLoading)
-    {
-        ItemStack getitem = null;
-        int slotid = 0;
-        int startid = 0;
-        int maxSize = inv.getSizeInventory();
-        
-        //init slots for ship inventory
-        if (inv instanceof CapaInventoryExtend)
-        {
-            //start at inv slots
-            startid = ContainerShipInventory.SLOTS_SHIPINV;
-            
-            //get max size by page
-            maxSize = ((CapaInventoryExtend) inv).getSizeInventoryPaged();
-        }
-        
-        for (slotid = startid; slotid < maxSize; slotid++)
-        {
-            if (inv instanceof CapaInventoryExtend) getitem = ((CapaInventoryExtend) inv).getStackInSlotWithPageCheck(slotid);
-            else getitem = inv.getStackInSlot(slotid);
-            
-            if (getitem != null)
-            {
-                if (checkNotModeItem(slotid, getitem, isLoading) >= 0) return slotid;
-            }
-        }
-
-        return -1;
-    }    
-    //if item is in NotMode slot, return -1
-    private int checkNotModeItem(int slotid, ItemStack item, boolean isLoading)
-    {
-        ItemStack temp = null;
-        int slotStart = isLoading ? 0 : 9;
-        int slotEnd = isLoading ? 9 : 18;
-        
-        for (int i = slotStart; i < slotEnd; i++)
-        {
-            if (getItemMode(i))
-            {
-                temp = this.itemHandler.getStackInSlot(i);
-                
-                if (temp != null)
-                {
-                    //check item type
-                    if (item.getItem() == temp.getItem())
-                    {
-                        //check both nbt and meta
-                        if (checkNbt && checkMetadata)
-                        {
-                            if (ItemStack.areItemStackTagsEqual(item, temp) &&
-                                item.getItemDamage() == temp.getItemDamage())
-                            {
-                                return -1;
-                            }
-                        }
-                        //check nbt only
-                        else if (checkNbt)
-                        {
-                            if (ItemStack.areItemStackTagsEqual(item, temp)) return -1;
-                        }
-                        //check meta only
-                        else if (checkMetadata)
-                        {
-                            if (item.getItemDamage() == temp.getItemDamage()) return -1;
-                        }
-                        //dont check nbt and meta
-                        else
-                        {
-                            return -1;
-                        }
-                    }
-                    else
-                    {
-                        //check ore dict
-                        if (checkOredict)
-                        {
-                            int[] a = OreDictionary.getOreIDs(item);
-                            int[] b = OreDictionary.getOreIDs(temp);
-                            
-                            if (a.length > 0 && b.length > 0 && a[0] == b[0])
-                            {
-                                return -1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        //pass checking, return slot id
-        return slotid;
-    }
-    
-    //check ship under crane waiting for craning
+    /** check ship under crane waiting for craning */
     private void checkCraningShip()
     {
-        AxisAlignedBB box = new AxisAlignedBB(pos.getX() - 7D, pos.getY() - 8D, pos.getZ() - 7D,
-                                              pos.getX() + 7D, pos.getY(), pos.getZ() + 7D);
+        AxisAlignedBB box = new AxisAlignedBB(pos.getX() - 6D, pos.getY() - 12D, pos.getZ() - 6D,
+                                              pos.getX() + 6D, pos.getY(), pos.getZ() + 6D);
         List<BasicEntityShip> slist = this.world.getEntitiesWithinAABB(BasicEntityShip.class, box);
 
         if (slist != null && !slist.isEmpty())
@@ -1454,7 +1258,7 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
             //get craning ship
             for (BasicEntityShip s : slist)
             {
-                if (s.getStateMinor(ID.M.CraneState) == 2 &&
+                if (s.getStateHandler().getStateInt(ID.Keys.CraneState) == 2 &&
                     s.getGuardedPos(0) == pos.getX() &&
                     s.getGuardedPos(1) == pos.getY() &&
                     s.getGuardedPos(2) == pos.getZ())
@@ -1614,7 +1418,12 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         return 0;
     }
     
-    /** set slot is NOT loading/unloading mode */
+    /**
+     * set slot mode
+     * 
+     * @param slotID 0 ~ 17 (18 slots)
+     * @param notMode <tt>true</tt> = set slot to NOT mode
+     */
     public void setItemMode(int slotID, boolean notMode)
     {
         int slot = 1 << slotID;
@@ -1631,30 +1440,37 @@ public class TileEntityCrane extends BasicTileInventory implements ITileWaypoint
         }
     }
     
-    /** get slot item mode array */
-    @Nonnull
-    public boolean[] getItemMode(boolean isLoadingTemp)
-    {
-        int start = isLoadingTemp ? 0 : 9;
-        boolean[] temp = new boolean[9];
-        
-        for (int i = 0; i < 9; i++)
-        {
-            temp[i] = getItemMode(i + start);
-        }
-        
-        return temp;
-    }
-    
     /**
-     * check slot is NOT mode, return TRUE = NOT MODE
+     * check slot is NOT mode
      * 
      * itemMode: right most bits are slots mode: 1 = NOT MODE, 0 = NORMAL MODE
      *     bits: 17 16 15 ... 3 2 1 0 = (18 slots)
+     * 
+     * @param slotID 0 ~ 17 (18 slots)
+     * @return <tt>true</tt> if slot is NOT mode
      */
     public boolean getItemMode(int slotID)
     {
         return ((this.modeItem >> slotID) & 1) == 1 ? true : false;
+    }
+    
+    /**
+     * get slot item mode array
+     * 
+     * @param isLoading set <tt>true</tt> to get LOADING temp
+     */
+    @Nonnull
+    public boolean[] getItemMode(boolean isLoading)
+    {
+        int start = isLoading ? 0 : 9;
+        boolean[] temp = new boolean[9];
+        
+        for (int i = 0; i < 9; i++)
+        {
+            temp[i] = this.getItemMode(i + start);
+        }
+        
+        return temp;
     }
     
     //getter, setter

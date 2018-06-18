@@ -31,7 +31,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.7F, 1.9F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 3);
@@ -47,7 +47,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(24);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

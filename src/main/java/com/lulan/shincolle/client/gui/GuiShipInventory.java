@@ -117,7 +117,7 @@ public class GuiShipInventory extends GuiContainer
 			{
 				if (this.entity.getRidingState() > 1)
 				{
-					this.shipType = ID.ShipType.HEAVY_CRUISER;
+					this.shipType = ID.ShipIconType.HEAVY_CRUISER;
 					this.shipClass = ID.ShipClass.Raiden;
 					
 					//get rider or mount

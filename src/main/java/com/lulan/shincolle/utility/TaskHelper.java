@@ -1012,7 +1012,7 @@ public class TaskHelper
   			CapaInventoryExtend inv = ship.getCapaShipInventory();
   			
   	  		//check pump equip if not transport ship
-  			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
+  			if (ship.getShipType() != ID.ShipIconType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
   			{
   				if (!InventoryHelper.checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
   			}
@@ -1102,7 +1102,7 @@ public class TaskHelper
   			CapaInventoryExtend inv = ship.getCapaShipInventory();
 			
 	  		//check pump equip if not transport ship
-			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
+			if (ship.getShipType() != ID.ShipIconType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
 			{
 				if (!InventoryHelper.checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
 			}

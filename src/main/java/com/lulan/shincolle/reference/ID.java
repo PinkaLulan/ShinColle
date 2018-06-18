@@ -458,7 +458,7 @@ public class ID
         public static final byte HEAVY = 3;     //大破
     }
     
-    /** state keys for Statehandler */
+    /** state keys for StateHandler */
     public static final class Keys
     {
         //AI setting
@@ -511,6 +511,7 @@ public class ID
         public static final short IsAntiSS = 146;
         public static final short IsPassive = 147;
         public static final short IsTimeKeeper = 148;
+        public static final short EquipType = 149;
         
         //model and emotion
         public static final short ShowHeldItem = 300;
@@ -525,7 +526,8 @@ public class ID
         public static final short TimeSound = 309;          //SERVER: sound event cooldown
         public static final short TimeFace = 310;           //CLIENT: face emotion time
         public static final short TimeHeadTilt = 311;       //CLIENT: head tilt time
-        public static final short DelayEmote = 312;         //SERVER: emote reaction delay
+        public static final short EmoteDelay = 312;         //SERVER: emote reaction delay
+        
         //number data
         public static final short ShipType = 400;           //ship type
         public static final short ShipClass = 401;          //ship class
@@ -536,11 +538,11 @@ public class ID
         public static final short Kills = 406;              //ship kill number
         public static final short ExpCurrent = 407;         //exp current level
         public static final short ExpNext = 408;            //exp next level
-        public static final short Grudge = 409;             //grudge number
-        public static final short AmmoLight = 410;          //ammo light number
-        public static final short AmmoHeavy = 411;          //ammo heavy number
-        public static final short AirLight = 412;           //airplane light number
-        public static final short AirHeavy = 413;           //airplane heavy number
+        public static final short GrudgeNumber = 409;       //grudge number
+        public static final short AmmoLightNumber = 410;    //ammo light number
+        public static final short AmmoHeavyNumber = 411;    //ammo heavy number
+        public static final short AirLightNumber = 412;     //airplane light number
+        public static final short AirHeavyNumber = 413;     //airplane heavy number
         public static final short GrudgeConsume = 414;      //grudge base consumption when idle
         public static final short AmmoConsume = 415;        //ammo base consumption
         public static final short Morale = 416;             //morale value
@@ -554,6 +556,8 @@ public class ID
         public static final short FlareLevel = 424;         //level of flare
         public static final short SearchlightLevel = 425;   //level of searchlight
         public static final short XP = 426;                 //current xp orb value
+        public static final short IconType = 427;           //ship icon in GUI
+        
         //timer
         public static final short ImmuneTime = 500;         //SERVER: immune time
         public static final short RevengeTime = 501;        //SERVER: revenge target time
@@ -566,6 +570,7 @@ public class ID
         public static final short MountSkillCD3 = 508;
         public static final short MountSkillCD4 = 509;
         public static final short MountSkillCD5 = 510;
+        
         //attrs update flag
         public static final short UpdateAttrsBuffed = 601;
         public static final short UpdateAttrsBonus = 602;
@@ -575,6 +580,9 @@ public class ID
         public static final short UpdateAttrsFormation = 606;
         public static final short UpdateAttrsRaw = 607;
         public static final short UpdateFormatBuff = 608;
+        
+        //string data
+        public static final short OwnerName = 700;
     }
     
     /** morale level */
@@ -719,7 +727,8 @@ public class ID
         public static final short TwinHime = 84;
     }
     
-    /**SHIP REGISTER NAME MAP
+    /**
+     * SHIP REGISTER NAME MAP
      * index by {@link ID.ShipClass}
      */
     public static final Map<Short, String> NameMap = Collections.unmodifiableMap(new HashMap<Short, String>()
@@ -905,53 +914,46 @@ public class ID
     /** ship type for damage calc */
     public static final class ShipDmgType
     {
-        public static final byte UNDEFINED = 0;            //未定義
-        public static final byte CARRIER = 1;            //航母
+        public static final byte UNDEFINED = 0;           //未定義
+        public static final byte CARRIER = 1;             //航母
         public static final byte AVIATION = 2;            //航戰
-        public static final byte BATTLESHIP    = 3;        //戰艦
-        public static final byte CRUISER = 4;            //巡洋
-        public static final byte DESTROYER = 5;            //驅逐
-        public static final byte SUBMARINE = 6;            //潛艇
-        public static final byte AIRPLANE = 7;            //飛機
+        public static final byte BATTLESHIP    = 3;       //戰艦
+        public static final byte CRUISER = 4;             //巡洋
+        public static final byte DESTROYER = 5;           //驅逐
+        public static final byte SUBMARINE = 6;           //潛艇
+        public static final byte AIRPLANE = 7;            //飛機+魚雷
     }
     
     /** ship type for GUI display */
-    public static final class ShipType
+    public static final class IconType
     {
-        public static final byte DESTROYER = -1;        //DD
-        public static final byte LIGHT_CRUISER = 1;        //CL
-        public static final byte HEAVY_CRUISER = 2;        //CA CAV
-        public static final byte TORPEDO_CRUISER = 3;    //CLT
-        public static final byte LIGHT_CARRIER = 4;        //CVL
+        public static final byte DESTROYER = 0;           //DD
+        public static final byte LIGHT_CRUISER = 1;       //CL
+        public static final byte HEAVY_CRUISER = 2;       //CA CAV
+        public static final byte TORPEDO_CRUISER = 3;     //CLT
+        public static final byte LIGHT_CARRIER = 4;       //CVL
         public static final byte STANDARD_CARRIER = 5;    //CV
-        public static final byte BATTLESHIP    = 6;        //BB BBV
-        public static final byte TRANSPORT = 7;            //AR AO
-        public static final byte SUBMARINE = 8;            //SS
-        public static final byte DEMON = 9;                //demon + water demon (De)
-        public static final byte HIME = 10;                //princess (Pr)
+        public static final byte BATTLESHIP    = 6;       //BB BBV
+        public static final byte TRANSPORT = 7;           //AR AO
+        public static final byte SUBMARINE = 8;           //SS
+        public static final byte DEMON = 9;               //demon + water demon (De)
+        public static final byte HIME = 10;               //princess (Pr)
     }
     
-    /** consumption type and action index */
-    public static final class ShipConsume
+    /** ship type for calculation */
+    public static final class ShipType
     {
-        /** ship type */
-        public static final byte DD = 0;
-        public static final byte CL = 1;
-        public static final byte CA = 2;
-        public static final byte CAV = 3;
-        public static final byte CLT = 4;
-        public static final byte CVL = 5;
-        public static final byte CV    = 6;
-        public static final byte BB = 7;
-        public static final byte BBV = 8;
-        public static final byte SS = 9;
-        public static final byte AP = 10;
-        /** ship action */
-        public static final byte LAtk = 0;
-        public static final byte HAtk = 1;
-        public static final byte LAir = 2;
-        public static final byte HAir = 3;
-        public static final byte Move = 4;
+        public static final byte DD = 0;                  //destroyer
+        public static final byte CL = 1;                  //light cruiser
+        public static final byte CA = 2;                  //heavy cruiser
+        public static final byte CAV = 3;                 //carrier cruiser
+        public static final byte CLT = 4;                 //torpedo cruiser
+        public static final byte CVL = 5;                 //light carrier
+        public static final byte CV = 6;                  //carrier
+        public static final byte BB = 7;                  //battleship
+        public static final byte BBV = 8;                 //aviation battleship
+        public static final byte SS = 9;                  //submarine
+        public static final byte AP = 10;                 //transport
     }
     
     

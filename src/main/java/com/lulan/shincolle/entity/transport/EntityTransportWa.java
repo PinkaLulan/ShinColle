@@ -28,7 +28,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 1.53F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.TRANSPORT);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.TRANSPORT);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.APWA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.UNDEFINED);
 		this.setStateMinor(ID.M.NumState, 3);
@@ -43,7 +43,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

@@ -42,7 +42,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
@@ -68,9 +67,6 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
  */
 abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, IShipCustomTexture, IShipMorph
 {
-	
-	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
-	protected Attrs shipAttrs;
 	
 	public BasicEntityShip host;  				//host
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator

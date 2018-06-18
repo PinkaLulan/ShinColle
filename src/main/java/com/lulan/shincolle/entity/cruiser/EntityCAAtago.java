@@ -32,7 +32,7 @@ public class EntityCAAtago extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 1.75F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CAAtago);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 4);
@@ -47,7 +47,7 @@ public class EntityCAAtago extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(16);
 		
-		this.postInit();
+		this.initPre();
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

@@ -52,7 +52,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 	{
 		super(world);
 		this.setSize(0.5F, 1.5F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDAkatsuki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 4);
@@ -68,7 +68,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		this.riderType = 0;
 		this.ridingState = 0;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

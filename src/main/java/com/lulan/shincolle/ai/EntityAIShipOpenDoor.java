@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.lulan.shincolle.ai.path.ShipPath;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
-import com.lulan.shincolle.entity.IShipNavigator;
+import com.lulan.shincolle.handler.IMoveShip;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -28,7 +28,7 @@ public class EntityAIShipOpenDoor extends EntityAIBase
 {
 	
 	private Entity host;
-	private IShipNavigator host2;
+	private IMoveShip host2;
 	private ArrayList<BlockPos> doors;
 	private BlockPos pathPoint;
 	private boolean hasPassed;  //true時表示已經通過門，可準備結束AI
@@ -39,7 +39,7 @@ public class EntityAIShipOpenDoor extends EntityAIBase
 	private float dist;
 	
     
-    public EntityAIShipOpenDoor(IShipNavigator host, boolean closeDoor)
+    public EntityAIShipOpenDoor(IMoveShip host, boolean closeDoor)
     {
     	this.setMutexBits(0);
         this.host = (Entity) host;

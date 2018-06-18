@@ -30,7 +30,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.6F, 1.875F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVAkagi);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 8);
@@ -46,7 +46,7 @@ public class EntityCarrierAkagi extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(35);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

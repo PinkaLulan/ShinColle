@@ -26,7 +26,7 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.6F, 1.55F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 6);
@@ -39,7 +39,7 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

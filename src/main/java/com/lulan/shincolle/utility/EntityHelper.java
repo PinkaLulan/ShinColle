@@ -22,9 +22,9 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
-import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
+import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -1376,7 +1376,7 @@ public class EntityHelper
   	 * 1. floating on water/lava/liquid block
   	 * 2. change movSpeed in water
   	 */
-  	public static <T extends EntityLivingBase & IShipNavigator> void moveEntityWithHeading(T host, float strafe, float forward)
+  	public static <T extends EntityLivingBase & IMoveShip> void moveEntityWithHeading(T host, float strafe, float forward)
 	{
         double d0;
         
@@ -1792,7 +1792,7 @@ public class EntityHelper
   	 *  >100           top
   	 *  100~80         head
   	 *  80~70          neck
-  	 *  70~45          back
+  	 *  70~45          chest
   	 *  45~35          belly
   	 *  35~30          ubelly
   	 *  <30            leg
@@ -2076,7 +2076,7 @@ public class EntityHelper
      *  
      *  return true if teleport successfully
      */
-  	public static boolean applyTeleport(IShipNavigator host, double dist, Vec3d tpPos)
+  	public static boolean applyTeleport(IMoveShip host, double dist, Vec3d tpPos)
     {
   		if (!ConfigHandler.canTeleport) return false;
   		if (host == null) return false;

@@ -24,7 +24,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.9F, 1.7F);	//碰撞大小 跟模型大小無關
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDRO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 1);
@@ -37,7 +37,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

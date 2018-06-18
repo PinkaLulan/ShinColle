@@ -33,7 +33,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 2.05F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 1);
@@ -48,7 +48,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(30);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	{
 		super(world);
 		this.setSize(0.5F, 1.6F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 6);
@@ -58,7 +58,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.postInit();
+		this.initPre();
 	}
 	
 	//for morph

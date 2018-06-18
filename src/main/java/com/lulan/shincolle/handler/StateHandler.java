@@ -1,4 +1,4 @@
-package com.lulan.shincolle.entity;
+package com.lulan.shincolle.handler;
 
 import java.util.HashMap;
 
@@ -10,18 +10,43 @@ import javax.annotation.Nonnull;
 public class StateHandler
 {
     
+    /** host entity */
+    protected IStateEntity host;
+    
+    protected HashMap<Short, String> statesStringMap;
     protected HashMap<Short, Number> statesNumberMap;
     protected HashMap<Short, Boolean> statesFlagMap;
     
     
-    public StateHandler()
+    public StateHandler(IStateEntity host)
     {
+        this.host = host;
+        
+        //null check
+        if (this.host == null) throw new NullPointerException("StateHandler: host is null.");
+        
+        //init
+        this.initFirst();
+    }
+    
+    /** init data on new object */
+    protected void initFirst()
+    {
+        this.statesStringMap = new HashMap<Short, String>();
         this.statesNumberMap = new HashMap<Short, Number>();
         this.statesFlagMap = new HashMap<Short, Boolean>();
     }
     
+    public void initPre()
+    {
+    }
+    
+    public void initPost()
+    {
+    }
+    
     /**
-     * get data from all state map<br>
+     * get data from number or flag state map<br>
      * for flags: return Byte(1) if <tt>true</tt>, else Byte(0) (include null)
      */
     @Nonnull
@@ -36,6 +61,16 @@ public class StateHandler
         return new Byte((byte)0);
     }
     
+    /** get data from STRING state map, return empty string if no such data */
+    @Nonnull
+    public String getStringState(Short key)
+    {
+        String s = this.statesStringMap.get(key);
+        
+        if (s != null) return s;
+        else return "";
+    }
+    
     /** get data from NUMBER state map, return Integer(0) if no such data */
     @Nonnull
     public Number getNumberState(Short key)
@@ -48,7 +83,7 @@ public class StateHandler
     
     /** get data from FLAGS state map, return false if no such data */
     @Nonnull
-    public boolean getFlagState(Short key)
+    public boolean getBooleanState(Short key)
     {
         Boolean b = this.statesFlagMap.get(key);
         
@@ -139,9 +174,27 @@ public class StateHandler
     }
     
     /** set data in FLAG state map */
-    public void setFlagState(Short key, boolean value)
+    public void setBooleanState(Short key, boolean value)
     {
         this.statesFlagMap.put(key, value);
+    }
+    
+    /** set data in STRING state map */
+    public void setStringState(Short key, String value)
+    {
+        this.statesStringMap.put(key, value);
+    }
+    
+    /** add value to number state */
+    public void addNumberState(Short key, int value)
+    {
+        this.statesNumberMap.put(key, this.statesNumberMap.get(key).intValue() + value);
+    }
+    
+    /** inverse boolean state */
+    public void inverseBooleanState(Short key)
+    {
+        this.statesFlagMap.put(key, !this.statesFlagMap.get(key));
     }
     
     

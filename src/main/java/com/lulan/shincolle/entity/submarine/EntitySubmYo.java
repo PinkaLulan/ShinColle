@@ -33,7 +33,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 	{
 		super(world);
 		this.setSize(0.6F, 1.8F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSYO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 2);
@@ -46,7 +46,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

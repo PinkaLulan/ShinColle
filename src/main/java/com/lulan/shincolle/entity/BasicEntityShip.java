@@ -1,67 +1,51 @@
 package com.lulan.shincolle.entity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFlee;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipGuarding;
-import com.lulan.shincolle.ai.EntityAIShipLookIdle;
-import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
-import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
-import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
-import com.lulan.shincolle.ai.EntityAIShipSit;
-import com.lulan.shincolle.ai.EntityAIShipWander;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.capability.CapaInventoryExtend;
-import com.lulan.shincolle.capability.CapaInventoryPaged;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
-import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.entity.other.EntityShipFishingHook;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
+import com.lulan.shincolle.handler.AttackHandler;
+import com.lulan.shincolle.handler.BuffHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.init.ModBlocks;
+import com.lulan.shincolle.handler.GuardHandler;
+import com.lulan.shincolle.handler.IAIShip;
+import com.lulan.shincolle.handler.IInventoryShip;
+import com.lulan.shincolle.handler.IMoveShip;
+import com.lulan.shincolle.handler.IPacketShip;
+import com.lulan.shincolle.handler.IRenderEntity;
+import com.lulan.shincolle.handler.IStateShip;
+import com.lulan.shincolle.handler.RenderHandler;
+import com.lulan.shincolle.handler.ShipInventoryHandler;
+import com.lulan.shincolle.handler.ShipMoveHandler;
+import com.lulan.shincolle.handler.ShipStateHandler;
+import com.lulan.shincolle.handler.TargetHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.init.ModSounds;
-import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
-import com.lulan.shincolle.network.S2CGUIPackets;
-import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
-import com.lulan.shincolle.reference.Enums;
-import com.lulan.shincolle.reference.Enums.BodyHeight;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.reference.unitclass.AttrsAdv;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
-import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.InteractHelper;
 import com.lulan.shincolle.utility.LogHelper;
@@ -72,7 +56,6 @@ import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -80,7 +63,6 @@ import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -108,55 +90,49 @@ import net.minecraftforge.items.CapabilityItemHandler;
 /**SHIP DATA <br>
  * Explanation in crafting/ShipCalc.class
  */
-public abstract class BasicEntityShip extends EntityTameable implements IShipCannonAttack, IShipGuardian, IShipFloating, IShipCustomTexture, IShipMorph, IStateHandler, IShipInventory
+public abstract class BasicEntityShip extends EntityTameable
+implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
+           IAIShip,
+           
+           IShipCannonAttack, //TODO to IAttackEntity
+           IShipFloating,
+           IShipCustomTexture,
+           IShipMorph,
+           IShipGuardian  //TODO to IGuardEntity
 {
 
     //override attribute
-    protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
+    public static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
     
-    /** item slot, get from null side */
-    protected CapaInventoryExtend invItem;
-    /** equip slot, get from horizontal side */
-    protected CapaInventoryPaged invEquip;
-    /** handheld slot, get from vertical side */
-    protected CapaInventory invHand;
-    /** ship attributes: hp, def, atk, ... */
-    protected AttrsAdv shipAttrs;
-    /** ship states: flags, minor values, ... */
+    /** inventory: items, handheld item, equips, ... */
+    protected ShipInventoryHandler shipItems;
+    /** states: flags, minor values, ... */
     protected ShipStateHandler shipStates;
-    //moving handler
-    protected ShipPathNavigate shipNavigator;
-    protected ShipMoveHelper shipMoveHelper;
-    //target
-    protected EntityLivingBase aiTarget;       //target for AI
-    protected Entity guardedEntity;            //guarding target
-    protected Entity atkTarget;                //attack target
-    protected Entity rvgTarget;                //revenge target
-    public EntityShipFishingHook fishHook;     //fishing hook
+    /** move: path finding, move, jump, ... */
+    protected ShipMoveHandler shipMove;
+    /** target: ai, attack, guard, owner target */
+    protected TargetHandler shipTarget;
+    /** attack: all attack methods */
+    protected AttackHandler shipAttack;
+    /** guard: type, target, position, ... */
+    protected GuardHandler shipGuard;
+    /** buff: buff, debuff, attack effect, ... */
+    protected BuffHandler shipBuff;
+    /** render params handler */
+    protected RenderHandler shipRender;
     
     /** stop onUpdate, onLivingUpdate flag */
-    public static boolean stopAI = false;
-    public boolean stopAIindivdual = false;
+    protected static boolean stopAI = false;
+    protected boolean stopAIindivdual = false;
     /** initial flag */
-    private boolean initAI, initWaitAI;        //init flag
+    private boolean initWait, initPost;        //init flag
     private boolean isUpdated;                 //updated ship id/owner id tag
     private int updateTime = 16;               //update check interval
-    /** BodyHeightRange: */
+    /** body part height: values are between: top, head, neck, chest, belly, underbelly, leg */
     protected byte[] bodyHeightStand;
     protected byte[] bodyHeightSit;
     /** ModelPos: posX, posY, posZ, scale (in ship inventory) */
     protected float[] modelPosInGUI;
-    /** waypoints: 0:last wp */
-    protected BlockPos[] waypoints;
-    /** owner name */
-    public String ownerName;
-    /** unit names */
-    public ArrayList<String> unitNames;
-    /** buffs */
-    protected HashMap<Integer, Integer> BuffMap;
-    protected HashMap<Integer, int[]> AttackEffectMap;
-    /** 0: melee, 1: light, 2: heavy, 3: air-light, 4: air-heavy */
-    protected MissileData[] MissileData;
     /** hand held item rotate angle */
     protected float[] rotateAngle;
     /** ship prev pos X ticks ago */
@@ -169,7 +145,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     private Set<ChunkPos> chunks;
     
     /** inter-mod */
-    protected boolean isMorph = false;        //is a morph entity, for Metamorph mod
+    protected boolean isMorph;  //is a morph entity, for Metamorph mod
     protected EntityPlayer morphHost;
     
     
@@ -184,35 +160,88 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         this.stepHeight = 1F;
         
         //init ship value
-        this.invItem = new CapaInventoryExtend(ConfigHandler.baseSlotNumber, this);
-        this.invHand = new CapaInventory(2, this);
-        this.invEquip = new CapaInventoryPaged();
         this.bodyHeightStand = new byte[] {92, 78, 73, 58, 47, 37};
         this.bodyHeightSit = new byte[] {64, 49, 44, 29, 23, 12};
         this.modelPosInGUI = new float[] {0F, 0F, 0F, 50F};
-        this.waypoints = new BlockPos[] {BlockPos.ORIGIN};
-        this.BuffMap = new HashMap<Integer, Integer>();
         this.resetMissileData();
-        this.ownerName = "";
-        this.unitNames = new ArrayList<String>();
-        this.shipPrevX = posX;                //ship position 5 sec ago
+        this.shipPrevX = posX;              //ship X position at X ticks ago
         this.shipPrevY = posY;
         this.shipPrevZ = posZ;
         this.rotateAngle = new float[3];    //model rotate angle (right hand)
-        this.initAI = false;                //normal init
-        this.initWaitAI = false;            //slow init after player entity loaded
+        this.initWait = false;              //init after 128 ticks
+        this.initPost = false;              //init after nbt loaded
         this.isUpdated = false;
         this.chunkTicket = null;
         this.chunks = null;
+        this.stopAI = false;
+        this.stopAIindivdual = false;
+        this.isMorph = false;
         
         //choice random sensitive body part
         randomSensitiveBody();
     }
     
-    @Override
-    protected boolean canDespawn()
+    /** stop AI at base level */
+    public boolean getStopAI()
     {
-        return false;
+        return this.stopAI;
+    }
+    
+    public void setStopAI(boolean flag)
+    {
+        this.stopAI = flag;
+    }
+    
+    /** stop AI at object level */
+    public boolean getStopAIindivdual()
+    {
+        return this.stopAIindivdual;
+    }
+    
+    public void setStopAIindivdual(boolean flag)
+    {
+        this.stopAIindivdual = flag;
+    }
+    
+    /** stop AI at class level */
+    public abstract boolean getStopAIclass();
+    public abstract void setStopAIclass(boolean flag);
+    
+    /** init data at the end of constructor */
+    protected void initPre()
+    {
+        this.shipNavigator = new ShipPathNavigate(this);
+        this.shipMoveHelper = new ShipMoveHelper(this, 60F);
+    }
+    
+    /** init data after nbt tags loaded */
+    protected void initPost()
+    {
+        this.initPost = true;
+        
+        //TODO
+    }
+    
+    /**
+     * init data only:
+     *   1. after ticking X ticks &
+     *   2. initWait = false &
+     *   3. initPost = true
+     */
+    protected void initWait()
+    {
+        if (!this.initWait && this.initPost && this.ticksExisted > 60)
+        {
+            this.initWait = true;
+            
+            //TODO
+        }
+    }
+    
+    @Override
+    public EntityAgeable createChild(EntityAgeable entity)
+    {
+        return null;
     }
     
     @Override
@@ -222,38 +251,27 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
     
     @Override
+    protected boolean canDespawn()
+    {
+        return false;
+    }
+    
+    @Override
+    public boolean canBreatheUnderwater()
+    {
+        return true;
+    }
+    
+    @Override
     public boolean isBurning()
     {    //display fire effect
         return this.getStateEmotion(ID.S.HPState) == ID.HPState.HEAVY;
     }
     
     @Override
-    public boolean isJumping()
-    {
-        return this.isJumping;
-    }
-    
-    @Override
     public float getEyeHeight()
     {
         return this.height * 0.8F;
-    }
-    
-    /**
-     * Returns true if this thing is named
-     */
-    @Override
-    public boolean hasCustomName()
-    {
-        return super.hasCustomName();
-    }
-    
-    /** init values, called in the end of constructor */
-    protected void postInit()
-    {
-        this.shipNavigator = new ShipPathNavigate(this);
-        this.shipMoveHelper = new ShipMoveHelper(this, 60F);
-        this.shipAttrs = new AttrsAdv(this.getShipClass());
     }
     
     //check world time is 0~23 hour, -1 for fail
@@ -268,107 +286,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
         
         return -1;
-    }
-    
-    /**
-     * type: 0:idle, 1:hit, 2:hurt, 3:dead, 4:marry, 5:knockback, 6:item, 7:feed, 10~33:timekeep
-     */
-    @Nullable
-    public static SoundEvent getCustomSound(int type, BasicEntityShip ship)
-    {
-        //get custom sound rate
-        int key = ship.getShipClass() + 2;
-        float[] rate = ConfigHandler.configSound.SOUNDRATE.get(key);
-        int typeKey = key * 100 + type;
-        int typeTemp = type;
-        
-        //if timekeeping sound
-        if (type >= 10 && type <= 33)
-        {
-            type = 8;
-        }
-        
-        //has custom sound
-        if (rate != null && rate[type] > 0.01F)
-        {
-            SoundEvent sound = ModSounds.CUSTOM_SOUND.get(typeKey);
-            
-            if (sound != null && ship.rand.nextFloat() < rate[type])
-            {
-                return sound;
-            }
-        }
-        
-        //no custom sound, return default sound
-        switch (typeTemp)
-        {
-        case 0:
-            return ModSounds.SHIP_IDLE;
-        case 1:
-            return ModSounds.SHIP_HIT;
-        case 2:
-            return ModSounds.SHIP_HURT;
-        case 3:
-            return ModSounds.SHIP_DEATH;
-        case 4:
-            return ModSounds.SHIP_MARRY;
-        case 5:
-            return ModSounds.SHIP_KNOCKBACK;
-        case 6:
-            return ModSounds.SHIP_ITEM;
-        case 7:
-            return ModSounds.SHIP_FEED;
-        case 10:
-            return ModSounds.SHIP_TIME0;
-        case 11:
-            return ModSounds.SHIP_TIME1;
-        case 12:
-            return ModSounds.SHIP_TIME2;
-        case 13:
-            return ModSounds.SHIP_TIME3;
-        case 14:
-            return ModSounds.SHIP_TIME4;
-        case 15:
-            return ModSounds.SHIP_TIME5;
-        case 16:
-            return ModSounds.SHIP_TIME6;
-        case 17:
-            return ModSounds.SHIP_TIME7;
-        case 18:
-            return ModSounds.SHIP_TIME8;
-        case 19:
-            return ModSounds.SHIP_TIME9;
-        case 20:
-            return ModSounds.SHIP_TIME10;
-        case 21:
-            return ModSounds.SHIP_TIME11;
-        case 22:
-            return ModSounds.SHIP_TIME12;
-        case 23:
-            return ModSounds.SHIP_TIME13;
-        case 24:
-            return ModSounds.SHIP_TIME14;
-        case 25:
-            return ModSounds.SHIP_TIME15;
-        case 26:
-            return ModSounds.SHIP_TIME16;
-        case 27:
-            return ModSounds.SHIP_TIME17;
-        case 28:
-            return ModSounds.SHIP_TIME18;
-        case 29:
-            return ModSounds.SHIP_TIME19;
-        case 30:
-            return ModSounds.SHIP_TIME20;
-        case 31:
-            return ModSounds.SHIP_TIME21;
-        case 32:
-            return ModSounds.SHIP_TIME22;
-        case 33:
-            return ModSounds.SHIP_TIME23;
-        }
-        
-        return null;
     }
     
     //音量大小
@@ -453,108 +370,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
     }
     
-    //timekeeping method
-    protected void playTimeSound(int hour)
-    {
-        SoundEvent sound = this.getCustomSound(hour + 10, this);
-
-        //play sound
-        if (sound != null)
-        {
-            this.playSound(sound, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
-        }
-    }
-
-    //get model rotate angle, par1 = 0:X, 1:Y, 2:Z
-    @Override
-    public float getModelRotate(int par1)
-    {
-        switch (par1)
-        {
-        default:
-            return this.rotateAngle[0];
-        case 1:
-            return this.rotateAngle[1];
-        case 2:
-            return this.rotateAngle[2];
-        }
-    }
-    
-    //set model rotate angle, par1 = 0:X, 1:Y, 2:Z
-    @Override
-    public void setModelRotate(int par1, float par2)
-    {
-        switch (par1)
-        {
-        default:
-            rotateAngle[0] = par2;
-        case 1:
-            rotateAngle[1] = par2;
-        case 2:
-            rotateAngle[2] = par2;
-        }
-    }
-
-    @Override
-    public EntityAgeable createChild(EntityAgeable entity)
-    {
-        return null;
-    }
-
-    //setup AI
-    protected void setAIList()
-    {
-        //high priority
-        this.tasks.addTask(1, new EntityAIShipSit(this));                        //0111
-        this.tasks.addTask(2, new EntityAIShipFlee(this));                        //0111
-        this.tasks.addTask(3, new EntityAIShipGuarding(this));                    //0111
-        this.tasks.addTask(4, new EntityAIShipFollowOwner(this));                //0111
-        this.tasks.addTask(5, new EntityAIShipOpenDoor(this, true));            //0000
-        
-        //use melee attack (mux bit: melee:0100, air:0010, ammo:0001)
-        if (this.getStateFlag(ID.F.UseMelee))
-        {
-            this.tasks.addTask(15, new EntityAIShipAttackOnCollide(this, 1D));    //0100
-        }
-        
-        //idle AI
-        this.tasks.addTask(23, new EntityAIShipFloating(this));                    //0111
-        this.tasks.addTask(24, new EntityAIShipWander(this, 10, 5, 0.8D));        //0111
-        this.tasks.addTask(25, new EntityAIShipWatchClosest(this,
-                                        EntityPlayer.class, 4F, 0.06F));        //0000
-        this.tasks.addTask(26, new EntityAIShipLookIdle(this));                    //0000
-    }
-    
-    //setup target AI
-    public void setAITargetList()
-    {
-        //passive target AI
-        if (this.getStateFlag(ID.F.PassiveAI))
-        {
-            this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
-        }
-        //active target AI
-        else
-        {
-            this.targetTasks.addTask(1, new EntityAIShipRevengeTarget(this));
-            this.targetTasks.addTask(5, new EntityAIShipRangeTarget(this, Entity.class));
-        }
-    }
-
-    //clear AI
-    protected void clearAITasks()
-    {
-        tasks.taskEntries.clear();
-    }
-    
-    //clear target AI
-    protected void clearAITargetTasks()
-    {
-        this.setAttackTarget(null);
-        this.setEntityTarget(null);
-        targetTasks.taskEntries.clear();
-    }
-    
     /**
      * FIX: mounts and rider be pushed while saving and loading from disk
      */
@@ -635,337 +450,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return nbt;
     }
     
-    @Override
-    public ShipPathNavigate getShipNavigate()
-    {
-        return shipNavigator;
-    }
-    
-    @Override
-    public ShipMoveHelper getShipMoveHelper()
-    {
-        return shipMoveHelper;
-    }
-    
-    public EntityLivingBase getAITarget()
-    {
-        return aiTarget;
-    }
-    
-    /** 1:cannon only, 2:both, 3:aircraft only */
-    abstract public int getEquipType();
-
-    @Override
-    public int getLevel()
-    {
-        return StateMinor[ID.M.ShipLevel];
-    }
-    
-    public byte getShipType()
-    {
-        return (byte)getStateMinor(ID.M.ShipType);
-    }
-    
-    public short getShipClass()
-    {
-        return (short) getStateMinor(ID.M.ShipClass);
-    }
-    
-    //ShipUID = ship UNIQUE ID
-    public int getShipUID()
-    {
-        return getStateMinor(ID.M.ShipUID);
-    }
-    
-    public int getMorale()
-    {
-        return this.StateMinor[ID.M.Morale];
-    }
-    
-    //PlayerUID = player UNIQUE ID (not UUID)
-    @Override
-    public int getPlayerUID()
-    {
-        return getStateMinor(ID.M.PlayerUID);
-    }
-    
-    @Override
-    public int getAmmoLight()
-    {
-        return this.StateMinor[ID.M.NumAmmoLight];
-    }
-
-    @Override
-    public int getAmmoHeavy()
-    {
-        return this.StateMinor[ID.M.NumAmmoHeavy];
-    }
-    
-    @Override
-    public int getFaceTick()
-    {
-        return this.StateTimer[ID.T.FaceTime];
-    }
-    
-    @Override
-    public int getHeadTiltTick()
-    {
-        return this.StateTimer[ID.T.HeadTilt];
-    }
-    
-    @Override
-    public int getAttackTick()
-    {
-        return this.StateTimer[ID.T.AttackTime];
-    }
-    
-    @Override
-    public int getAttackTick2()
-    {
-        return this.StateTimer[ID.T.AttackTime2];
-    }
-    
-    //emotes CD
-    public int getEmotesTick()
-    {
-        return this.StateTimer[ID.T.EmoteDelay];
-    }
-    
-    //last attack time
-    public int getCombatTick()
-    {
-        return this.StateTimer[ID.T.LastCombat];
-    }
-    
-    /** 被pointer item點到的高度, 以百分比值表示 */
-    public int getHitHeight()
-    {
-        return this.StateMinor[ID.M.HitHeight];
-    }
-    
-    /** 被pointer item點到的角度, 0~-360
-     *  front: -180
-     *  back: 0/-360
-     *  right:-90
-     *  left:-270
-     */
-    public int getHitAngle()
-    {
-        return this.StateMinor[ID.M.HitAngle];
-    }
-    
-    @Override
-    public int getTickExisted()
-    {
-        return this.ticksExisted;
-    }
-    
-    @Override
-    public float getSwingTime(float partialTick)
-    {
-        return this.getSwingProgress(partialTick);
-    }
-    
-    @Override
-    public boolean getIsRiding()
-    {
-        return this.isRiding();
-    }
-    
-    @Override
-    public boolean getIsLeashed()
-    {
-        return this.getLeashed();
-    }
-
-    @Override
-    public boolean getIsSprinting()
-    {
-        return this.isSprinting() || this.limbSwingAmount > 0.9F;
-    }
-
-    @Override
-    public boolean getIsSitting()
-    {
-        return this.isSitting();
-    }
-
-    @Override
-    public boolean getIsSneaking()
-    {
-        return this.isSneaking();
-    }
-    
-    @Override
-    public Entity getEntityTarget()
-    {
-        return this.atkTarget;
-    }
-    
-    @Override
-    public Entity getEntityRevengeTarget()
-    {
-        return this.rvgTarget;
-    }
-
-    @Override
-    public int getEntityRevengeTime()
-    {
-        return this.StateTimer[ID.T.RevengeTime];
-    }
-    
-    @Override
-    public boolean getAttackType(int par1)
-    {
-        return this.getStateFlag(par1);
-    }
-    
-    @Override
-    public float getAIMoveSpeed()
-    {
-        return getMoveSpeed();
-    }
-    
-    @Override
-    public float getMoveSpeed()
-    {
-        return this.shipAttrs.getMoveSpeed(false);
-    }
-    
-    @Override
-    public float getJumpSpeed()
-    {
-        return 1F;
-    }
-    
-    @Override
-    public boolean hasAmmoLight()
-    {
-        return StateMinor[ID.M.NumAmmoLight] >= StateMinor[ID.M.AmmoCon];
-    }
-    
-    @Override
-    public boolean hasAmmoHeavy()
-    {
-        return StateMinor[ID.M.NumAmmoHeavy] >= StateMinor[ID.M.AmmoCon];
-    }
-
-    @Override
-    public boolean useAmmoLight()
-    {
-        return StateFlag[ID.F.UseAmmoLight];
-    }
-
-    @Override
-    public boolean useAmmoHeavy()
-    {
-        return StateFlag[ID.F.UseAmmoHeavy];
-    }
-    
-    @Override
-    public double getShipDepth()
-    {
-        return shipDepth;
-    }
-    
-    @Override
-    public double getShipDepth(int type)
-    {
-        switch (type)
-        {
-        case 1:
-            if (this.getRidingEntity() instanceof IShipEmotion)
-            {
-                return ((IShipEmotion)this.getRidingEntity()).getShipDepth(0);
-            }
-            else
-            {
-                return this.shipDepth;
-            }
-        case 2:
-            return 0D;
-        default:
-            return this.shipDepth;
-        }
-    }
-    
-    @Override
-    public boolean getStateFlag(int flag)
-    {
-        //treat death as no fuel
-        if (flag == ID.F.NoFuel && (this.isDead || this.deathTime > 0)) return true;
-        
-        return StateFlag[flag];
-    }
-    
-    public byte getStateFlagI(int flag)
-    {    //get flag (byte)
-        if (StateFlag[flag])
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    
-    @Override
-    public int getStateMinor(int id)
-    {
-        return StateMinor[id];
-    }
-
-    @Override
-    public boolean getUpdateFlag(int id)
-    {
-        return UpdateFlag[id];
-    }
-
-    @Override
-    public int getStateTimer(int id)
-    {
-        return StateTimer[id];
-    }
-    
-    @Override
-    public int getStateEmotion(int id)
-    {
-        return StateEmotion[id];
-    }
-    
-    /** get model position in GUI */
-    public float[] getModelPos()
-    {
-        return modelPosInGUI;
-    }
-    
-    /** grudge consumption when IDLE */
-    public int getGrudgeConsumption()
-    {
-        return getStateMinor(ID.M.GrudgeCon);
-    }
-    
-    public int getAmmoConsumption()
-    {
-        return getStateMinor(ID.M.AmmoCon);
-    }
-    
-    public int getFoodSaturation()
-    {
-        return getStateMinor(ID.M.Food);
-    }
-    
-    public int getFoodSaturationMax()
-    {
-        return getStateMinor(ID.M.FoodMax);
-    }
-    
-    public CapaInventoryExtend getCapaShipInventory()
-    {
-        return this.itemHandler;
-    }
-    
     /**
      * calc ship attributes<br>
      * <br>
@@ -979,7 +463,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
      *         <br>
      *   sync: send sync packet to client<br>
      */
-    public void calcShipAttributes(int flag, boolean sync)
+    public static void calcShipAttributes(BasicEntityShip ship, int flag, boolean sync)
     {
         //null check
         if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getShipClass());
@@ -1084,6 +568,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.MOV));
         getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64);
         getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.KB));
+        
         //apply attrs to player
         if (this.morphHost != null)
         {
@@ -1101,6 +586,45 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     {
         this.AttackEffectMap = new HashMap<Integer, int[]>();
     }
+    
+    
+
+
+ 
+    
+    /** get model position in GUI */
+    public float[] getModelPos()
+    {
+        return modelPosInGUI;
+    }
+    
+    /** grudge consumption when IDLE */
+    public int getGrudgeConsumption()
+    {
+        return getStateMinor(ID.M.GrudgeCon);
+    }
+    
+    public int getAmmoConsumption()
+    {
+        return getStateMinor(ID.M.AmmoCon);
+    }
+    
+    public int getFoodSaturation()
+    {
+        return getStateMinor(ID.M.Food);
+    }
+    
+    public int getFoodSaturationMax()
+    {
+        return getStateMinor(ID.M.FoodMax);
+    }
+    
+    public CapaInventoryExtend getCapaShipInventory()
+    {
+        return this.itemHandler;
+    }
+    
+
     
     @Override
     public IAttributeInstance getEntityAttribute(IAttribute attribute)
@@ -1124,69 +648,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
     }
     
-    //set next exp value (for client load nbt data, gui display)
-    public void setExpNext()
-    {
-        StateMinor[ID.M.ExpNext] = StateMinor[ID.M.ShipLevel] * ConfigHandler.expMod + ConfigHandler.expMod;
-    }
-        
-    //called when entity exp++
-    public void addShipExp(int exp)
-    {
-        int capLevel = getStateFlag(ID.F.IsMarried) ? 150 : 100;
-        
-        //check morph
-        if (this.isMorph) exp = (int) ((float)exp * ConfigHandler.expGainPlayerSkill);
-        
-        //apply equip effect
-        exp = (int) ((float)exp * this.shipAttrs.getAttrsBuffed(ID.Attrs.XP));
-        
-        //level is not cap level
-        if (StateMinor[ID.M.ShipLevel] != capLevel && StateMinor[ID.M.ShipLevel] < 150)
-        {
-            StateMinor[ID.M.ExpCurrent] += exp;
-            if (StateMinor[ID.M.ExpCurrent] >= StateMinor[ID.M.ExpNext])
-            {
-                
-                //level up sound
-                if (this.rand.nextInt(4) == 0)
-                {
-                    this.world.playSound(null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_PLAYER_LEVELUP, this.getSoundCategory(), 0.75F, 1F);
-                }
-                else
-                {
-                    this.playSound(ModSounds.SHIP_LEVEL, 0.75F, 1F);
-                }
-                
-                StateMinor[ID.M.ExpCurrent] -= StateMinor[ID.M.ExpNext];    //level up
-                StateMinor[ID.M.ExpNext] = (StateMinor[ID.M.ShipLevel] + 2) * ConfigHandler.expMod;
-                setShipLevel(++StateMinor[ID.M.ShipLevel], true);
-            }
-        }    
-    }
-    
-    @Override
-    public void setShipDepth(double par1)
-    {
-        this.shipDepth = par1;
-    }
-    
-    //called when entity level up
-    public void setShipLevel(int par1, boolean update)
-    {
-        //set level
-        if (par1 < 151)
-        {
-            StateMinor[ID.M.ShipLevel] = par1;
-        }
-        //update attributes
-        if (update)
-        {
-            this.calcShipAttributes(31, true);
-            this.setHealth(this.getMaxHealth());
-        }
-    }
-    
     //prevent player use name tag
     @Override
     public void setCustomNameTag(String str) {}
@@ -1197,89 +658,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         super.setCustomNameTag(str);
     }
     
-    public void setAITarget(EntityLivingBase target)
-    {
-        this.aiTarget = target;
-    }
-    
-    //called when a mob die near the entity (used in event handler)
-    public void addKills()
-    {
-        StateMinor[ID.M.Kills]++;
-    }
-    
-    public void addMorale(int value)
-    {
-        this.StateMinor[ID.M.Morale] += value;
-        if (this.StateMinor[ID.M.Morale] < 0) this.StateMinor[ID.M.Morale] = 0;
-        else if (this.StateMinor[ID.M.Morale] > 16000) this.StateMinor[ID.M.Morale] = 16000;
-    }
-    
-    public void addAmmoLight(int value)
-    {
-        this.StateMinor[ID.M.NumAmmoLight] += value;
-        if (this.StateMinor[ID.M.NumAmmoLight] < 0) this.StateMinor[ID.M.NumAmmoLight] = 0;
-    }
-    
-    public void addAmmoHeavy(int value)
-    {
-        this.StateMinor[ID.M.NumAmmoHeavy] += value;
-        if (this.StateMinor[ID.M.NumAmmoHeavy] < 0) this.StateMinor[ID.M.NumAmmoHeavy] = 0;
-    }
-    
-    public void setMorale(int value)
-    {
-        this.StateMinor[ID.M.Morale] = value;
-    }
-    
-    @Override
-    public void setAmmoLight(int num)
-    {
-        this.StateMinor[ID.M.NumAmmoLight] = num;
-    }
-    
-    @Override
-    public void setAmmoHeavy(int num)
-    {
-        this.StateMinor[ID.M.NumAmmoHeavy] = num;
-    }
-    
-    @Override
-    public void setStateMinor(int id, int par1)
-    {
-        //value limit
-        switch (id)
-        {
-        case ID.M.Morale:
-            if (par1 < 0) par1 = 0;
-        break;
-        case ID.M.CraneState:
-            //if changed to 1 or 2, check delay
-            if (par1 > 0)
-            {
-                if (getStateTimer(ID.T.CrandDelay) > 0)
-                {
-                    return;
-                }
-                else
-                {
-                    setStateTimer(ID.T.CrandDelay, 20);
-                }
-            }
-        break;
-        }
-        
-        //set value
-        StateMinor[id] = par1;
-    }
-    
-    @Override
-    public void setUpdateFlag(int id, boolean par1)
-    {
-        UpdateFlag[id] = par1;
-    }
-    
-    @Override
     public void setEntitySit(boolean sit)
     {
         this.setSitting(sit);
@@ -1330,344 +708,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             }
         }
     }
-
-    //called when load nbt data or GUI click
-    @Override
-    public void setStateFlag(int id, boolean par1)
-    {
-        this.StateFlag[id] = par1;
-        
-        //若修改melee flag, 則reload AI
-        if (!this.world.isRemote)
-        {
-            if (id == ID.F.UseMelee)
-            {
-                clearAITasks();
-                setAIList();
-                
-                //設定mount的AI
-                if (this.getRidingEntity() instanceof BasicEntityMount)
-                {
-                    ((BasicEntityMount) this.getRidingEntity()).clearAITasks();
-                    ((BasicEntityMount) this.getRidingEntity()).setAIList();
-                }
-            }
-            else if (id == ID.F.PassiveAI)
-            {
-                clearAITargetTasks();
-                setAITargetList();
-            }
-        }
-    }
-    
-    //called when load nbt data or GUI click
-    public void setStateFlagI(int id, int par1)
-    {
-        if (par1 > 0)
-        {
-            setStateFlag(id, true);
-        }
-        else
-        {
-            setStateFlag(id, false);
-        }
-    }
-    
-    @Override
-    public void setStateTimer(int id, int value)
-    {
-        StateTimer[id] = value;
-    }
-    
-    @Override
-    public void setStateEmotion(int id, int value, boolean sync)
-    {
-        StateEmotion[id] = value;
-        
-        if (sync && !this.world.isRemote)
-        {
-            this.sendSyncPacketEmotion();
-        }
-    }
-    
-    //emotion start time (CLIENT ONLY), called from model class
-    @Override
-    public void setFaceTick(int par1)
-    {
-        this.StateTimer[ID.T.FaceTime] = par1;
-    }
-    
-    @Override
-    public void setHeadTiltTick(int par1)
-    {
-        this.StateTimer[ID.T.HeadTilt] = par1;
-    }
-    
-    @Override
-    public void setAttackTick(int par1)
-    {
-        this.StateTimer[ID.T.AttackTime] = par1;
-    }
-    
-    @Override
-    public void setAttackTick2(int par1)
-    {
-        this.StateTimer[ID.T.AttackTime2] = par1;
-    }
-    
-    //emotes CD
-    public void setEmotesTick(int par1)
-    {
-        this.StateTimer[ID.T.EmoteDelay] = par1;
-    }
-    
-    //last attack time
-    public void setCombatTick(int par1)
-    {
-        this.StateTimer[ID.T.LastCombat] = par1;
-    }
-    
-    /** 被pointer item點到的高度, 以百分比值表示 */
-    public void setHitHeight(int par1)
-    {
-        this.StateMinor[ID.M.HitHeight] = par1;
-    }
-    
-    /** 被pointer item點到的角度, 0~-360
-     *  front: -180
-     *  back: 0/-360
-     *  right:-90
-     *  left:-270
-     */
-    public void setHitAngle(int par1)
-    {
-        this.StateMinor[ID.M.HitAngle] = par1;
-    }
-    
-    public void setShipUID(int par1)
-    {
-        this.setStateMinor(ID.M.ShipUID, par1);
-    }
-    
-    @Override
-    public void setPlayerUID(int par1)
-    {
-        this.setStateMinor(ID.M.PlayerUID, par1);
-    }
-    
-
-      @Override
-    public void setEntityTarget(Entity target)
-      {
-        this.atkTarget = target;
-    }
-      
-      @Override
-    public void setEntityRevengeTarget(Entity target)
-      {
-        this.rvgTarget = target;
-    }
-      
-      @Override
-    public void setEntityRevengeTime()
-      {
-          this.StateTimer[ID.T.RevengeTime] = this.ticksExisted;
-    }
-      
-      public void setGrudgeConsumption(int par1)
-      {
-          this.setStateMinor(ID.M.GrudgeCon, par1);
-      }
-      
-      public void setAmmoConsumption(int par1)
-      {
-          this.setStateMinor(ID.M.AmmoCon, par1);
-      }
-      
-      public void setFoodSaturation(int par1)
-      {
-          setStateMinor(ID.M.Food, par1);
-    }
-    
-    public void setFoodSaturationMax(int par1)
-    {
-        setStateMinor(ID.M.FoodMax, par1);
-    }
-    
-    /** send sync packet: sync all data */
-    public void sendSyncPacketAll()
-    {
-        //set update flag
-        this.setUpdateFlag(ID.FlagUpdate.AttrsBonus, true);
-        this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
-        this.setUpdateFlag(ID.FlagUpdate.AttrsEquip, true);
-        this.setUpdateFlag(ID.FlagUpdate.AttrsMorale, true);
-        this.setUpdateFlag(ID.FlagUpdate.AttrsPotion, true);
-        this.setUpdateFlag(ID.FlagUpdate.AttrsFormation, true);
-        this.setUpdateFlag(ID.FlagUpdate.AttrsBuffed, true);
-        
-        this.sendSyncPacket(S2CEntitySync.PID.SyncShip_AllMisc, false);
-        this.sendSyncPacket(S2CEntitySync.PID.SyncShip_Attrs, false);
-    }
-    
-    /** send sync packet: attrs */
-    public void sendSyncPacketAttrs()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_Attrs, false);
-    }
-    
-    /** send sync packet: attrs */
-    public void sendSyncPacketMinor()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_Minor, false);
-    }
-    
-    /** send sync packet: attrs */
-    public void sendSyncPacketAllMisc()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_AllMisc, false);
-    }
-
-    /** send sync packet: sync formation data */
-    public void sendSyncPacketFormationValue()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_Formation, false);
-    }
-    
-    /** send sync packet: sync riders */
-    public void sendSyncPacketRiders()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_Riders, true);
-    }
-    
-    /** send sync packet: sync unit name */
-    public void sendSyncPacketUnitName()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_UnitName, true);
-    }
-    
-    /** send sync packet: sync buff map */
-    public void sendSyncPacketBuffMap()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_Buffmap, false);
-    }
-    
-    /** sync data for GUI display */
-    public void sendSyncPacketGUI()
-    {
-        if (!this.world.isRemote)
-        {
-            if (this.getPlayerUID() > 0)
-            {
-                EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-                
-                //owner在附近才需要sync
-                if (player != null && player.dimension == this.dimension &&
-                    this.getDistanceToEntity(player) < 64F)
-                {
-                    CommonProxy.channelG.sendTo(new S2CGUIPackets(this), player);
-                }
-            }
-        }
-    }
-    
-    /**
-     * sync data for timer display
-     * 
-     * type:
-     *   0: crane time
-     *   1: mount skill time
-     */
-    public void sendSyncPacketTimer(int type)
-    {
-        switch (type)
-        {
-        case 0:
-            sendSyncPacket(S2CEntitySync.PID.SyncShip_Timer, true);
-        break;
-        case 1:
-            sendSyncPacket(S2CEntitySync.PID.SyncShip_PlayerSkillTimer, false);
-        break;
-        }
-    }
-    
-    /** sync data for emotion display */
-    public void sendSyncPacketEmotion()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_Emo, true);
-    }
-    
-    /** sync data for flag */
-    public void sendSyncPacketFlag()
-    {
-        sendSyncPacket(S2CEntitySync.PID.SyncShip_Flag, true);
-    }
-    
-    /** send sync packet:
-     *  type: 0: all  1: emotion  2: flag  3: minor
-     *  send all: send packet to all around player
-     *  sync emo: sync emotion to all around player
-     */
-    public void sendSyncPacket(byte type, boolean sendAll)
-    {
-        if (!world.isRemote)
-        {
-            //send to all player
-            if (sendAll)
-            {
-                TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this, type), point);
-            }
-            else
-            {
-                EntityPlayerMP player = null;
-                
-                //for owner, send all data
-                if (this.getPlayerUID() > 0)
-                {
-                    player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-                }
-                
-                //owner在附近才需要sync
-                if (player != null && this.getDistanceToEntity(player) <= 64F)
-                {
-                    CommonProxy.channelE.sendTo(new S2CEntitySync(this, type), player);
-                }
-            }
-        }
-    }
-    
-    /**
-     * request server to send sync packet
-     *   0: model display (StateEmotion)
-     *   1: unit name
-     *   2: buff map
-     */
-    public void sendSyncRequest(int type)
-    {
-        if (this.world.isRemote)
-        {
-            switch (type)
-            {
-            case 0:        //model display
-                if (this.morphHost != null)
-                {
-                    CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.morphHost.getEntityId(), this.world.provider.getDimension()));
-                }
-                else
-                {
-                    CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_SyncModel, this.getEntityId(), this.world.provider.getDimension()));
-                }
-            break;
-            case 1:        //unit name display
-                CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_UnitName, this.getEntityId(), this.world.provider.getDimension()));
-            break;
-            case 2:        //buff map
-                CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_Buffmap, this.getEntityId(), this.world.provider.getDimension()));
-            break;
-            }
-        }
-    }
     
     /**
      * 1.9.4:
@@ -1677,11 +717,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
      *   SUCCESS:本方法的動作成功, 並且禁止其他interact
      */
     @Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
         //禁用副手, 死亡時不反應, morph不反應
         if (hand == EnumHand.OFF_HAND || !this.isEntityAlive() || this.isMorph) return EnumActionResult.FAIL;
-        
+
         //server side
         if (!this.world.isRemote)
         {
@@ -1828,13 +868,20 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return true;    //client端只回傳true
     }
     
-    /**修改移動方法, 使其water跟lava中移動時像是flying entity
+    /**
+     * 修改移動方法, 使其water跟lava中移動時像是flying entity
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
     @Override
-    public void moveEntityWithHeading(float strafe, float forward)
+    public void travel(float strafe, float vertical, float forward)
     {
-        EntityHelper.moveEntityWithHeading(this, strafe, forward);
+        super.travel(strafe, vertical, forward);
+        
+        //TODO old method:
+//        public void moveEntityWithHeading(float strafe, float forward)
+//        {
+//            EntityHelper.moveEntityWithHeading(this, strafe, forward);
+//        }
     }
 
     /** update entity 
@@ -2315,774 +1362,362 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return false;
     }
     
-    //use combat ration
-    protected void useCombatRation()
-    {
-        //search item in ship inventory
-        int i = findItemInSlot(new ItemStack(ModItems.CombatRation), true);
-        
-        if (i >= 0)
-        {
-            //decr item stacksize
-            ItemStack getItem = this.itemHandler.getStackInSlot(i);
-            
-            InteractHelper.interactFeed(this, null, getItem);
-            
-            getItem.stackSize--;
-            
-            if (getItem.stackSize <= 0)
-            {
-                getItem = null;
-            }
-            
-            //save back itemstack
-            //no need to sync because no GUI opened
-            this.itemHandler.setStackInSlot(i, getItem);
-        }
-    }
+    
 
     //melee attack method, no ammo cost, no attack speed, damage = 12.5% atk
     @Override
     public boolean attackEntityAsMob(Entity target)
     {
-        //get attack value
-        float atk = getAttackBaseDamage(0, target);
-        
-        //experience++
-        addShipExp(ConfigHandler.expGain[0]);
-        
-        //morale--
-        decrMorale(0);
-        setCombatTick(this.ticksExisted);
-        
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
-                
-        //entity attack effect
-        applySoundAtAttacker(0, target);
-        applyParticleAtAttacker(0, target, distVec);
-        
-        //是否成功傷害到目標
-        boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
-
-        //target attack effect
-        if (isTargetHurt)
-        {
-            if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
-            applySoundAtTarget(0, target);
-            applyParticleAtTarget(0, target, distVec);
-            applyEmotesReaction(3);
-            
-            if (ConfigHandler.canFlare)
-            {
-                flareTarget(target);
-            }
-        }
-        
-        applyAttackPostMotion(0, target, isTargetHurt, atk);
-
-        return isTargetHurt;
-    }
-    
-    //range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
-    @Override
-    public boolean attackEntityWithAmmo(Entity target)
-    {
-        //light ammo -1
-        if (!decrAmmoNum(0, this.getAmmoConsumption())) return false;
-        
-        //experience++
-          addShipExp(ConfigHandler.expGain[1]);
-          
-          //grudge--
-          decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
-          
-          //morale--
-          decrMorale(1);
-          setCombatTick(this.ticksExisted);
-          
-          //get attack value
-          float atk = getAttackBaseDamage(1, target);
-          
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
-        
-        //play cannon fire sound at attacker
-        applySoundAtAttacker(1, target);
-        applyParticleAtAttacker(1, target, distVec);
-        
-        //roll miss, cri, dhit, thit
-        atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
-          
-          //damage limit on player target
-        atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
-          
-          //check friendly fire
-        if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
-        
-          //確認攻擊是否成功
-        boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
-        
-        //if attack success
-        if (isTargetHurt)
-        {
-            //check owner
-            if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
-            applySoundAtTarget(1, target);
-            applyParticleAtTarget(1, target, distVec);
-            applyEmotesReaction(3);
-            
-            if (ConfigHandler.canFlare) flareTarget(target);
-        }
-        
-        applyAttackPostMotion(1, target, isTargetHurt, atk);
-
-        return isTargetHurt;
-    }
-    
-    /**
-     * attack a position with missile, NOTE: SHIP MOUNTS REQUIRED
-     */
-    public boolean attackEntityWithHeavyAmmo(BlockPos target)
-    {
-        //ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-        
-        //experience++
-        addShipExp(ConfigHandler.expGain[2]);
-        
-        //grudge--
-        decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-        
-          //morale--
-        decrMorale(2);
-          setCombatTick(this.ticksExisted);
-    
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPosition(), target);
-        
-        //play sound and particle
-        applySoundAtAttacker(2, this);
-        applyParticleAtAttacker(2, this, distVec);
-        
-        float tarX = (float) target.getX();
-        float tarY = (float) target.getY();
-        float tarZ = (float) target.getZ();
-        
-        //calc miss rate
-        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
-        {
-            tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-            tarY = tarY + this.rand.nextFloat() * 5F;
-            tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-            
-            ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-        }
-        
-        //get attack value
-          float atk = getAttackBaseDamage(2, null);
-        
-        //spawn missile
-          summonMissile(2, atk, tarX, tarY, tarZ, 1F);
-        
-        //play target effect
-        applySoundAtTarget(2, this);
-        applyParticleAtTarget(2, this, distVec);
-        applyEmotesReaction(3);
-        
-        if (ConfigHandler.canFlare) flareTarget(target);
-        
-        applyAttackPostMotion(2, this, true, atk);
-        
-        return true;
-    }
-
-    //range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
-    @Override
-    public boolean attackEntityWithHeavyAmmo(Entity target)
-    {
-        //ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-        
-        //experience++
-        addShipExp(ConfigHandler.expGain[2]);
-        
-        //grudge--
-        decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-        
-          //morale--
-        decrMorale(2);
-          setCombatTick(this.ticksExisted);
-    
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
-        
-        //play sound and particle
-        applySoundAtAttacker(2, target);
-        applyParticleAtAttacker(2, target, distVec);
-        
-        float tarX = (float) target.posX;
-        float tarY = (float) target.posY;
-        float tarZ = (float) target.posZ;
-        
-        //calc miss rate
-        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
-        {
-            tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-            tarY = tarY + this.rand.nextFloat() * 5F;
-            tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-            
-            ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-        }
-        
-        //get attack value
-          float atk = getAttackBaseDamage(2, target);
-        
-        //spawn missile
-        summonMissile(2, atk, tarX, tarY, tarZ, target.height);
-        
-        //play target effect
-        applySoundAtTarget(2, target);
-        applyParticleAtTarget(2, target, distVec);
-        applyEmotesReaction(3);
-        
-        if (ConfigHandler.canFlare) flareTarget(target);
-        
-        applyAttackPostMotion(2, target, true, atk);
-        
-        return true;
-    }
-    
-    /**
-     * spawn attack missile, used in light or heavy attack method
-     * 
-     * attackType: 0:melee, 1:light, 2:heavy
-     */
-    public void summonMissile(int attackType, float atk, float tarX, float tarY, float tarZ, float targetHeight)
-    {
-        //missile type
-        float launchPos = (float) posY + height * 0.5F;
-        if (this.isMorph) launchPos += 0.5F;
-        int moveType = CombatHelper.calcMissileMoveType(this, tarY, attackType);
-        if (moveType == 0) launchPos = (float) posY + height * 0.3F;
-        
-        MissileData md = this.getMissileData(attackType);
-        float[] data = new float[] {atk, 0.15F, launchPos, tarX, tarY + targetHeight * 0.1F, tarZ, 140, 0.25F, md.vel0, md.accY1, md.accY2};
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
-        this.world.spawnEntity(missile);
-    }
-    
-    /** apply motion after attack
-     *  type: 0:melee, 1:light, 2:heavy, 3:light air, 4:heavy air
-     */
-    public void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk) {}
-
-    @Override
-    public boolean updateSkillAttack(Entity target)
-    {
-        return false;
+        //TODO AttackHandler
     }
     
     @Override
     public boolean attackEntityFrom(DamageSource source, float atk)
     {
-        if (this.world.isRemote || this.morphHost != null) return false;
-        
-        boolean checkDEF = true;
-
-        //change sensitive body
-          if (this.rand.nextInt(10) == 0) randomSensitiveBody();
-          
-        //damage disabled
-        if (source == DamageSource.inWall || source == DamageSource.starve ||
-            source == DamageSource.cactus || source == DamageSource.fall)
-        {
-            return false;
-        }
-        //damage ignore def value
-        else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
-        {
-            //ignore atk < 1% max hp
-            if (atk < this.getMaxHealth() * 0.01F) return false;
-            
-            //set hurt face
-            this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-            
-            return super.attackEntityFrom(source, atk);
-        }
-        //out of world
-        else if (source == DamageSource.outOfWorld)
-        {
-            //取消坐下動作
-            this.setSitting(false);
-            this.dismountRidingEntity();
-            this.setPositionAndUpdate(this.posX, 4D, this.posZ);
-            this.motionX = 0D;
-            this.motionY = 1D;
-            this.motionZ = 0D;
-            return false;
-        }
-        
-        //check attacker is potion
-        float patk = BuffHelper.getPotionDamage(this, source, atk);
-        
-        if (patk > 0F)
-        {
-            atk = patk;
-            checkDEF = false;
-        }
-        
-        //若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
-        if (source.getEntity() instanceof EntityPlayer &&
-            TeamHelper.checkSameOwner(source.getEntity(), this))
-        {
-            this.setSitting(false);
-            
-            //set hurt face
-            this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-            
-            return super.attackEntityFrom(source, atk);
-        }
-        
-        //無敵的entity傷害無效
-        if (this.isEntityInvulnerable(source))
-        {
-            return false;
-        }
-        else if (source.getEntity() != null)
-        {
-            Entity attacker = source.getEntity();
-            
-            //不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
-            if (attacker.equals(this))
-            {
-                //取消坐下動作
-                this.setSitting(false);
-                return false;
-            }
-            
-            //若攻擊方為player, 則檢查friendly fire
-            if (attacker instanceof EntityPlayer)
-            {
-                //若禁止friendlyFire, 則不造成傷害
-                if (!ConfigHandler.friendlyFire)
-                {
-                    return false;
-                }
-            }
-            
-            //進行dodge計算
-            float dist = (float) this.getDistanceSqToEntity(attacker);
-            
-            if (CombatHelper.canDodge(this, dist))
-            {
-                return false;
-            }
-            
-            //進行def計算
-            float reducedAtk = atk;
-            
-            if (checkDEF)
-            {
-                reducedAtk = CombatHelper.applyDamageReduceByDEF(this.rand, this.shipAttrs, reducedAtk);
-            }
-            
-            //ship vs ship, config傷害調整 (僅限友善船)
-            if (attacker instanceof IShipOwner && ((IShipOwner)attacker).getPlayerUID() > 0 &&
-                (attacker instanceof BasicEntityShip ||
-                 attacker instanceof BasicEntitySummon || 
-                 attacker instanceof BasicEntityMount))
-            {
-                reducedAtk = reducedAtk * (float)ConfigHandler.dmgSvS * 0.01F;
-            }
-            
-            //check resist potion
-            reducedAtk = BuffHelper.applyBuffOnDamageByResist(this, source, reducedAtk);
-
-            //check night vision potion
-            reducedAtk = BuffHelper.applyBuffOnDamageByLight(this, source, reducedAtk);
-            
-            //tweak min damage
-            if (reducedAtk < 1F && reducedAtk > 0F) reducedAtk = 1F;
-            else if (reducedAtk <= 0F) reducedAtk = 0F;
-
-            //取消坐下動作
-            this.setSitting(false);
-            
-            //設置revenge target
-            this.setEntityRevengeTarget(attacker);
-            this.setEntityRevengeTime();
-            
-            //若傷害力可能致死, 則尋找物品中有無repair goddess來取消掉此攻擊
-            if (reducedAtk >= (this.getHealth() - 1F))
-            {
-                if (this.decrSupplies(8))
-                {
-                    this.setHealth(this.getMaxHealth());
-                    this.StateTimer[ID.T.ImmuneTime] = 120;
-                    
-                    //add repair goddess particle
-                    TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                    CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 13, 0D, 0.03D, 0D), point);
-                    
-                    return false;
-                }
-            }
-            
-              //morale--
-            decrMorale(5);
-              setCombatTick(this.ticksExisted);
-              
-              //set damaged body ID and show emotes
-              if (this.rand.nextInt(5) == 0)
-              {
-                //set hit position
-                this.setStateMinor(ID.M.HitHeight, CalcHelper.getEntityHitHeight(this, source.getSourceOfDamage()));
-                this.setStateMinor(ID.M.HitAngle, CalcHelper.getEntityHitSide(this, source.getSourceOfDamage()));
-                
-                //apply emotes
-                applyEmotesReaction(2);
-              }
-              
-              //set hurt face
-            this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-            
-            return super.attackEntityFrom(source, reducedAtk);
-        }
-        
+      //TODO AttackHandler
+    }
+    
+    //true if host has mounts
+    public boolean hasShipMounts()
+    {
         return false;
     }
     
-    /** decr morale value, type: 0:melee, 1:light, 2:heavy, 3:light air, 4:light heavy, 5:damaged */
-    public void decrMorale(int type)
+    //true if host can summon mounts
+    public boolean canSummonMounts()
     {
-        if (this.isMorph) return;
-        
-        switch (type)
-        {
-        case 0:  //melee
-            this.addMorale(-2);
-        break;
-        case 1:  //light
-            this.addMorale(-4);
-        break;
-        case 2:  //heavy
-            this.addMorale(-6);
-        break;
-        case 3:  //light air
-            this.addMorale(-6);
-        break;
-        case 4:  //light heavy
-            this.addMorale(-8);
-        break;
-        case 5:  //damaged
-            this.addMorale(-5);
-        break;
-        }
+        return (this.getStateEmotion(ID.S.State) & 1) == 1 && !this.getStateFlag(ID.F.NoFuel);
     }
     
-    /** decr ammo, type: 0:light, 1:heavy */
-    public boolean decrAmmoNum(int type, int amount)
+    public BasicEntityMount summonMountEntity()
     {
-        //check morph
-        if (this.isMorph)
+        return null;
+    }
+    
+    @Override
+    public double getMountedYOffset()
+    {
+        return this.height;
+    }
+    
+    @Override
+    public Entity getHostEntity()
+    {
+        if (this.getPlayerUID() > 0)
         {
-            return MetamorphHelper.decrAmmoNum(this, type, amount);
-        }
-        
-        int ammoType = ID.M.NumAmmoLight;
-        boolean useItem = !hasAmmoLight();
-        boolean showEmo = false;
-        float modAmmo = this.shipAttrs.getAttrsBuffed(ID.Attrs.AMMO);
-        
-        switch (type)
-        {
-        case 1:   //use heavy ammo
-            ammoType = ID.M.NumAmmoHeavy;
-            useItem = !hasAmmoHeavy();
-            break;
-        }
-
-        //check ammo first time
-        if (StateMinor[ammoType] <= amount || useItem)
-        {
-            int addAmmo = 0;
-            
-            //use light ammo item
-            if (ammoType == ID.M.NumAmmoLight)
+            if (this.world.isRemote)
             {
-                if (decrSupplies(0))
-                {  //use ammo item
-                    addAmmo = (int) (Values.N.BaseLightAmmo * modAmmo);
-                    showEmo = true;
-                }
-                else if (decrSupplies(2))
-                {  //use ammo container item
-                    addAmmo = (int) (Values.N.BaseLightAmmo * 9 * modAmmo);
-                    showEmo = true;
-                }
+                return this.getOwner();
             }
-            //use heavy ammo item
             else
             {
-                if (decrSupplies(1))
-                {  //use ammo item
-                    addAmmo = (int) (Values.N.BaseHeavyAmmo * modAmmo);
-                    showEmo = true;
-                }
-                else if (decrSupplies(3))
-                {  //use ammo container item
-                    addAmmo = (int) (Values.N.BaseHeavyAmmo * 9 * modAmmo);
-                    showEmo = true;
-                }
+                return EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
             }
-            
-            //check easy mode
-            if (ConfigHandler.easyMode)
-            {
-                addAmmo *= 10;
-            }
-            
-            StateMinor[ammoType] += addAmmo;
-        }
-        
-        //show emotes
-        if (showEmo)
-        {
-            if (this.getEmotesTick() <= 0)
-            {
-                this.setEmotesTick(40);
-                
-                switch (this.rand.nextInt(4))
-                {
-                case 1:
-                    applyParticleEmotion(29);  //blink
-                break;
-                case 2:
-                    applyParticleEmotion(30);  //pif
-                break;
-                default:
-                    applyParticleEmotion(9);  //hungry
-                break;
-                }
-            }
-        }
-        
-        //check ammo second time
-        if (StateMinor[ammoType] < amount)
-        {
-            //show emotes
-            if (this.getEmotesTick() <= 0)
-            {
-                this.setEmotesTick(20);
-                
-                switch (this.rand.nextInt(7))
-                {
-                case 1:
-                    applyParticleEmotion(0);  //drop
-                break;
-                case 2:
-                    applyParticleEmotion(2);  //panic
-                break;
-                case 3:
-                    applyParticleEmotion(5);  //...
-                break;
-                case 4:
-                    applyParticleEmotion(20);  //orz
-                break;
-                default:
-                    applyParticleEmotion(32);  //hmm
-                break;
-                }
-            }
-            
-            return false;
         }
         else
         {
-            StateMinor[ammoType] -= amount;
-            return true;
+            return this.getOwner();
         }
     }
     
-    public int getGrudge()
+    //update ship id
+    public void updateShipCacheData(boolean forceUpdate)
     {
-        return this.StateMinor[ID.M.NumGrudge];
-    }
-    
-    //change grudge value (without buff)
-    public void addGrudge(int value)
-    {
-        this.StateMinor[ID.M.NumGrudge] += value;
-        if (this.StateMinor[ID.M.NumGrudge] <= 0) this.StateMinor[ID.M.NumGrudge] = 0;
-    }
-    
-    //consume grudge with buff and item calculation
-    public void decrGrudgeNum(int value)
-    {
-        //check morph
-        if (this.isMorph)
+        //register or update ship id and owner id
+        if (!this.isUpdated && ticksExisted % updateTime == 0 || forceUpdate)
         {
-            MetamorphHelper.decrGrudgeNum(this, value);
-            return;
-        }
+            LogHelper.debug("DEBUG: update ship: initial SID, PID  cd: "+updateTime+" force: "+forceUpdate);
+            
+            //update owner uid
+            if (this.getPlayerUID() <= 0)
+            {
+                ServerProxy.updateShipOwnerID(this);
+            }
+            
+            //update ship uid
+            ServerProxy.updateShipID(this);
+            
+            //update success
+            if (getPlayerUID() > 0 && getShipUID() > 0)
+            {
+                this.sendSyncPacketAll();
+                this.isUpdated = true;
+            }
+            
+            //prolong update time
+            if (updateTime > 4096)
+            {
+                updateTime = 4096;
+            }
+            else
+            {
+                updateTime *= 2;
+            }
+        }//end update id
+    }
+    
+    //update ship id
+    public void updateShipCacheDataWithoutNewID()
+    {
+        //update ship cache
+        if (!this.world.isRemote)
+        {
+            int uid = this.getShipUID();
+            
+            if (uid > 0)
+            {
+                //ship dupe bug checking
+                BasicEntityShip ship = ServerProxy.checkShipIsDupe(this, uid);
                 
-        //get grudge magnification
-        float modGrudge = this.shipAttrs.getAttrsBuffed(ID.Attrs.GRUDGE);
-        
-        //if grudge--, check buff: hunger
-        if (value > 0)
-        {
-            int level = BuffHelper.getPotionLevel(this, 17);
-            value = (int) ((float)value * (1F + level * 2F));
-        }
-        //if grudge++, check buff: grudge mod
-        else if (value < 0)
-        {
-            value = (int) ((float)value * modGrudge);
-        }
-        
-        //check fuel flag
-        if (!getStateFlag(ID.F.NoFuel))
-        {
-            this.addGrudge(-value);
-        }
-        
-        //eat "ONE" grudge item
-        if (this.getGrudge() <= 0)
-        {
-            //try to find grudge item
-            if (decrSupplies(4))
-            {
-                if (ConfigHandler.easyMode)
+                if (this.equals(ship))
                 {
-                    this.addGrudge((int)(Values.N.BaseGrudge * 10F * modGrudge));
+                    CacheDataShip sdata = new CacheDataShip(this.getEntityId(), this.world.provider.getDimension(),
+                            this.getShipClass(), this.isDead, this.posX, this.posY, this.posZ,
+                            this.writeToNBT(new NBTTagCompound()));
+                    
+                    ServerProxy.setShipWorldData(uid, sdata);
                 }
                 else
                 {
-                    this.addGrudge((int)(Values.N.BaseGrudge * modGrudge));
+                    this.setDead();
                 }
             }
-            //try to find grudge block
-            else if (decrSupplies(5))
-            {
-                if (ConfigHandler.easyMode)
-                {
-                    this.addGrudge((int)(Values.N.BaseGrudge * 90F * modGrudge));
-                }
-                else
-                {
-                    this.addGrudge((int)(Values.N.BaseGrudge * 9F * modGrudge));
-                }
-            }
-            //避免吃掉含有儲存資訊的方塊, 因此不使用heavy grudge block作為補充道具
         }
-        
-        //check fuel again and set fuel flag
-        if (StateMinor[ID.M.NumGrudge] <= 0)
+    }
+    
+    //update emotion, SERVER SIDE ONLY!
+    protected void updateEmotionState()
+    {
+        float hpState = 1F;
+          
+        if (this.morphHost != null)
         {
-            setStateFlag(ID.F.NoFuel, true);
+            hpState = this.morphHost.getHealth() / this.morphHost.getMaxHealth();
         }
         else
         {
-            setStateFlag(ID.F.NoFuel, false);
+            hpState = this.getHealth() / this.getMaxHealth();
         }
         
-        //check fuel flag and set AI
-        if (getStateFlag(ID.F.NoFuel))  //no fuel, clear AI
-        {
-            //原本有AI, 則清除之
-            if (this.targetTasks.taskEntries.size() > 0)
-            {
-                updateFuelState(true);
-            }    
+        //check hp state
+        if (hpState > 0.75F)
+        {    //normal
+            this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
         }
-        else                            //has fuel, set AI
+        else if (hpState > 0.5F)
+        {    //minor damage
+            this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
+        }
+        else if (hpState > 0.25F)
+        {    //moderate damage
+            this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);               
+        }
+        else
+        {    //heavy damage
+            this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
+        }
+        
+        //roll emtion: hungry > T_T > bored
+        if (getStateFlag(ID.F.NoFuel))
         {
-            if (this.targetTasks.taskEntries.size() < 1)
+            if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY)
             {
-                updateFuelState(false);
+                this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
+            }
+        }
+        else
+        {
+            if (hpState < 0.35F)
+            {
+                if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T)
+                {
+                    this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
+                }            
+            }
+            else
+            {
+                //random Emotion
+                switch (this.getStateEmotion(ID.S.Emotion))
+                {
+                case ID.Emotion.NORMAL:        //if normal, 33% to bored
+                    if (this.getRNG().nextInt(3) == 0)
+                        this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
+                break;
+                default:                    //other, 25% return normal
+                    if (this.getRNG().nextInt(4) == 0)
+                    {
+                        this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
+                    }
+                break;
+                }
+                
+                //random Emotion4
+                switch (this.getStateEmotion(ID.S.Emotion4))
+                {
+                case ID.Emotion.NORMAL:        //if normal, 33% to bored
+                    if (this.getRNG().nextInt(3) == 0)
+                        this.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
+                break;
+                default:                    //other, 33% return normal
+                    if (this.getRNG().nextInt(3) == 0)
+                        this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
+                break;
+                }
+            }
+        }
+        
+        //send sync packet
+        if (!this.world.isRemote)
+        {
+            this.sendSyncPacketEmotion();
+        }
+    }
+      
+    //update hp state
+    protected void updateMountSummon()
+    {
+        if (this.hasShipMounts())
+        {
+            //summon mount if emotion state >= equip00
+            if (this.canSummonMounts() && !this.getStateFlag(ID.F.NoFuel))
+            {
+                if (!this.isRiding())
+                {
+                    //summon mount entity
+                    BasicEntityMount mount = this.summonMountEntity();
+                    mount.initAttrs(this);
+                    this.world.spawnEntity(mount);
+                      
+                    //clear rider
+                    for (Entity p : this.getPassengers())
+                    {
+                        p.dismountRidingEntity();
+                    }
+                      
+                    //set riding entity
+                    this.startRiding(mount, true);
+                    
+                    //sync rider
+                    mount.sendSyncPacket(0);
+                }
             }
         }
     }
-    
-    /**
-     * decrese ammo/grudge/repair item number
-     * return:
-     *   true = get item and item number -1
-     *   false = not enough item
+      
+    //update consume item
+    protected void updateConsumeItem()
+      {
+        //get ammo if no ammo
+        if (!this.hasAmmoLight()) { this.decrAmmoNum(0, 0); }
+        if (!this.hasAmmoHeavy()) { this.decrAmmoNum(1, 0); }
+        
+        //calc move distance
+        double distX = posX - shipPrevX;
+        double distY = posY - shipPrevY;
+        double distZ = posZ - shipPrevZ;
+        
+        //calc total consumption
+        int valueConsume = (int) MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
+        if (shipPrevY <= 0D) valueConsume = 0;  //do not decrGrudge if ShipPrev not inited
+        
+        //morale-- per 2 blocks
+        int m = (int)((float)valueConsume * 0.5F);
+        if(m < 5) m = 5;
+        if(m > 50) m = 50;
+        this.addMorale(-m);
+        
+        //moving grudge cost per block
+        valueConsume *= ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move];
+        
+        //get exp if transport
+        if(this instanceof EntityTransportWa && this.ticksExisted > 200)
+        {
+            //gain exp when moving
+            int moveExp = (int) (valueConsume * 0.2F);
+            addShipExp(moveExp);
+        }
+        
+        //add idle grudge cost
+        valueConsume += this.getGrudgeConsumption();
+        
+        //eat grudge
+        decrGrudgeNum(valueConsume);
+        
+        //update pos
+        shipPrevX = posX;
+        shipPrevY = posY;
+        shipPrevZ = posZ;
+    }
+      
+    /** morale value
+     *  5101 - X     Exciting
+     *  3901 - 5100  Happy
+     *  2101 - 3900  Normal
+     *  901  - 2100  Tired
+     *  0    - 900   Exhausted
+     *  
+     *  action:
+     *  
+     *  caress head:
+     *    +X per 3 ticks
+     *    
+     *  feed:
+     *    +X per item
+     *    
+     *  idle:
+     *    -X if > happy
+     *    +X if < normal * 150%
+     *    
+     *  attack:
+     *    -X per hit
+     *    +X per kill
+     *    
+     *  damaged:
+     *    -X per hit
+     *    
+     *  move:
+     *    -X per Y blocks
+     *  
      */
-    public boolean decrSupplies(int type)
+    protected void updateMorale()
     {
-        int itemNum = 1;
-        boolean noMeta = false;
-        ItemStack itemType = null;
-        
-        //find ammo
-        switch (type)
+        int m = this.getMorale();
+          
+        //out of combat
+        if (EntityHelper.checkShipOutOfCombat(this))
         {
-        case 0:    //use 1 light ammo
-            itemType = new ItemStack(ModItems.Ammo,1,0);
-            break;
-        case 1: //use 1 heavy ammo
-            itemType = new ItemStack(ModItems.Ammo,1,2);
-            break;
-        case 2:    //use 1 light ammo container
-            itemType = new ItemStack(ModItems.Ammo,1,1);
-            break;
-        case 3: //use 1 heavy ammo container
-            itemType = new ItemStack(ModItems.Ammo,1,3);
-            break;
-        case 4: //use 1 grudge
-            itemType = new ItemStack(ModItems.Grudge,1);
-            break;
-        case 5: //use 1 grudge block
-            itemType = new ItemStack(ModBlocks.BlockGrudge,1);
-            break;
-        case 6: //use 1 grudge block
-            itemType = new ItemStack(ModBlocks.BlockGrudgeHeavy,1);
-            break;
-        case 7:    //use 1 repair bucket
-            itemType = new ItemStack(ModItems.BucketRepair,1);
-            break;
-        case 8:    //use 1 repair goddess
-            itemType = new ItemStack(ModItems.RepairGoddess,1);
-            break;
+            if (m < ID.Morale.L_Normal + 1000)
+            {
+                //take 5 min from 0 to 2100
+                this.setStateMinor(ID.M.Morale, m + 40);
+            }
+            else if (m > ID.Morale.L_Happy)
+            {
+                this.setStateMinor(ID.M.Morale, m - 10);
+            }
         }
-        
-        //search item in ship inventory
-        int i = findItemInSlot(itemType, noMeta);
-        
-        if (i == -1)
-        {    //item not found
-            return false;
-        }
-        
-        //decr item stacksize
-        ItemStack getItem = this.itemHandler.getStackInSlot(i);
-
-        if (getItem.stackSize >= itemNum)
-        {
-            getItem.stackSize -= itemNum;
-        }
+        //in combat
         else
-        {    //not enough item, return false
-            return false;
-        }
-                
-        if (getItem.stackSize == 0)
         {
-            getItem = null;
-        }
-        
-        //save back itemstack
-        //no need to sync because no GUI opened
-        this.itemHandler.setStackInSlot(i, getItem);
-        
-        return true;    
+            if (m < ID.Morale.L_Tired)
+            {
+                this.setStateMinor(ID.M.Morale, m - 11);
+            }
+            else if (m < ID.Morale.L_Normal)
+            {
+                this.setStateMinor(ID.M.Morale, m - 7);
+            }
+            else if (m < ID.Morale.L_Happy)
+            {
+                this.setStateMinor(ID.M.Morale, m - 5);
+            }
+            else if (m >= ID.Morale.L_Happy)
+            {
+                this.setStateMinor(ID.M.Morale, m - 11);
+            }
+        } 
     }
-
-    //update AI task when no fuel
+    
     protected void updateFuelState(boolean nofuel)
     {
         if (nofuel)
@@ -3165,495 +1800,33 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             }
         }
     }
-
-    //find item in ship inventory
-    protected int findItemInSlot(ItemStack parItem, boolean noMeta)
-    {
-        ItemStack slotitem = null;
-
-        //search ship inventory (except equip slots)
-        for (int i = ContainerShipInventory.SLOTS_SHIPINV; i < CapaInventoryExtend.SLOTS_MAX; i++)
-        {
-            //check inv size
-            switch (getInventoryPageSize())
-            {
-            case 0:
-                if (i >= ContainerShipInventory.SLOTS_SHIPINV + 18) return -1;
-                break;
-            case 1:
-                if (i >= ContainerShipInventory.SLOTS_SHIPINV + 36) return -1;
-                break;
-            }
-            
-            //get item
-            slotitem = this.itemHandler.getStackInSlot(i);
-            
-            if (slotitem != null && slotitem.getItem().equals(parItem.getItem()))
-            {
-                if (noMeta)
-                {
-                    return i;    //found item
-                }
-                else
-                {
-                    if (slotitem.getItemDamage() == parItem.getItemDamage())
-                    {
-                        return i;
-                    }
-                }
-                
-            }        
-        }    
-        
-        return -1;    //item not found
-    }
-    
-    @Override
-    public boolean canFly()
-    {
-        return isPotionActive(MobEffects.LEVITATION);
-    }
-    
-    @Override
-    public boolean canBreatheUnderwater()
-    {
-        return true;
-    }
-    
-    //true if host has mounts
-    public boolean hasShipMounts()
-    {
-        return false;
-    }
-    
-    //true if host can summon mounts
-    public boolean canSummonMounts()
-    {
-        return (this.getStateEmotion(ID.S.State) & 1) == 1 && !this.getStateFlag(ID.F.NoFuel);
-    }
-    
-    public BasicEntityMount summonMountEntity()
-    {
-        return null;
-    }
-    
-    @Override
-    public Entity getGuardedEntity()
-    {
-        return this.guardedEntity;
-    }
-
-    @Override
-    public void setGuardedEntity(Entity entity)
-    {
-        if(entity != null && entity.isEntityAlive())
-        {
-            this.guardedEntity = entity;
-            this.setStateMinor(ID.M.GuardID, entity.getEntityId());
-        }
-        else
-        {
-            this.guardedEntity = null;
-            this.setStateMinor(ID.M.GuardID, -1);
-        }
-    }
-    
-    /**
-     * vec:
-     *   0:x, 1:y, 2:z, 3:dimension, 4:type
-     *   
-     *   type:
-     *     0:none, 1:guard block, 2:guard entity
-     */
-    @Override
-    public int getGuardedPos(int vec)
-    {
-        switch (vec)
-        {
-        case 0:
-            return this.getStateMinor(ID.M.GuardX);
-        case 1:
-            return this.getStateMinor(ID.M.GuardY);
-        case 2:
-            return this.getStateMinor(ID.M.GuardZ);
-        case 3:
-            return this.getStateMinor(ID.M.GuardDim);
-        case 4:
-            return this.getStateMinor(ID.M.GuardType);
-        default:
-            return 0;
-        }
-    }
-
-    /**
-     *  type: 0:none, 1:block, 2:entity
-     */
-    @Override
-    public void setGuardedPos(int x, int y, int z, int dim, int type)
-    {
-        this.setStateMinor(ID.M.GuardX, x);
-        this.setStateMinor(ID.M.GuardY, y);
-        this.setStateMinor(ID.M.GuardZ, z);
-        this.setStateMinor(ID.M.GuardDim, dim);
-        this.setStateMinor(ID.M.GuardType, type);
-    }
-    
-    @Override
-    public double getMountedYOffset()
-    {
-        return this.height;
-    }
-    
-    @Override
-    public Entity getHostEntity()
-    {
-        if (this.getPlayerUID() > 0)
-        {
-            if (this.world.isRemote)
-            {
-                return this.getOwner();
-            }
-            else
-            {
-                return EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-            }
-        }
-        else
-        {
-            return this.getOwner();
-        }
-    }
-    
-    @Override
-    public int getDamageType()
-    {
-        return this.getStateMinor(ID.M.DamageType);
-    }
-    
-    //update ship id
-    public void updateShipCacheData(boolean forceUpdate)
-    {
-        //register or update ship id and owner id
-        if (!this.isUpdated && ticksExisted % updateTime == 0 || forceUpdate)
-        {
-            LogHelper.debug("DEBUG: update ship: initial SID, PID  cd: "+updateTime+" force: "+forceUpdate);
-            
-            //update owner uid
-            if (this.getPlayerUID() <= 0)
-            {
-                ServerProxy.updateShipOwnerID(this);
-            }
-            
-            //update ship uid
-            ServerProxy.updateShipID(this);
-            
-            //update success
-            if (getPlayerUID() > 0 && getShipUID() > 0)
-            {
-                this.sendSyncPacketAll();
-                this.isUpdated = true;
-            }
-            
-            //prolong update time
-            if (updateTime > 4096)
-            {
-                updateTime = 4096;
-            }
-            else
-            {
-                updateTime *= 2;
-            }
-        }//end update id
-    }
-    
-    //update ship id
-    public void updateShipCacheDataWithoutNewID()
-    {
-        //update ship cache
-        if (!this.world.isRemote)
-        {
-            int uid = this.getShipUID();
-            
-            if (uid > 0)
-            {
-                //ship dupe bug checking
-                BasicEntityShip ship = ServerProxy.checkShipIsDupe(this, uid);
-                
-                if (this.equals(ship))
-                {
-                    CacheDataShip sdata = new CacheDataShip(this.getEntityId(), this.world.provider.getDimension(),
-                            this.getShipClass(), this.isDead, this.posX, this.posY, this.posZ,
-                            this.writeToNBT(new NBTTagCompound()));
-                    
-                    ServerProxy.setShipWorldData(uid, sdata);
-                }
-                else
-                {
-                    this.setDead();
-                }
-            }
-        }
-    }
-    
-      //update emotion, SERVER SIDE ONLY!
-      protected void updateEmotionState()
-      {
-          float hpState = 1F;
-          
-          if (this.morphHost != null)
-          {
-              hpState = this.morphHost.getHealth() / this.morphHost.getMaxHealth();
-          }
-          else
-          {
-              hpState = this.getHealth() / this.getMaxHealth();
-          }
-        
-        //check hp state
-        if (hpState > 0.75F)
-        {    //normal
-            this.setStateEmotion(ID.S.HPState, ID.HPState.NORMAL, false);
-        }
-        else if (hpState > 0.5F)
-        {    //minor damage
-            this.setStateEmotion(ID.S.HPState, ID.HPState.MINOR, false);
-        }
-        else if (hpState > 0.25F)
-        {    //moderate damage
-            this.setStateEmotion(ID.S.HPState, ID.HPState.MODERATE, false);               
-        }
-        else
-        {    //heavy damage
-            this.setStateEmotion(ID.S.HPState, ID.HPState.HEAVY, false);
-        }
-        
-        //roll emtion: hungry > T_T > bored
-        if (getStateFlag(ID.F.NoFuel))
-        {
-            if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.HUNGRY)
-            {
-                this.setStateEmotion(ID.S.Emotion, ID.Emotion.HUNGRY, false);
-            }
-        }
-        else
-        {
-            if (hpState < 0.35F)
-            {
-                if (this.getStateEmotion(ID.S.Emotion) != ID.Emotion.T_T)
-                {
-                    this.setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, false);
-                }            
-            }
-            else
-            {
-                //random Emotion
-                switch (this.getStateEmotion(ID.S.Emotion))
-                {
-                case ID.Emotion.NORMAL:        //if normal, 33% to bored
-                    if (this.getRNG().nextInt(3) == 0)
-                        this.setStateEmotion(ID.S.Emotion, ID.Emotion.BORED, false);
-                break;
-                default:                    //other, 25% return normal
-                    if (this.getRNG().nextInt(4) == 0)
-                    {
-                        this.setStateEmotion(ID.S.Emotion, ID.Emotion.NORMAL, false);
-                    }
-                break;
-                }
-                
-                //random Emotion4
-                switch (this.getStateEmotion(ID.S.Emotion4))
-                {
-                case ID.Emotion.NORMAL:        //if normal, 33% to bored
-                    if (this.getRNG().nextInt(3) == 0)
-                        this.setStateEmotion(ID.S.Emotion4, ID.Emotion.BORED, false);
-                break;
-                default:                    //other, 33% return normal
-                    if (this.getRNG().nextInt(3) == 0)
-                        this.setStateEmotion(ID.S.Emotion4, ID.Emotion.NORMAL, false);
-                break;
-                }
-            }
-        }
-        
-        //send sync packet
-        if (!this.world.isRemote)
-        {
-            this.sendSyncPacketEmotion();
-        }
-      }
       
-    //update hp state
-      protected void updateMountSummon()
-      {
-        if (this.hasShipMounts())
+    /** update searchlight effect */
+    protected void updateSearchlight()
+    {
+        if (this.getStateMinor(ID.M.LevelSearchlight) > 0)
         {
-            //summon mount if emotion state >= equip00
-                if (this.canSummonMounts() && !this.getStateFlag(ID.F.NoFuel))
-                {
-                    if (!this.isRiding())
-                    {
-                        //summon mount entity
-                          BasicEntityMount mount = this.summonMountEntity();
-                          mount.initAttrs(this);
-                          this.world.spawnEntity(mount);
-                          
-                          //clear rider
-                          for (Entity p : this.getPassengers())
-                          {
-                              p.dismountRidingEntity();
-                          }
-                          
-                          //set riding entity
-                        this.startRiding(mount, true);
-                        
-                        //sync rider
-                        mount.sendSyncPacket(0);
-                    }
-                }
-        }
-      }
-      
-      //update consume item
-      protected void updateConsumeItem()
-      {
-        //get ammo if no ammo
-        if (!this.hasAmmoLight()) { this.decrAmmoNum(0, 0); }
-        if (!this.hasAmmoHeavy()) { this.decrAmmoNum(1, 0); }
-        
-        //calc move distance
-        double distX = posX - shipPrevX;
-        double distY = posY - shipPrevY;
-        double distZ = posZ - shipPrevZ;
-        
-        //calc total consumption
-        int valueConsume = (int) MathHelper.sqrt(distX*distX + distY*distY + distZ*distZ);
-        if (shipPrevY <= 0D) valueConsume = 0;  //do not decrGrudge if ShipPrev not inited
-        
-        //morale-- per 2 blocks
-        int m = (int)((float)valueConsume * 0.5F);
-        if(m < 5) m = 5;
-        if(m > 50) m = 50;
-        this.addMorale(-m);
-        
-        //moving grudge cost per block
-        valueConsume *= ConfigHandler.consumeGrudgeAction[ID.ShipConsume.Move];
-        
-        //get exp if transport
-        if(this instanceof EntityTransportWa && this.ticksExisted > 200)
-        {
-            //gain exp when moving
-            int moveExp = (int) (valueConsume * 0.2F);
-            addShipExp(moveExp);
-        }
-        
-        //add idle grudge cost
-        valueConsume += this.getGrudgeConsumption();
-        
-        //eat grudge
-        decrGrudgeNum(valueConsume);
-        
-        //update pos
-        shipPrevX = posX;
-        shipPrevY = posY;
-        shipPrevZ = posZ;
-      }
-      
-      /** morale value
-       *  5101 - X     Exciting
-       *  3901 - 5100  Happy
-       *  2101 - 3900  Normal
-       *  901  - 2100  Tired
-       *  0    - 900   Exhausted
-       *  
-       *  action:
-       *  
-       *  caress head:
-       *    +X per 3 ticks
-       *    
-       *  feed:
-       *    +X per item
-       *    
-       *  idle:
-       *    -X if > happy
-       *    +X if < normal * 150%
-       *    
-       *  attack:
-       *    -X per hit
-       *    +X per kill
-       *    
-       *  damaged:
-       *    -X per hit
-       *    
-       *  move:
-       *    -X per Y blocks
-       *  
-       */
-      protected void updateMorale()
-      {
-          int m = this.getMorale();
-          
-          //out of combat
-          if (EntityHelper.checkShipOutOfCombat(this))
-          {
-              if (m < ID.Morale.L_Normal + 1000)
-              {    //take 5 min from 0 to 2100
-                    this.setStateMinor(ID.M.Morale, m + 40);
-                }
-                else if (m > ID.Morale.L_Happy)
-                {
-                    this.setStateMinor(ID.M.Morale, m - 10);
-                }
-          }
-          //in combat
-          else
-          {
-                if (m < ID.Morale.L_Tired)
-                {
-                    this.setStateMinor(ID.M.Morale, m - 11);
-                }
-                else if (m < ID.Morale.L_Normal)
-                {
-                    this.setStateMinor(ID.M.Morale, m - 7);
-                }
-                else if (m < ID.Morale.L_Happy)
-                {
-                    this.setStateMinor(ID.M.Morale, m - 5);
-                }
-                else if (m >= ID.Morale.L_Happy)
-                {
-                    this.setStateMinor(ID.M.Morale, m - 11);
-                }
-          }
-          
-      }
-      
-      /** update searchlight effect */
-      protected void updateSearchlight()
-      {
-          if (this.getStateMinor(ID.M.LevelSearchlight) > 0)
-          {
-              BlockPos pos = new BlockPos(this);
+            BlockPos pos = new BlockPos(this);
             int light = this.world.getLight(pos, true);
-
+    
             //place new light block
-              if (light < 11)
-              {
+            if (light < 11)
+            {
                 BlockHelper.placeLightBlock(this.world, pos);
-              }
-              //search light block, renew lifespan
-              else
-              {
-                  BlockHelper.updateNearbyLightBlock(this.world, pos);
-              }
-          }
-      }
+            }
+            //search light block, renew lifespan
+            else
+            {
+                BlockHelper.updateNearbyLightBlock(this.world, pos);
+            }
+        }
+    }
       
-      /** update client timer */
-      protected void updateClientTimer()
-      {
-          //attack motion timer
-          if (this.StateTimer[ID.T.AttackTime] > 0) this.StateTimer[ID.T.AttackTime]--;
+    /** update client timer */
+    protected void updateClientTimer()
+    {
+        //attack motion timer
+        if (this.StateTimer[ID.T.AttackTime] > 0) this.StateTimer[ID.T.AttackTime]--;
           
         //caress reaction time
         if (this.StateTimer[ID.T.Emotion3Time] > 0)
@@ -3665,1325 +1838,161 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
                 this.setStateEmotion(ID.S.Emotion3, 0, false);
             }
         }
-      }
-      
-      /** update server timer */
-      protected void updateServerTimer()
-      {
-          //immune timer
-          if (this.StateTimer[ID.T.ImmuneTime] > 0) this.StateTimer[ID.T.ImmuneTime]--;
-          
-          //crane change state delay
-          if (this.StateTimer[ID.T.CrandDelay] > 0) this.StateTimer[ID.T.CrandDelay]--;
-          
-          //craning timer
-          if (this.getStateMinor(ID.M.CraneState) > 1) this.StateTimer[ID.T.CraneTime]++;
-          
-          //hurt sound delay
-          if (this.StateTimer[ID.T.SoundTime] > 0) this.StateTimer[ID.T.SoundTime]--;
-    
-          //emotes delay
-        if (this.StateTimer[ID.T.EmoteDelay] > 0) this.StateTimer[ID.T.EmoteDelay]--;
-      }
-      
-      /** update both side timer */
-      protected void updateBothSideTimer()
-      {
-          //mount skill cd
-          if (this.StateTimer[ID.T.MountSkillCD1] > 0) this.StateTimer[ID.T.MountSkillCD1]--;
-          if (this.StateTimer[ID.T.MountSkillCD2] > 0) this.StateTimer[ID.T.MountSkillCD2]--;
-          if (this.StateTimer[ID.T.MountSkillCD3] > 0) this.StateTimer[ID.T.MountSkillCD3]--;
-          if (this.StateTimer[ID.T.MountSkillCD4] > 0) this.StateTimer[ID.T.MountSkillCD4]--;
-          if (this.StateTimer[ID.T.MountSkillCD5] > 0) this.StateTimer[ID.T.MountSkillCD5]--;
-      }
-      
-      /** update rotate */
-      protected void updateClientBodyRotate()
-      {
-          if (!this.isRiding())
-          {
-              if (this.morphHost != null)
-              {
-                  this.rotationYaw = this.morphHost.rotationYaw;
-              }
-              else
-              {
-                  if (MathHelper.abs((float) (posX - prevPosX)) > 0.1F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.1F)
-                      {
-                          float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
-                          this.rotationYaw = degree[0];
-                      }
-              }
-          }
-      }
-      
-      /** change ship outfit */
-      public void setShipOutfit(int id)
-      {
-          if (id > this.getStateMinor(ID.M.NumState) || id < 0) id = 0;
-          this.setStateEmotion(ID.S.State, this.getStateEmotion(ID.S.State) ^ Values.N.Pow2[id], false);
-      }
-      
-      public void setSensitiveBody(int par1)
-      {
-          setStateMinor(ID.M.SensBody, par1);
-      }
-      
-      public int getSensitiveBody()
-      {
-          return getStateMinor(ID.M.SensBody);
-      }
-      
-      /** set random sensitive body id, ref: ID.Body */
-      public void randomSensitiveBody()
-      {
-          int ran = this.rand.nextInt(100);
-          int bodyid = 20;
-          
-          //first roll
-          if (ran > 80)
-          {  //20%
-              bodyid = ID.Body.UBelly;
-          }
-          else if (ran > 65)
-          {  //15%
-              bodyid = ID.Body.Chest;
-          }
-          else
-          {  //55%
-              bodyid = 3 + this.rand.nextInt(8);  //roll 3~10
-          }
-          
-          //reroll if HEAD/BACK
-        if (bodyid == ID.Body.Head || bodyid == ID.Body.Back) bodyid = ID.Body.UBelly;
-        if (bodyid == ID.Body.Arm || bodyid == ID.Body.Butt) bodyid = ID.Body.Chest;
-          
-          setSensitiveBody(bodyid);
-      }
-      
-      /** knockback AI target */
-      public void pushAITarget()
-      {
-          if (this.aiTarget != null)
-          {
-              //swing arm
-              this.swingArm(EnumHand.MAIN_HAND);
-              
-              //push target
-              this.aiTarget.addVelocity(-MathHelper.sin(rotationYaw * (float)Math.PI / 180.0F) * 0.5F, 
-                     0.5D, MathHelper.cos(rotationYaw * (float)Math.PI / 180.0F) * 0.5F);
-          
-              //sync target motion
-              TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 48D);
-              CommonProxy.channelE.sendToAllAround(new S2CEntitySync(this.aiTarget, 0, S2CEntitySync.PID.SyncEntity_Motion), point);
-          }
     }
       
-      //check caress state for model display, CLIENT SIDE
-      public void checkCaressed()
-      {
-          BodyHeight hit = getBodyIDFromHeight();
+    /** update server timer */
+    protected void updateServerTimer()
+    {
+        //immune timer
+        if (this.StateTimer[ID.T.ImmuneTime] > 0) this.StateTimer[ID.T.ImmuneTime]--;
           
-          //default: only top or head = caressed
-          if (hit == BodyHeight.TOP || hit == BodyHeight.HEAD ||
-              hit == BodyHeight.NECK || hit == BodyHeight.CHEST)
-          {
-              setStateEmotion(ID.S.Emotion3, ID.Emotion3.CARESS, false);
-              setStateTimer(ID.T.Emotion3Time, 80);
-          }
-      }
+        //crane change state delay
+        if (this.StateTimer[ID.T.CrandDelay] > 0) this.StateTimer[ID.T.CrandDelay]--;
+          
+        //craning timer
+        if (this.getStateMinor(ID.M.CraneState) > 1) this.StateTimer[ID.T.CraneTime]++;
+          
+        //hurt sound delay
+        if (this.StateTimer[ID.T.SoundTime] > 0) this.StateTimer[ID.T.SoundTime]--;
+    
+        //emotes delay
+        if (this.StateTimer[ID.T.EmoteDelay] > 0) this.StateTimer[ID.T.EmoteDelay]--;
+    }
       
-      /** normal emotes for head caress */
-      public void reactionNormal()
-      {
-          Random ran = new Random();
-          int m = this.getMorale();
-          int body = EntityHelper.getHitBodyID(this);
-          int baseMorale = (int) ((float)ConfigHandler.baseCaressMorale * 2.5F);
-          LogHelper.debug("DEBUG: hit ship: Morale: "+m+" BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody());         
-          
-          //show emotes by morale level
-        switch (EntityHelper.getMoraleLevel(m))
+    /** update both side timer */
+    protected void updateBothSideTimer()
+    {
+        //mount skill cd
+        if (this.StateTimer[ID.T.MountSkillCD1] > 0) this.StateTimer[ID.T.MountSkillCD1]--;
+        if (this.StateTimer[ID.T.MountSkillCD2] > 0) this.StateTimer[ID.T.MountSkillCD2]--;
+        if (this.StateTimer[ID.T.MountSkillCD3] > 0) this.StateTimer[ID.T.MountSkillCD3]--;
+        if (this.StateTimer[ID.T.MountSkillCD4] > 0) this.StateTimer[ID.T.MountSkillCD4]--;
+        if (this.StateTimer[ID.T.MountSkillCD5] > 0) this.StateTimer[ID.T.MountSkillCD5]--;
+    }
+      
+    /** update rotate */
+    protected void updateClientBodyRotate()
+    {
+        if (!this.isRiding())
         {
-        case 0:   //excited
-            //check sensitive body
-              if (body == getSensitiveBody())
-              {
-                  //apply emotion
-                  this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
-                  
-                  if (this.rand.nextInt(2) == 0)
-                  {
-                      applyParticleEmotion(31);  //shy
-                  }
-                  else
-                  {
-                      applyParticleEmotion(10);  //dizzy
-                  }
-                  
-                  if (m < (int)(ID.Morale.L_Excited * 1.5F))
-                  {
-                      this.addMorale(baseMorale * 3 + this.rand.nextInt(baseMorale + 1));
-                  }
-              }
-              //other reaction
-              else
-              {
-                  //apply emotion
-                  this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
-                  
-                switch (body)
-                {
-                case ID.Body.UBelly:
-                case ID.Body.Butt:
-                case ID.Body.Chest:
-                case ID.Body.Face:
-                    if (this.getStateFlag(ID.F.IsMarried))
-                    {
-                        applyParticleEmotion(15);  //kiss
-                    }
-                    else
-                    {
-                        applyParticleEmotion(1);  //heart
-                    }
-                    break;
-                default:
-                    if (this.rand.nextInt(2) == 0)
-                    {
-                        applyParticleEmotion(1);  //heart
-                    }
-                    else
-                    {
-                        applyParticleEmotion(7);  //note
-                    }
-                    break;
-                }
-              }
-            break;
-        case 1:   //happy
-              //apply emotion
-              this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
-              
-            //check sensitive body
-              if (body == getSensitiveBody())
-              {
-                  if (this.getStateFlag(ID.F.IsMarried))
-                  {
-                      if (this.rand.nextInt(2) == 0)
-                      {
-                          applyParticleEmotion(31);  //shy
-                      }
-                      else
-                      {
-                          applyParticleEmotion(10);  //dizzy
-                      }
-                }
-                else
-                {
-                    applyParticleEmotion(10);  //dizzy
-                }
-                  
-                  this.addMorale(baseMorale + this.rand.nextInt(baseMorale + 1));
-              }
-              //other reaction
-              else
-              {
-                  switch (body)
-                  {
-                case ID.Body.UBelly:
-                case ID.Body.Butt:
-                case ID.Body.Chest:
-                case ID.Body.Face:
-                    if (this.getStateFlag(ID.F.IsMarried))
-                    {
-                        applyParticleEmotion(1);  //heart
-                    }
-                    else
-                    {
-                        applyParticleEmotion(16);  //haha
-                    }
-                    break;
-                default:
-                    if (this.rand.nextInt(2) == 0)
-                    {
-                        applyParticleEmotion(1);  //heart
-                    }
-                    else
-                    {
-                        applyParticleEmotion(7);  //note
-                    }
-                    break;
-                }
-              }
-            break;
-        case 2:   //normal
-            //check sensitive body
-              if (body == getSensitiveBody())
-              {
-                  //apply emotion
-                  this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
-                  
-                  if (this.getStateFlag(ID.F.IsMarried))
-                  {
-                      applyParticleEmotion(19);  //lick
-                }
-                else
-                {
-                    applyParticleEmotion(18);  //sigh
-                }
-                  
-                  this.addMorale(baseMorale + this.rand.nextInt(baseMorale + 1));
-                  
-                  //push target
-                  if (ran.nextInt(6) == 0)
-                  {
-                      this.pushAITarget();
-                      this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-                  }
-              }
-              //other reaction
-              else
-              {
-                  switch (body)
-                  {
-                case ID.Body.UBelly:
-                case ID.Body.Butt:
-                case ID.Body.Chest:
-                case ID.Body.Face:
-                    if (this.getStateFlag(ID.F.IsMarried))
-                    {
-                        applyParticleEmotion(1);  //heart
-                    }
-                    else
-                    {
-                        applyParticleEmotion(27);  //-w-
-                    }
-                    
-                    //push target
-                      if (ran.nextInt(8) == 0)
-                      {
-                          this.pushAITarget();
-                          this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-                      }
-                    break;
-                default:
-                    switch (this.rand.nextInt(7))
-                    {
-                    case 1:
-                        applyParticleEmotion(30);  //pif
-                        break;
-                    case 3:
-                        applyParticleEmotion(7);  //note
-                        break;
-                    case 4:
-                        applyParticleEmotion(26);  //ya
-                        break;
-                    case 6:
-                        applyParticleEmotion(11);  //find
-                        break;
-                    default:
-                        applyParticleEmotion(29);  //blink
-                        break;
-                    }
-                    break;
-                }
-              }
-            break;
-        case 3:   //tired
-            //check sensitive body
-              if  (body == getSensitiveBody())
-              {
-                  //apply emotion
-                  this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
-                  
-                  applyParticleEmotion(32);  //hmm
-                  this.addMorale(this.rand.nextInt(baseMorale + 1));
-                  
-                  //push target
-                  if (ran.nextInt(2) == 0)
-                  {
-                      this.pushAITarget();
-                      this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-                  }
-                  else if (this.aiTarget != null && ran.nextInt(8) == 0)
-                  {
-                      switch (ran.nextInt(3))
-                      {
-                    case 0:
-                        attackEntityWithAmmo(this.aiTarget);
-                        break;
-                    case 1:
-                        attackEntityWithHeavyAmmo(this.aiTarget);
-                        break;
-                    default:
-                        attackEntityAsMob(this.aiTarget);
-                        break;
-                    }
-                  }
-              }
-              //other reaction
-              else
-              {
-                  switch (body)
-                  {
-                case ID.Body.UBelly:
-                case ID.Body.Butt:
-                case ID.Body.Chest:
-                case ID.Body.Face:
-                    setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-                    applyParticleEmotion(32);  //hmm
-                    //push target
-                      if (ran.nextInt(4) == 0)
-                      {
-                          this.pushAITarget();
-                          this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-                      }
-                    break;
-                default:
-                    switch (this.rand.nextInt(5))
-                    {
-                    case 1:
-                        applyParticleEmotion(30);  //pif
-                        break;
-                    case 2:
-                        applyParticleEmotion(2);  //panic
-                        break;
-                    case 4:
-                        applyParticleEmotion(3);  //?
-                        break;
-                    default:
-                        applyParticleEmotion(0);  //sweat
-                        break;
-                    }
-                    break;
-                }
-              }
-            break;
-        default:  //exhausted
-            //check sensitive body
-              if (body == getSensitiveBody())
-              {
-                  //apply emotion
-                  this.setStateEmotion(ID.S.Emotion, ID.Emotion.SHY, true);
-                  
-                  applyParticleEmotion(6);  //angry
-                  this.addMorale((baseMorale * 10 + this.rand.nextInt(baseMorale * 5 + 1)) * -1);
-                  
-                  //push target
-                  this.pushAITarget();
-                  this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-                
-                if (this.aiTarget != null && ran.nextInt(3) == 0)
-                {
-                    switch (ran.nextInt(3))
-                    {
-                    case 0:
-                        attackEntityWithAmmo(this.aiTarget);
-                        break;
-                    case 1:
-                        attackEntityWithHeavyAmmo(this.aiTarget);
-                        break;
-                    default:
-                        attackEntityAsMob(this.aiTarget);
-                        break;
-                    }
-                  }
-              }
-              //other reaction
-              else
-              {
-                  switch (body)
-                  {
-                case ID.Body.UBelly:
-                case ID.Body.Butt:
-                case ID.Body.Chest:
-                case ID.Body.Face:
-                    setStateEmotion(ID.S.Emotion, ID.Emotion.T_T, true);
-                    
-                    if (this.rand.nextInt(3) == 0)
-                    {
-                        applyParticleEmotion(6);  //angry
-                    }
-                    else
-                    {
-                        applyParticleEmotion(32);  //hmm
-                    }
-                    
-                    //push target
-                      if (ran.nextInt(2) == 0)
-                      {
-                          this.pushAITarget();
-                          this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-                      }
-                      else if (this.aiTarget != null && ran.nextInt(5) == 0)
-                      {
-                          switch (ran.nextInt(3))
-                          {
-                        case 0:
-                            attackEntityWithAmmo(this.aiTarget);
-                            break;
-                        case 1:
-                            attackEntityWithHeavyAmmo(this.aiTarget);
-                            break;
-                        default:
-                            attackEntityAsMob(this.aiTarget);
-                            break;
-                        }
-                      }
-                    break;
-                default:
-                    switch (this.rand.nextInt(5))
-                    {
-                    case 1:
-                        applyParticleEmotion(8);  //cry
-                        break;
-                    case 2:
-                        applyParticleEmotion(2);  //panic
-                        break;
-                    case 3:
-                        applyParticleEmotion(20);  //orz
-                        break;
-                    case 4:
-                        applyParticleEmotion(5);  //...
-                        break;
-                    default:
-                        applyParticleEmotion(34);  //lll
-                        break;
-                    }
-                    break;
-                }
-              }
-            break;
-        }//end morale level switch
-      }
-      
-      /** stranger (not owner) emotes */
-      public void reactionStranger()
-      {
-          int body = EntityHelper.getHitBodyID(this);
-          LogHelper.debug("DEBUG: hit ship: BodyID: "+body+" sensitiveBodyID: "+this.getSensitiveBody());         
-
-        //check sensitive body
-          if (body == getSensitiveBody())
-          {
-              //apply emotion
-              this.setStateEmotion(ID.S.Emotion, ID.Emotion.ANGRY, true);
-              
-              if (this.rand.nextInt(2) == 0)
-              {
-                applyParticleEmotion(6);  //angry
+            if (this.morphHost != null)
+            {
+                this.rotationYaw = this.morphHost.rotationYaw;
             }
             else
             {
-                applyParticleEmotion(22);  //x
-            }
-              
-              //push target
-              if (rand.nextInt(2) == 0)
-              {
-                  this.pushAITarget();
-                  this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-              }
-              else if (this.aiTarget != null && rand.nextInt(4) == 0)
-              {
-                  switch (rand.nextInt(3))
-                  {
-                case 0:
-                    attackEntityWithAmmo(this.aiTarget);
-                    break;
-                case 1:
-                    attackEntityWithHeavyAmmo(this.aiTarget);
-                    break;
-                default:
-                    attackEntityAsMob(this.aiTarget);
-                    break;
-                }
-              }
-          }
-          //other reaction
-          else
-          {
-              //apply emotion
-              this.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
-              
-              switch (body)
-              {
-            case ID.Body.UBelly:
-            case ID.Body.Butt:
-            case ID.Body.Chest:
-            case ID.Body.Face:
-                if (this.rand.nextInt(2) == 0)
+                if (MathHelper.abs((float) (posX - prevPosX)) > 0.1F || MathHelper.abs((float) (posZ - prevPosZ)) > 0.1F)
                 {
-                    applyParticleEmotion(6);  //angry
+                    float[] degree = CalcHelper.getLookDegree(posX - prevPosX, posY - prevPosY, posZ - prevPosZ, true);
+                    this.rotationYaw = degree[0];
                 }
-                else
-                {
-                    applyParticleEmotion(5);  //...
-                }
-                
-                //push target
-                  if (rand.nextInt(4) == 0)
-                  {
-                      this.pushAITarget();
-                      this.playSound(this.getCustomSound(5, this), this.getSoundVolume(), 1F / (this.getRNG().nextFloat() * 0.2F + 0.9F));
-                  }
-                  else if (this.aiTarget != null && rand.nextInt(8) == 0)
-                  {
-                      switch (rand.nextInt(3))
-                      {
-                    case 0:
-                        attackEntityWithAmmo(this.aiTarget);
-                        break;
-                    case 1:
-                        attackEntityWithHeavyAmmo(this.aiTarget);
-                        break;
-                    default:
-                        attackEntityAsMob(this.aiTarget);
-                        break;
-                    }
-                  }
-                break;
-            default:
-                switch (this.rand.nextInt(7))
-                {
-                case 1:
-                    applyParticleEmotion(9);  //hungry
-                    break;
-                case 2:
-                    applyParticleEmotion(2);  //panic
-                    break;
-                case 3:
-                    applyParticleEmotion(20);  //orz
-                    break;
-                case 4:
-                    applyParticleEmotion(8);  //cry
-                    break;
-                case 5:
-                    applyParticleEmotion(0);  //sweat
-                    break;
-                default:
-                    applyParticleEmotion(34);  //lll
-                    break;
-                }
-                break;
             }
-          }
-      }
-      
-      /** damaged emotes */
-      public void reactionAttack()
-      {
-          //show emotes by morale level
-        switch (EntityHelper.getMoraleLevel(this.getMorale()))
-        {
-        case 0:   //excited
-              //apply emotion
-              this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
-              
-            switch (this.rand.nextInt(8))
-            {
-            case 1:
-                applyParticleEmotion(33);  //:p
-                break;
-            case 2:
-                applyParticleEmotion(17);  //gg
-                break;
-            case 3:
-                applyParticleEmotion(19);  //lick
-                break;
-            case 4:
-                applyParticleEmotion(16);  //ha
-                break;
-            default:
-                applyParticleEmotion(7);  //note
-                break;
-            }
-            break;
-        case 1:   //happy
-        case 2:   //normal
-        case 3:   //tired
-        default:  //exhausted
-            switch (this.rand.nextInt(8))
-            {
-            case 1:
-                applyParticleEmotion(14);  //+_+
-                break;
-            case 2:
-                applyParticleEmotion(30);  //pif
-                break;
-            case 3:
-                applyParticleEmotion(7);  //note
-                break;
-            case 4:
-                applyParticleEmotion(4);  //!
-                break;
-            case 5:
-                applyParticleEmotion(7);  //note
-                break;
-            default:
-                applyParticleEmotion(6);  //angry
-                break;
-            }
-            break;
-        }//end morale level switch
-      }
-      
-      /** damaged emotes */
-      public void reactionDamaged()
-      {
-          int body = EntityHelper.getHitBodyID(this);
-          
-          //show emotes by morale level
-        switch (EntityHelper.getMoraleLevel(this.getMorale()))
-        {
-        case 0:   //excited
-        case 1:   //happy
-        case 2:   //normal
-            //check sensitive body
-              if (body == getSensitiveBody())
-              {
-                  applyParticleEmotion(6);  //angry
-              }
-              //other reaction
-              else
-              {
-                switch (body)
-                {
-                case ID.Body.UBelly:
-                case ID.Body.Butt:
-                case ID.Body.Chest:
-                case ID.Body.Face:
-                    applyParticleEmotion(6);  //angry
-                    break;
-                default:
-                    switch (this.rand.nextInt(7))
-                    {
-                    case 1:
-                        applyParticleEmotion(30);  //pif
-                        break;
-                    case 2:
-                        applyParticleEmotion(5);  //...
-                        break;
-                    case 3:
-                        applyParticleEmotion(2);  //panic
-                        break;
-                    case 4:
-                        applyParticleEmotion(3);  //?
-                        break;
-                    default:
-                        applyParticleEmotion(8);  //cry
-                        break;
-                    }
-                    break;
-                }
-              }
-            break;
-        case 3:   //tired
-        default:  //exhausted
-            //check sensitive body
-              if (body == getSensitiveBody())
-              {
-                  applyParticleEmotion(10);  //dizzy
-              }
-              //other reaction
-              else
-              {
-                  switch (body)
-                  {
-                case ID.Body.UBelly:
-                case ID.Body.Butt:
-                case ID.Body.Chest:
-                case ID.Body.Face:
-                    applyParticleEmotion(10);  //dizzy
-                    break;
-                default:
-                    switch (this.rand.nextInt(7))
-                    {
-                    case 1:
-                        applyParticleEmotion(30);  //pif
-                        break;
-                    case 2:
-                        applyParticleEmotion(5);  //...
-                        break;
-                    case 3:
-                        applyParticleEmotion(2);  //panic
-                        break;
-                    case 4:
-                        applyParticleEmotion(3);  //?
-                        break;
-                    case 5:
-                        applyParticleEmotion(0);  //sweat
-                        break;
-                    default:
-                        applyParticleEmotion(8);  //cry
-                        break;
-                    }
-                }
-              }
-            break;
-        }//end morale level switch
-      }
-      
-      /** idle emotes */
-      public void reactionIdle()
-      {
-          //show emotes by morale level
-        switch (EntityHelper.getMoraleLevel(this.getMorale()))
-        {
-        case 0:   //excited
-        case 1:   //happy
-            if (this.getStateFlag(ID.F.IsMarried) && this.rand.nextInt(2) == 0)
-            {
-                switch (this.rand.nextInt(3))
-                {
-                case 1:
-                    applyParticleEmotion(31);  //shy
-                    break;
-                default:
-                    applyParticleEmotion(15);  //kiss
-                    break;
-                }
-                
-                return;
-            }
-            
-            switch (this.rand.nextInt(10))
-            {
-            case 1:
-                applyParticleEmotion(33);  //:p
-                break;
-            case 2:
-                applyParticleEmotion(17);  //gg
-                break;
-            case 3:
-                applyParticleEmotion(19);  //lick
-                break;
-            case 4:
-                applyParticleEmotion(9);  //hungry
-                break;
-            case 5:
-                applyParticleEmotion(1);  //love
-                break;
-            case 6:
-                applyParticleEmotion(15);  //kiss
-                break;
-            case 7:
-                applyParticleEmotion(16);  //haha
-                break;
-            case 8:
-                applyParticleEmotion(14);  //+_+
-                break;
-            default:
-                applyParticleEmotion(7);  //note
-                break;
-            }
-            break;
-        case 2:   //normal
-            if (this.getStateFlag(ID.F.IsMarried) && this.rand.nextInt(2) == 0)
-            {
-                switch (this.rand.nextInt(3))
-                {
-                case 1:
-                    applyParticleEmotion(1);  //love
-                    break;
-                default:
-                    applyParticleEmotion(15);  //kiss
-                    break;
-                }
-                
-                return;
-            }
-            
-            switch (this.rand.nextInt(8))
-            {
-            case 1:
-                applyParticleEmotion(11);  //find
-                break;
-            case 2:
-                applyParticleEmotion(3);  //?
-                break;
-            case 3:
-                applyParticleEmotion(13);  //nod
-                break;
-            case 4:
-                applyParticleEmotion(9);  //hungry
-                break;
-            case 5:
-                applyParticleEmotion(18);  //sigh
-                break;
-            case 7:
-                applyParticleEmotion(16);  //haha
-                break;
-            default:
-                applyParticleEmotion(29);  //blink
-                break;
-            }
-            break;
-        case 3:   //tired
-        default:  //exhausted
-            switch (this.rand.nextInt(8))
-            {
-            case 1:
-                applyParticleEmotion(0);  //drop
-                break;
-            case 2:
-                applyParticleEmotion(2);  //panic
-                break;
-            case 3:
-                applyParticleEmotion(3);  //?
-                break;
-            case 4:
-                applyParticleEmotion(8);  //cry
-                break;
-            case 5:
-                applyParticleEmotion(10);  //dizzy
-                break;
-            case 6:
-                applyParticleEmotion(20);  //orz
-                break;
-            default:
-                applyParticleEmotion(32);  //hmm
-                break;
-            }
-            break;
-        }//end morale level switch
-      }
-      
-      /** command emotes */
-      public void reactionCommand()
-      {
-          //show emotes by morale level
-        switch (EntityHelper.getMoraleLevel(this.getMorale()))
-        {
-        case 0:   //excited
-        case 1:   //happy
-        case 2:   //normal
-            switch (this.rand.nextInt(7))
-            {
-            case 1:
-                applyParticleEmotion(21);  //o
-                break;
-            case 2:
-                applyParticleEmotion(4);  //!
-                break;
-            case 3:
-                applyParticleEmotion(14);  //+_+
-                break;
-            case 4:
-                applyParticleEmotion(11);  //find
-                break;
-            default:
-                applyParticleEmotion(13);  //nod
-                break;
-            }
-            break;
-        case 3:   //tired
-        default:  //exhausted
-            switch (this.rand.nextInt(8))
-            {
-            case 1:
-                applyParticleEmotion(0);  //drop
-            case 2:
-                applyParticleEmotion(33);  //:p
-                break;
-            case 3:
-                applyParticleEmotion(3);  //?
-                break;
-            case 5:
-                applyParticleEmotion(10);  //dizzy
-                break;
-            case 6:
-                applyParticleEmotion(13);  //nod
-                break;
-            default:
-                applyParticleEmotion(32);  //hmm
-                break;
-            }
-            break;
-        }//end morale level switch
-      }
-      
-      /** shock emotes */
-      public void reactionShock()
-      {
-        switch (this.rand.nextInt(8))
-        {
-        case 1:
-            applyParticleEmotion(0);  //drop
-            break;
-        case 2:
-            applyParticleEmotion(8);  //cry
-            break;
-        case 3:
-            applyParticleEmotion(4);  //!
-            break;
-        default:
-            applyParticleEmotion(12);  //omg
-            break;
         }
-      }
-      
-      /** emotes method
-       * 
-       *  type:
-       *  0: caress head (owner)
-       *  1: caress head (other)
-       *  2: damaged
-       *  3: attack
-       *  4: idle
-       *  5: command
-       *  6: shock
-       */
-      public void applyEmotesReaction(int type)
-      {
-          Random ran = new Random();
-          
-          switch (type)
-          {
-          case 1:        //caress head (no fuel / not owner)
-              if (ran.nextInt(9) == 0 && this.getEmotesTick() <= 0)
-              {
-                this.setEmotesTick(60);
-                reactionStranger();
-            }
-              break;
-          case 2:        //damaged
-              if (this.getEmotesTick() <= 10)
-              {
-                this.setEmotesTick(40);
-                reactionDamaged();
-            }
-              break;
-          case 3:        //attack
-              if (ran.nextInt(6) == 0 && this.getEmotesTick() <= 0)
-              {
-                this.setEmotesTick(60);
-                reactionAttack();
-            }
-              break;
-          case 4:        //idle
-              if (ran.nextInt(3) == 0 && this.getEmotesTick() <= 0)
-              {
-                this.setEmotesTick(20);
-                reactionIdle();
-            }
-              break;
-          case 5:
-              if (ran.nextInt(3) == 0 && this.getEmotesTick() <= 0)
-              {
-                this.setEmotesTick(25);
-                reactionCommand();
-            }
-              break;
-          case 6:
-            reactionShock();
-              break;
-          default: //caress head (owner)
-              if (ran.nextInt(7) == 0 && this.getEmotesTick() <= 0)
-              {
-                this.setEmotesTick(50);
-                reactionNormal();
-            }
-              break;
-          }
-      }
-      
-      /** spawn emotion particle */
-      public void applyParticleEmotion(int type)
-      {
-          float h = isSitting() ? this.height * 0.4F : this.height * 0.45F;
-          
-          //server side emotes
-          if (!this.world.isRemote)
-          {
-              TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 36, h, 0, type), point);
-          }
-          //client side emotes
-          else
-          {
-              ParticleHelper.spawnAttackParticleAtEntity(this, h, 0, type, (byte)36);
-          }
-      }
-      
-      /** attack particle at attacker
-       * 
-       *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-       */
-      public void applyParticleAtAttacker(int type, Entity target, Dist4d distance)
-      {
-          TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        
-          switch (type)
-          {
-          case 1:  //light cannon
-              CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distance.x, distance.y, distance.z, true), point);
-          break;
-          case 2:  //heavy cannon
-          case 3:  //light aircraft
-          case 4:  //heavy aircraft
-        default: //melee
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-        break;
-          }
-      }
-      
-      /** attack particle at target
-       * 
-       *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-       */
-      public void applyParticleAtTarget(int type, Entity target, Dist4d distance)
-      {
-          TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-          
-          switch (type)
-          {
-          case 1:  //light cannon
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
-          break;
-          case 2:  //heavy cannon
-          break;
-          case 3:  //light aircraft
-          break;
-          case 4:  //heavy aircraft
-          break;
-        default: //melee
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
-        break;
-          }
-      }
-      
-      /** attack particle at attacker
-       * 
-       *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-       */
-      public void applySoundAtAttacker(int type, Entity target)
-      {
-          switch (type)
-          {
-          case 1:  //light cannon
-              this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
-              
-              //entity sound
-              if (this.rand.nextInt(8) == 0)
-              {
-                  this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-              }
-          break;
-          case 2:  //heavy cannon
-              this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
-              
-              //entity sound
-              if (this.getRNG().nextInt(8) == 0)
-              {
-                  this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-              }
-          break;
-          case 3:  //light aircraft
-          case 4:  //heavy aircraft
-              this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
-            
-              //entity sound
-              if (this.getRNG().nextInt(8) == 0)
-              {
-                  this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-              }
-          break;
-        default: //melee
-            if (this.getRNG().nextInt(3) == 0)
-            {
-                this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-            }
-        break;
-          }//end switch
-      }
-      
-      /** attack particle at target
-       * 
-       *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-       */
-      public void applySoundAtTarget(int type, Entity target)
-      {
-          switch (type)
-          {
-          case 1:  //light cannon
-          break;
-          case 2:  //heavy cannon
-          break;
-          case 3:  //light aircraft
-          break;
-          case 4:  //heavy aircraft
-          break;
-        default: //melee
-        break;
-          }
-      }
-      
-      /** attack base damage
-       * 
-       *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-       */
-      public float getAttackBaseDamage(int type, Entity target)
-      {
-          switch (type)
-          {
-          case 1:  //light cannon
-              return CombatHelper.modDamageByAdditionAttrs(this, target, this.shipAttrs.getAttackDamage(), 0);
-          case 2:  //heavy cannon
-              return this.shipAttrs.getAttackDamageHeavy();
-          case 3:  //light aircraft
-              return this.shipAttrs.getAttackDamageAir();
-          case 4:  //heavy aircraft
-              return this.shipAttrs.getAttackDamageAirHeavy();
-        default: //melee
-            return this.shipAttrs.getAttackDamage() * 0.125F;
-          }
-      }
-      
-      //get # inv pages ship have
-      public int getInventoryPageSize()
-      {
-          return this.StateMinor[ID.M.DrumState];
-      }
-      
-      //set # inv pages ship have
-      public void setInventoryPageSize(int par1)
-      {
-          this.StateMinor[ID.M.DrumState] = par1;
-      }
-      
-      /** set flare on target */
-      public void flareTarget(Entity target)
-      {
-          //server side, send flare packet
-          if (!this.world.isRemote)
-          {
-                if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
-                {
-                    this.flareTarget(target.getPosition());
-                }
-          }
-      }
-      
-      public void flareTarget(BlockPos target)
-      {
-          //server side, send flare packet
-          if (!this.world.isRemote)
-          {
-              if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
-                {
-                TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-                CommonProxy.channelI.sendToAllAround(new S2CReactPackets(S2CReactPackets.PID.FlareEffect, target.getX(), target.getY(), target.getZ()), point);
-                }
-          }
-      }
-      
-      /** release ticket when dead */
-      @Override
-      public void setDead()
-      {
-          //clear chunk loader
-          this.clearChunkLoader();
-          
-          super.setDead();
-          
-          //update ship cache
-          this.updateShipCacheDataWithoutNewID();
     }
-
-      
-      /** release chunk loader ticket */
-      public void clearChunkLoader()
-      {
-          //unforce chunk
-          if (this.chunks != null)
-          {
-                for(ChunkPos p : this.chunks)
-                {
+    
+    /** release ticket when dead */
+    @Override
+    public void setDead()
+    {
+        //clear chunk loader
+        this.clearChunkLoader();
+        super.setDead();
+        
+        //update ship cache
+        this.updateShipCacheDataWithoutNewID();
+    }
+    
+    /** release chunk loader ticket */
+    public void clearChunkLoader()
+    {
+        //unforce chunk
+        if (this.chunks != null)
+        {
+            for(ChunkPos p : this.chunks)
+            {
                 ForgeChunkManager.unforceChunk(this.chunkTicket, p);
             }
-          }
-
-          //release ticket
-          if (this.chunkTicket != null)
-          {
-                ForgeChunkManager.releaseTicket(this.chunkTicket);
-          }
-          
-          this.chunks = null;
-          this.chunkTicket = null;
-      }
+        }
+        
+        //release ticket
+        if (this.chunkTicket != null)
+        {
+            ForgeChunkManager.releaseTicket(this.chunkTicket);
+        }
+        
+        this.chunks = null;
+        this.chunkTicket = null;
+    }
       
-      /** chunk loader ticking */
-      public void updateChunkLoader()
-      {
-          if (!this.world.isRemote)
-          {
-              //set ticket
-                setChunkLoader();
+    /** chunk loader ticking */
+    public void updateChunkLoader()
+    {
+        if (!this.world.isRemote)
+        {
+            //set ticket
+            setChunkLoader();
+            //apply ticket
+            applyChunkLoader();
+        }
+    }
+      
+    /** request chunk loader ticket
+     * 
+     *  player must be ONLINE
+     */
+    private void setChunkLoader()
+    {
+        //if equip chunk loader
+        if (this.getStateMinor(ID.M.LevelChunkLoader) > 0)
+        {
+            EntityPlayer player = null;
+            int uid = this.getPlayerUID();
+            
+            //check owner exists
+            if (uid > 0)
+            {
+                player = EntityHelper.getEntityPlayerByUID(uid);
                 
-                //apply ticket
-                applyChunkLoader();
-          }
-      }
-      
-      /** request chunk loader ticket
-       * 
-       *  player must be ONLINE
-       */
-      private void setChunkLoader()
-      {
-          //if equip chunk loader
-          if (this.getStateMinor(ID.M.LevelChunkLoader) > 0)
-          {
-              EntityPlayer player = null;
-              int uid = this.getPlayerUID();
-              
-              //check owner exists
-              if (uid > 0)
-              {
-                  player = EntityHelper.getEntityPlayerByUID(uid);
-                  
-                  //player is online and no ticket
-                  if (player != null && this.chunkTicket == null)
-                  {
+                //player is online and no ticket
+                if (player != null && this.chunkTicket == null)
+                {
                     //get ticket
-                      this.chunkTicket = ForgeChunkManager.requestPlayerTicket(ShinColle.instance, player.getName(), world, ForgeChunkManager.Type.ENTITY);
-                  
-                      if (this.chunkTicket != null)
-                      {
-                          this.chunkTicket.bindEntity(this);
-                      }
-                      else
-                      {
-                          LogHelper.debug("DEBUG: Ship get chunk loader ticket fail.");
-                          clearChunkLoader();
-                      }
-                  }
-              }//end check player
-          }//end can chunk loader
-          else
-          {
-              clearChunkLoader();
-          }
-      }
+                    this.chunkTicket = ForgeChunkManager.requestPlayerTicket(ShinColle.instance, player.getName(), world, ForgeChunkManager.Type.ENTITY);
+                    
+                    if (this.chunkTicket != null)
+                    {
+                        this.chunkTicket.bindEntity(this);
+                    }
+                    else
+                    {
+                        LogHelper.debug("DEBUG: Ship get chunk loader ticket fail.");
+                        clearChunkLoader();
+                    }
+                }
+            }//end check player
+        }//end can chunk loader
+        else
+        {
+            clearChunkLoader();
+        }
+    }
       
-      /** force chunk load */
-      private void applyChunkLoader()
-      {
-          if (this.chunkTicket != null)
-          {
-              HashSet<ChunkPos> unloadChunks = new HashSet<ChunkPos>();
-              HashSet<ChunkPos> loadChunks = null;
-              HashSet<ChunkPos> tempChunks = new HashSet<ChunkPos>();
-              
-              //get chunk x,z
-              int cx = MathHelper.floor(this.posX) >> 4;
+    /** force chunk load */
+    private void applyChunkLoader()
+    {
+        if (this.chunkTicket != null)
+        {
+            HashSet<ChunkPos> unloadChunks = new HashSet<ChunkPos>();
+            HashSet<ChunkPos> loadChunks = null;
+            HashSet<ChunkPos> tempChunks = new HashSet<ChunkPos>();
+            
+            //get chunk x,z
+            int cx = MathHelper.floor(this.posX) >> 4;
             int cz = MathHelper.floor(this.posZ) >> 4;
             
-              //get new chunk
+            //get new chunk
             loadChunks = BlockHelper.getChunksWithinRange(world, cx, cz, ConfigHandler.chunkloaderMode);
-              
+            
             //get unload chunk
             if (this.chunks != null)
             {
@@ -5015,83 +2024,24 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
             
             LogHelper.debug("DEBUG : ship chunk loader: "+this.chunks+" "+this);
         }
-      }
-      
-      //get last waypoint, for waypoint loop checking
-      @Override
-      public BlockPos getLastWaypoint()
-      {
-          return this.waypoints[0];
-      }
-      
-      @Override
-      public void setLastWaypoint(BlockPos pos)
-      {
-          this.waypoints[0] = pos;
-      }
-      
-      //convert wp stay time to ticks
-      public static int wpStayTime2Ticks(int wpstay)
-      {
-          switch (wpstay)
-          {
-          case 1:
-          case 2:
-          case 3:
-          case 4:
-          case 5:
-              return wpstay * 100;
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-          case 10:
-              return (wpstay - 5) * 1200;
-          case 11:
-          case 12:
-          case 13:
-          case 14:
-          case 15:
-          case 16:
-              return (wpstay - 10) * 12000;
-        default:
-            return 0;
-          }
-      }
-
-    @Override
-    public int getWpStayTime()
-    {
-        return getStateTimer(ID.T.WpStayTime);
-    }
-
-    @Override
-    public int getWpStayTimeMax()
-    {
-        return wpStayTime2Ticks(getStateMinor(ID.M.WpStay));
-    }
-
-    @Override
-    public void setWpStayTime(int time)
-    {
-        setStateTimer(ID.T.WpStayTime, time);
     }
     
     //不跟aircraft, mount碰撞
     @Override
-      protected void collideWithEntity(Entity target)
+    protected void collideWithEntity(Entity target)
     {
-          if (target instanceof BasicEntityAirplane)
-          {
-              return;
-          }
-          
+        if (target instanceof BasicEntityAirplane)
+        {
+            return;
+        }
+        
+        //TODO passenger need test
 //          for (Entity p : this.getPassengers())
 //          {
 //              if (target.equals(p)) return;
 //          }
-          
-          target.applyEntityCollision(this);
+        
+        target.applyEntityCollision(this);
     }
     
     @Override
@@ -5100,212 +2050,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return 40;
     }
     
-      /**
-       * get/setField為GUI container更新用
-       * 使資料可以只用相同方法取值, 不用每個資料用各自方法取值
-       * 方便for loop撰寫
-       */
-    public int getFieldCount()
-    {
-        return 35;
-    }
-    
-    public int getField(int id)
-    {
-        switch (id)
-        {
-        case 0:
-            return this.StateMinor[ID.M.ExpCurrent];
-        case 1:
-            return this.StateMinor[ID.M.NumAmmoLight];
-        case 2:
-            return this.StateMinor[ID.M.NumAmmoHeavy];
-        case 3:
-            return this.StateMinor[ID.M.NumAirLight];
-        case 4:
-            return this.StateMinor[ID.M.NumAirHeavy];
-        case 5:
-            return this.getStateFlagI(ID.F.UseMelee);
-        case 6:
-            return this.getStateFlagI(ID.F.UseAmmoLight);
-        case 7:
-            return this.getStateFlagI(ID.F.UseAmmoHeavy);
-        case 8:
-            return this.getStateFlagI(ID.F.UseAirLight);
-        case 9:
-            return this.getStateFlagI(ID.F.UseAirHeavy);
-        case 10:
-            return this.getStateFlagI(ID.F.IsMarried);
-        case 11:
-            return this.StateMinor[ID.M.FollowMin];
-        case 12:
-            return this.StateMinor[ID.M.FollowMax];
-        case 13:
-            return this.StateMinor[ID.M.FleeHP];
-        case 14:
-            return this.getStateFlagI(ID.F.PassiveAI);
-        case 15:
-            return this.getStateFlagI(ID.F.UseRingEffect);
-        case 16:
-            return this.getStateFlagI(ID.F.OnSightChase);
-        case 17:
-            return this.getStateFlagI(ID.F.PVPFirst);
-        case 18:
-            return this.getStateFlagI(ID.F.AntiAir);
-        case 19:
-            return this.getStateFlagI(ID.F.AntiSS);
-        case 20:
-            return this.getStateFlagI(ID.F.TimeKeeper);
-        case 21:
-            return this.getMorale();
-        case 22:
-            return this.StateMinor[ID.M.DrumState];
-        case 23:
-            return this.getStateFlagI(ID.F.PickItem);
-        case 24:
-            return this.StateMinor[ID.M.WpStay];
-        case 25:
-            return this.StateMinor[ID.M.Kills];
-        case 26:
-            return this.StateMinor[ID.M.NumGrudge];
-        case 27:
-            return this.itemHandler.getInventoryPage();
-        case 28:
-            return this.getStateFlagI(ID.F.ShowHeldItem);
-        case 29:
-            return this.StateMinor[ID.M.UseCombatRation];
-        case 30:
-            return this.getStateFlagI(ID.F.AutoPump);
-        case 31:
-            return this.getStateEmotion(ID.S.State);
-        case 32:
-            return this.StateMinor[ID.M.Task];
-        case 33:
-            return this.StateMinor[ID.M.TaskSide];
-        case 34:
-            return this.getStateFlagI(ID.F.NoFuel);  //for morph entity
-        }
-        
-        return 0;
-    }
-
-    public void setField(int id, int value)
-    {
-        switch (id)
-        {
-        case 0:
-            this.StateMinor[ID.M.ExpCurrent] = value;
-        break;
-        case 1:
-            this.StateMinor[ID.M.NumAmmoLight] = value;
-        break;
-        case 2:
-            this.StateMinor[ID.M.NumAmmoHeavy] = value;
-        break;
-        case 3:
-            this.StateMinor[ID.M.NumAirLight] = value;
-        break;
-        case 4:
-            this.StateMinor[ID.M.NumAirHeavy] = value;
-        break;
-        case 5:
-            this.setStateFlagI(ID.F.UseMelee, value);
-        break;
-        case 6:
-            this.setStateFlagI(ID.F.UseAmmoLight, value);
-        break;
-        case 7:
-            this.setStateFlagI(ID.F.UseAmmoHeavy, value);
-        break;
-        case 8:
-            this.setStateFlagI(ID.F.UseAirLight, value);
-        break;
-        case 9:
-            this.setStateFlagI(ID.F.UseAirHeavy, value);
-        break;
-        case 10:
-            this.setStateFlagI(ID.F.IsMarried, value);
-        break;
-        case 11:
-            this.StateMinor[ID.M.FollowMin] = value;
-        break;
-        case 12:
-            this.StateMinor[ID.M.FollowMax] = value;
-        break;
-        case 13:
-            this.StateMinor[ID.M.FleeHP] = value;
-        break;
-        case 14:
-            this.setStateFlagI(ID.F.PassiveAI, value);
-        break;
-        case 15:
-            this.setStateFlagI(ID.F.UseRingEffect, value);
-        break;
-        case 16:
-            this.setStateFlagI(ID.F.OnSightChase, value);
-        break;
-        case 17:
-            this.setStateFlagI(ID.F.PVPFirst, value);
-        break;
-        case 18:
-            this.setStateFlagI(ID.F.AntiAir, value);
-        break;
-        case 19:
-            this.setStateFlagI(ID.F.AntiSS, value);
-        break;
-        case 20:
-            this.setStateFlagI(ID.F.TimeKeeper, value);
-        break;
-        case 21:
-            this.StateMinor[ID.M.Morale] = value;
-        break;
-        case 22:
-            this.StateMinor[ID.M.DrumState] = value;
-        break;
-        case 23:
-            this.setStateFlagI(ID.F.PickItem, value);
-        break;
-        case 24:
-            this.StateMinor[ID.M.WpStay] = value;
-        break;
-        case 25:
-            this.StateMinor[ID.M.Kills] = value;
-        break;
-        case 26:
-            this.StateMinor[ID.M.NumGrudge] = value;
-        break;
-        case 27:
-            this.itemHandler.setInventoryPage(value);
-        break;
-        case 28:
-            this.setStateFlagI(ID.F.ShowHeldItem, value);
-        break;
-        case 29:
-            this.StateMinor[ID.M.UseCombatRation] = value;
-        break;
-        case 30:
-            this.setStateFlagI(ID.F.AutoPump, value);
-        break;
-        case 31:
-            this.setStateEmotion(ID.S.State, value, false);
-        break;
-        case 32:
-            this.StateMinor[ID.M.Task] = value;
-        break;
-        case 33:
-            this.StateMinor[ID.M.TaskSide] = value;
-        break;
-        case 34:
-            this.setStateFlagI(ID.F.NoFuel, value);     //for morph entity
-        break;
-        }
-        
-    }
-    
     //固定swing max tick為6, 無視藥水效果
-      @Override
+    @Override
     protected void updateArmSwingProgress()
-      {
+    {
         int swingMaxTick = 6;
         if (this.isSwingInProgress)
         {
@@ -5324,42 +2072,11 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 
         this.swingProgress = (float)this.swingProgressInt / (float)swingMaxTick;
     }
-      
-    @Override
-    public int getTextureID()
-    {
-        return this.getShipClass();
-    }
-    
-    //for model display
-    @Override
-    public int getRidingState()
-    {
-        return 0;
-    }
-    
-    @Override
-    public void setRidingState(int state) {}
     
     @Override
     public boolean shouldDismountInWater(Entity rider)
     {
         return false;
-    }
-    
-    @Override
-    public int getScaleLevel()
-    {
-        return 0;
-    }
-    
-    @Override
-    public void setScaleLevel(int par1) {}
-      
-    @Override
-    public Random getRand()
-    {
-        return this.rand;
     }
     
     @Override
@@ -5463,18 +2180,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
     }
     
     @Override
-    public int getDeathTick()
-    {
-        return this.deathTime;
-    }
-
-    @Override
-    public void setDeathTick(int par1)
-    {
-        this.deathTime = par1;
-    }
-    
-    @Override
     @Nullable
     public ItemStack getHeldItemMainhand()
     {
@@ -5508,18 +2213,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
     }
     
-    //check held item can be rendered
-    public boolean canShowHeldItem()
-    {
-        if (!this.getStateFlag(ID.F.ShowHeldItem) || this.getAttackTick() > 0 ||
-            this.getAttackTick2() > 0)
-        {
-            return false;
-        }
-        
-        return true;
-    }
-    
     public byte[] getBodyHeightStand()
     {
         return this.bodyHeightStand;
@@ -5530,68 +2223,13 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return this.bodyHeightSit;
     }
     
-      public Enums.BodyHeight getBodyIDFromHeight()
-      {
-          return EntityHelper.getBodyIDFromHeight(getHitHeight(), this);
-      }
-      
-      public Enums.BodySide getHitAngleID()
-      {
-          return EntityHelper.getHitAngleID(getHitAngle());
-      }
-      
-      /**
-       * FIX: bug that ship be deleted while teleport (dismount)
-       */
-      @Override
+    /**
+     * FIX: bug that ship be deleted while teleport (dismount)
+     */
+    @Override
     public void dismountEntity(Entity mount)
     {
-          if (mount != null)
-          {
-              this.setPositionAndUpdate(mount.posX, mount.posY + 1D, mount.posZ);
-          }
-          else
-          {
-              super.dismountEntity(mount);
-          }
-    }
-      
-    @Override
-    public HashMap<Integer, Integer> getBuffMap()
-    {
-        if (this.BuffMap == null) this.BuffMap = new HashMap<Integer, Integer>();
-        return this.BuffMap;
-    }
-
-    @Override
-    public void setBuffMap(HashMap<Integer, Integer> map)
-    {
-        if (map != null) this.BuffMap = map;
-    }
-    
-    @Override
-    public Attrs getAttrs()
-    {
-        return this.shipAttrs;
-    }
-    
-    @Override
-    public void setAttrs(Attrs data)
-    {
-        if (data instanceof AttrsAdv) this.shipAttrs = (AttrsAdv) data;
-    }
-    
-    @Override
-    public HashMap<Integer, int[]> getAttackEffectMap()
-    {
-        if (this.AttackEffectMap == null) this.AttackEffectMap = new HashMap<Integer, int[]>();
-        return this.AttackEffectMap;
-    }
-
-    @Override
-    public void setAttackEffectMap(HashMap<Integer, int[]> map)
-    {
-        this.AttackEffectMap = map;
+        this.setPositionAndUpdate(this.posX, this.posY + 1D, this.posZ);
     }
     
     @Override
@@ -5608,25 +2246,6 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         }
         
         return super.isGlowing();
-    }
-    
-    @Override
-    public MissileData getMissileData(int type)
-    {
-        return this.MissileData[type];
-    }
-
-    @Override
-    public void setMissileData(int type, MissileData data)
-    {
-        this.MissileData[type] = data;
-    }
-    
-    //init missile data
-    public void resetMissileData()
-    {
-        this.MissileData = new MissileData[5];
-        for (int i = 0; i < 5; i++) this.MissileData[i] = new MissileData();
     }
     
     @Override
@@ -5673,23 +2292,10 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         return super.getCapability(capability, facing);
     }
     
-    /**
-     * if change equips => update attrs
-     */
     @Override
-    public void onContentChanged(int slot, CapaInventory cpInv)
-    {
-        if (!this.world.isRemote && cpInv.getInvName().equals(ID.InvName.EquipSlot))
-        {
-            this.calcShipAttributes(2, true);
-        }
-    }
-    
-    @Override
-    public StateHandler getStateHandler()
+    public ShipStateHandler getStateHandler()
     {
         if (this.shipStates == null) this.shipStates = new ShipStatesHandler(this);
-        
         return this.shipStates;
     }
     

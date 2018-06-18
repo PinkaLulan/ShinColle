@@ -35,7 +35,7 @@ public class EntityCANe extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.6F, 1.3F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CANE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 0);
@@ -50,7 +50,7 @@ public class EntityCANe extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(14);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

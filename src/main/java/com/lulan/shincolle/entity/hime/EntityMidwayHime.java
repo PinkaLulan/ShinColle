@@ -31,7 +31,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.7F, 2.0F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.MidwayHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 2);
@@ -43,7 +43,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(35);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override

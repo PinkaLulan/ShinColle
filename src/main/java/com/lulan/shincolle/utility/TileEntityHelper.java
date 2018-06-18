@@ -260,7 +260,7 @@ public class TileEntityHelper
 	}
 	
 	/**
-	 * check and get chest tile, now accept IInventory or IItemHandler
+	 * check and get inventory tile, now accept IInventory or IItemHandler
 	 * 
 	 * @return TileEntity if inventory found, otherwise null
 	 */

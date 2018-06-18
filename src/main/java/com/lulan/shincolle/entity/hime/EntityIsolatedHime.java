@@ -24,7 +24,7 @@ public class EntityIsolatedHime extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.6F, 1.6F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.IsolatedHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 8);
@@ -36,7 +36,7 @@ public class EntityIsolatedHime extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(18);
 		
-		this.postInit();
+		this.initPre();
 	}
 
 	@Override
