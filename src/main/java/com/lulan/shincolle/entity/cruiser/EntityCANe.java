@@ -39,7 +39,7 @@ public class EntityCANe extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CANE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 0);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.modelPosInGUI = new float[] {0F, 10F, 0F, 40F};
 		

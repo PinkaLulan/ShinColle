@@ -5,11 +5,10 @@ import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.intermod.MetamorphHelper;
+import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.InteractHelper;
+import com.lulan.shincolle.utility.InventoryHelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -100,25 +99,25 @@ public class ShipInventoryHandler
             /*
              * resize if size changed
              * item slot size = level / N + icon type + ship type + equip
-             * equip slot size = 
+             * equip slot size = level / N + icon type
+             * equip page size = by level
+             * hand size = fixed 2
              */
+            //check item slots
             ShipStateHandler st = this.host.getStateHandler();
-            int sizetemp = st.getShipLevel() / ConfigHandler.slotsLevel +
-                           ConfigHandler.getSlotsByIcon(st.getShipIcon()) +
-                           ConfigHandler.getSlotsByType(st.getShipType());
-        }
+            int sizetemp = st.getShipLevel() / ConfigHandler.itemSlotsLevel +    //level
+                           ConfigHandler.getSlotsItemByIcon(st.getShipIcon()) +  //by icon
+                           ConfigHandler.itemSlotsType[st.getShipType()] +  //by type
+                           this.host.getStateHandler().getShipSlotsLevel();      //equip
             
-        
-        //TODO
-        
-        
-        
-    }
-    
-    /** calc slot number modify by ship type */
-    public static int getShipTypeToSlots(byte type)
-    {
-        
+            if (sizetemp != this.invItem.getSlots()) this.invItem.resize(sizetemp);
+            
+            //check equip slots
+            sizetemp = st.getShipLevel() / ConfigHandler.equipSlotsLevel +   //level
+                       ConfigHandler.getSlotsEquipByIcon(st.getShipIcon());  //by icon
+            
+            if (sizetemp != this.invEquip.getSlots()) this.invEquip.resize(sizetemp);
+        }
     }
     
     /** get inventory */
@@ -155,339 +154,94 @@ public class ShipInventoryHandler
         //send sync packet
         if (!this.host.world.isRemote)
         {
-          //TODO
+          //TODO send ship sync packet
         }
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //TODO old method refactoring
-    
-    /** decr ammo, type: 0:light, 1:heavy */
-    public boolean decrAmmoNum(int type, int amount)
-    {
-        //check morph
-        if (this.isMorph)
-        {
-            return MetamorphHelper.decrAmmoNum(this, type, amount);
-        }
-        
-        int ammoType = ID.M.NumAmmoLight;
-        boolean useItem = !hasAmmoLight();
-        boolean showEmo = false;
-        float modAmmo = this.shipAttrs.getAttrsBuffed(ID.Attrs.AMMO);
-        
-        switch (type)
-        {
-        case 1:   //use heavy ammo
-            ammoType = ID.M.NumAmmoHeavy;
-            useItem = !hasAmmoHeavy();
-            break;
-        }
-
-        //check ammo first time
-        if (StateMinor[ammoType] <= amount || useItem)
-        {
-            int addAmmo = 0;
-            
-            //use light ammo item
-            if (ammoType == ID.M.NumAmmoLight)
-            {
-                if (decrSupplies(0))
-                {  //use ammo item
-                    addAmmo = (int) (Values.N.BaseLightAmmo * modAmmo);
-                    showEmo = true;
-                }
-                else if (decrSupplies(2))
-                {  //use ammo container item
-                    addAmmo = (int) (Values.N.BaseLightAmmo * 9 * modAmmo);
-                    showEmo = true;
-                }
-            }
-            //use heavy ammo item
-            else
-            {
-                if (decrSupplies(1))
-                {  //use ammo item
-                    addAmmo = (int) (Values.N.BaseHeavyAmmo * modAmmo);
-                    showEmo = true;
-                }
-                else if (decrSupplies(3))
-                {  //use ammo container item
-                    addAmmo = (int) (Values.N.BaseHeavyAmmo * 9 * modAmmo);
-                    showEmo = true;
-                }
-            }
-            
-            //check easy mode
-            if (ConfigHandler.easyMode)
-            {
-                addAmmo *= 10;
-            }
-            
-            StateMinor[ammoType] += addAmmo;
-        }
-        
-        //show emotes
-        if (showEmo)
-        {
-            if (this.getEmotesTick() <= 0)
-            {
-                this.setEmotesTick(40);
-                
-                switch (this.rand.nextInt(4))
-                {
-                case 1:
-                    applyParticleEmotion(29);  //blink
-                break;
-                case 2:
-                    applyParticleEmotion(30);  //pif
-                break;
-                default:
-                    applyParticleEmotion(9);  //hungry
-                break;
-                }
-            }
-        }
-        
-        //check ammo second time
-        if (StateMinor[ammoType] < amount)
-        {
-            //show emotes
-            if (this.getEmotesTick() <= 0)
-            {
-                this.setEmotesTick(20);
-                
-                switch (this.rand.nextInt(7))
-                {
-                case 1:
-                    applyParticleEmotion(0);  //drop
-                break;
-                case 2:
-                    applyParticleEmotion(2);  //panic
-                break;
-                case 3:
-                    applyParticleEmotion(5);  //...
-                break;
-                case 4:
-                    applyParticleEmotion(20);  //orz
-                break;
-                default:
-                    applyParticleEmotion(32);  //hmm
-                break;
-                }
-            }
-            
-            return false;
-        }
-        else
-        {
-            StateMinor[ammoType] -= amount;
-            return true;
-        }
-    }
-    
-    //consume grudge with buff and item calculation
-    public void decrGrudgeNum(int value)
-    {
-        //check morph
-        if (this.isMorph)
-        {
-            MetamorphHelper.decrGrudgeNum(this, value);
-            return;
-        }
-                
-        //get grudge magnification
-        float modGrudge = this.shipAttrs.getAttrsBuffed(ID.Attrs.GRUDGE);
-        
-        //if grudge--, check buff: hunger
-        if (value > 0)
-        {
-            int level = BuffHelper.getPotionLevel(this, 17);
-            value = (int) ((float)value * (1F + level * 2F));
-        }
-        //if grudge++, check buff: grudge mod
-        else if (value < 0)
-        {
-            value = (int) ((float)value * modGrudge);
-        }
-        
-        //check fuel flag
-        if (!getStateFlag(ID.F.NoFuel))
-        {
-            this.addGrudge(-value);
-        }
-        
-        //eat "ONE" grudge item
-        if (this.getGrudge() <= 0)
-        {
-            //try to find grudge item
-            if (decrSupplies(4))
-            {
-                if (ConfigHandler.easyMode)
-                {
-                    this.addGrudge((int)(Values.N.BaseGrudge * 10F * modGrudge));
-                }
-                else
-                {
-                    this.addGrudge((int)(Values.N.BaseGrudge * modGrudge));
-                }
-            }
-            //try to find grudge block
-            else if (decrSupplies(5))
-            {
-                if (ConfigHandler.easyMode)
-                {
-                    this.addGrudge((int)(Values.N.BaseGrudge * 90F * modGrudge));
-                }
-                else
-                {
-                    this.addGrudge((int)(Values.N.BaseGrudge * 9F * modGrudge));
-                }
-            }
-            //避免吃掉含有儲存資訊的方塊, 因此不使用heavy grudge block作為補充道具
-        }
-        
-        //check fuel again and set fuel flag
-        if (StateMinor[ID.M.NumGrudge] <= 0)
-        {
-            setStateFlag(ID.F.NoFuel, true);
-        }
-        else
-        {
-            setStateFlag(ID.F.NoFuel, false);
-        }
-        
-        //check fuel flag and set AI
-        if (getStateFlag(ID.F.NoFuel))  //no fuel, clear AI
-        {
-            //原本有AI, 則清除之
-            if (this.targetTasks.taskEntries.size() > 0)
-            {
-                updateFuelState(true);
-            }    
-        }
-        else                            //has fuel, set AI
-        {
-            if (this.targetTasks.taskEntries.size() < 1)
-            {
-                updateFuelState(false);
-            }
-        }
-    }
+    private static ItemStack AmmoLight = new ItemStack(ModItems.Ammo, 1, 0);
+    private static ItemStack AmmoHeavy = new ItemStack(ModItems.Ammo, 1, 2);
+    private static ItemStack AmmoLightContainer = new ItemStack(ModItems.Ammo, 1, 1);
+    private static ItemStack AmmoHeavyContainer = new ItemStack(ModItems.Ammo, 1, 3);
     
     /**
-     * decrese ammo/grudge/repair item number
-     * return:
-     *   true = get item and item number -1
-     *   false = not enough item
+     * consume ammo item x1
+     * 
+     * @param type 0:light, 1:heavy
+     * @return -1:no item can be consumed, 0:light ammo, 1:heavy ammo, 2:light container, 3:heavy container
      */
-    public boolean decrSupplies(int type)
+    public int consumeAmmoItem(Enums.Ammo type)
     {
-        int itemNum = 1;
-        boolean noMeta = false;
-        ItemStack itemType = null;
-        
-        //find ammo
-        switch (type)
+        if (type == Enums.Ammo.HEAVY)
         {
-        case 0:    //use 1 light ammo
-            itemType = new ItemStack(ModItems.Ammo,1,0);
-            break;
-        case 1: //use 1 heavy ammo
-            itemType = new ItemStack(ModItems.Ammo,1,2);
-            break;
-        case 2:    //use 1 light ammo container
-            itemType = new ItemStack(ModItems.Ammo,1,1);
-            break;
-        case 3: //use 1 heavy ammo container
-            itemType = new ItemStack(ModItems.Ammo,1,3);
-            break;
-        case 4: //use 1 grudge
-            itemType = new ItemStack(ModItems.Grudge,1);
-            break;
-        case 5: //use 1 grudge block
-            itemType = new ItemStack(ModBlocks.BlockGrudge,1);
-            break;
-        case 6: //use 1 grudge block
-            itemType = new ItemStack(ModBlocks.BlockGrudgeHeavy,1);
-            break;
-        case 7:    //use 1 repair bucket
-            itemType = new ItemStack(ModItems.BucketRepair,1);
-            break;
-        case 8:    //use 1 repair goddess
-            itemType = new ItemStack(ModItems.RepairGoddess,1);
-            break;
-        }
-        
-        //search item in ship inventory
-        int i = findItemInSlot(itemType, noMeta);
-        
-        if (i == -1)
-        {    //item not found
-            return false;
-        }
-        
-        //decr item stacksize
-        ItemStack getItem = this.itemHandler.getStackInSlot(i);
-
-        if (getItem.stackSize >= itemNum)
-        {
-            getItem.stackSize -= itemNum;
+            if (InventoryHelper.consumeItem(this.invItem, AmmoHeavy, 1, true, false, false)) return 1;
+            if (InventoryHelper.consumeItem(this.invItem, AmmoHeavyContainer, 1, true, false, false)) return 3;
         }
         else
-        {    //not enough item, return false
-            return false;
-        }
-                
-        if (getItem.stackSize == 0)
         {
-            getItem = null;
+            if (InventoryHelper.consumeItem(this.invItem, AmmoLight, 1, true, false, false)) return 0;
+            if (InventoryHelper.consumeItem(this.invItem, AmmoLightContainer, 1, true, false, false)) return 2;
         }
         
-        //save back itemstack
-        //no need to sync because no GUI opened
-        this.itemHandler.setStackInSlot(i, getItem);
-        
-        return true;    
+        //item not found
+        return -1;    
     }
     
-  //use combat ration
-    protected void useCombatRation()
+    private static ItemStack GrudgeItem = new ItemStack(ModItems.Grudge, 1, 0);
+    private static ItemStack GrudgeBlock = new ItemStack(ModBlocks.BlockGrudge);
+    
+    /**
+     * consume grudge item x1
+     * 
+     * @return -1:no item can be consumed, 0:grudge, 1:grudge block
+     */
+    public int consumeGrudgeItem()
+    {
+        if (InventoryHelper.consumeItem(this.invItem, GrudgeItem, 1, true, false, false)) return 0;
+        if (InventoryHelper.consumeItem(this.invItem, GrudgeBlock, 1, false, false, false)) return 1;
+
+        //item not found
+        return -1;    
+    }
+    
+    private static ItemStack RepairBucket = new ItemStack(ModItems.BucketRepair);
+    
+    /**
+     * consume repair bucket x1
+     * @return <tt>true</tt> if item consumed
+     */
+    public boolean consumeRepairBucket()
+    {
+        return InventoryHelper.consumeItem(this.invItem, RepairBucket, 1, false, false, false);
+    }
+    
+    private static ItemStack RepairGoddess = new ItemStack(ModItems.RepairGoddess);
+    
+    /**
+     * consume repair goddess x1
+     * @return <tt>true</tt> if item consumed
+     */
+    public boolean consumeRepairGoddess()
+    {
+        return InventoryHelper.consumeItem(this.invItem, RepairGoddess, 1, false, false, false);
+    }
+    
+    private static ItemStack CombatRation = new ItemStack(ModItems.CombatRation);
+    
+    /**
+     * autouse combat ration
+     * 
+     * CombatRation meta:
+     *   0:Rice Balls, 1:Rice Balls +grudge,
+     *   2:Rice Balls XL, 3:Rice Balls XL +grudge,
+     *   4:Ice Cream, 5:Ice Cream +grudge
+     */
+    public void autouseCombatRation()
     {
         //search item in ship inventory
-        int i = findItemInSlot(new ItemStack(ModItems.CombatRation), true);
+        ItemStack stack = InventoryHelper.getAndRemoveItem(this.invItem, CombatRation, 1, false, false, false, null);
         
-        if (i >= 0)
-        {
-            //decr item stacksize
-            ItemStack getItem = this.itemHandler.getStackInSlot(i);
-            
-            InteractHelper.interactFeed(this, null, getItem);
-            
-            getItem.stackSize--;
-            
-            if (getItem.stackSize <= 0)
-            {
-                getItem = null;
-            }
-            
-            //save back itemstack
-            //no need to sync because no GUI opened
-            this.itemHandler.setStackInSlot(i, getItem);
-        }
+        if (!stack.isEmpty()) InteractHelper.interactFeed(this.host, null, stack);
     }
-    
-    
     
     
 }

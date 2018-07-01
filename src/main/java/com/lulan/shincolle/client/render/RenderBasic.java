@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.lulan.shincolle.client.model.ShipModelBaseAdv;
 import com.lulan.shincolle.entity.IShipEmotion;
+import com.lulan.shincolle.handler.IRenderEntity;
 import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.Minecraft;
@@ -22,36 +23,36 @@ import net.minecraft.util.math.Vec3d;
 
 abstract public class RenderBasic extends RenderLiving<EntityLiving>
 {
-	
-	/** misc model data */
-	public static class MiscModel
-	{
-		public ModelBase model;
-		public ResourceLocation texture;
-		public Entity entity;
-		public Vec3d scale;
-		public float rotX;
-		public float rotY;
-		public float rotZ;
-		
-		public MiscModel(Entity entity, ModelBase model, ResourceLocation texture)
-		{
-			this.entity = entity;
-			this.model = model;
-			this.texture = texture;
-			this.scale = new Vec3d(1D, 1D, 1D);
-			this.rotX = 0F;
-			this.rotY = 0F;
-			this.rotZ = 0F;
-		}
-	}
+    
+    /** misc model data */
+    public static class MiscModel
+    {
+        public ModelBase model;
+        public ResourceLocation texture;
+        public Entity entity;
+        public Vec3d scale;
+        public float rotX;
+        public float rotY;
+        public float rotZ;
+        
+        public MiscModel(Entity entity, ModelBase model, ResourceLocation texture)
+        {
+            this.entity = entity;
+            this.model = model;
+            this.texture = texture;
+            this.scale = new Vec3d(1D, 1D, 1D);
+            this.rotX = 0F;
+            this.rotY = 0F;
+            this.rotZ = 0F;
+        }
+    }
 
-	protected static final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
-	protected int shipClass = 0;
-	protected boolean initModel = true;
-	protected ArrayList<MiscModel> miscModelList;
-	
-	
+    protected static final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
+    protected int textuerID = 0;
+    protected boolean initModel = true;
+    protected ArrayList<MiscModel> miscModelList;
+    
+    
     public RenderBasic(RenderManager rm)
     {
         super(rm, null, 1F);
@@ -65,63 +66,72 @@ abstract public class RenderBasic extends RenderLiving<EntityLiving>
     @Override
     public void doRender(EntityLiving entity, double x, double y, double z, float yaw, float parTick)
     {
-    	//model init
-    	if (this.initModel)
-    	{
-    		this.shipClass = ((IShipCustomTexture) entity).getTextureID();
-    		this.initModel = false;
-    		setModel();
-    		setMiscModel();
-    	}
-    	
-    	//for invisible model
-    	if (this.mainModel == null) return;
-    	
-    	//set shadow size
-    	setShadowSize();
-    	
-    	//tweak shadow size
-    	if (((IShipEmotion)entity).getScaleLevel() > 0) this.shadowSize += ((IShipEmotion)entity).getScaleLevel() * 0.4F;
+        //model init
+        if (this.initModel)
+        {
+            if (entity instanceof IRenderEntity)
+            {
+                this.textuerID = ((IRenderEntity) entity).getRenderHandler().getTextureID();
+            }
+            else if (entity instanceof ICustomTexture)
+            {
+                this.textuerID = ((ICustomTexture) entity).getTextureID();
+            }
+            else this.textuerID = 0;
+            
+            this.initModel = false;
+            setModel();
+            setMiscModel();
+        }
+        
+        //for invisible model
+        if (this.mainModel == null) return;
+        
+        //set shadow size
+        setShadowSize();
+        
+        //tweak shadow size
+        if (((IShipEmotion)entity).getScaleLevel() > 0) this.shadowSize += ((IShipEmotion)entity).getScaleLevel() * 0.4F;
 
-    	super.doRender(entity, x, y, z, yaw, parTick);
-    	
-    	//reset light
-    	int j = entity.getBrightnessForRender(parTick);
+        super.doRender(entity, x, y, z, yaw, parTick);
+        
+        //reset light
+        int j = entity.getBrightnessForRender(parTick);
         int k = j % 65536;
         int l = j / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k, (float)l);
-    	
+        
         //render misc models
         if (hasMiscModel() && miscModelList != null && miscModelList.size() > 0)
         {
-        	for (int i = 0; i < miscModelList.size(); i++)
-        	{
-        		if (this.mainModel instanceof ShipModelBaseAdv &&
-        			!((ShipModelBaseAdv) this.mainModel).shouldRenderMiscModel(i))
-        		{
-        			continue;
-        		}
-        		
-        		doRenderMisc(entity, i, x, y, z, yaw, parTick);
-        	}
+            for (int i = 0; i < miscModelList.size(); i++)
+            {
+                if (this.mainModel instanceof ShipModelBaseAdv &&
+                    !((ShipModelBaseAdv) this.mainModel).shouldRenderMiscModel(i))
+                {
+                    continue;
+                }
+                
+                doRenderMisc(entity, i, x, y, z, yaw, parTick);
+            }
         }
     }
     
     /** for more models in one entity, return true and add misc model list */
     protected boolean hasMiscModel()
     {
-    	return false;
+        return false;
     }
     
     /** render misc model */
     protected void doRenderMisc(EntityLiving host, int miscID, double x, double y, double z, float yaw, float parTick)
     {
-    	MiscModel mm = this.miscModelList.get(miscID);
-    	if (mm == null) return;
-    	
-    	ModelBase model = mm.model;
-    	Entity entity = mm.entity;
-    	
+        MiscModel mm = this.miscModelList.get(miscID);
+        if (mm == null) return;
+        
+        ModelBase model = mm.model;
+        Entity entity = mm.entity;
+        
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
         model.swingProgress = this.getSwingProgress(host, parTick);
@@ -193,7 +203,7 @@ abstract public class RenderBasic extends RenderLiving<EntityLiving>
             
             if (entity instanceof EntityLivingBase)
             {
-            	model.setLivingAnimations((EntityLivingBase) entity, f6, f5, parTick);
+                model.setLivingAnimations((EntityLivingBase) entity, f6, f5, parTick);
             }
             
             model.setRotationAngles(f6, f5, f8, f2, f7, f4, entity);
@@ -230,14 +240,14 @@ abstract public class RenderBasic extends RenderLiving<EntityLiving>
     
     protected void renderMiscModel(MiscModel miscModel, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor)
     {
-    	if (miscModel.texture == null) return;
-    	
+        if (miscModel.texture == null) return;
+        
         boolean flag = !miscModel.entity.isInvisible() || this.renderOutlines;
         boolean flag1 = !flag && !miscModel.entity.isInvisibleToPlayer(Minecraft.getMinecraft().player);
 
         if (flag || flag1)
         {
-        	this.renderManager.renderEngine.bindTexture(miscModel.texture);
+            this.renderManager.renderEngine.bindTexture(miscModel.texture);
 
             if (flag1)
             {
@@ -317,14 +327,14 @@ abstract public class RenderBasic extends RenderLiving<EntityLiving>
             }
             else
             {
-	            float f1 = (float)(i >> 24 & 255) / 255.0F;
-	            float f2 = (float)(i >> 16 & 255) / 255.0F;
-	            float f3 = (float)(i >> 8 & 255) / 255.0F;
-	            float f4 = (float)(i & 255) / 255.0F;
-	            this.brightnessBuffer.put(f2);
-	            this.brightnessBuffer.put(f3);
-	            this.brightnessBuffer.put(f4);
-	            this.brightnessBuffer.put(1.0F - f1);
+                float f1 = (float)(i >> 24 & 255) / 255.0F;
+                float f2 = (float)(i >> 16 & 255) / 255.0F;
+                float f3 = (float)(i >> 8 & 255) / 255.0F;
+                float f4 = (float)(i & 255) / 255.0F;
+                this.brightnessBuffer.put(f2);
+                this.brightnessBuffer.put(f3);
+                this.brightnessBuffer.put(f4);
+                this.brightnessBuffer.put(1.0F - f1);
             }
 
             this.brightnessBuffer.flip();
@@ -346,11 +356,11 @@ abstract public class RenderBasic extends RenderLiving<EntityLiving>
         }
     }
     
-	//interpolation
-	protected double interp(double start, double end, double pct)
-	{
+    //interpolation
+    protected double interp(double start, double end, double pct)
+    {
         return start + (end - start) * pct;
     }
-
+    
     
 }

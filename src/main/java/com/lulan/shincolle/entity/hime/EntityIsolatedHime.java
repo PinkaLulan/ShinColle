@@ -7,7 +7,7 @@ import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.entity.mounts.EntityMountIsH;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.CombatHelper;
 
 import net.minecraft.entity.Entity;
@@ -28,7 +28,7 @@ public class EntityIsolatedHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.IsolatedHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 8);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 0.7F;

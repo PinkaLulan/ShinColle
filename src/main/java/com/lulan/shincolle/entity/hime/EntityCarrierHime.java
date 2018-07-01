@@ -10,8 +10,8 @@ import com.lulan.shincolle.entity.mounts.EntityMountCaH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
@@ -35,7 +35,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 0.9F;

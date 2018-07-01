@@ -38,7 +38,7 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
 		

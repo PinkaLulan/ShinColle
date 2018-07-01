@@ -19,8 +19,8 @@ import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.IFloatingEntity;
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -33,8 +33,9 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Enums;
+import com.lulan.shincolle.reference.Enums.MoveType;
+import com.lulan.shincolle.reference.dataclass.Attrs;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.server.CacheDataPlayer;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
@@ -54,6 +55,7 @@ import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGuardian;
+import net.minecraft.entity.monster.EntityVex;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -92,51 +94,73 @@ public class EntityHelper
 
 	
 	public EntityHelper() {}
+	
+	/** get ship entity by host trace */
+    public static BasicEntityShip getShipEntity(Object host)
+    {
+        if (host instanceof BasicEntityShip)
+        {
+            return (BasicEntityShip) host;
+        }
+        else if (host instanceof BasicEntityMount)
+        {
+            if (((BasicEntityMount) host).getHostEntity() instanceof BasicEntityShip)
+            {
+                return ((BasicEntityShip) ((BasicEntityMount) host).getHostEntity());
+            }
+        }
+        else if (host instanceof IShipOwner)
+        {
+            return getShipEntity(((IShipOwner) host).getHostEntity());
+        }
+        
+        return null;
+    }
 
-	/**check entity is in (stand on, y+0D) liquid (not air or solid block) */
+	/** check entity is in (stand on, y+0D) liquid (not air or solid block) */
 	public static boolean checkEntityIsInLiquid(Entity entity)
 	{
 		IBlockState block = entity.world.getBlockState(new BlockPos(MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY), MathHelper.floor(entity.posZ)));
 		return BlockHelper.checkBlockIsLiquid(block);
 	}
 	
-	/**check entity is free to move (stand in, y+0.5D) the block */
+	/** check entity is free to move (stand in, y+0.5D) the block */
 	public static boolean checkEntityIsFree(Entity entity)
 	{
 		return BlockHelper.checkBlockSafe(entity.world, MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor(entity.posZ));
 	}
 	
-	/**check entity is air or underwater mob, return 0:default 1:air 2:water */
-	public static int checkEntityMovingType(Entity entity)
+	/** get entity move type, ex: fly, undersea */
+	public static MoveType getEntityMoveType(Entity entity)
 	{
 		if (entity instanceof IShipAttackBase)
 		{
 			switch (((IShipAttackBase) entity).getDamageType())
 			{
 			case ID.ShipDmgType.AIRPLANE:
-				return 1;
+				return MoveType.FLY;
 			case ID.ShipDmgType.SUBMARINE:
-				return 2;
+				return MoveType.UNDERSEA;
 			default:	//default type
-				return 0;
+				return MoveType.LAND;
 			}
 		}
 		else if (entity instanceof EntityWaterMob || entity instanceof EntityGuardian)
 		{
-			return 2;
+			return MoveType.UNDERSEA;
 		}
 		else if (entity instanceof EntityBlaze || entity instanceof EntityWither ||
 				 entity instanceof EntityDragon || entity instanceof EntityBat ||
-				 entity instanceof EntityFlying)
+				 entity instanceof EntityFlying || entity instanceof EntityVex)
 		{
-			return 1;
+			return MoveType.FLY;
 		}
 		
-		return 0;
+		return MoveType.LAND;
 	}
 	
 	/**replace isInWater, check water block with NO extend AABB */
-	public static void checkDepth(IShipFloating host)
+	public static void checkDepth(IFloatingEntity host)
 	{
 		Entity host2 = (Entity) host;
 		World w = host2.world;
@@ -185,7 +209,7 @@ public class EntityHelper
 			host.setStateFlag(ID.F.CanFloatUp, false);
 		}
 		
-		host.setShipDepth(depth);
+		host.setEntityDepth(depth);
 	}
 	
 	/** check ship is out of combat */

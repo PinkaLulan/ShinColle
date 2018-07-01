@@ -9,7 +9,7 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.EmotionHelper;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -36,7 +36,7 @@ public class EntityCAAtago extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CAAtago);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
 		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
 		
@@ -204,7 +204,7 @@ public class EntityCAAtago extends BasicEntityShipSmall
     {
     	SoundEvent event = getCustomSound(0, this);
     	
-    	if (event == ModSounds.CUSTOM_SOUND.get((this.getShipClass() + 2) * 100))
+    	if (event == ModSounds.CUSTOM_SOUND.get((this.getAttrClass() + 2) * 100))
     	{
     		this.StateEmotion[ID.S.Emotion4] = ID.Emotion.BORED;
     		

@@ -51,7 +51,7 @@ public class RenderSummonEntity extends RenderBasic
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		case ID.ShipMisc.Airplane:
 			return TEX_Airplane;
@@ -78,7 +78,7 @@ public class RenderSummonEntity extends RenderBasic
     @Override
     protected void setModel()
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		case ID.ShipMisc.Airplane:
 			this.mainModel = MD_Airplane;
@@ -114,7 +114,7 @@ public class RenderSummonEntity extends RenderBasic
     @Override
     protected void setShadowSize()
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		case ID.ShipMisc.Airplane:
 		case ID.ShipMisc.AirplaneZero:

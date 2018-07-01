@@ -13,6 +13,7 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
+import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.BuffHelper;
@@ -617,7 +618,7 @@ public class MetamorphHelper
 	}
 	
 	/** decr ammo in morph ship, type: 0:light, 1:heavy */
-	public static boolean decrAmmoNum(BasicEntityShip morph, int type, int amount)
+	public static boolean decrAmmoNum(BasicEntityShip morph, Enums.Ammo type, int amount)
 	{
 		int ammoType = type == 1 ? ID.M.NumAmmoHeavy : ID.M.NumAmmoLight;
 		int remain = morph.getStateMinor(ammoType) - amount;

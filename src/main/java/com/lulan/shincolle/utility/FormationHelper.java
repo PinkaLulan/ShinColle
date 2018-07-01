@@ -12,7 +12,7 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

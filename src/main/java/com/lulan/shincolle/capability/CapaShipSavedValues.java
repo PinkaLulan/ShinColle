@@ -2,7 +2,7 @@ package com.lulan.shincolle.capability;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.Attrs;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.NBTHelper;
 

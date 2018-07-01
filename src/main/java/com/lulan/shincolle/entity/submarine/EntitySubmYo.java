@@ -7,8 +7,8 @@ import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -37,7 +37,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSYO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.modelPosInGUI = new float[] {0F, 25F, 0F, 45F};
 		
@@ -277,7 +277,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 	}
   	
 	@Override
-	public double getShipFloatingDepth()
+	public double getEntityFloatingDepth()
 	{
 		return 1D;
 	}

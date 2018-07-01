@@ -1,4 +1,4 @@
-package com.lulan.shincolle.reference.unitclass;
+package com.lulan.shincolle.reference.dataclass;
 
 import java.util.Arrays;
 
@@ -6,7 +6,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.FormationHelper;
 
 /**
- * ship basic attributes + equip, potion, formation and morale buffs
+ * ship basic attributes + formation and morale buffs
  */
 public class AttrsAdv extends Attrs
 {

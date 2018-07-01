@@ -15,7 +15,7 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -53,7 +53,7 @@ public class EntityCLTatsuta extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CLTatsuta);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CL]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CL]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CL]);
 		this.modelPosInGUI = new float[] {0F, 22F, 0F, 42F};
 		this.targetSelector = new TargetHelper.Selector(this);

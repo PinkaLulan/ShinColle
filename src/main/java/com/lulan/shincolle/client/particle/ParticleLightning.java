@@ -3,7 +3,7 @@ package com.lulan.shincolle.client.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.entity.IFloatingEntity;
 import com.lulan.shincolle.utility.CalcHelper;
 
 import net.minecraft.client.particle.Particle;
@@ -186,7 +186,7 @@ public class ParticleLightning extends Particle
                 this.posZ = this.host.posZ + newPos[1];
             }
             
-            if (((IShipFloating)host).getShipDepth() > 0D)
+            if (((IFloatingEntity)host).getEntityDepth() > 0D)
             {
             	this.posY -= 0.08D;
             }

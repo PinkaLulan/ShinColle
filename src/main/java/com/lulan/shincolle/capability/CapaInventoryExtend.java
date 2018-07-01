@@ -116,7 +116,7 @@ public class CapaInventoryExtend<T extends IInventoryShip> extends CapaInventory
             }
             else return;
             
-            if (w.isRemote) return;  //no client side
+            if (w == null || w.isRemote) return;  //no client side
             
             for (ItemStack s : dropList)
             {

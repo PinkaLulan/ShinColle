@@ -14,7 +14,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -50,7 +50,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
 		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
 		

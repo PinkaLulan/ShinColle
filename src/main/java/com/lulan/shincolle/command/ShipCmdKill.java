@@ -145,7 +145,7 @@ public class ShipCmdKill extends CommandBase
 						
 			            for (BasicEntityShip i : hitent)
 			            {
-			            	if (i.getShipClass() == id)
+			            	if (i.getAttrClass() == id)
 			            	{
 			            		i.setDead();
 			            		sender.sendMessage(new TextComponentString("remove "+i));
@@ -160,7 +160,7 @@ public class ShipCmdKill extends CommandBase
 						
 			            for (BasicEntityShipHostile i : hitent)
 			            {
-			            	if (i.getShipClass() == id)
+			            	if (i.getAttrClass() == id)
 			            	{
 			            		i.setDead();
 			            		sender.sendMessage(new TextComponentString("remove "+i));

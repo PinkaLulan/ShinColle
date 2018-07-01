@@ -1,4 +1,4 @@
-package com.lulan.shincolle.reference.unitclass;
+package com.lulan.shincolle.reference.dataclass;
 
 public class BuffEffect
 {

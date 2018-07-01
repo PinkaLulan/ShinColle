@@ -2,7 +2,7 @@ package com.lulan.shincolle.entity.other;
 
 import java.util.List;
 
-import com.lulan.shincolle.client.render.IShipCustomTexture;
+import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipOwner;
@@ -10,8 +10,8 @@ import com.lulan.shincolle.entity.IShipProjectile;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -32,7 +32,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  *   0: black hole, pull nearby entities to center, setDead after X ticks
  *      
  */
-public class EntityProjectileStatic extends Entity implements IShipOwner, IShipAttrs, IShipCustomTexture, IShipProjectile
+public class EntityProjectileStatic extends Entity implements IShipOwner, IShipAttrs, ICustomTexture, IShipProjectile
 {
 	
 	private IShipAttackBase host;

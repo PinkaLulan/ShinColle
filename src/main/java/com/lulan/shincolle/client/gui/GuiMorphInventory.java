@@ -16,7 +16,7 @@ import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.GuiHelper;
@@ -98,7 +98,7 @@ public class GuiMorphInventory extends GuiContainer
 		{
 			this.attrs = (AttrsAdv) this.entity.getAttrs();
 			this.shipType = this.entity.getShipType();
-			this.shipClass = this.entity.getShipClass();
+			this.shipClass = this.entity.getAttrClass();
 			this.shipRiding[0] = this.entity;
 			this.maxBtn = this.entity.getStateMinor(ID.M.NumState);
 			this.iconXY = new int[2][3];
@@ -761,7 +761,7 @@ public class GuiMorphInventory extends GuiContainer
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[1].getShipClass() == ID.ShipClass.DDIkazuchi)
+			if (entity[1].getAttrClass() == ID.ShipClass.DDIkazuchi)
 			{
 				if (entity[0].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -785,7 +785,7 @@ public class GuiMorphInventory extends GuiContainer
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[2].getShipClass() == ID.ShipClass.DDInazuma)
+			if (entity[2].getAttrClass() == ID.ShipClass.DDInazuma)
 			{
 				if (entity[2].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{

@@ -12,7 +12,7 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TargetHelper;
@@ -50,7 +50,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.modelPosInGUI = new float[] {-6F, 25F, 0F, 40F};
 		this.launchHeight = this.height * 0.8F;

@@ -56,7 +56,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDAkatsuki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
 		this.modelPosInGUI = new float[] {0F, 25F, 0F, 50F};
 		

@@ -35,7 +35,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.MidwayHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 0.7F;

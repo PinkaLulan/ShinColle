@@ -530,9 +530,24 @@ public class InventoryHelper
     }
     
     /**
+     * consume item with amount/meta/nbt/oredict checking
+     * 
+     * @return <tt>true</tt> if item consumed
+     */
+    public static boolean consumeItem(IItemHandler inv, ItemStack temp, int amount, boolean checkMetadata, boolean checkNbt, boolean checkOredict)
+    {
+        //search item in ship inventory
+        ItemStack getitem = InventoryHelper.getAndRemoveItem(inv, temp, amount, checkMetadata, checkNbt, checkOredict, null);
+        if (!getitem.isEmpty()) return true;
+        
+        //item not found
+        return false; 
+    }
+    
+    /**
      * get and remove temp item from inventory, return item
      */
-    public static ItemStack getAndRemoveItem(IInventory inv, ItemStack temp, int number, boolean checkMetadata, boolean checkNbt, boolean checkOredict, int[] exceptSlots)
+    public static ItemStack getAndRemoveItem(IItemHandler inv, ItemStack temp, int number, boolean checkMetadata, boolean checkNbt, boolean checkOredict, int[] exceptSlots)
     {
         if (temp == null || number <= 0) return null;
         if (number > 64) number = 64;

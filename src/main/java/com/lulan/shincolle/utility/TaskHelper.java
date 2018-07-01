@@ -18,7 +18,7 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 
 import net.minecraft.block.BlockLiquid;

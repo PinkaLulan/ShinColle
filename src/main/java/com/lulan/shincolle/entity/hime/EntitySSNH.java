@@ -16,8 +16,8 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -57,7 +57,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSNH);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.modelPosInGUI = new float[] {-6F, 8F, 0F, 50F};
 		this.goRidingTicks = 0;
@@ -223,7 +223,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 	public void setInvisibleLevel(float level) {}
 	
 	@Override
-	public double getShipFloatingDepth()
+	public double getEntityFloatingDepth()
 	{
 		return 1D;
 	}

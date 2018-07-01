@@ -11,7 +11,7 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.ShipTank;
 import com.lulan.shincolle.playerskill.ShipSkillHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.Attrs;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;

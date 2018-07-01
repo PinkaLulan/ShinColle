@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.client.render.IShipCustomTexture;
+import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -13,9 +13,9 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
@@ -34,7 +34,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-abstract public class BasicEntitySummon extends EntityLiving implements IShipCannonAttack, IShipCustomTexture, IShipMorph
+abstract public class BasicEntitySummon extends EntityLiving implements IShipCannonAttack, ICustomTexture, IShipMorph
 {
 	
     //attributes

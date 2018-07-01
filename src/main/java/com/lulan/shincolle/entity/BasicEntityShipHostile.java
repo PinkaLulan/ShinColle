@@ -13,7 +13,7 @@ import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.client.render.IShipCustomTexture;
+import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -26,10 +26,10 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
@@ -62,7 +62,7 @@ import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating, IShipCustomTexture, IShipMorph
+public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IFloatingEntity, ICustomTexture, IShipMorph
 {
 	
 	//attributes
@@ -263,7 +263,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected void setAttrsWithScaleLevel()
 	{
 		//calc ship attrs
-		this.shipAttrs = new Attrs(this.getShipClass());
+		this.shipAttrs = new Attrs(this.getAttrClass());
 		this.calcShipAttributes(9);
         
 		//renew health
@@ -286,14 +286,14 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void calcShipAttributes(int flag)
 	{
 		//null check
-		if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getShipClass());
+		if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getAttrClass());
 		
 		this.stepHeight = 1F + this.getScaleLevel();
 		
 		//recalc raw attrs
 		if ((flag & 1) == 1)
 		{
-			BuffHelper.updateAttrsRawHostile(this.shipAttrs, this.getScaleLevel(), this.getShipClass());
+			BuffHelper.updateAttrsRawHostile(this.shipAttrs, this.getScaleLevel(), this.getAttrClass());
 		}
 		//recalc potion buff
 		if ((flag & 8) == 8)
@@ -753,7 +753,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void setAmmoHeavy(int num) {}
 
 	@Override
-	public double getShipDepth()
+	public double getEntityDepth()
 	{
 		return this.ShipDepth;
 	}
@@ -1079,7 +1079,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 
 	@Override
-	public void setShipDepth(double par1)
+	public void setEntityDepth(double par1)
 	{
 		ShipDepth = par1;
 	}
@@ -1609,7 +1609,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	
 	public int getTextureID()
 	{
-		return this.getShipClass();
+		return this.getAttrClass();
 	}
 	
 	//for model display
@@ -1664,13 +1664,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 	
 	@Override
-	public double getShipFloatingDepth()
+	public double getEntityFloatingDepth()
 	{
 		return 0.3D + this.scaleLevel * 0.05D;
 	}
 
 	@Override
-	public void setShipFloatingDepth(double par1) {}
+	public void setEntityFloatingDepth(double par1) {}
 	
 	@Override
     protected void onDeathUpdate()

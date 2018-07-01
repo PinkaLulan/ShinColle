@@ -9,7 +9,7 @@ import java.util.Map;
 
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -26,10 +26,6 @@ public class Values
     {
         public static final float DIV_180_PI = 57.295779513F;  // 180 / PI
         public static final float DIV_PI_180 = 0.0174532925F;  // PI / 180
-        
-        public static final int BaseGrudge = 300;
-        public static final int BaseLightAmmo = 30;
-        public static final int BaseHeavyAmmo = 15;
         
         public static final int[] Pow2 = new int[] {1, 2, 4, 8, 16,  //2^0~24
                                                     32, 64, 128, 256, 512,

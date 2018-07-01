@@ -3,7 +3,7 @@ package com.lulan.shincolle.entity.other;
 import java.util.HashMap;
 import java.util.List;
 
-import com.lulan.shincolle.client.render.IShipCustomTexture;
+import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipFlyable;
@@ -15,8 +15,8 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
@@ -44,7 +44,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * ENTITY ABYSS MISSILE
  * XZ為等速運動, Y軸為等加速度移動的entity, 有數種移動方式
  */
-public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs, IShipFlyable, IShipCustomTexture, IShipProjectile
+public class EntityAbyssMissile extends EntityLiving implements IShipOwner, IShipAttrs, IShipFlyable, ICustomTexture, IShipProjectile
 {
 	
     protected IShipAttackBase host;	//main host type

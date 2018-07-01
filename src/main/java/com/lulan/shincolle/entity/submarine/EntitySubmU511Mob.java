@@ -5,7 +5,7 @@ import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
@@ -156,7 +156,7 @@ public class EntitySubmU511Mob extends BasicEntityShipHostile implements IShipIn
 	public void setInvisibleLevel(float level) {}
 	
 	@Override
-	public double getShipFloatingDepth()
+	public double getEntityFloatingDepth()
 	{
 		return 1.1D + this.scaleLevel * 0.3D;
 	}

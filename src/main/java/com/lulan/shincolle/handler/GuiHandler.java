@@ -69,7 +69,7 @@ public class GuiHandler implements IGuiHandler
             if (entity instanceof BasicEntityShip)
             {
                 //get ship class id and register to player data for ship list recording
-                int cid = ((BasicEntityShip) entity).getShipClass();
+                int cid = ((BasicEntityShip) entity).getAttrClass();
                 EntityHelper.addPlayerColledShip(cid, player);
                 
                 //sync ship when gui opened

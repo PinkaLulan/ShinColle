@@ -5,7 +5,7 @@ import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.Attrs;
 import com.lulan.shincolle.utility.TargetHelper;
 
 import net.minecraft.entity.Entity;

@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 
 import net.minecraft.entity.Entity;
 

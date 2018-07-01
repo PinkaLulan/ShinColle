@@ -2,10 +2,12 @@ package com.lulan.shincolle.handler;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
+import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 
 import net.minecraft.init.SoundEvents;
@@ -13,23 +15,22 @@ import net.minecraft.init.SoundEvents;
 /**
  * ship states handler, get data by {@link ID.Keys}
  */
-public class ShipStateHandler extends StateHandler
+public class ShipStateHandler extends AttrStateHandler
 {
     
-    /** convenient ship entity to use */
-    private BasicEntityShip ship;
+    /** host entity */
+    protected BasicEntityShip host;
     /** ship attributes: hp, def, atk, ... */
-    protected AttrsAdv shipAttrs;
+    protected AttrsAdv attrs;
     
     
     public ShipStateHandler(BasicEntityShip host)
     {
         super(host);
         
-        this.ship = host;
+        this.host = host;
     }
     
-    /** init data on new object */
     @Override
     protected void initFirst()
     {
@@ -101,7 +102,6 @@ public class ShipStateHandler extends StateHandler
         this.setNumberState(ID.Keys.EmoteDelay, 0);
         this.setNumberState(ID.Keys.ShipType, 0);
         this.setNumberState(ID.Keys.IconType, 0);
-        this.setNumberState(ID.Keys.ShipClass, 0);
         this.setNumberState(ID.Keys.ShipLevel, 1);
         this.setNumberState(ID.Keys.ShipUID, -1);
         this.setNumberState(ID.Keys.PlayerUID, -1);
@@ -147,6 +147,8 @@ public class ShipStateHandler extends StateHandler
         this.setBooleanState(ID.Keys.UpdateFormatBuff, false);
         this.setStringState(ID.Keys.OwnerName, "");
         
+        //choice random sensitive body part
+        this.randomSensitiveBody();
     }
     
     /** init data at the end of {@link BasicEntityShip#initPre()} */
@@ -154,7 +156,7 @@ public class ShipStateHandler extends StateHandler
     public void initPre()
     {
         //init ship attrs
-        this.shipAttrs = new AttrsAdv(this.getShipClass());
+        this.attrs = new AttrsAdv(this.getAttrClass());
     }
     
     /** init data at the end of {@link BasicEntityShip#initPost()} */
@@ -167,19 +169,10 @@ public class ShipStateHandler extends StateHandler
      *       getter / setter
      */
     
+    @Override
     public AttrsAdv getAttrs()
     {
-        return this.shipAttrs;
-    }
-    
-    public int getShipClass()
-    {
-        return this.getStateInt(ID.Keys.ShipClass);
-    }
-    
-    public void setShipClass(short value)
-    {
-        this.setNumberState(ID.Keys.ShipClass, value);  //ID.ShipClass
+        return this.attrs;
     }
     
     public int getShipType()
@@ -252,6 +245,17 @@ public class ShipStateHandler extends StateHandler
         this.setNumberState(ID.Keys.ShipType, value);  //ID.ShipDmgType
     }
     
+    public int getShipSlotsLevel()
+    {
+        return this.getStateInt(ID.Keys.SlotsLevel);
+    }
+    
+    public void setShipSlotsLevel(int value)
+    {
+        if (value < 0) value = 0;
+        this.setNumberState(ID.Keys.SlotsLevel, value);
+    }
+    
     public int getShipStateNumber()
     {
         return this.getStateInt(ID.Keys.ShipType);
@@ -282,7 +286,7 @@ public class ShipStateHandler extends StateHandler
     /** set random sensitive body id, ref: ID.Body */
     public void randomSensitiveBody()
     {
-        int ran = this.ship.getRNG().nextInt(100);
+        int ran = this.host.getRNG().nextInt(100);
         byte bodyid = 20;
         
         //first roll
@@ -296,7 +300,7 @@ public class ShipStateHandler extends StateHandler
         }
         else
         {  //55%
-            bodyid = (byte) (3 + this.ship.getRNG().nextInt(8));  //roll 3~10
+            bodyid = (byte) (3 + this.host.getRNG().nextInt(8));  //roll 3~10
         }
         
         //reroll if HEAD/BACK
@@ -318,12 +322,12 @@ public class ShipStateHandler extends StateHandler
         this.setNumberState(ID.Keys.EquipType, value);  //max equip type < 3
     }
     
-    public int getGrudgeConsumption()
+    public int getGrudgeConsumeIdle()
     {
         return this.getStateInt(ID.Keys.GrudgeConsume);
     }
     
-    public void setGrudgeConsumption(int value)
+    public void setGrudgeConsumeIdle(int value)
     {
         this.setNumberState(ID.Keys.GrudgeConsume, value);
     }
@@ -418,7 +422,7 @@ public class ShipStateHandler extends StateHandler
         this.setBooleanState(ID.Keys.UseMelee, value);
         
         //reset AI
-        this.ship.getAIHandler().resetShipAI();
+        this.host.getAIHandler().resetShipAI();
     }
     
     public boolean useAttackLight()
@@ -561,18 +565,6 @@ public class ShipStateHandler extends StateHandler
         this.setNumberState(ID.Keys.RevengeTime, value);
     }
     
-    /** last combat time */
-    public int getLastCombatTick()
-    {
-        return this.getStateInt(ID.Keys.LastCombatTime);
-    }
-    
-    /** @see #getLastCombatTick() */
-    public void setLastCombatTick(int value)
-    {
-        this.setNumberState(ID.Keys.LastCombatTime, value);
-    }
-    
     /** show emote cooldown */
     public int getEmoteDelay()
     {
@@ -622,7 +614,7 @@ public class ShipStateHandler extends StateHandler
     
     public Enums.BodyHeight getBodyIDFromHeight()
     {
-        return EntityHelper.getBodyIDFromHeight(this.getHitHeight(), this.ship);
+        return EntityHelper.getBodyIDFromHeight(this.getHitHeight(), this.host);
     }
     
     public Enums.BodySide getHitAngleID()
@@ -652,7 +644,7 @@ public class ShipStateHandler extends StateHandler
     
     public int getTickExisted()
     {
-        return this.ship.ticksExisted;
+        return this.host.ticksExisted;
     }
     
     public int getKills()
@@ -677,6 +669,8 @@ public class ShipStateHandler extends StateHandler
     
     public void addAmmoLight(int value)
     {
+        if (value > 0 && ConfigHandler.easyMode) value *= 10;
+        
         int n = this.getStateInt(ID.Keys.AmmoLightNumber) + value;
         
         if (n < 0) n = 0;
@@ -686,11 +680,24 @@ public class ShipStateHandler extends StateHandler
     
     public void addAmmoHeavy(int value)
     {
+        if (value > 0 && ConfigHandler.easyMode) value *= 10;
+        
         int n = this.getStateInt(ID.Keys.AmmoHeavyNumber) + value;
         
         if (n < 0) n = 0;
         
         this.setNumberState(ID.Keys.AmmoHeavyNumber, n);
+    }
+    
+    public void addGrudge(int value)
+    {
+        if (value > 0 && ConfigHandler.easyMode) value *= 10;
+        
+        int n = this.getStateInt(ID.Keys.GrudgeNumber) + value;
+        
+        if (n < 0) n = 0;
+        
+        this.setNumberState(ID.Keys.GrudgeNumber, n);
     }
     
     /** 0:ready, 1:waiting, 2:craning */
@@ -717,32 +724,32 @@ public class ShipStateHandler extends StateHandler
     
     public boolean isRiding()
     {
-        return this.ship.isRiding();
+        return this.host.isRiding();
     }
     
     public boolean isLeashed()
     {
-        return this.ship.getLeashed();
+        return this.host.getLeashed();
     }
 
     public boolean isSprinting()
     {
-        return this.ship.isSprinting() || this.ship.limbSwingAmount > 0.9F;
+        return this.host.isSprinting() || this.host.limbSwingAmount > 0.9F;
     }
 
     public boolean isSitting()
     {
-        return this.ship.isSitting();
+        return this.host.isSitting();
     }
 
     public boolean isSneaking()
     {
-        return this.ship.isSneaking();
+        return this.host.isSneaking();
     }
     
     public float getMoveSpeed()
     {
-        return this.shipAttrs.getMoveSpeed(false);
+        return this.attrs.getMoveSpeed(false);
     }
     
     public float getJumpSpeed()
@@ -753,9 +760,9 @@ public class ShipStateHandler extends StateHandler
     /** get depth: 0:self depth, 1:mounts depth */
     public double getShipDepth(boolean getMountDepth)
     {
-        if (getMountDepth && this.ship.getRidingEntity() instanceof IStateMinion)
+        if (getMountDepth && this.host.getRidingEntity() instanceof IStateMinion)
         {
-            return ((IStateMinion) this.ship.getRidingEntity()).getStateHandler().getShipDepth(false);
+            return ((IStateMinion) this.host.getRidingEntity()).getStateHandler().getShipDepth(false);
         }
         
         return this.getStateDouble(ID.Keys.ShipDepth);
@@ -769,9 +776,26 @@ public class ShipStateHandler extends StateHandler
     public boolean hasNoFuel()
     {
         //treat death as no fuel
-        if (!this.ship.isEntityAlive() || this.ship.deathTime > 0) return true;
+        if (!this.host.isEntityAlive() || this.host.deathTime > 0) return true;
         
         return this.getBooleanState(ID.Keys.IsNoFuel);
+    }
+    
+    public void setNoFuel(boolean value)
+    {
+        this.setBooleanState(ID.Keys.IsNoFuel, value);
+    }
+    
+    /** check ammo > 4 * base consume number */
+    public boolean hasAmmoLight()
+    {
+        return this.getAmmoLight() >= 4 * ConfigHandler.consumeAmmoShip[this.getShipType()];
+    }
+    
+    /** check ammo > 4 * base consume number */
+    public boolean hasAmmoHeavy()
+    {
+        return this.getAmmoHeavy() >= 4 * ConfigHandler.consumeAmmoShip[this.getShipType()];
     }
     
     public static int calcExpNext(int level)
@@ -792,10 +816,10 @@ public class ShipStateHandler extends StateHandler
         if (curLevel < capLevel)
         {
             //check morph
-            if (this.ship.isMorph()) exp = (int) ((float)exp * ConfigHandler.expGainPlayerSkill);
+            if (this.host.isMorph()) exp = (int) ((float)exp * ConfigHandler.expGainPlayerSkill);
         
             //apply equip effect
-            exp = (int) ((float)exp * this.shipAttrs.getAttrsBuffed(ID.Attrs.XP));
+            exp = (int) ((float)exp * this.attrs.getAttrsBuffed(ID.Attrs.XP));
             
             int curExp = this.getStateInt(ID.Keys.ExpCurrent) + exp;
             int nextExp = this.getStateInt(ID.Keys.ExpCurrent);
@@ -804,11 +828,11 @@ public class ShipStateHandler extends StateHandler
             while (curExp >= nextExp || curLevel >= capLevel)
             {
                 //level up sound
-                this.ship.world.playSound(null, this.ship.posX, this.ship.posY, this.ship.posZ, SoundEvents.ENTITY_PLAYER_LEVELUP, this.ship.getSoundCategory(), 0.7F, 1F);
+                this.host.world.playSound(null, this.host.posX, this.host.posY, this.host.posZ, SoundEvents.ENTITY_PLAYER_LEVELUP, this.host.getSoundCategory(), 0.7F, 1F);
                 
-                if (this.ship.getRNG().nextInt(4) == 0)
+                if (this.host.getRNG().nextInt(4) == 0)
                 {
-                    this.ship.playSound(ModSounds.SHIP_LEVEL, ConfigHandler.volumeShip, 1F);
+                    this.host.playSound(ModSounds.SHIP_LEVEL, ConfigHandler.volumeShip, 1F);
                 }
                 
                 curLevel++;
@@ -831,14 +855,14 @@ public class ShipStateHandler extends StateHandler
         //update attributes
         if (update)
         {
-            BasicEntityShip.calcShipAttributes(this.ship, 31, true);
-            this.ship.setHealth(this.ship.getMaxHealth());
+            BasicEntityShip.calcShipAttributes(this.host, 31, true);
+            this.host.setHealth(this.host.getMaxHealth());
         }
     }
     
-    public void decrMorale(Enums.CostType type)
+    public void decrMorale(Enums.ActType type)
     {
-        if (this.ship.isMorph()) return;
+        if (this.host.isMorph()) return;
         
         switch (type)
         {
@@ -862,6 +886,159 @@ public class ShipStateHandler extends StateHandler
         break;
         default:
         break;
+        }
+    }
+    
+    /**
+     * consume ammo. if not enough ammo, then consume ammo item. 
+     * 
+     * @param type by Enums.Ammo
+     * @return <tt>true</tt> if ammo number was decreased
+     */
+    public boolean decrAmmo(Enums.Ammo type, int amount)
+    {
+        //check morph
+        if (this.host.isMorph())
+        {
+            return MetamorphHelper.decrAmmoNum(this.host, type, amount);
+        }
+        
+        boolean isHeavy = type == Enums.Ammo.HEAVY;
+        int ammoKey = isHeavy ? ID.Keys.AmmoHeavyNumber : ID.Keys.AmmoLightNumber;
+        int ammoNum = isHeavy ? this.getAmmoHeavy() : this.getAmmoLight();
+        boolean useItem = isHeavy ? !hasAmmoHeavy() : !this.hasAmmoLight();
+        float modAmmo = this.attrs.getAttrsBuffed(ID.Attrs.AMMO);
+        
+        //check buff: hunger
+        if (amount > 0)
+        {
+            int level = BuffHelper.getPotionLevel(this.host, 17);
+            amount = (int) ((float)amount * (1F + level * 2F));
+        }
+        
+        //use item first if not enough ammo
+        if (ammoNum <= amount || useItem)
+        {
+            int addAmmo = 0;
+            int geti = this.host.getItemHandler().consumeAmmoItem(type);
+            
+            //show eat emotes
+            if (geti >= 0) this.host.getReactHandler().reactEatItem();
+            
+            switch (geti)
+            {
+            case 0:
+                addAmmo = (int) (ConfigHandler.baseLightAmmo * modAmmo);
+            break;
+            case 1:
+                addAmmo = (int) (ConfigHandler.baseHeavyAmmo * modAmmo);
+            break;
+            case 2:
+                addAmmo = (int) (ConfigHandler.baseLightAmmo * 9 * modAmmo);
+            break;
+            case 3:
+                addAmmo = (int) (ConfigHandler.baseHeavyAmmo * 9 * modAmmo);
+            break;
+            }
+            
+            if (isHeavy) this.addAmmoHeavy(addAmmo);
+            else this.addAmmoLight(addAmmo);
+        }
+        
+        //check ammo again
+        if (isHeavy ? !hasAmmoHeavy() : !this.hasAmmoLight())
+        {
+            //if still not enough ammo, show emotes
+            this.host.getReactHandler().reactItemNotFound();
+            return false;
+        }
+        
+        //decr ammo number
+        if (isHeavy) this.addAmmoHeavy(-amount);
+        else this.addAmmoLight(-amount);
+        
+        return true;
+    }
+    
+    /** consume grudge. if not enough grudge, then consume grudge item. */
+    public void decrGrudge(int value)
+    {
+        //check morph
+        if (this.host.isMorph())
+        {
+            MetamorphHelper.decrGrudgeNum(this.host, value);
+            return;
+        }
+        
+        //get grudge magnification
+        float modGrudge = this.attrs.getAttrsBuffed(ID.Attrs.GRUDGE);
+        
+        //if grudge--, check buff: hunger
+        if (value > 0)
+        {
+            int level = BuffHelper.getPotionLevel(this.host, 17);
+            value = (int) ((float)value * (1F + level * 2F));
+        }
+        //if grudge++, check buff: grudge mod
+        else if (value < 0)
+        {
+            value = (int) ((float)value * modGrudge);
+        }
+        
+        //check fuel flag, only decrGrudge when entity alive
+        if (!this.hasNoFuel())
+        {
+            this.addGrudge(-value);
+        }
+        
+        //eat "ONE" grudge item per method call
+        if (this.getGrudge() <= 0)
+        {
+            int addnum = 0;
+            int geti = this.host.getItemHandler().consumeGrudgeItem();
+            
+            //show eat emotes
+            if (geti >= 0) this.host.getReactHandler().reactEatItem();
+            
+            switch (geti)
+            {
+            case 0:  //grudge item
+                addnum = (int) (ConfigHandler.baseGrudge * modGrudge);
+            break;
+            case 1:  //grudge block
+                addnum = (int) (ConfigHandler.baseGrudge * 9 * modGrudge);
+            break;
+            }
+            
+            this.addGrudge(addnum);
+        }
+        
+        //check fuel again and set fuel flag
+        if (this.getGrudge() <= 0)
+        {
+            this.setNoFuel(true);
+        }
+        else
+        {
+            this.setNoFuel(false);
+        }
+        
+        //check fuel flag again and set AI
+        if (this.hasNoFuel())
+        {
+            //no fuel, clear AI
+            if (this.host.getAIHandler().hasAI())
+            {
+                this.host.updateFuelState(true);
+            }
+        }
+        else
+        {
+            //has fuel, set AI
+            if (!this.host.getAIHandler().hasAI())
+            {
+                this.host.updateFuelState(false);
+            }
         }
     }
     

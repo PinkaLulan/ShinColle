@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.Attrs;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;

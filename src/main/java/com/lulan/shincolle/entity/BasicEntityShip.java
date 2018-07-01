@@ -12,17 +12,20 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
-import com.lulan.shincolle.client.render.IShipCustomTexture;
+import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
+import com.lulan.shincolle.handler.AIHandler;
 import com.lulan.shincolle.handler.AttackHandler;
 import com.lulan.shincolle.handler.BuffHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.GuardHandler;
 import com.lulan.shincolle.handler.IAIShip;
+import com.lulan.shincolle.handler.IGuardEntity;
 import com.lulan.shincolle.handler.IInventoryShip;
 import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.handler.IPacketShip;
+import com.lulan.shincolle.handler.IReactionShip;
 import com.lulan.shincolle.handler.IRenderEntity;
 import com.lulan.shincolle.handler.IStateShip;
 import com.lulan.shincolle.handler.RenderHandler;
@@ -41,7 +44,7 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.BuffHelper;
@@ -64,7 +67,6 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -87,18 +89,13 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-/**SHIP DATA <br>
- * Explanation in crafting/ShipCalc.class
+/**
+ * basic ship entity class
  */
 public abstract class BasicEntityShip extends EntityTameable
 implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
-           IAIShip,
-           
-           IShipCannonAttack, //TODO to IAttackEntity
-           IShipFloating,
-           IShipCustomTexture,
-           IShipMorph,
-           IShipGuardian  //TODO to IGuardEntity
+           IAIShip, IReactionShip, IShipMorph, IGuardEntity, IFloatingEntity,
+           IShipCannonAttack //TODO to IAttackEntity
 {
 
     //override attribute
@@ -110,7 +107,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
     protected ShipStateHandler shipStates;
     /** move: path finding, move, jump, ... */
     protected ShipMoveHandler shipMove;
-    /** target: ai, attack, guard, owner target */
+    /** target: ai, attack, guard and owner target */
     protected TargetHandler shipTarget;
     /** attack: all attack methods */
     protected AttackHandler shipAttack;
@@ -120,6 +117,8 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
     protected BuffHandler shipBuff;
     /** render params handler */
     protected RenderHandler shipRender;
+    /** AI: task and target */
+    protected AIHandler shipAI;
     
     /** stop onUpdate, onLivingUpdate flag */
     protected static boolean stopAI = false;
@@ -128,6 +127,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
     private boolean initWait, initPost;        //init flag
     private boolean isUpdated;                 //updated ship id/owner id tag
     private int updateTime = 16;               //update check interval
+    
     /** body part height: values are between: top, head, neck, chest, belly, underbelly, leg */
     protected byte[] bodyHeightStand;
     protected byte[] bodyHeightSit;
@@ -163,7 +163,6 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
         this.bodyHeightStand = new byte[] {92, 78, 73, 58, 47, 37};
         this.bodyHeightSit = new byte[] {64, 49, 44, 29, 23, 12};
         this.modelPosInGUI = new float[] {0F, 0F, 0F, 50F};
-        this.resetMissileData();
         this.shipPrevX = posX;              //ship X position at X ticks ago
         this.shipPrevY = posY;
         this.shipPrevZ = posZ;
@@ -176,9 +175,6 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
         this.stopAI = false;
         this.stopAIindivdual = false;
         this.isMorph = false;
-        
-        //choice random sensitive body part
-        randomSensitiveBody();
     }
     
     /** stop AI at base level */
@@ -466,7 +462,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
     public static void calcShipAttributes(BasicEntityShip ship, int flag, boolean sync)
     {
         //null check
-        if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getShipClass());
+        if (this.attrs == null) this.attrs = new AttrsAdv(this.getAttrClass());
         
         //server side
         if (!this.world.isRemote)
@@ -477,7 +473,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                 //recalc raw attrs
                 if ((flag & 1) == 1)
                 {
-                    BuffHelper.updateAttrsRaw(this.shipAttrs, this.getShipClass(), this.getLevel());
+                    BuffHelper.updateAttrsRaw(this.attrs, this.getAttrClass(), this.getLevel());
                     this.calcShipAttributesAddRaw();
                     this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
                     this.setUpdateFlag(ID.FlagUpdate.AttrsBonus, true);
@@ -506,7 +502,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                 //recalc raw attrs
                 if ((flag & 1) == 1)
                 {
-                    BuffHelper.updateAttrsRaw(this.shipAttrs, this.getShipClass(), this.getLevel());
+                    BuffHelper.updateAttrsRaw(this.attrs, this.getAttrClass(), this.getLevel());
                     this.calcShipAttributesAddRaw();
                     this.setUpdateFlag(ID.FlagUpdate.AttrsRaw, true);
                 }
@@ -520,7 +516,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                 //recalc morale buff
                 if ((flag & 4) == 4)
                 {
-                    BuffHelper.updateBuffMorale(this.shipAttrs, this.getMorale());
+                    BuffHelper.updateBuffMorale(this.attrs, this.getMorale());
                     this.setUpdateFlag(ID.FlagUpdate.AttrsMorale, true);
                 }
                 //recalc potion buff
@@ -564,15 +560,15 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
         /**
          * DO NOT SET ATTACK DAMAGE to non-EntityMob!!!!!
          */
-        getEntityAttribute(MAX_HP).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.HP));
-        getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.MOV));
+        getEntityAttribute(MAX_HP).setBaseValue(this.attrs.getAttrsBuffed(ID.Attrs.HP));
+        getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(this.attrs.getAttrsBuffed(ID.Attrs.MOV));
         getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64);
-        getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(this.shipAttrs.getAttrsBuffed(ID.Attrs.KB));
+        getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(this.attrs.getAttrsBuffed(ID.Attrs.KB));
         
         //apply attrs to player
         if (this.morphHost != null)
         {
-            this.morphHost.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D + this.shipAttrs.getAttrsBuffed(ID.Attrs.HP) * ConfigHandler.morphHPRatio);
+            this.morphHost.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20D + this.attrs.getAttrsBuffed(ID.Attrs.HP) * ConfigHandler.morphHPRatio);
         }
     }
     
@@ -597,34 +593,6 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
     {
         return modelPosInGUI;
     }
-    
-    /** grudge consumption when IDLE */
-    public int getGrudgeConsumption()
-    {
-        return getStateMinor(ID.M.GrudgeCon);
-    }
-    
-    public int getAmmoConsumption()
-    {
-        return getStateMinor(ID.M.AmmoCon);
-    }
-    
-    public int getFoodSaturation()
-    {
-        return getStateMinor(ID.M.Food);
-    }
-    
-    public int getFoodSaturationMax()
-    {
-        return getStateMinor(ID.M.FoodMax);
-    }
-    
-    public CapaInventoryExtend getCapaShipInventory()
-    {
-        return this.itemHandler;
-    }
-    
-
     
     @Override
     public IAttributeInstance getEntityAttribute(IAttribute attribute)
@@ -918,7 +886,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
         if (this.world.isRemote)
         {
             //有移動時, 產生水花特效
-            if (this.getShipDepth() > 0D && !isRiding())
+            if (this.getEntityDepth() > 0D && !isRiding())
             {
                 //(注意此entity因為設為非高速更新, client端不會更新motionX等數值, 需自行計算)
                 double motX = this.posX - this.prevPosX;
@@ -1240,7 +1208,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                                         //use combat ration automatically
                                         if (EntityHelper.getMoraleLevel(this.getMorale()) >= getStateMinor(ID.M.UseCombatRation) && getFoodSaturation() < getFoodSaturationMax())
                                         {
-                                            useCombatRation();
+                                            this.shipItems.autouseCombatRation();
                                         }
                                         
                                         //update mount
@@ -1472,7 +1440,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                 if (this.equals(ship))
                 {
                     CacheDataShip sdata = new CacheDataShip(this.getEntityId(), this.world.provider.getDimension(),
-                            this.getShipClass(), this.isDead, this.posX, this.posY, this.posZ,
+                            this.getAttrClass(), this.isDead, this.posX, this.posY, this.posZ,
                             this.writeToNBT(new NBTTagCompound()));
                     
                     ServerProxy.setShipWorldData(uid, sdata);
@@ -1638,7 +1606,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
         }
         
         //add idle grudge cost
-        valueConsume += this.getGrudgeConsumption();
+        valueConsume += this.getGrudgeConsumptionIdle();
         
         //eat grudge
         decrGrudgeNum(valueConsume);
@@ -1718,7 +1686,8 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
         } 
     }
     
-    protected void updateFuelState(boolean nofuel)
+    /** update fuel state */
+    public void updateFuelState(boolean nofuel)
     {
         if (nofuel)
         {
@@ -2080,13 +2049,13 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
     }
     
     @Override
-    public double getShipFloatingDepth()
+    public double getEntityFloatingDepth()
     {
         return 0.32D;
     }
 
     @Override
-    public void setShipFloatingDepth(double par1) {}
+    public void setEntityFloatingDepth(double par1) {}
     
     //apply heal effect
     @Override
@@ -2133,7 +2102,7 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                 this.setStateFlag(ID.F.CanDrop, false);
                 
                 //save ship attributes to ship spawn egg
-                ItemStack egg = new ItemStack(ModItems.ShipSpawnEgg, 1, this.getShipClass()+2);
+                ItemStack egg = new ItemStack(ModItems.ShipSpawnEgg, 1, this.getAttrClass()+2);
                 egg.setTagCompound(EntityHelper.saveShipDataToNBT(this, true));
                 
                 //spawn entity item

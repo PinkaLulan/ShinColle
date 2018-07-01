@@ -16,7 +16,7 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -55,7 +55,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
 		this.modelPosInGUI = new float[] {-6F, 8F, 0F, 50F};
 		this.goRidingTicks = 0;
@@ -316,7 +316,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
   		float launchPos = (float)posY + height;
         Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 		
-        if (getShipDepth() > 0D) launchPos += 0.2D;
+        if (getEntityDepth() > 0D) launchPos += 0.2D;
 		
 		//experience++
 		addShipExp(ConfigHandler.expGain[2]);

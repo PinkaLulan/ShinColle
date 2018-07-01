@@ -5,12 +5,13 @@ import java.util.Random;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Enums.BodyHeight;
+import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
@@ -18,10 +19,66 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 public class ReactionHandler
 {
     
+    protected EntityLivingBase host;
+    protected Random rand;
+    
+    
+    public ReactionHandler(EntityLivingBase host)
+    {
+        this.host = host;
+        this.rand = this.host.getRNG();
+    }
+    
+    /** eat item */
+    public void reactEatItem()
+    {
+        switch (this.rand.nextInt(4))
+        {
+        case 1:
+            applyParticleEmotion(29);  //blink
+        break;
+        case 2:
+            applyParticleEmotion(30);  //pif
+        break;
+        default:
+            applyParticleEmotion(9);   //hungry
+        break;
+        }
+    }
+    
+    /** has no item */
+    public void reactItemNotFound()
+    {
+        switch (this.rand.nextInt(7))
+        {
+        case 1:
+            applyParticleEmotion(0);   //drop
+        break;
+        case 2:
+            applyParticleEmotion(2);   //panic
+        break;
+        case 3:
+            applyParticleEmotion(5);   //...
+        break;
+        case 4:
+            applyParticleEmotion(20);  //orz
+        break;
+        default:
+            applyParticleEmotion(32);  //hmm
+        break;
+        }
+    }
     
     
     
     
+    
+    
+    
+    
+    
+    
+    /** TODO OLD METHODS */
     
     /** knockback AI target */
     public void pushAITarget()

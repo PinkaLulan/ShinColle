@@ -29,7 +29,7 @@ public class EntitySubmKa extends BasicEntityShipSmall implements IShipInvisible
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSKA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
 		this.modelPosInGUI = new float[] {0F, 25F, 0F, 45F};
 		
@@ -120,7 +120,7 @@ public class EntitySubmKa extends BasicEntityShipSmall implements IShipInvisible
 	public void setInvisibleLevel(float level) {}
 	
 	@Override
-	public double getShipFloatingDepth()
+	public double getEntityFloatingDepth()
 	{
 		return 1D;
 	}

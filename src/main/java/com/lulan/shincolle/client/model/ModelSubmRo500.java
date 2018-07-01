@@ -1,7 +1,7 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.entity.IFloatingEntity;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -501,7 +501,7 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
 	    {  //騎乘動作
 	    	if (ent.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 	    	{
-	    		if (((IShipFloating)ent).getShipDepth() > 0)
+	    		if (((IFloatingEntity)ent).getEntityDepth() > 0)
 	    		{
 	    			GlStateManager.translate(0F, -0.21F, 0F);
 		    	}
@@ -531,7 +531,7 @@ public class ModelSubmRo500 extends ShipModelBaseAdv
 	    	}
 	    	else
 	    	{
-	    		if(((IShipFloating)ent).getShipDepth() > 0)
+	    		if(((IFloatingEntity)ent).getEntityDepth() > 0)
 	    		{
 	    			GlStateManager.translate(0F, -0.22F, 0F);
 		    	}

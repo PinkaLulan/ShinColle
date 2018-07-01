@@ -1,7 +1,7 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IShipFloating;
+import com.lulan.shincolle.entity.IFloatingEntity;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
@@ -623,7 +623,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
     	GlStateManager.translate(0F, 0.53F + 0.25F * ent.getScaleLevel(), 0F);
 		this.setFaceHungry(ent);
 	  	
-	  	if (((IShipFloating)ent).getShipDepth() > 0)
+	  	if (((IFloatingEntity)ent).getEntityDepth() > 0)
 	  	{
 	  		this.EquipSL01.isHidden = false;
 	    	this.EquipSR01.isHidden = false;
@@ -753,7 +753,7 @@ public class ModelCarrierAkagi extends ShipModelBaseAdv
   		addk1 = angleAdd1 * 0.5F - 0.2793F;  //LegLeft01
 	  	addk2 = angleAdd2 * 0.5F - 0.1396F;  //LegRight01
 	  	
-	  	if (((IShipFloating)ent).getShipDepth() > 0)
+	  	if (((IFloatingEntity)ent).getEntityDepth() > 0)
 	  	{
 	  		this.EquipSL01.isHidden = false;
 	    	this.EquipSR01.isHidden = false;

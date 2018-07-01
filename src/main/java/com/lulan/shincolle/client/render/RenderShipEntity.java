@@ -194,7 +194,7 @@ public class RenderShipEntity extends RenderBasic
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		//AP
 		case ID.ShipClass.APWA:
@@ -310,7 +310,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected void setModel()
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		//AP
 		case ID.ShipClass.APWA:
@@ -471,7 +471,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected void setMiscModel()
     {
-    	switch (this.shipClass)
+    	switch (this.textuerID)
 		{
 		case ID.ShipClass.MidwayHime:
 			this.miscModelList = new ArrayList<MiscModel>();
@@ -495,7 +495,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected void setShadowSize()
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		case ID.ShipClass.NorthernHime:
 		case ID.ShipClass.SSNH:
@@ -538,7 +538,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected boolean hasMiscModel()
     {
-    	switch (this.shipClass)
+    	switch (this.textuerID)
 		{
 		case ID.ShipClass.MidwayHime:
 			return true;
@@ -550,7 +550,7 @@ public class RenderShipEntity extends RenderBasic
 	//get leash height
 	protected float[] getLeashHeight()
 	{
-		float[] f = Values.ShipLeashHeight.get(this.shipClass);
+		float[] f = Values.ShipLeashHeight.get(this.textuerID);
 		
 		if (f == null)
 		{

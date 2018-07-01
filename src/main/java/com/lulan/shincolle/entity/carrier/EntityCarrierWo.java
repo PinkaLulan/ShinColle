@@ -32,7 +32,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 5);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.modelPosInGUI = new float[] {0F, 20F, 0F, 30F};
 		this.launchHeight = this.height * 0.9F;

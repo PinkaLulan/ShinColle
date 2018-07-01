@@ -15,7 +15,7 @@ import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
 import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.client.render.IShipCustomTexture;
+import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -25,10 +25,10 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
-import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.MissileData;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
@@ -65,7 +65,7 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
  * mount use cannon attack, no aircraft attack
  * all states get from host ex: sitting, leashed, sprinting...
  */
-abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, IShipCustomTexture, IShipMorph
+abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture, IShipMorph
 {
 	
 	public BasicEntityShip host;  				//host
@@ -671,7 +671,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 			this.jumpHelper.setJumping();
 			
 			//if in water, add motionY
-			if (this.getShipDepth() > 0D)
+			if (this.getEntityDepth() > 0D)
 			{
 				this.motionY += movSpeed * 0.1F;
 				if (motionY > 1F) motionY = 1F;
@@ -818,7 +818,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
-	public void setShipDepth(double par1)
+	public void setEntityDepth(double par1)
 	{
 		this.shipDepth = par1;
 	}
@@ -1326,7 +1326,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 
 	@Override
-	public double getShipDepth()
+	public double getEntityDepth()
 	{
 		return this.shipDepth;
 	}
@@ -1341,7 +1341,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 		case 2:
 			if (this.host != null)
 			{
-				return this.host.getShipDepth();
+				return this.host.getEntityDepth();
 			}
 			else
 			{
@@ -1713,13 +1713,13 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	}
 	
 	@Override
-	public double getShipFloatingDepth()
+	public double getEntityFloatingDepth()
 	{
 		return 0.3D;
 	}
 
 	@Override
-	public void setShipFloatingDepth(double par1) {}
+	public void setEntityFloatingDepth(double par1) {}
 	
 	@Override
 	public float[] getSeatPos()

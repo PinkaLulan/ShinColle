@@ -1,4 +1,4 @@
-package com.lulan.shincolle.reference.unitclass;
+package com.lulan.shincolle.reference.dataclass;
 
 import net.minecraft.util.math.MathHelper;
 

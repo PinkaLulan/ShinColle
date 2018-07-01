@@ -177,7 +177,7 @@ public class ShipSkillHandler
 			//get skill target: block
 			if (target == null) 
 			{
-				if (mount.getShipDepth() >= 3D)
+				if (mount.getEntityDepth() >= 3D)
 				{
 					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
 				}
@@ -290,7 +290,7 @@ public class ShipSkillHandler
 			//get skill target: block
 			if (target == null) 
 			{
-				if (ship.getShipDepth() > 2D)
+				if (ship.getEntityDepth() > 2D)
 				{
 					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
 				}
@@ -434,7 +434,7 @@ public class ShipSkillHandler
 			//get skill target: block
 			if (target == null) 
 			{
-				if (ship.getShipDepth() >= 3D)
+				if (ship.getEntityDepth() >= 3D)
 				{
 					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
 				}

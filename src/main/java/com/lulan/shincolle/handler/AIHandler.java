@@ -13,43 +13,86 @@ import com.lulan.shincolle.ai.EntityAIShipSit;
 import com.lulan.shincolle.ai.EntityAIShipWander;
 import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
 import com.lulan.shincolle.entity.BasicEntityMount;
+import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.reference.ID;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class AIHandler
 {
     
+    protected EntityLiving host;
     
     
-    
-    
-    
-    
-    //setup AI
-    protected void setAIList()
+    public AIHandler(EntityLiving host)
     {
+        this.host = host;
+    }
+    
+    public boolean hasAI()
+    {
+        if (this.host.tasks != null && !this.host.tasks.taskEntries.isEmpty()) return false;
+        
+        return true;
+    }
+    
+    public boolean hasTargetAI()
+    {
+        if (this.host.targetTasks != null && !this.host.targetTasks.taskEntries.isEmpty()) return false;
+        
+        return true;
+    }
+    
+    public EntityAITasks getAITasks()
+    {
+        return this.host.tasks;
+    }
+    
+    public EntityAITasks getTargetAITasks()
+    {
+        return this.host.targetTasks;
+    }
+    
+    /**
+     * set basic AI for BasicEntityShip
+     */
+    public void setShipAI()
+    {
+        if (!(this.host instanceof BasicEntityShip)) return;
+        
+        BasicEntityShip ship = (BasicEntityShip) this.host;
+        EntityAITasks ais = this.getAITasks();
+        
         //high priority
-        this.tasks.addTask(1, new EntityAIShipSit(this));                        //0111
-        this.tasks.addTask(2, new EntityAIShipFlee(this));                        //0111
-        this.tasks.addTask(3, new EntityAIShipGuarding(this));                    //0111
-        this.tasks.addTask(4, new EntityAIShipFollowOwner(this));                //0111
-        this.tasks.addTask(5, new EntityAIShipOpenDoor(this, true));            //0000
+        ais.addTask(1, new EntityAIShipSit(ship));                        //0111
+        ais.addTask(2, new EntityAIShipFlee(ship));                        //0111
+        ais.addTask(3, new EntityAIShipGuarding(ship));                    //0111
+        ais.addTask(4, new EntityAIShipFollowOwner(ship));                //0111
+        ais.addTask(5, new EntityAIShipOpenDoor(ship, true));            //0000
         
         //use melee attack (mux bit: melee:0100, air:0010, ammo:0001)
         if (this.getStateFlag(ID.F.UseMelee))
         {
-            this.tasks.addTask(15, new EntityAIShipAttackOnCollide(this, 1D));    //0100
+            this.tasks.addTask(15, new EntityAIShipAttackOnCollide(ship, 1D));    //0100
         }
         
         //idle AI
-        this.tasks.addTask(23, new EntityAIShipFloating(this));                    //0111
-        this.tasks.addTask(24, new EntityAIShipWander(this, 10, 5, 0.8D));        //0111
-        this.tasks.addTask(25, new EntityAIShipWatchClosest(this,
+        ais.addTask(23, new EntityAIShipFloating(ship));                    //0111
+        ais.addTask(24, new EntityAIShipWander(ship, 10, 5, 0.8D));        //0111
+        ais.addTask(25, new EntityAIShipWatchClosest(ship,
                                         EntityPlayer.class, 4F, 0.06F));        //0000
-        this.tasks.addTask(26, new EntityAIShipLookIdle(this));                    //0000
+        ais.addTask(26, new EntityAIShipLookIdle(ship));                    //0000
     }
+    
+    
+    
+    /******** TODO refactoring *******/
+    
+    //setup AI
+    
     
     //setup target AI
     public void setAITargetList()

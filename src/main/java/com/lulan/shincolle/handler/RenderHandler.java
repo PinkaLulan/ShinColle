@@ -1,14 +1,27 @@
 package com.lulan.shincolle.handler;
 
+import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.reference.ID;
 
-public class RenderHandler
+public class RenderHandler implements ICustomTexture
 {
     
+    protected int textureID = 0;
+    
+    
+    @Override
+    public int getTextureID()
+    {
+        return textureID;
+    }
     
     
     
     
+    
+    
+    
+    /***** old method refactoring ******/
     
     
     public int getDeathTick()
@@ -54,7 +67,7 @@ public class RenderHandler
     @Override
     public int getTextureID()
     {
-        return this.getShipClass();
+        return this.getAttrClass();
     }
     
   //check held item can be rendered

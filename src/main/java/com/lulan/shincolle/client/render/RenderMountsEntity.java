@@ -54,7 +54,7 @@ public class RenderMountsEntity extends RenderShipEntity
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		case ID.ShipMisc.AirfieldMount:
 			return TEX_AirfieldMount;
@@ -83,7 +83,7 @@ public class RenderMountsEntity extends RenderShipEntity
     @Override
     protected void setModel()
     {
-		switch (this.shipClass)
+		switch (this.textuerID)
 		{
 		case ID.ShipMisc.AirfieldMount:
 			this.mainModel = MD_AirfieldMount;
@@ -125,7 +125,7 @@ public class RenderMountsEntity extends RenderShipEntity
 	@Override
 	protected float[] getLeashHeight()
 	{
-		switch(this.shipClass)
+		switch(this.textuerID)
 		{
 		case ID.ShipMisc.AirfieldMount:
 			return new float[] {0.37F, 0.5F, 0.5F, 0.5F, 0.5F};

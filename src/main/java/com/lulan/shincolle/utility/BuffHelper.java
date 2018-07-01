@@ -19,8 +19,8 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAmmo;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.unitclass.Attrs;
-import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.dataclass.AttrsAdv;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAreaEffectCloud;
@@ -56,7 +56,7 @@ import net.minecraftforge.common.util.Constants;
    14 invis:          no special effect (clear invis target every 64 ticks)
    15 blind:          range--
    16 night vision:   night battle effect -80%
-   17 hunger:         grudge consumption +200%/lv (multiplier)
+   17 hunger:         resources consumption +200%/lv (multiplier)
    18 weak:           dmg, kb
    19 poison:         def, kb
    20 wither:         hurt (1% + 2)/lv until dead

@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 import javax.annotation.Nonnull;
 
+import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.reference.ID;
+
 /**
  * store data in Number or Boolean map
  */
@@ -37,10 +40,12 @@ public class StateHandler
         this.statesFlagMap = new HashMap<Short, Boolean>();
     }
     
+    /** init data at the end of entity's initPre() */
     public void initPre()
     {
     }
     
+    /** init data at the end of entity's initPost() */
     public void initPost()
     {
     }
@@ -195,6 +200,18 @@ public class StateHandler
     public void inverseBooleanState(Short key)
     {
         this.statesFlagMap.put(key, !this.statesFlagMap.get(key));
+    }
+    
+    /** last combat time */
+    public int getLastCombatTick()
+    {
+        return this.getStateInt(ID.Keys.LastCombatTime);
+    }
+    
+    /** @see #getLastCombatTick() */
+    public void setLastCombatTick(int value)
+    {
+        this.setNumberState(ID.Keys.LastCombatTime, value);
     }
     
     

@@ -197,7 +197,7 @@ public class InteractHelper
         	stack.setItemDamage(stack.getItemDamage() + 1);
             
             //set item amount
-            ItemStack[] items = ShipCalc.getKaitaiItems(ship.getShipClass());
+            ItemStack[] items = ShipCalc.getKaitaiItems(ship.getAttrClass());
                         
             EntityItem entityItem0 = new EntityItem(ship.world, ship.posX+0.5D, ship.posY+0.8D, ship.posZ+0.5D, items[0]);
             EntityItem entityItem1 = new EntityItem(ship.world, ship.posX+0.5D, ship.posY+0.8D, ship.posZ-0.5D, items[1]);

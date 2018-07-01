@@ -23,7 +23,7 @@ public class CacheDataShip
 		{
 			this.entityID = ship.getEntityId();
 			this.worldID = ship.world.provider.getDimension();
-			this.classID = ship.getShipClass();
+			this.classID = ship.getAttrClass();
 			this.isDead = ship.isDead;
 			this.posX = (int) ship.posX;
 			this.posY = (int) ship.posY;

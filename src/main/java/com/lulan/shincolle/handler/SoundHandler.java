@@ -1,29 +1,111 @@
 package com.lulan.shincolle.handler;
 
+import java.util.Random;
+
 import javax.annotation.Nullable;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.init.ModSounds;
+import com.lulan.shincolle.reference.Enums.AtkType;
+import com.lulan.shincolle.reference.Enums.SoundType;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 
+/**
+ * handler for sound
+ */
 public class SoundHandler
 {
     
+    /** host object */
+    protected ISoundEntity host;
+    protected Random rand;
+    protected float volume, pitch;
+    protected SoundCategory category;
     
     
+    public SoundHandler(ISoundEntity host, SoundCategory category, float volume, float pitch)
+    {
+        this.host = host;
+        
+        this.category = category;
+        this.volume = volume;
+        this.pitch = pitch;
+        
+        if (this.host instanceof EntityLivingBase)
+        {
+            this.rand = ((EntityLivingBase) this.host).getRNG();
+        }
+        else
+        {
+            this.rand = new Random();
+        }
+    }
     
+    public float getVolume()
+    {
+        return this.volume;
+    }
     
+    public float getPitch()
+    {
+        return this.pitch;
+    }
     
+    /** @see #playSound(ISoundEntity, SoundEvent, SoundCategory, float, float) */
+    public void playSound(SoundEvent sound)
+    {
+        this.playSound(sound, this.getVolume(), this.getPitch());
+    }
     
-    /**
-     * type: 0:idle, 1:hit, 2:hurt, 3:dead, 4:marry, 5:knockback, 6:item, 7:feed, 10~33:timekeep
-     */
+    /** @see #playSound(SoundEvent, volume, pitch) */
+    public void playSound(SoundEvent sound, float volume, float pitch)
+    {
+        this.playSound(this.host, sound, this.category, volume, pitch);
+    }
+    
+    /** play sound with host type checking at SERVER SIDE */
+    public static void playSound(ISoundEntity host, SoundEvent sound, SoundCategory category, float volume, float pitch)
+    {
+        if (host instanceof Entity)
+        {
+            ((Entity) host).playSound(sound, volume, pitch);
+        }
+        else if (host instanceof TileEntity)
+        {
+            if (((TileEntity) host).hasWorld())
+            {
+                BlockPos pos = ((TileEntity) host).getPos();
+                ((TileEntity) host).getWorld().playSound(null,
+                        pos.getX(), pos.getY(), pos.getZ(),
+                        sound, category, volume, pitch);
+            }
+        }
+    }
+    
+    /** get sound by type */
     @Nullable
-    public static SoundEvent getCustomSound(int type, BasicEntityShip ship)
+    public SoundEvent getSound(SoundType type)
+    {
+        if (this.host instanceof BasicEntityShip ||
+            this.host instanceof BasicEntityShipHostile)
+        {
+            return getSound(type, (IStateEntityAdv) this.host);
+        }
+    }
+    
+    /** get sound by type */
+    @Nullable
+    public static SoundEvent getSound(SoundType type, IStateEntityAdv ship)
     {
         //get custom sound rate
-        int key = ship.getShipClass() + 2;
+        int key = ship.getStateHandler().getAttrClass() + 2;
         float[] rate = ConfigHandler.configSound.SOUNDRATE.get(key);
         int typeKey = key * 100 + type;
         int typeTemp = type;
@@ -116,6 +198,79 @@ public class SoundHandler
         
         return null;
     }
+    
+    /** play ship attack sound at ship attacker */
+    public void applySoundAtShipAttacker(AtkType type, Entity target)
+    {
+        //play sound
+        switch (type)
+        {
+        case GENERIC_MELEE:
+            if (this.rand.nextInt(3) == 0)
+            {
+                this.playSound(this.getCustomSound(1, this), this.getVolume(), this.getPitch());
+            }
+        break;
+        case GENERIC_LIGHT:
+            this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, host.getSoundHandler().getPitch() * 0.85F);
+            
+            //entity sound
+            if (this.rand.nextInt(8) == 0)
+            {
+                this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+            }
+        break;
+        case GENERIC_HEAVY:
+        break;
+        case GENERIC_AIR_LIGHT:
+        break;
+        case GENERIC_AIR_HEAVY:
+        break;
+        case YAMATO_CANNON:
+        break;
+        case AP91_FIST:
+        break;
+        
+        
+        
+        case 2:  //heavy cannon
+            this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
+            
+            //entity sound
+            if (this.getRNG().nextInt(8) == 0)
+            {
+                this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+            }
+        break;
+        case 3:  //light aircraft
+        case 4:  //heavy aircraft
+            this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
+          
+            //entity sound
+            if (this.getRNG().nextInt(8) == 0)
+            {
+                this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+            }
+        break;
+      default: //melee
+          if (this.getRNG().nextInt(3) == 0)
+          {
+              this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
+          }
+      break;
+        }//end switch
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**************** TODO refactoring ******************/
+    
     
     //timekeeping method
     protected void playTimeSound(int hour)

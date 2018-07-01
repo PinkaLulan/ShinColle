@@ -670,7 +670,7 @@ public class ServerProxy extends CommonProxy
 			
 			//create ship cache data
 			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
-									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
+									ship.getAttrClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
 									ship.writeToNBT(new NBTTagCompound()));
 
 			//update ship cache
@@ -697,7 +697,7 @@ public class ServerProxy extends CommonProxy
 			LogHelper.debug("DEBUG: update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			ship.setShipUID(uid);
 			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
-									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
+									ship.getAttrClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
 									ship.writeToNBT(new NBTTagCompound()));
 	
 			setShipWorldData(uid, sdata);	//cache in server proxy

@@ -81,7 +81,7 @@ public class RenderMiscEntity extends Render<Entity>
     	//model init
     	if (this.initModel)
     	{
-    		this.mobID = ((IShipCustomTexture) entity).getTextureID();
+    		this.mobID = ((ICustomTexture) entity).getTextureID();
     		this.initModel = false;
     		setModel();
     	}

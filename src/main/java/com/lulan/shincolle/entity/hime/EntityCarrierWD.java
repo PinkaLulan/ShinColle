@@ -14,7 +14,7 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TeamHelper;
@@ -41,7 +41,7 @@ public class EntityCarrierWD extends BasicEntityShipCV
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVWD);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
 		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 1.2F;

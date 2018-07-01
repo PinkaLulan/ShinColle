@@ -2233,7 +2233,7 @@ public class GuiDesk extends GuiContainer
             {
             	this.shipModel.setStateFlag(ID.F.NoFuel, false);
             	this.shipType = this.shipModel.getShipType();
-    			this.shipClass = this.shipModel.getShipClass();
+    			this.shipClass = this.shipModel.getAttrClass();
     			this.shipMaxStats = this.shipModel.getStateMinor(ID.M.NumState);
     			
     			this.iconXY = new int[2][3];

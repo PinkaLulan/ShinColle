@@ -34,13 +34,13 @@ public class ConfigHandler
     public static ConfigMining configMining;  //mining
     
     private static Property propShip, propLimitShipAttrs, propMobSpawn,
-        propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShip,
+        propBossSmall, propBossLarge, propMobSmall, propMobLarge, propGrudgeShipIdle,
         propGrudgeAction, propAmmoShip, propAtkSpd, propAtkDly, propExp, propExpTask,
         propShipyardSmall, propShipyardLarge, propVolCore, propRingAbility,
         propPolyGravel, propHeldItem, propDrumLiquid, propDrumEU, propCrane,
         propInfLiquid, propShipTeleport, propFishing, propMining, propTask,
-        propGrudgeTask, propPosHUD, propShipTank, propSlotsClass, propSlotsType,
-        propPagesEquip;
+        propGrudgeTask, propPosHUD, propShipTank, propItemSlotsClass, propItemSlotsType,
+        propEquipPages, propEquipSlotsClass;
     
     /********************* GENERAL **********************/
     public static boolean debugMode = false;
@@ -121,9 +121,9 @@ public class ConfigHandler
     public static double[] scaleHeldItem = new double[] {2.5D,    0D,   0D,   0D};
     //ammo consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
     public static int[] consumeAmmoShip = new int[] {1, 2, 2, 2,  2,  3,  3, 4, 4,  1, 1};
-    //grudge consumption:                              DD CL CA CAV CLT CVL CV BB BBV SS AP 
-    public static int[] consumeGrudgeShip = new int[] {5, 7, 8, 9,  8,  11, 12,15,14, 4, 3};
-    //grudge consumption:                                LAtk, HAtk, LAir, HAir, moving
+    //grudge consumption:                                  DD CL CA CAV CLT CVL CV BB BBV SS AP 
+    public static int[] consumeGrudgeShipIdle = new int[] {5, 7, 8, 9,  8,  11, 12,15,14, 4, 3};
+    /** grudge consumption:                              LAtk, HAtk, LAir, HAir, moving */
     public static int[] consumeGrudgeAction = new int[] {4,    8,    6,    12,   3};
     //grudge consumption:                              cook fish mine craft
     public static int[] consumeGrudgeTask = new int[] {3,   30,  300, 2};
@@ -162,6 +162,10 @@ public class ConfigHandler
     public static int maxLevel = 150;        //not configurable now
     public static int midLimitLevel = 100;   //not configurable now
     public static int airplaneDelay = 2400;  //airplane recovery base delay ticks
+    public static int baseGrudge = 300;      //base grudge value per item
+    public static int baseLightAmmo = 30;    //base light ammo value per item
+    public static int baseHeavyAmmo = 15;    //base heavy ammo value per item
+    
     
     public static boolean timeKeeping = true;
     public static boolean canFlare = true;
@@ -174,69 +178,86 @@ public class ConfigHandler
     public static float volumeFire = 0.7F;
     
     //slots setting
-    //item slots by ship type                   DD CL CA CAV CLT CVL CV BB BBV SS AP 
-    private static int[] slotsType = new int[] {3, 4, 5, 6,  4,  6,  6, 6, 6,  2, 18};
-    //item slots by ship class                   DD, Cru, CV, BB, AP, SS, De, Pr
-    private static int[] slotsClass = new int[] {6,  9,   12, 10, 18, 4,  12, 12};
+    //item slots by ship type                      DD CL CA CAV CLT CVL CV BB BBV SS AP 
+    public static int[] itemSlotsType = new int[] {3, 4, 5, 6,  4,  6,  6, 6, 6,  2, 18};
+    //item slots by ship class                       DD, Cru, CV, BB, AP, SS, De, Pr
+    private static int[] itemSlotsClass = new int[] {6,  9,   12, 10, 18, 4,  12, 12};
     //item slots by level
-    public static int slotsLevel = 10;
+    public static int itemSlotsLevel = 10;
     //equip page by level                       page 1  2   3
-    public static int[] pagesEquipLevel = new int[] {1, 75, 120};
+    public static int[] equipPagesLevel = new int[] {1, 75, 120};
+    //equip slots by class                           DD, Cru, CV, BB, AP, SS, De, Pr
+    public static int[] equipSlotsClass = new int[] {0,  1,   2,  2,  0,  0,  2,  3};
+    //equip slots by level
+    public static int equipSlotsLevel = 20;
     
-    public static int getSlotsByType(int shipType)
+    public static int getSlotsItemByIcon(int shipIcon)
     {
-        switch (shipType)
+        switch (shipIcon)
         {
-        case ID.ShipType.DD:
-            return slotsType[0];
-        case ID.ShipType.CL:
-            return slotsType[1];
-        case ID.ShipType.CA:
-            return slotsType[2];
-        case ID.ShipType.CAV:
-            return slotsType[3];
-        case ID.ShipType.CLT:
-            return slotsType[4];
-        case ID.ShipType.CVL:
-            return slotsType[5];
-        case ID.ShipType.CV:
-            return slotsType[6];
-        case ID.ShipType.BB:
-            return slotsType[7];
-        case ID.ShipType.BBV:
-            return slotsType[8];
-        case ID.ShipType.SS:
-            return slotsType[9];
-        case ID.ShipType.AP:
-            return slotsType[10];
+        case ID.IconType.DESTROYER:
+            return itemSlotsClass[0];
+        case ID.IconType.LIGHT_CRUISER:
+        case ID.IconType.HEAVY_CRUISER:
+        case ID.IconType.TORPEDO_CRUISER:
+            return itemSlotsClass[1];
+        case ID.IconType.LIGHT_CARRIER:
+        case ID.IconType.STANDARD_CARRIER:
+            return itemSlotsClass[2];
+        case ID.IconType.BATTLESHIP:
+            return itemSlotsClass[3];
+        case ID.IconType.TRANSPORT:
+            return itemSlotsClass[4];
+        case ID.IconType.SUBMARINE:
+            return itemSlotsClass[5];
+        case ID.IconType.DEMON:
+            return itemSlotsClass[6];
+        case ID.IconType.HIME:
+            return itemSlotsClass[7];
         default:
             return 0;
         }
     }
     
-    public static int getSlotsByIcon(int shipIcon)
+    public static int getSlotsEquipByIcon(int shipIcon)
     {
         switch (shipIcon)
         {
         case ID.IconType.DESTROYER:
-            return slotsClass[0];
+            return equipSlotsClass[0];
         case ID.IconType.LIGHT_CRUISER:
         case ID.IconType.HEAVY_CRUISER:
         case ID.IconType.TORPEDO_CRUISER:
-            return slotsClass[1];
+            return equipSlotsClass[1];
         case ID.IconType.LIGHT_CARRIER:
         case ID.IconType.STANDARD_CARRIER:
-            return slotsClass[2];
+            return equipSlotsClass[2];
         case ID.IconType.BATTLESHIP:
-            return slotsClass[3];
+            return equipSlotsClass[3];
         case ID.IconType.TRANSPORT:
-            return slotsClass[4];
+            return equipSlotsClass[4];
         case ID.IconType.SUBMARINE:
-            return slotsClass[5];
+            return equipSlotsClass[5];
         case ID.IconType.DEMON:
-            return slotsClass[6];
+            return equipSlotsClass[6];
         case ID.IconType.HIME:
-            return slotsClass[7];
+            return equipSlotsClass[7];
+        default:
+            return 0;
+        }
+    }
+    
+    /** input page number, return enable level */
+    public static int getPagesEquipEnableLevel(int page)
+    {
+        switch (page)
+        {
+        case 0:
+            return equipPagesLevel[0];
+        case 1:
+            return equipPagesLevel[1];
+        case 2:
+            return equipPagesLevel[2];
         default:
             return 0;
         }
@@ -288,7 +309,7 @@ public class ConfigHandler
         dropGrudge = config.getFloat("DropRate_Grudge", CATE_GENERAL, 1F, 0F, 64F, "Grudge drop rate (ex: 0.5 = 50% drop 1 grudge, 5.5 = drop 5 grudge + 50% drop 1 grudge)");
         
         //是否開啟簡單模式
-        easyMode = config.getBoolean("Mode_Easy", CATE_GENERAL, false, "Easy mode: decrease Large Construction resources requirement, increase ammo / grudge gained from items");
+        easyMode = config.getBoolean("Mode_Easy", CATE_GENERAL, false, "Easy mode: decrease Large Construction resources requirement, increase ammo / grudge gained from items (10x)");
         
         //是否開啟誤傷模式
         friendlyFire = config.getBoolean("Friendly_Fire", CATE_GENERAL, true, "false: disable damage done by player (except owner)");
@@ -359,7 +380,15 @@ public class ConfigHandler
         modernLimit = config.getInt("Attrs_Limit_Modernization", CATE_SHIP, 3, 3, 100, "Max upgrade level by Modernization Toolkit");
         searchlightCD = config.getInt("CD_SearchLight", CATE_SHIP, 4, 1, 256, "Cooldown for placing light block of searchlight");
         airplaneDelay = config.getInt("CD_AirplaneRecovery", CATE_SHIP, 3600, 1, 30000, "Base cooldown for airplane recovery, actual recovery time = CD_AirplaneRecovery / attack speed + 20");
-        slotsLevel = config.getInt("Slots_Item_Level", CATE_SHIP, 10, 1, 151, "item slots +1 per N level. Total #slot = ship level / Slots_Level + Slots_Icon + Slots_Type");
+        baseGrudge = config.getInt("Item_Grudge", CATE_SHIP, 300, 1, 30000, "Grudge value per grudge item. Block = 9x");
+        baseLightAmmo = config.getInt("Item_LightAmmo", CATE_SHIP, 30, 1, 30000, "Light ammo value per light ammo item. Container = 9x");
+        baseHeavyAmmo = config.getInt("Item_HeavyAmmo", CATE_SHIP, 15, 1, 30000, "Heavy ammo value per heavy ammo item. Container = 9x");
+        
+        String totalItemSlots = "Total Item Slots = ship level / Slots_Item_ByLevel + Slots_Item_ByIcon + Slots_Item_ByType.";
+        itemSlotsLevel = config.getInt("Slots_Item_ByLevel", CATE_SHIP, 10, 1, 151, "item slots +1 per N level. " + totalItemSlots);
+        
+        String totalEquipSlots = "Total Equip Slots = ship level / Slots_Equip_ByLevel + Slots_Equip_ByIcon.";
+        equipSlotsLevel = config.getInt("Slots_Equip_ByLevel", CATE_SHIP, 20, 1, 151, "equip slots +1 per N level. " + totalEquipSlots);
         
         //array data
         propShip = config.get(CATE_SHIP, "Attrs_Scale", scaleShip, "Ship attributes SCALE: HP, firepower, armor, attack speed, move speed, range");
@@ -369,9 +398,9 @@ public class ConfigHandler
         propMobSmall = config.get(CATE_SHIP, "Attrs_Hostile_SmallMob", scaleMobSmall, "Small mob ship like DD and SS base attribute values: HP, firepower, armor, attack speed, move speed, range");
         propMobLarge = config.get(CATE_SHIP, "Attrs_Hostile_LargeMob", scaleMobLarge, "Large mob ship like CL and CA base attribute values: HP, firepower, armor, attack speed, move speed, range");
         propAmmoShip = config.get(CATE_SHIP, "Consume_Ammo", consumeAmmoShip, "Ammo consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 45)");
-        propGrudgeShip = config.get(CATE_SHIP, "Consume_Grudge_Idle", consumeGrudgeShip, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
+        propGrudgeShipIdle = config.get(CATE_SHIP, "Consume_Grudge_Idle", consumeGrudgeShipIdle, "Grudge consumption for ship type: DD CL CA CAV CLT CVL CV BB BBV SS AP (MAX = 120)");
         propGrudgeAction = config.get(CATE_SHIP, "Consume_Grudge_Action", consumeGrudgeAction, "Grudge consumption for ship action: Light attack, Heavy attack, Light aircraft, Heavy aircraft, Moving per block");
-        propGrudgeTask = config.get(CATE_SHIP, "Consume_Grudge_Task", consumeGrudgeTask, "Grudge consumption for task: cooking, fishing, mining, crafting");
+        propGrudgeTask = config.get(CATE_SHIP, "Consume_Grudge_Task", consumeGrudgeTask, "Grudge consumption for task: Cooking, Fishing, Mining, Crafting");
         propAtkSpd = config.get(CATE_SHIP, "Attack_Base_Speed", baseAttackSpeed, "Base attack speed for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
         propAtkDly = config.get(CATE_SHIP, "Attack_Fixed_Delay", fixedAttackDelay, "Fixed attack delay for: Melee, Light attack, Heavy attack, Carrier attack, Airplane attack, ex: base speed 160, fixed delay 30 means (160 / ship attack speed +30) ticks per attack");
         propExp = config.get(CATE_SHIP, "Exp_Gain", expGain, "Exp gain for: Melee, Light Attack, Heavy Attack, Light Aircraft, Heavy Aircraft, Move per Block(AP only), Other Action(AP only)");
@@ -383,9 +412,10 @@ public class ConfigHandler
         propFishing = config.get(CATE_SHIP, "Tick_Fishing", tickFishing, "Fishing time setting: base, random (ticks)");
         propMining = config.get(CATE_SHIP, "Tick_Mining", tickMining, "Mining time setting: base, random (ticks)");
         propTask = config.get(CATE_SHIP, "Task_Enable", enableTask, "set true to enable the task: cooking, fishing, mining, crafting");
-        propSlotsClass = config.get(CATE_SHIP, "Slots_Item_Icon", slotsClass, "add item slots by ship icon class, index: Destroyer, Cruiser, Carrier, Battleship, Transport, Submarine, Demon, Princess. Total #slot = ship level / Slots_Level + Slots_Icon + Slots_Type");
-        propSlotsType = config.get(CATE_SHIP, "Slots_Item_Type", slotsType, "add item slots by ship type, index: DD CL CA CAV CLT CVL CV BB BBV SS AP. Total #slot = ship level / Slots_Level + Slots_Icon + Slots_Type");
-        propPagesEquip = config.get(CATE_SHIP, "Slots_Equip_Page", pagesEquipLevel, "enable equip slot pages by ship level, index: page1, page2, page3");
+        propItemSlotsClass = config.get(CATE_SHIP, "Slots_Item_ByIcon", itemSlotsClass, "add item slots by ship icon, index: Destroyer, Cruiser, Carrier, Battleship, Transport, Submarine, Demon, Princess. " + totalItemSlots);
+        propItemSlotsType = config.get(CATE_SHIP, "Slots_Item_ByType", itemSlotsType, "add item slots by ship type, index: DD CL CA CAV CLT CVL CV BB BBV SS AP. " + totalItemSlots);
+        propEquipPages = config.get(CATE_SHIP, "Slots_Equip_Page", equipPagesLevel, "enable equip pages by ship level, index: page1, page2, page3. " + totalEquipSlots);
+        propEquipSlotsClass = config.get(CATE_SHIP, "Slots_Equip_ByIcon", equipSlotsClass, "add equip slots by ship icon class, index: Destroyer, Cruiser, Carrier, Battleship, Transport, Submarine, Demon, Princess. " + totalEquipSlots);
         
         propShipyardSmall = config.get(CATE_GENERAL, "Tile_SmallShipyard", tileShipyardSmall, "Small shipyard: max fuel storage, build speed, fuel magnification");
         propShipyardLarge = config.get(CATE_GENERAL, "Tile_LargeShipyard", tileShipyardLarge, "Large shipyard: max fuel storage, build speed, fuel magnification");
@@ -414,7 +444,7 @@ public class ConfigHandler
         scaleMobLarge = getDoubleArrayFromConfig(scaleMobLarge, propMobLarge);
         polyGravelBaseBlock = getBooleanArrayFromConfig(polyGravelBaseBlock, propPolyGravel);
         consumeAmmoShip = getIntArrayFromConfig(consumeAmmoShip, propAmmoShip);
-        consumeGrudgeShip = getIntArrayFromConfig(consumeGrudgeShip, propGrudgeShip);
+        consumeGrudgeShipIdle = getIntArrayFromConfig(consumeGrudgeShipIdle, propGrudgeShipIdle);
         consumeGrudgeAction = getIntArrayFromConfig(consumeGrudgeAction, propGrudgeAction);
         consumeGrudgeTask = getIntArrayFromConfig(consumeGrudgeTask, propGrudgeTask);
         baseAttackSpeed = getIntArrayFromConfig(baseAttackSpeed, propAtkSpd);
@@ -436,8 +466,10 @@ public class ConfigHandler
         enableTask = getBooleanArrayFromConfig(enableTask, propTask);
         posHUD = getDoubleArrayFromConfig(posHUD, propPosHUD);
         itemShipTank = getIntArrayFromConfig(itemShipTank, propShipTank);
-        slotsClass = getIntArrayFromConfig(slotsClass, propSlotsClass);
-        slotsType = getIntArrayFromConfig(slotsType, propSlotsType);
+        itemSlotsClass = getIntArrayFromConfig(itemSlotsClass, propItemSlotsClass);
+        itemSlotsType = getIntArrayFromConfig(itemSlotsType, propItemSlotsType);
+        equipSlotsClass = getIntArrayFromConfig(equipSlotsClass, propEquipSlotsClass);
+        equipPagesLevel = getIntArrayFromConfig(equipPagesLevel, propEquipPages);
         
         checkChange(config);
     }

@@ -1,4 +1,4 @@
-package com.lulan.shincolle.reference.unitclass;
+package com.lulan.shincolle.reference.dataclass;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -8,7 +8,7 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 
 /**
- * ship basic attributes + equip and potion buffs
+ * attributes
  * 
  * 若要新增新屬性, 需修改ID.Attrs, Attrs.AttrsLength, ConfigHandler.limitShipAttrs
  */

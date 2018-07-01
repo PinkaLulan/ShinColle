@@ -32,7 +32,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.APWA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.UNDEFINED);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.AP]);
+		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.AP]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.AP]);
 		this.modelPosInGUI = new float[] {-3F, 20F, 0F, 45F};
 		
