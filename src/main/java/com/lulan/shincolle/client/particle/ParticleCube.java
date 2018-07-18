@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
+import com.lulan.shincolle.utility.EntityHelper;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,10 +12,9 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -36,10 +36,10 @@ public class ParticleCube extends Particle
 	private float shotYaw, shotPitch, scaleOut, scaleIn, alphaOut, alphaIn;
 	private double par1, par2, par3;
 	private double[][] vt, vt2;				//cube vertex
-	private EntityLivingBase host;
+	private Entity host;
 	
 	
-    public ParticleCube(World world, EntityLivingBase host, double par1, double par2, double par3, float scale, int type)
+    public ParticleCube(World world, Entity host, double par1, double par2, double par3, float scale, int type)
     {
         super(world, host.posX, host.posY, host.posZ);
         this.setSize(0F, 0F);
@@ -236,6 +236,7 @@ public class ParticleCube extends Particle
     	//update pos
     	else
     	{
+    	    float yawDeg;
     		float[] lookDeg;
     		float[] posOffset;
     		
@@ -247,7 +248,7 @@ public class ParticleCube extends Particle
             	posOffset = CalcHelper.rotateXYZByYawPitch(0F, 0F, host.width * 2F, lookDeg[0], lookDeg[1], 1F);
             	
         		this.posX = this.host.posX + posOffset[0];
-            	this.posY = this.host.posY + host.height * 0.6D;
+            	this.posY = this.host.posY + this.host.height * 0.6D;
                 this.posZ = this.host.posZ + posOffset[2];
             	this.shotYaw = lookDeg[0];
             	this.shotPitch = lookDeg[1];
@@ -290,13 +291,14 @@ public class ParticleCube extends Particle
     		break;
     		default:	//yamato cannon charging
     			//particle position
-    			posOffset = CalcHelper.rotateXZByAxis(host.width * 2F, 0F, (host.renderYawOffset % 360) * Values.N.DIV_PI_180, 1F);
+    		    yawDeg = EntityHelper.getRadRenderYawOffset(this.host);
+    			posOffset = CalcHelper.rotateXZByAxis(this.host.width * 2F, 0F, yawDeg, 1F);
             	
 				this.posX = this.host.posX + posOffset[1];
             	this.posY = this.host.posY + host.height * 0.6D;
                 this.posZ = this.host.posZ + posOffset[0];
-    			this.shotYaw = (host.renderYawOffset % 360) * Values.N.DIV_PI_180;
-            	this.shotPitch = (host.rotationPitch % 360) * Values.N.DIV_PI_180;
+    			this.shotYaw = yawDeg;
+            	this.shotPitch = EntityHelper.getRadRenderPitch(this.host);
             	
         		//change alpha
             	if (this.particleAge < 32)

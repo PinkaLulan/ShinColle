@@ -34,8 +34,9 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.Enums.MoveType;
-import com.lulan.shincolle.reference.dataclass.Attrs;
 import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.dataclass.Attrs;
 import com.lulan.shincolle.server.CacheDataPlayer;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
@@ -94,6 +95,23 @@ public class EntityHelper
 
 	
 	public EntityHelper() {}
+	
+	/** get host position */
+	public static Vec3d getHostPosition(Object host)
+	{
+	    if (host instanceof Entity)
+	    {
+	        return ((Entity) host).getPositionVector();
+	    }
+	    else if (host instanceof TileEntity)
+	    {
+	        return new Vec3d(((TileEntity) host).getPos());
+	    }
+	    else
+	    {
+	        return Vec3d.ZERO;
+	    }
+	}
 	
 	/** get ship entity by host trace */
     public static BasicEntityShip getShipEntity(Object host)
@@ -2520,6 +2538,31 @@ public class EntityHelper
 			}//end roll spawn boss
 		}//end boss cooldown <= 0
 	}
+	
+	/** get rotationYawHead or rotationYaw in RAD */
+    public static float getRadRenderYawHead(Entity host)
+    {
+        if (host == null) return 0F;
+        return host instanceof EntityLivingBase ?
+               (((EntityLivingBase) host).rotationYawHead % 360) * Values.N.DIV_PI_180 :
+               (host.rotationYaw % 360) * Values.N.DIV_PI_180;
+    }
+	
+	/** get renderYawOffset or rotationYaw in RAD */
+	public static float getRadRenderYawOffset(Entity host)
+	{
+	    if (host == null) return 0F;
+	    return host instanceof EntityLivingBase ?
+	           (((EntityLivingBase) host).renderYawOffset % 360) * Values.N.DIV_PI_180 :
+	           (host.rotationYaw % 360) * Values.N.DIV_PI_180;
+	}
+	
+	/** get rotationPitch in RAD */
+    public static float getRadRenderPitch(Entity host)
+    {
+        if (host == null) return 0F;
+        return host.rotationPitch * Values.N.DIV_PI_180;
+    }
 	
   	
 }

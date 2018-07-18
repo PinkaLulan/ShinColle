@@ -4,6 +4,9 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.reference.Enums;
+import com.lulan.shincolle.reference.Enums.AttrBoo;
+import com.lulan.shincolle.reference.Enums.AttrNum;
+import com.lulan.shincolle.reference.Enums.AttrStr;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.reference.dataclass.AttrsAdv;
@@ -37,115 +40,112 @@ public class ShipStateHandler extends AttrStateHandler
         super.initFirst();
         
         //init numbers and flags
-        this.setBooleanState(ID.Keys.CanFloatUp, false);
-        this.setBooleanState(ID.Keys.CanDropItem, true);
-        this.setBooleanState(ID.Keys.CanFollow, false);
-        this.setBooleanState(ID.Keys.CanOnSightChase, true);
-        this.setBooleanState(ID.Keys.CanAtkLight, true);
-        this.setBooleanState(ID.Keys.CanAtkHeavy, true);
-        this.setBooleanState(ID.Keys.CanAtkAirLight, true);
-        this.setBooleanState(ID.Keys.CanAtkAirHeavy, true);
-        this.setBooleanState(ID.Keys.UseMelee, false);
-        this.setBooleanState(ID.Keys.UseAtkLight, true);
-        this.setBooleanState(ID.Keys.UseAtkHeavy, true);
-        this.setBooleanState(ID.Keys.UseAtkAirLight, true);
-        this.setBooleanState(ID.Keys.UseAtkAirHeavy, true);
-        this.setNumberState(ID.Keys.Phase, 0);
-        this.setBooleanState(ID.Keys.CanRingEffect, true);
-        this.setBooleanState(ID.Keys.UseRingEffect, true);
-        this.setBooleanState(ID.Keys.CanPickItem, false);
-        this.setBooleanState(ID.Keys.UsePickItem, true);
-        this.setBooleanState(ID.Keys.UseAutoPump, false);
-        this.setNumberState(ID.Keys.FollowMin, 3);
-        this.setNumberState(ID.Keys.FollowMax, 12);
-        this.setNumberState(ID.Keys.FleeHP, 35);
-        this.setNumberState(ID.Keys.CombatRationLevel, 3);
-        this.setNumberState(ID.Keys.GuardType, 0);
-        this.setNumberState(ID.Keys.GuardX, -1);
-        this.setNumberState(ID.Keys.GuardY, -1);
-        this.setNumberState(ID.Keys.GuardZ, -1);
-        this.setNumberState(ID.Keys.GuardDim, 0);
-        this.setNumberState(ID.Keys.GuardID, -1);
-        this.setNumberState(ID.Keys.EquipType, 2);
-        this.setNumberState(ID.Keys.DamageType, 0);
-        this.setNumberState(ID.Keys.FormatType, 0);
-        this.setNumberState(ID.Keys.FormatPos, 0);
-        this.setNumberState(ID.Keys.ShipDepth, 0D);     //double
-        this.setNumberState(ID.Keys.Task, -1);
-        this.setNumberState(ID.Keys.TaskSide, -1);
-        this.setNumberState(ID.Keys.TaskTime, 0);
-        this.setNumberState(ID.Keys.CraneState, 0);
-        this.setNumberState(ID.Keys.CraneTime, 0);
-        this.setNumberState(ID.Keys.CraneDelay, 0);
-        this.setNumberState(ID.Keys.WpStay, 0);
-        this.setNumberState(ID.Keys.WpStayTime, 0);
-        this.setBooleanState(ID.Keys.IsMarried, false);
-        this.setBooleanState(ID.Keys.IsNoFuel, false);
-        this.setBooleanState(ID.Keys.IsHeadTilt, false);
-        this.setBooleanState(ID.Keys.IsPVPFirst, true);
-        this.setBooleanState(ID.Keys.IsAntiAir, false);
-        this.setBooleanState(ID.Keys.IsAntiSS, false);
-        this.setBooleanState(ID.Keys.IsPassive, false);
-        this.setBooleanState(ID.Keys.IsTimeKeeper, true);
-        this.setBooleanState(ID.Keys.ShowHeldItem, true);
-        this.setNumberState(ID.Keys.ModelStateNum, 1);
-        this.setNumberState(ID.Keys.ModelState, 0);
-        this.setNumberState(ID.Keys.Emotion, 0);
-        this.setNumberState(ID.Keys.Emotion2, 0);
-        this.setNumberState(ID.Keys.Emotion3, 0);
-        this.setNumberState(ID.Keys.Emotion4, 0);
-        this.setNumberState(ID.Keys.HPState, 0);
-        this.setNumberState(ID.Keys.TimeEmotion3, 0);
-        this.setNumberState(ID.Keys.TimeSound, 0);
-        this.setNumberState(ID.Keys.TimeFace, 0);
-        this.setNumberState(ID.Keys.TimeHeadTilt, 0);
-        this.setNumberState(ID.Keys.EmoteDelay, 0);
-        this.setNumberState(ID.Keys.ShipType, 0);
-        this.setNumberState(ID.Keys.IconType, 0);
-        this.setNumberState(ID.Keys.ShipLevel, 1);
-        this.setNumberState(ID.Keys.ShipUID, -1);
-        this.setNumberState(ID.Keys.PlayerUID, -1);
-        this.setNumberState(ID.Keys.PlayerEID, -1);
-        this.setNumberState(ID.Keys.Kills, 0);
-        this.setNumberState(ID.Keys.ExpCurrent, 0);
-        this.setNumberState(ID.Keys.ExpNext, this.calcExpNext(1));
-        this.setNumberState(ID.Keys.GrudgeNumber, 0);
-        this.setNumberState(ID.Keys.AmmoLightNumber, 0);
-        this.setNumberState(ID.Keys.AmmoHeavyNumber, 0);
-        this.setNumberState(ID.Keys.AirLightNumber, 0);
-        this.setNumberState(ID.Keys.AirHeavyNumber, 0);
-        this.setNumberState(ID.Keys.GrudgeConsume, 0);
-        this.setNumberState(ID.Keys.AmmoConsume, 0);
-        this.setNumberState(ID.Keys.Morale, 60);
-        this.setNumberState(ID.Keys.Food, 0);
-        this.setNumberState(ID.Keys.FoodMax, 10);
-        this.setNumberState(ID.Keys.HitHeight, 0);
-        this.setNumberState(ID.Keys.HitAngle, 0);
-        this.setNumberState(ID.Keys.SensBody, -1);
-        this.setNumberState(ID.Keys.ChunkLoaderLevel, 0);
-        this.setNumberState(ID.Keys.FlareLevel, 0);
-        this.setNumberState(ID.Keys.SearchlightLevel, 0);
-        this.setNumberState(ID.Keys.XP, 0);
-        this.setNumberState(ID.Keys.ImmuneTime, 0);
-        this.setNumberState(ID.Keys.RevengeTime, 0);
-        this.setNumberState(ID.Keys.LastCombatTime, 0);
-        this.setNumberState(ID.Keys.AttackTime, 0);
-        this.setNumberState(ID.Keys.AttackTime2, 0);
-        this.setNumberState(ID.Keys.AttackTime3, 0);
-        this.setNumberState(ID.Keys.MountSkillCD1, 0);
-        this.setNumberState(ID.Keys.MountSkillCD2, 0);
-        this.setNumberState(ID.Keys.MountSkillCD3, 0);
-        this.setNumberState(ID.Keys.MountSkillCD4, 0);
-        this.setNumberState(ID.Keys.MountSkillCD5, 0);
-        this.setBooleanState(ID.Keys.UpdateAttrsBuffed, false);
-        this.setBooleanState(ID.Keys.UpdateAttrsBonus, false);
-        this.setBooleanState(ID.Keys.UpdateAttrsEquip, false);
-        this.setBooleanState(ID.Keys.UpdateAttrsMorale, false);
-        this.setBooleanState(ID.Keys.UpdateAttrsPotion, false);
-        this.setBooleanState(ID.Keys.UpdateAttrsFormation, false);
-        this.setBooleanState(ID.Keys.UpdateAttrsRaw, false);
-        this.setBooleanState(ID.Keys.UpdateFormatBuff, false);
-        this.setStringState(ID.Keys.OwnerName, "");
+        this.setBooleanState(AttrBoo.CanFloatUp, false);
+        this.setBooleanState(AttrBoo.CanDropItem, true);
+        this.setBooleanState(AttrBoo.CanFollow, false);
+        this.setBooleanState(AttrBoo.CanOnSightChase, true);
+        this.setBooleanState(AttrBoo.CanAtkLight, true);
+        this.setBooleanState(AttrBoo.CanAtkHeavy, true);
+        this.setBooleanState(AttrBoo.CanAtkAirLight, true);
+        this.setBooleanState(AttrBoo.CanAtkAirHeavy, true);
+        this.setBooleanState(AttrBoo.UseMelee, false);
+        this.setBooleanState(AttrBoo.UseAtkLight, true);
+        this.setBooleanState(AttrBoo.UseAtkHeavy, true);
+        this.setBooleanState(AttrBoo.UseAtkAirLight, true);
+        this.setBooleanState(AttrBoo.UseAtkAirHeavy, true);
+        this.setNumberState(AttrNum.Phase, 0);
+        this.setBooleanState(AttrBoo.CanRingEffect, true);
+        this.setBooleanState(AttrBoo.UseRingEffect, true);
+        this.setBooleanState(AttrBoo.CanPickItem, false);
+        this.setBooleanState(AttrBoo.UsePickItem, true);
+        this.setBooleanState(AttrBoo.UseAutoPump, false);
+        this.setNumberState(AttrNum.FollowMin, 3);
+        this.setNumberState(AttrNum.FollowMax, 12);
+        this.setNumberState(AttrNum.FleeHP, 35);
+        this.setNumberState(AttrNum.CombatRationLevel, 3);
+        this.setNumberState(AttrNum.GuardType, 0);
+        this.setNumberState(AttrNum.GuardX, -1);
+        this.setNumberState(AttrNum.GuardY, -1);
+        this.setNumberState(AttrNum.GuardZ, -1);
+        this.setNumberState(AttrNum.GuardDim, 0);
+        this.setNumberState(AttrNum.GuardID, -1);
+        this.setNumberState(AttrNum.EquipType, 2);
+        this.setNumberState(AttrNum.DamageType, 0);
+        this.setNumberState(AttrNum.FormatType, 0);
+        this.setNumberState(AttrNum.FormatPos, 0);
+        this.setNumberState(AttrNum.ShipDepth, 0D);     //double
+        this.setNumberState(AttrNum.Task, -1);
+        this.setNumberState(AttrNum.TaskSide, -1);
+        this.setNumberState(AttrNum.TaskTime, 0);
+        this.setNumberState(AttrNum.CraneState, 0);
+        this.setNumberState(AttrNum.CraneTime, 0);
+        this.setNumberState(AttrNum.CraneDelay, 0);
+        this.setNumberState(AttrNum.WpStay, 0);
+        this.setNumberState(AttrNum.WpStayTime, 0);
+        this.setBooleanState(AttrBoo.IsMarried, false);
+        this.setBooleanState(AttrBoo.IsNoFuel, false);
+        this.setBooleanState(AttrBoo.IsHeadTilt, false);
+        this.setBooleanState(AttrBoo.IsPVPFirst, true);
+        this.setBooleanState(AttrBoo.IsAntiAir, false);
+        this.setBooleanState(AttrBoo.IsAntiSS, false);
+        this.setBooleanState(AttrBoo.IsPassive, false);
+        this.setBooleanState(AttrBoo.IsTimeKeeper, true);
+        this.setBooleanState(AttrBoo.ShowHeldItem, true);
+        this.setNumberState(AttrNum.ModelStateNum, 1);
+        this.setNumberState(AttrNum.ModelState, 0);
+        this.setNumberState(AttrNum.Emotion, 0);
+        this.setNumberState(AttrNum.Emotion2, 0);
+        this.setNumberState(AttrNum.Emotion3, 0);
+        this.setNumberState(AttrNum.Emotion4, 0);
+        this.setNumberState(AttrNum.HPState, 0);
+        this.setNumberState(AttrNum.TimeEmotion3, 0);
+        this.setNumberState(AttrNum.TimeSound, 0);
+        this.setNumberState(AttrNum.TimeFace, 0);
+        this.setNumberState(AttrNum.TimeHeadTilt, 0);
+        this.setNumberState(AttrNum.EmoteDelay, 0);
+        this.setNumberState(AttrNum.Scale, 0);
+        this.setNumberState(AttrNum.ShipType, 0);
+        this.setNumberState(AttrNum.IconType, 0);
+        this.setNumberState(AttrNum.ShipLevel, 1);
+        this.setNumberState(AttrNum.ShipUID, -1);
+        this.setNumberState(AttrNum.PlayerUID, -1);
+        this.setNumberState(AttrNum.PlayerEID, -1);
+        this.setNumberState(AttrNum.Kills, 0);
+        this.setNumberState(AttrNum.ExpCurrent, 0);
+        this.setNumberState(AttrNum.ExpNext, this.calcExpNext(1));
+        this.setNumberState(AttrNum.GrudgeNumber, 0);
+        this.setNumberState(AttrNum.AmmoLightNumber, 0);
+        this.setNumberState(AttrNum.AmmoHeavyNumber, 0);
+        this.setNumberState(AttrNum.AirLightNumber, 0);
+        this.setNumberState(AttrNum.AirHeavyNumber, 0);
+        this.setNumberState(AttrNum.GrudgeConsume, 0);
+        this.setNumberState(AttrNum.AmmoConsume, 0);
+        this.setNumberState(AttrNum.Morale, 60);
+        this.setNumberState(AttrNum.Food, 0);
+        this.setNumberState(AttrNum.FoodMax, 10);
+        this.setNumberState(AttrNum.HitHeight, 0);
+        this.setNumberState(AttrNum.HitAngle, 0);
+        this.setNumberState(AttrNum.SensBody, -1);
+        this.setNumberState(AttrNum.ChunkLoaderLevel, 0);
+        this.setNumberState(AttrNum.FlareLevel, 0);
+        this.setNumberState(AttrNum.SearchlightLevel, 0);
+        this.setNumberState(AttrNum.XP, 0);
+        this.setNumberState(AttrNum.ImmuneTime, 0);
+        this.setNumberState(AttrNum.RevengeTime, 0);
+        this.setNumberState(AttrNum.MountSkillCD1, 0);
+        this.setNumberState(AttrNum.MountSkillCD2, 0);
+        this.setNumberState(AttrNum.MountSkillCD3, 0);
+        this.setNumberState(AttrNum.MountSkillCD4, 0);
+        this.setNumberState(AttrNum.MountSkillCD5, 0);
+        this.setBooleanState(AttrBoo.UpdateAttrsBuffed, false);
+        this.setBooleanState(AttrBoo.UpdateAttrsBonus, false);
+        this.setBooleanState(AttrBoo.UpdateAttrsEquip, false);
+        this.setBooleanState(AttrBoo.UpdateAttrsMorale, false);
+        this.setBooleanState(AttrBoo.UpdateAttrsPotion, false);
+        this.setBooleanState(AttrBoo.UpdateAttrsFormation, false);
+        this.setBooleanState(AttrBoo.UpdateAttrsRaw, false);
+        this.setBooleanState(AttrBoo.UpdateFormatBuff, false);
+        this.setStringState(AttrStr.OwnerName, "");
         
         //choice random sensitive body part
         this.randomSensitiveBody();
@@ -177,110 +177,120 @@ public class ShipStateHandler extends AttrStateHandler
     
     public int getShipType()
     {
-        return this.getStateInt(ID.Keys.ShipType);
+        return this.getStateInt(AttrNum.ShipType);
     }
     
     public void setShipType(byte value)
     {
-        this.setNumberState(ID.Keys.ShipType, value);  //ID.ShipType
+        this.setNumberState(AttrNum.ShipType, value);  //ID.ShipType
     }
     
     public int getShipIcon()
     {
-        return this.getStateInt(ID.Keys.IconType);
+        return this.getStateInt(AttrNum.IconType);
     }
     
     public void setShipIcon(byte value)
     {
-        this.setNumberState(ID.Keys.IconType, value);  //ID.IconType
+        this.setNumberState(AttrNum.IconType, value);  //ID.IconType
     }
     
     public int getShipLevel()
     {
-        return this.getStateInt(ID.Keys.ShipLevel);
+        return this.getStateInt(AttrNum.ShipLevel);
     }
     
     public void setShipLevel(int value)
     {
-        this.setNumberState(ID.Keys.ShipLevel, value);
+        this.setNumberState(AttrNum.ShipLevel, value);
+    }
+    
+    public int getShipScale()
+    {
+        return this.getStateInt(AttrNum.Scale);
+    }
+    
+    public void setShipScale(int value)
+    {
+        this.setNumberState(AttrNum.Scale, value);
     }
     
     public int getShipUID()
     {
-        return this.getStateInt(ID.Keys.ShipUID);
+        return this.getStateInt(AttrNum.ShipUID);
     }
     
     public void setShipUID(int value)
     {
-        this.setNumberState(ID.Keys.ShipUID, value);
+        this.setNumberState(AttrNum.ShipUID, value);
     }
     
     public int getOwnerUID()
     {
-        return this.getStateInt(ID.Keys.PlayerUID);
+        return this.getStateInt(AttrNum.PlayerUID);
     }
     
     public void setOwnerUID(int value)
     {
-        this.setNumberState(ID.Keys.PlayerUID, value);
+        this.setNumberState(AttrNum.PlayerUID, value);
     }
     
     public int getOwnerEID()
     {
-        return this.getStateInt(ID.Keys.PlayerEID);
+        return this.getStateInt(AttrNum.PlayerEID);
     }
     
     public void setOwnerEID(int value)
     {
-        this.setNumberState(ID.Keys.PlayerEID, value);
+        this.setNumberState(AttrNum.PlayerEID, value);
     }
     
     public int getShipDamageType()
     {
-        return this.getStateInt(ID.Keys.ShipType);
+        return this.getStateInt(AttrNum.ShipType);
     }
     
     public void setShipDamageType(byte value)
     {
-        this.setNumberState(ID.Keys.ShipType, value);  //ID.ShipDmgType
+        this.setNumberState(AttrNum.ShipType, value);  //ID.ShipDmgType
     }
     
     public int getShipSlotsLevel()
     {
-        return this.getStateInt(ID.Keys.SlotsLevel);
+        return this.getStateInt(AttrNum.SlotsLevel);
     }
     
     public void setShipSlotsLevel(int value)
     {
         if (value < 0) value = 0;
-        this.setNumberState(ID.Keys.SlotsLevel, value);
+        this.setNumberState(AttrNum.SlotsLevel, value);
     }
     
     public int getShipStateNumber()
     {
-        return this.getStateInt(ID.Keys.ShipType);
+        return this.getStateInt(AttrNum.ShipType);
     }
     
     public void setShipStateNumber(byte value)
     {
-        this.setNumberState(ID.Keys.ShipType, value);  //max state number <= 32
+        this.setNumberState(AttrNum.ShipType, value);  //max state number <= 32
     }
     
     /** change ship outfit (model state) */
     public void setShipOutfit(int id)
     {
-        if (id > this.getStateByte(ID.Keys.ModelStateNum) || id < 0) id = 0;
-        this.setNumberState(ID.Keys.ModelState, this.getStateInt(ID.Keys.ModelState) ^ Values.N.Pow2[id]);
+        if (id > this.getStateByte(AttrNum.ModelStateNum) || id < 0) id = 0;
+        this.setNumberState(AttrNum.ModelState, this.getStateInt(AttrNum.ModelState) ^ Values.N.Pow2[id]);
     }
     
     public byte getSensitiveBody()
     {
-        return this.getStateByte(ID.Keys.SensBody);
+        return this.getStateByte(AttrNum.SensBody);
     }
     
     public void setSensitiveBody(byte value)
     {
-        this.setNumberState(ID.Keys.SensBody, value);
+        this.setNumberState(AttrNum.SensBody, value);
     }
     
     /** set random sensitive body id, ref: ID.Body */
@@ -313,113 +323,113 @@ public class ShipStateHandler extends AttrStateHandler
     /** 1:cannon only, 2:both, 3:aircraft only */
     public int getShipEquipType()
     {
-        return this.getStateInt(ID.Keys.EquipType);
+        return this.getStateInt(AttrNum.EquipType);
     }
     
     /** @see #getEquipType() */
     public void setShipEquipType(byte value)
     {
-        this.setNumberState(ID.Keys.EquipType, value);  //max equip type < 3
+        this.setNumberState(AttrNum.EquipType, value);  //max equip type < 3
     }
     
     public int getGrudgeConsumeIdle()
     {
-        return this.getStateInt(ID.Keys.GrudgeConsume);
+        return this.getStateInt(AttrNum.GrudgeConsume);
     }
     
     public void setGrudgeConsumeIdle(int value)
     {
-        this.setNumberState(ID.Keys.GrudgeConsume, value);
+        this.setNumberState(AttrNum.GrudgeConsume, value);
     }
     
     public int getAmmoConsumption()
     {
-        return this.getStateInt(ID.Keys.AmmoConsume);
+        return this.getStateInt(AttrNum.AmmoConsume);
     }
     
     public void setAmmoConsumption(int value)
     {
-        this.setNumberState(ID.Keys.AmmoConsume, value);
+        this.setNumberState(AttrNum.AmmoConsume, value);
     }
     
     public int getFoodSaturation()
     {
-        return this.getStateInt(ID.Keys.Food);
+        return this.getStateInt(AttrNum.Food);
     }
     
     public void setFoodSaturation(int value)
     {
-        this.setNumberState(ID.Keys.Food, value);
+        this.setNumberState(AttrNum.Food, value);
     }
     
     public int getFoodSaturationMax()
     {
-        return this.getStateInt(ID.Keys.FoodMax);
+        return this.getStateInt(AttrNum.FoodMax);
     }
     
     public void setFoodSaturationMax(int value)
     {
-        this.setNumberState(ID.Keys.FoodMax, value);
+        this.setNumberState(AttrNum.FoodMax, value);
     }
     
     public byte getDamageType()
     {
-        return this.getStateByte(ID.Keys.DamageType);
+        return this.getStateByte(AttrNum.DamageType);
     }
     
     public void setDamageType(byte value)
     {
-        this.setNumberState(ID.Keys.DamageType, value);
+        this.setNumberState(AttrNum.DamageType, value);
     }
     
     public boolean canAttackLight()
     {
-        return this.getBooleanState(ID.Keys.CanAtkLight);
+        return this.getBooleanState(AttrBoo.CanAtkLight);
     }
     
     public void setCanAttackLight(boolean value)
     {
-        this.setBooleanState(ID.Keys.CanAtkLight, value);
+        this.setBooleanState(AttrBoo.CanAtkLight, value);
     }
     
     public boolean canAttackHeavy()
     {
-        return this.getBooleanState(ID.Keys.CanAtkHeavy);
+        return this.getBooleanState(AttrBoo.CanAtkHeavy);
     }
     
     public void setCanAttackHeavy(boolean value)
     {
-        this.setBooleanState(ID.Keys.CanAtkHeavy, value);
+        this.setBooleanState(AttrBoo.CanAtkHeavy, value);
     }
     
     public boolean canAttackAirLight()
     {
-        return this.getBooleanState(ID.Keys.CanAtkAirLight);
+        return this.getBooleanState(AttrBoo.CanAtkAirLight);
     }
     
     public void setCanAttackAirLight(boolean value)
     {
-        this.setBooleanState(ID.Keys.CanAtkAirLight, value);
+        this.setBooleanState(AttrBoo.CanAtkAirLight, value);
     }
     
     public boolean canAttackAirHeavy()
     {
-        return this.getBooleanState(ID.Keys.CanAtkAirHeavy);
+        return this.getBooleanState(AttrBoo.CanAtkAirHeavy);
     }
     
     public void setCanAttackAirHeavy(boolean value)
     {
-        this.setBooleanState(ID.Keys.CanAtkAirHeavy, value);
+        this.setBooleanState(AttrBoo.CanAtkAirHeavy, value);
     }
     
     public boolean useAttackMelee()
     {
-        return this.getBooleanState(ID.Keys.UseMelee);
+        return this.getBooleanState(AttrBoo.UseMelee);
     }
     
     public void setUseAttackMelee(boolean value)
     {
-        this.setBooleanState(ID.Keys.UseMelee, value);
+        this.setBooleanState(AttrBoo.UseMelee, value);
         
         //reset AI
         this.host.getAIHandler().resetShipAI();
@@ -427,180 +437,150 @@ public class ShipStateHandler extends AttrStateHandler
     
     public boolean useAttackLight()
     {
-        return this.getBooleanState(ID.Keys.UseAtkLight);
+        return this.getBooleanState(AttrBoo.UseAtkLight);
     }
     
     public void setUseAttackLight(boolean value)
     {
-        this.setBooleanState(ID.Keys.UseAtkLight, value);
+        this.setBooleanState(AttrBoo.UseAtkLight, value);
     }
     
     public boolean useAttackHeavy()
     {
-        return this.getBooleanState(ID.Keys.UseAtkHeavy);
+        return this.getBooleanState(AttrBoo.UseAtkHeavy);
     }
     
     public void setUseAttackHeavy(boolean value)
     {
-        this.setBooleanState(ID.Keys.UseAtkHeavy, value);
+        this.setBooleanState(AttrBoo.UseAtkHeavy, value);
     }
     
     public boolean useAttackAirLight()
     {
-        return this.getBooleanState(ID.Keys.UseAtkAirLight);
+        return this.getBooleanState(AttrBoo.UseAtkAirLight);
     }
     
     public void setUseAttackAirLight(boolean value)
     {
-        this.setBooleanState(ID.Keys.UseAtkAirLight, value);
+        this.setBooleanState(AttrBoo.UseAtkAirLight, value);
     }
     
     public boolean useAttackAirHeavy()
     {
-        return this.getBooleanState(ID.Keys.UseAtkAirHeavy);
+        return this.getBooleanState(AttrBoo.UseAtkAirHeavy);
     }
     
     public void setUseAttackAirHeavy(boolean value)
     {
-        this.setBooleanState(ID.Keys.UseAtkAirHeavy, value);
+        this.setBooleanState(AttrBoo.UseAtkAirHeavy, value);
     }
     
     public int getMorale()
     {
-        return this.getStateInt(ID.Keys.Morale);
+        return this.getStateInt(AttrNum.Morale);
     }
     
     public void setMorale(int value)
     {
-        this.setNumberState(ID.Keys.Morale, value);
+        this.setNumberState(AttrNum.Morale, value);
     }
     
     public int getGrudge()
     {
-        return this.getStateInt(ID.Keys.GrudgeNumber);
+        return this.getStateInt(AttrNum.GrudgeNumber);
     }
     
     public void setGrudge(int value)
     {
-        this.setNumberState(ID.Keys.GrudgeNumber, value);
+        this.setNumberState(AttrNum.GrudgeNumber, value);
     }
     
     public int getAmmoLight()
     {
-        return this.getStateInt(ID.Keys.AmmoLightNumber);
+        return this.getStateInt(AttrNum.AmmoLightNumber);
     }
     
     public int getAmmoHeavy()
     {
-        return this.getStateInt(ID.Keys.AmmoHeavyNumber);
+        return this.getStateInt(AttrNum.AmmoHeavyNumber);
     }
     
     public int getAirplaneLight()
     {
-        return this.getStateInt(ID.Keys.AirLightNumber);
+        return this.getStateInt(AttrNum.AirLightNumber);
     }
     
     public int getAirplaneHeavy()
     {
-        return this.getStateInt(ID.Keys.AirHeavyNumber);
+        return this.getStateInt(AttrNum.AirHeavyNumber);
     }
     
     public int getFaceTick()
     {
-        return this.getStateInt(ID.Keys.TimeFace);
+        return this.getStateInt(AttrNum.TimeFace);
     }
     
     public void setFaceTick(int value)
     {
-        this.setNumberState(ID.Keys.TimeFace, value);
+        this.setNumberState(AttrNum.TimeFace, value);
     }
     
     public int getHeadTiltTick()
     {
-        return this.getStateInt(ID.Keys.TimeHeadTilt);
+        return this.getStateInt(AttrNum.TimeHeadTilt);
     }
     
     public void setHeadTiltTick(int value)
     {
-        this.setNumberState(ID.Keys.TimeHeadTilt, value);
-    }
-    
-    public int getAttackTick()
-    {
-        return this.getStateInt(ID.Keys.AttackTime);
-    }
-    
-    public void setAttackTick(int value)
-    {
-        this.setNumberState(ID.Keys.AttackTime, value);
-    }
-    
-    public int getAttackTick2()
-    {
-        return this.getStateInt(ID.Keys.AttackTime2);
-    }
-    
-    public void setAttackTick2(int value)
-    {
-        this.setNumberState(ID.Keys.AttackTime2, value);
-    }
-    
-    public int getAttackTick3()
-    {
-        return this.getStateInt(ID.Keys.AttackTime3);
-    }
-    
-    public void setAttackTick3(int value)
-    {
-        this.setNumberState(ID.Keys.AttackTime3, value);
+        this.setNumberState(AttrNum.TimeHeadTilt, value);
     }
     
     public int getRevengeTime()
     {
-        return this.getStateInt(ID.Keys.RevengeTime);
+        return this.getStateInt(AttrNum.RevengeTime);
     }
     
     public void setRevengeTime(int value)
     {
-        this.setNumberState(ID.Keys.RevengeTime, value);
+        this.setNumberState(AttrNum.RevengeTime, value);
     }
     
     /** show emote cooldown */
     public int getEmoteDelay()
     {
-        return this.getStateInt(ID.Keys.EmoteDelay);
+        return this.getStateInt(AttrNum.EmoteDelay);
     }
     
     /** @see #getEmoteDelay() */
     public void setEmoteDelay(int value)
     {
-        this.setNumberState(ID.Keys.EmoteDelay, value);
+        this.setNumberState(AttrNum.EmoteDelay, value);
     }
     
     public int getCraneDelay()
     {
-        return this.getStateInt(ID.Keys.CraneDelay);
+        return this.getStateInt(AttrNum.CraneDelay);
     }
     
     public void setCraneDelay(int value)
     {
-        this.setNumberState(ID.Keys.CraneDelay, value);
+        this.setNumberState(AttrNum.CraneDelay, value);
     }
     
     public int getCraneTime()
     {
-        return this.getStateInt(ID.Keys.CraneTime);
+        return this.getStateInt(AttrNum.CraneTime);
     }
     
     public void setCraneTime(int value)
     {
-        this.setNumberState(ID.Keys.CraneTime, value);
+        this.setNumberState(AttrNum.CraneTime, value);
     }
     
     /** pointer item click height on entity, sole = 0, headtop = 100 */
     public int getHitHeight()
     {
-        return this.getStateInt(ID.Keys.HitHeight);
+        return this.getStateInt(AttrNum.HitHeight);
     }
     
     /** @see #getHitHeight() */
@@ -609,7 +589,7 @@ public class ShipStateHandler extends AttrStateHandler
         if (value > 120) value = 120;
         else if (value < -20) value = -20;
         
-        this.setNumberState(ID.Keys.HitHeight, (byte) value);
+        this.setNumberState(AttrNum.HitHeight, (byte) value);
     }
     
     public Enums.BodyHeight getBodyIDFromHeight()
@@ -631,7 +611,7 @@ public class ShipStateHandler extends AttrStateHandler
      */
     public int getHitAngle()
     {
-        return this.getStateInt(ID.Keys.HitHeight);
+        return this.getStateInt(AttrNum.HitHeight);
     }
     
     /** @see #getHitAngle() */
@@ -639,7 +619,7 @@ public class ShipStateHandler extends AttrStateHandler
     {
         value %= 360;
         
-        this.setNumberState(ID.Keys.HitHeight, (short) value);
+        this.setNumberState(AttrNum.HitHeight, (short) value);
     }
     
     public int getTickExisted()
@@ -649,61 +629,61 @@ public class ShipStateHandler extends AttrStateHandler
     
     public int getKills()
     {
-        return this.getStateInt(ID.Keys.Kills);
+        return this.getStateInt(AttrNum.Kills);
     }
     
     public void addKills(int value)
     {
-        this.addNumberState(ID.Keys.Kills, value);
+        this.addIntegerState(AttrNum.Kills, value);
     }
     
     public void addMorale(int value)
     {
-        int n = this.getStateInt(ID.Keys.Morale) + value;
+        int n = this.getStateInt(AttrNum.Morale) + value;
         
         if (n < 0) n = 0;
         else if (n > 16000) n = 16000;
         
-        this.setNumberState(ID.Keys.Morale, n);
+        this.setNumberState(AttrNum.Morale, n);
     }
     
     public void addAmmoLight(int value)
     {
         if (value > 0 && ConfigHandler.easyMode) value *= 10;
         
-        int n = this.getStateInt(ID.Keys.AmmoLightNumber) + value;
+        int n = this.getStateInt(AttrNum.AmmoLightNumber) + value;
         
         if (n < 0) n = 0;
         
-        this.setNumberState(ID.Keys.AmmoLightNumber, n);
+        this.setNumberState(AttrNum.AmmoLightNumber, n);
     }
     
     public void addAmmoHeavy(int value)
     {
         if (value > 0 && ConfigHandler.easyMode) value *= 10;
         
-        int n = this.getStateInt(ID.Keys.AmmoHeavyNumber) + value;
+        int n = this.getStateInt(AttrNum.AmmoHeavyNumber) + value;
         
         if (n < 0) n = 0;
         
-        this.setNumberState(ID.Keys.AmmoHeavyNumber, n);
+        this.setNumberState(AttrNum.AmmoHeavyNumber, n);
     }
     
     public void addGrudge(int value)
     {
         if (value > 0 && ConfigHandler.easyMode) value *= 10;
         
-        int n = this.getStateInt(ID.Keys.GrudgeNumber) + value;
+        int n = this.getStateInt(AttrNum.GrudgeNumber) + value;
         
         if (n < 0) n = 0;
         
-        this.setNumberState(ID.Keys.GrudgeNumber, n);
+        this.setNumberState(AttrNum.GrudgeNumber, n);
     }
     
     /** 0:ready, 1:waiting, 2:craning */
     public byte getCraneState()
     {
-        return this.getStateByte(ID.Keys.CraneState);
+        return this.getStateByte(AttrNum.CraneState);
     }
     
     /** @see #getCraneState() */
@@ -719,7 +699,7 @@ public class ShipStateHandler extends AttrStateHandler
             }
         }
         
-        this.setNumberState(ID.Keys.CraneState, value);
+        this.setNumberState(AttrNum.CraneState, value);
     }
     
     public boolean isRiding()
@@ -765,12 +745,12 @@ public class ShipStateHandler extends AttrStateHandler
             return ((IStateMinion) this.host.getRidingEntity()).getStateHandler().getShipDepth(false);
         }
         
-        return this.getStateDouble(ID.Keys.ShipDepth);
+        return this.getStateDouble(AttrNum.ShipDepth);
     }
     
     public void setShipDepth(double value)
     {
-        this.setNumberState(ID.Keys.ShipDepth, value);
+        this.setNumberState(AttrNum.ShipDepth, value);
     }
     
     public boolean hasNoFuel()
@@ -778,12 +758,12 @@ public class ShipStateHandler extends AttrStateHandler
         //treat death as no fuel
         if (!this.host.isEntityAlive() || this.host.deathTime > 0) return true;
         
-        return this.getBooleanState(ID.Keys.IsNoFuel);
+        return this.getBooleanState(AttrBoo.IsNoFuel);
     }
     
     public void setNoFuel(boolean value)
     {
-        this.setBooleanState(ID.Keys.IsNoFuel, value);
+        this.setBooleanState(AttrBoo.IsNoFuel, value);
     }
     
     /** check ammo > 4 * base consume number */
@@ -809,8 +789,8 @@ public class ShipStateHandler extends AttrStateHandler
     /** add exp, called SERVER SIDE ONLY */
     public void addShipExp(int exp)
     {
-        int capLevel = this.getBooleanState(ID.Keys.IsMarried) ? ConfigHandler.maxLevel : ConfigHandler.midLimitLevel;
-        int curLevel = this.getStateInt(ID.Keys.ShipLevel);
+        int capLevel = this.getBooleanState(AttrBoo.IsMarried) ? ConfigHandler.maxLevel : ConfigHandler.midLimitLevel;
+        int curLevel = this.getStateInt(AttrNum.ShipLevel);
         
         //if not cap level
         if (curLevel < capLevel)
@@ -821,8 +801,8 @@ public class ShipStateHandler extends AttrStateHandler
             //apply equip effect
             exp = (int) ((float)exp * this.attrs.getAttrsBuffed(ID.Attrs.XP));
             
-            int curExp = this.getStateInt(ID.Keys.ExpCurrent) + exp;
-            int nextExp = this.getStateInt(ID.Keys.ExpCurrent);
+            int curExp = this.getStateInt(AttrNum.ExpCurrent) + exp;
+            int nextExp = this.getStateInt(AttrNum.ExpCurrent);
             
             //level++
             while (curExp >= nextExp || curLevel >= capLevel)
@@ -840,8 +820,8 @@ public class ShipStateHandler extends AttrStateHandler
                 nextExp = this.calcExpNext(curLevel);
             }
             
-            this.setNumberState(ID.Keys.ExpCurrent, curExp);
-            this.setNumberState(ID.Keys.ExpNext, nextExp);
+            this.setNumberState(AttrNum.ExpCurrent, curExp);
+            this.setNumberState(AttrNum.ExpNext, nextExp);
             this.addShipLevel(curLevel, true);
         }//end below cap level
     }
@@ -904,7 +884,6 @@ public class ShipStateHandler extends AttrStateHandler
         }
         
         boolean isHeavy = type == Enums.Ammo.HEAVY;
-        int ammoKey = isHeavy ? ID.Keys.AmmoHeavyNumber : ID.Keys.AmmoLightNumber;
         int ammoNum = isHeavy ? this.getAmmoHeavy() : this.getAmmoLight();
         boolean useItem = isHeavy ? !hasAmmoHeavy() : !this.hasAmmoLight();
         float modAmmo = this.attrs.getAttrsBuffed(ID.Attrs.AMMO);

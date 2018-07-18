@@ -3,6 +3,7 @@ package com.lulan.shincolle.handler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 
 public class TargetHandler
 {
@@ -11,6 +12,7 @@ public class TargetHandler
     protected Entity atkTarget;                //attack target
     protected Entity rvgTarget;                //revenge target
     protected EntityPlayer owner;
+    protected BlockPos posTarget;
     
     
     public EntityLivingBase getAITarget()

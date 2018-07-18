@@ -23,20 +23,21 @@ import net.minecraftforge.fml.relauncher.Side;
 public abstract class CommonProxy implements IProxy
 {
     
-    public static final String chNameEnt = "scEnt";
-    public static final String chNameGui = "scGui";
-    public static final String chNamePar = "scPar";
-    public static final String chNameIn = "scIn";
+    private static final String chNameEnt = "scEnt";
+    private static final String chNameGui = "scGui";
+    private static final String chNamePar = "scPar";
+    private static final String chNameIn = "scIn";
     
     /**packet system
-     * channelE: entity sync
-     * channelG: gui sync and client input
-     * channelP: particle
+     * channelE: entity sync(S2C)
+     * channelG: gui packet(S2C & C2S)
+     * channelP: particle(S2C)
+     * channelI: keymouse event(C2S) and react(S2C)
      */
-    public static SimpleNetworkWrapper channelE;
-    public static SimpleNetworkWrapper channelG;
-    public static SimpleNetworkWrapper channelP;
-    public static SimpleNetworkWrapper channelI;
+    private static SimpleNetworkWrapper channelE;
+    private static SimpleNetworkWrapper channelG;
+    private static SimpleNetworkWrapper channelP;
+    private static SimpleNetworkWrapper channelI;
 
     /** MP flag */
     public static boolean isMultiplayer = false;    //the world is MP or SP
@@ -52,6 +53,26 @@ public abstract class CommonProxy implements IProxy
     
     
     public CommonProxy() {}
+    
+    public static SimpleNetworkWrapper getChannelEntitySync()
+    {
+        return channelE;
+    }
+    
+    public static SimpleNetworkWrapper getChannelGUI()
+    {
+        return channelG;
+    }
+    
+    public static SimpleNetworkWrapper getChannelParticle()
+    {
+        return channelP;
+    }
+    
+    public static SimpleNetworkWrapper getChannelKeyMouseEvent()
+    {
+        return channelI;
+    }
     
     @Override
     public void registerChannel()

@@ -1,6 +1,6 @@
 package com.lulan.shincolle.handler;
 
-import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Enums.AttrNum;
 import com.lulan.shincolle.reference.dataclass.Attrs;
 
 /**
@@ -23,7 +23,7 @@ public class AttrStateHandler extends StateHandler
     {
         super.initFirst();
         
-        this.setNumberState(ID.Keys.ShipClass, 0);
+        this.setNumberState(AttrNum.ShipClass, 0);
     }
     
     @Override
@@ -40,12 +40,12 @@ public class AttrStateHandler extends StateHandler
     
     public int getAttrClass()
     {
-        return this.getStateInt(ID.Keys.ShipClass);
+        return this.getStateInt(AttrNum.ShipClass);
     }
     
     public void setAttrClass(short value)
     {
-        this.setNumberState(ID.Keys.ShipClass, value);
+        this.setNumberState(AttrNum.ShipClass, value);
     }
     
     
