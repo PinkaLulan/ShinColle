@@ -102,10 +102,10 @@ public class ConfigHandler
     /********************* SHIP **********************/
     //                                                    HP, ATK_L, ATK_H, ATK_AL, ATK_AH
     public static double[] limitShipAttrs = new double[] {-1D, -1D, -1D, -1D, -1D,
-    //                                                    DEF, SPD, MOV, HIT, CRI
-                                                          0.8D, 4D, 0.6D, 64D, 0.9D,
-    //                                                    DHIT, THIT, MISS, AA, ASM
-                                                          0.9D, 0.9D, 0.9D, -1D, -1D,
+    //                                                    DEF,   SPD, MOV,  HIT, CRI
+                                                          0.95D, 4D,  0.6D, 64D, 0.95D,
+    //                                                    DHIT,  THIT,  MISS,  AA, ASM
+                                                          0.95D, 0.95D, 0.95D, -1D, -1D,
     //                                                    DODGE, XP, GRUDGE, AMMO, HPRES
                                                           0.75D, -1D, -1D, -1D, -1D,
     //                                                    KB

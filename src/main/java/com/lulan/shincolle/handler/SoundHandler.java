@@ -1,11 +1,10 @@
 package com.lulan.shincolle.handler;
 
+import java.util.EnumMap;
 import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.Enums.AtkType;
 import com.lulan.shincolle.reference.Enums.SoundType;
@@ -16,9 +15,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
- * handler for sound
+ * handler for sound, must init AFTER StateHandler
  */
 public class SoundHandler
 {
@@ -28,15 +28,18 @@ public class SoundHandler
     protected Random rand;
     protected float volume, pitch;
     protected SoundCategory category;
+    /** key for sound map, for ship = classID + 2 */
+    protected int soundKey;
     
     
-    public SoundHandler(ISoundEntity host, SoundCategory category, float volume, float pitch)
+    public SoundHandler(ISoundEntity host, int soundKey, SoundCategory category, float volume, float pitch)
     {
         this.host = host;
         
         this.category = category;
         this.volume = volume;
         this.pitch = pitch;
+        this.soundKey = soundKey;
         
         if (this.host instanceof EntityLivingBase)
         {
@@ -58,13 +61,25 @@ public class SoundHandler
         return this.pitch;
     }
     
-    /** @see #playSound(ISoundEntity, SoundEvent, SoundCategory, float, float) */
+    /** @see #playSound(SoundEvent sound) */
+    public void playSound(SoundType type)
+    {
+        this.playSound(this.getSound(type));
+    }
+    
+    /** @see #playSound(SoundEvent sound, float volume, float pitch) */
     public void playSound(SoundEvent sound)
     {
         this.playSound(sound, this.getVolume(), this.getPitch());
     }
     
-    /** @see #playSound(SoundEvent, volume, pitch) */
+    /** @see #playSound(ISoundEntity host, SoundEvent sound, SoundCategory category, float volume, float pitch) */
+    public void playSound(SoundType type, float volume, float pitch)
+    {
+        this.playSound(this.host, this.getSound(type), this.category, volume, pitch);
+    }
+    
+    /** @see #playSound(ISoundEntity host, SoundEvent sound, SoundCategory category, float volume, float pitch) */
     public void playSound(SoundEvent sound, float volume, float pitch)
     {
         this.playSound(this.host, sound, this.category, volume, pitch);
@@ -89,110 +104,103 @@ public class SoundHandler
         }
     }
     
-    /** get sound by type */
+    /** get sound by type, for IStateEntityAdv ONLY */
     @Nullable
     public SoundEvent getSound(SoundType type)
     {
-        if (this.host instanceof BasicEntityShip ||
-            this.host instanceof BasicEntityShipHostile)
-        {
-            return getSound(type, (IStateEntityAdv) this.host);
-        }
+        return getSound(type, this.soundKey, this.rand);
     }
     
-    /** get sound by type */
+    /**
+     * get sound by type
+     * 
+     * @param shipID = AttrClass + 2
+     */
     @Nullable
-    public static SoundEvent getSound(SoundType type, IStateEntityAdv ship)
+    public static SoundEvent getSound(SoundType type, int shipID, Random rand)
     {
-        //get custom sound rate
-        int key = ship.getStateHandler().getAttrClass() + 2;
-        float[] rate = ConfigHandler.configSound.SOUNDRATE.get(key);
-        int typeKey = key * 100 + type;
-        int typeTemp = type;
-        
-        //if timekeeping sound
-        if (type >= 10 && type <= 33)
-        {
-            type = 8;
-        }
+        /* use custom sound */
+        EnumMap<SoundType, Float> rate = ConfigHandler.configSound.SOUNDRATE.get(shipID);
+        int soundKey = shipID * 100 + type.ordinal();
         
         //has custom sound
-        if (rate != null && rate[type] > 0.01F)
+        if (rate != null)
         {
-            SoundEvent sound = ModSounds.CUSTOM_SOUND.get(typeKey);
+            SoundEvent sound = ModSounds.CUSTOM_SOUND.get(soundKey);
+            Float r = rate.get(type);
             
-            if (sound != null && ship.rand.nextFloat() < rate[type])
+            if (sound != null && r != null && r > 0F && rand.nextFloat() < r)
             {
                 return sound;
             }
         }
         
-        //no custom sound, return default sound
-        switch (typeTemp)
+        /* use default sound */
+        switch (type)
         {
-        case 0:
+        case IDLE:
             return ModSounds.SHIP_IDLE;
-        case 1:
+        case HIT:
             return ModSounds.SHIP_HIT;
-        case 2:
+        case HURT:
             return ModSounds.SHIP_HURT;
-        case 3:
+        case DEAD:
             return ModSounds.SHIP_DEATH;
-        case 4:
+        case MARRY:
             return ModSounds.SHIP_MARRY;
-        case 5:
+        case KNOCKBACK:
             return ModSounds.SHIP_KNOCKBACK;
-        case 6:
+        case PICKITEM:
             return ModSounds.SHIP_ITEM;
-        case 7:
+        case FEED:
             return ModSounds.SHIP_FEED;
-        case 10:
+        case TIMEKEEP00:
             return ModSounds.SHIP_TIME0;
-        case 11:
+        case TIMEKEEP01:
             return ModSounds.SHIP_TIME1;
-        case 12:
+        case TIMEKEEP02:
             return ModSounds.SHIP_TIME2;
-        case 13:
+        case TIMEKEEP03:
             return ModSounds.SHIP_TIME3;
-        case 14:
+        case TIMEKEEP04:
             return ModSounds.SHIP_TIME4;
-        case 15:
+        case TIMEKEEP05:
             return ModSounds.SHIP_TIME5;
-        case 16:
+        case TIMEKEEP06:
             return ModSounds.SHIP_TIME6;
-        case 17:
+        case TIMEKEEP07:
             return ModSounds.SHIP_TIME7;
-        case 18:
+        case TIMEKEEP08:
             return ModSounds.SHIP_TIME8;
-        case 19:
+        case TIMEKEEP09:
             return ModSounds.SHIP_TIME9;
-        case 20:
+        case TIMEKEEP10:
             return ModSounds.SHIP_TIME10;
-        case 21:
+        case TIMEKEEP11:
             return ModSounds.SHIP_TIME11;
-        case 22:
+        case TIMEKEEP12:
             return ModSounds.SHIP_TIME12;
-        case 23:
+        case TIMEKEEP13:
             return ModSounds.SHIP_TIME13;
-        case 24:
+        case TIMEKEEP14:
             return ModSounds.SHIP_TIME14;
-        case 25:
+        case TIMEKEEP15:
             return ModSounds.SHIP_TIME15;
-        case 26:
+        case TIMEKEEP16:
             return ModSounds.SHIP_TIME16;
-        case 27:
+        case TIMEKEEP17:
             return ModSounds.SHIP_TIME17;
-        case 28:
+        case TIMEKEEP18:
             return ModSounds.SHIP_TIME18;
-        case 29:
+        case TIMEKEEP19:
             return ModSounds.SHIP_TIME19;
-        case 30:
+        case TIMEKEEP20:
             return ModSounds.SHIP_TIME20;
-        case 31:
+        case TIMEKEEP21:
             return ModSounds.SHIP_TIME21;
-        case 32:
+        case TIMEKEEP22:
             return ModSounds.SHIP_TIME22;
-        case 33:
+        case TIMEKEEP23:
             return ModSounds.SHIP_TIME23;
         }
         
@@ -206,82 +214,119 @@ public class SoundHandler
         switch (type)
         {
         case GENERIC_MELEE:
-            if (this.rand.nextInt(3) == 0)
-            {
-                this.playSound(this.getCustomSound(1, this), this.getVolume(), this.getPitch());
-            }
+            //entity sound
+            if (this.rand.nextInt(3) == 0) this.playSound(SoundType.HIT);
         break;
         case GENERIC_LIGHT:
+            //weapon sound
             this.playSound(ModSounds.SHIP_FIRELIGHT, ConfigHandler.volumeFire, host.getSoundHandler().getPitch() * 0.85F);
-            
             //entity sound
-            if (this.rand.nextInt(8) == 0)
-            {
-                this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-            }
+            if (this.rand.nextInt(8) == 0) this.playSound(SoundType.HIT);
         break;
         case GENERIC_HEAVY:
+            //weapon sound
+            this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, host.getSoundHandler().getPitch() * 0.85F);
+            //entity sound
+            if (this.rand.nextInt(8) == 0) this.playSound(SoundType.HIT);
         break;
         case GENERIC_AIR_LIGHT:
-        break;
         case GENERIC_AIR_HEAVY:
+            //weapon sound
+            this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, host.getSoundHandler().getPitch() * 0.85F);
+            //entity sound
+            if (this.rand.nextInt(8) == 0) this.playSound(SoundType.HIT);
         break;
         case YAMATO_CANNON:
         break;
         case AP91_FIST:
         break;
-        
-        
-        
-        case 2:  //heavy cannon
-            this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, this.getSoundPitch() * 0.85F);
-            
-            //entity sound
-            if (this.getRNG().nextInt(8) == 0)
-            {
-                this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-            }
-        break;
-        case 3:  //light aircraft
-        case 4:  //heavy aircraft
-            this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, this.getSoundPitch() * 0.85F);
-          
-            //entity sound
-            if (this.getRNG().nextInt(8) == 0)
-            {
-                this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-            }
-        break;
-      default: //melee
-          if (this.getRNG().nextInt(3) == 0)
-          {
-              this.playSound(this.getCustomSound(1, this), this.getSoundVolume(), this.getSoundPitch());
-          }
-      break;
         }//end switch
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    /**************** TODO refactoring ******************/
-    
-    
-    //timekeeping method
-    protected void playTimeSound(int hour)
+    /** play timekeeping sound */
+    public void playTimeSound(World w)
     {
-        SoundEvent sound = this.getCustomSound(hour + 10, this);
-
-        //play sound
-        if (sound != null)
+        long time = w.provider.getWorldTime();
+        
+        if ((int) (time % 1000L) == 0)
         {
-            this.playSound(sound, this.getSoundVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            switch ((int) (time / 1000L) % 24)
+            {
+            case 0:
+                this.playSound(SoundType.TIMEKEEP00, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 1:
+                this.playSound(SoundType.TIMEKEEP01, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 2:
+                this.playSound(SoundType.TIMEKEEP02, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 3:
+                this.playSound(SoundType.TIMEKEEP03, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 4:
+                this.playSound(SoundType.TIMEKEEP04, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 5:
+                this.playSound(SoundType.TIMEKEEP05, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 6:
+                this.playSound(SoundType.TIMEKEEP06, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 7:
+                this.playSound(SoundType.TIMEKEEP07, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 8:
+                this.playSound(SoundType.TIMEKEEP08, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 9:
+                this.playSound(SoundType.TIMEKEEP09, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 10:
+                this.playSound(SoundType.TIMEKEEP00, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 11:
+                this.playSound(SoundType.TIMEKEEP11, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 12:
+                this.playSound(SoundType.TIMEKEEP12, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 13:
+                this.playSound(SoundType.TIMEKEEP13, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 14:
+                this.playSound(SoundType.TIMEKEEP14, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 15:
+                this.playSound(SoundType.TIMEKEEP15, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 16:
+                this.playSound(SoundType.TIMEKEEP16, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 17:
+                this.playSound(SoundType.TIMEKEEP17, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 18:
+                this.playSound(SoundType.TIMEKEEP18, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 19:
+                this.playSound(SoundType.TIMEKEEP19, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 20:
+                this.playSound(SoundType.TIMEKEEP20, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 21:
+                this.playSound(SoundType.TIMEKEEP21, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 22:
+                this.playSound(SoundType.TIMEKEEP22, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            case 23:
+                this.playSound(SoundType.TIMEKEEP23, this.getVolume(), (this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F + 1F);
+            break;
+            }
         }
     }
+    
     
 }

@@ -1,10 +1,10 @@
 package com.lulan.shincolle.client.particle;
 
-import com.lulan.shincolle.utility.LogHelper;
+import java.util.ArrayList;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -181,7 +181,7 @@ public class ParticleSpray extends Particle
             this.particleMaxAge = 100;
             this.setSize(0F, 0F);
         break;
-        case 15:   //transparent cyan
+        case 15:   //transparent light cyan
         	this.speedLimit = 0.3D;
         	this.particleRed = 0.7F;
             this.particleGreen = 1F;
@@ -242,7 +242,7 @@ public class ParticleSpray extends Particle
      *   0:missile spray, data: 0:vel0, 1:index
      * 
      */
-    public ParticleSpray(Entity host, int type, double[] data)
+    public ParticleSpray(Entity host, int type, ArrayList<Float> data)
     {
         super(host.world, host.posX, host.posY, host.posZ);
         this.ptype = type;

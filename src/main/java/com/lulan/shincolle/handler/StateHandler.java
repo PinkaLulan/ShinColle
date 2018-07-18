@@ -1,11 +1,13 @@
 package com.lulan.shincolle.handler;
 
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.reference.ID;
+import com.lulan.shincolle.reference.Enums.AttrBoo;
+import com.lulan.shincolle.reference.Enums.AttrNum;
+import com.lulan.shincolle.reference.Enums.AttrStr;
 
 /**
  * store data in Number or Boolean map
@@ -16,9 +18,15 @@ public class StateHandler
     /** host entity */
     protected IStateEntity host;
     
-    protected HashMap<Short, String> statesStringMap;
-    protected HashMap<Short, Number> statesNumberMap;
-    protected HashMap<Short, Boolean> statesFlagMap;
+    //data map for data storage
+    protected EnumMap<AttrStr, String> statesString;
+    protected EnumMap<AttrNum, Number> statesNumber;
+    protected EnumMap<AttrBoo, Boolean> statesFlag;
+    
+    //dirty set for packet sync
+    protected EnumSet<AttrStr> syncString;
+    protected EnumSet<AttrNum> syncNumber;
+    protected EnumSet<AttrBoo> syncFlag;
     
     
     public StateHandler(IStateEntity host)
@@ -35,9 +43,18 @@ public class StateHandler
     /** init data on new object */
     protected void initFirst()
     {
-        this.statesStringMap = new HashMap<Short, String>();
-        this.statesNumberMap = new HashMap<Short, Number>();
-        this.statesFlagMap = new HashMap<Short, Boolean>();
+        this.statesString = new EnumMap<AttrStr, String>(AttrStr.class);
+        this.statesNumber = new EnumMap<AttrNum, Number>(AttrNum.class);
+        this.statesFlag = new EnumMap<AttrBoo, Boolean>(AttrBoo.class);
+        
+        this.syncString = EnumSet.<AttrStr>noneOf(AttrStr.class);
+        this.syncNumber = EnumSet.<AttrNum>noneOf(AttrNum.class);
+        this.syncFlag = EnumSet.<AttrBoo>noneOf(AttrBoo.class);
+        
+        this.setNumberState(AttrNum.LastCombatTime, 0);
+        this.setNumberState(AttrNum.AttackTime, 0);
+        this.setNumberState(AttrNum.AttackTime2, 0);
+        this.setNumberState(AttrNum.AttackTime3, 0);
     }
     
     /** init data at the end of entity's initPre() */
@@ -50,27 +67,71 @@ public class StateHandler
     {
     }
     
-    /**
-     * get data from number or flag state map<br>
-     * for flags: return Byte(1) if <tt>true</tt>, else Byte(0) (include null)
-     */
-    @Nonnull
-    public Number getState(Short key)
+    public EnumSet<AttrStr> getSyncString()
     {
-        Number n = this.statesNumberMap.get(key);
-        if (n != null) return n;
-        
-        Boolean b = this.statesFlagMap.get(key);
-        if (b != null) return b.booleanValue() ? new Byte((byte)1) : new Byte((byte)0);
-        
-        return new Byte((byte)0);
+        return this.syncString;
+    }
+    
+    public EnumSet<AttrNum> getSyncNumber()
+    {
+        return this.syncNumber;
+    }
+    
+    public EnumSet<AttrBoo> getSyncFlag()
+    {
+        return this.syncFlag;
+    }
+    
+    public void clearSyncString()
+    {
+        this.syncString.clear();
+    }
+    
+    public void clearSyncNumber()
+    {
+        this.syncNumber.clear();
+    }
+    
+    public void clearSyncFlag()
+    {
+        this.syncFlag.clear();
+    }
+    
+    public EnumMap<AttrStr, String> getAllString()
+    {
+        return this.statesString;
+    }
+    
+    public EnumMap<AttrNum, Number> getAllNumber()
+    {
+        return this.statesNumber;
+    }
+    
+    public EnumMap<AttrBoo, Boolean> getAllBoolean()
+    {
+        return this.statesFlag;
+    }
+    
+    public void setAllString(EnumMap<AttrStr, String> map)
+    {
+        this.statesString = map;
+    }
+    
+    public void setAllNumber(EnumMap<AttrNum, Number> map)
+    {
+        this.statesNumber = map;
+    }
+    
+    public void setAllboolaen(EnumMap<AttrBoo, Boolean> map)
+    {
+        this.statesFlag = map;
     }
     
     /** get data from STRING state map, return empty string if no such data */
     @Nonnull
-    public String getStringState(Short key)
+    public String getStringState(AttrStr key)
     {
-        String s = this.statesStringMap.get(key);
+        String s = this.statesString.get(key);
         
         if (s != null) return s;
         else return "";
@@ -78,9 +139,9 @@ public class StateHandler
     
     /** get data from NUMBER state map, return Integer(0) if no such data */
     @Nonnull
-    public Number getNumberState(Short key)
+    public Number getNumberState(AttrNum key)
     {
-        Number n = this.statesNumberMap.get(key);
+        Number n = this.statesNumber.get(key);
         
         if (n != null) return n;
         else return new Integer(0);
@@ -88,9 +149,9 @@ public class StateHandler
     
     /** get data from FLAGS state map, return false if no such data */
     @Nonnull
-    public boolean getBooleanState(Short key)
+    public boolean getBooleanState(AttrBoo key)
     {
-        Boolean b = this.statesFlagMap.get(key);
+        Boolean b = this.statesFlag.get(key);
         
         if (b != null) return b;
         else return false;
@@ -101,9 +162,9 @@ public class StateHandler
      * NOTE: data will be truncated to byte (rightmost 8 bits)
      */
     @Nonnull
-    public byte getStateByte(Short key)
+    public byte getStateByte(AttrNum key)
     {
-        Number n = this.statesNumberMap.get(key);
+        Number n = this.statesNumber.get(key);
         
         if (n == null) return 0;
         else return n.byteValue();
@@ -114,9 +175,9 @@ public class StateHandler
      * NOTE: data will be truncated to short (rightmost 16 bits)
      */
     @Nonnull
-    public short getStateShort(Short key)
+    public short getStateShort(AttrNum key)
     {
-        Number n = this.statesNumberMap.get(key);
+        Number n = this.statesNumber.get(key);
         
         if (n == null) return 0;
         else return n.shortValue();
@@ -127,9 +188,9 @@ public class StateHandler
      * NOTE: data will be truncated to int
      */
     @Nonnull
-    public int getStateInt(Short key)
+    public int getStateInt(AttrNum key)
     {
-        Number n = this.statesNumberMap.get(key);
+        Number n = this.statesNumber.get(key);
         
         if (n == null) return 0;
         else return n.intValue();
@@ -140,9 +201,9 @@ public class StateHandler
      * NOTE: data will be truncated to float
      */
     @Nonnull
-    public float getStateFloat(Short key)
+    public float getStateFloat(AttrNum key)
     {
-        Number n = this.statesNumberMap.get(key);
+        Number n = this.statesNumber.get(key);
         
         if (n == null) return 0;
         else return n.floatValue();
@@ -152,9 +213,9 @@ public class StateHandler
      * get data (long), return 0 if no data
      */
     @Nonnull
-    public long getStateLong(Short key)
+    public long getStateLong(AttrNum key)
     {
-        Number n = this.statesNumberMap.get(key);
+        Number n = this.statesNumber.get(key);
         
         if (n == null) return 0;
         else return n.longValue();
@@ -164,54 +225,89 @@ public class StateHandler
      * get data (double), return 0 if no data
      */
     @Nonnull
-    public double getStateDouble(Short key)
+    public double getStateDouble(AttrNum key)
     {
-        Number n = this.statesNumberMap.get(key);
+        Number n = this.statesNumber.get(key);
         
         if (n == null) return 0;
         else return n.doubleValue();
     }
     
     /** set data in NUMBER state map */
-    public void setNumberState(Short key, Number value)
+    public void setNumberState(AttrNum key, Number value)
     {
-        this.statesNumberMap.put(key, value);
+        this.statesNumber.put(key, value);
+        this.syncNumber.add(key);
     }
     
     /** set data in FLAG state map */
-    public void setBooleanState(Short key, boolean value)
+    public void setBooleanState(AttrBoo key, boolean value)
     {
-        this.statesFlagMap.put(key, value);
+        this.statesFlag.put(key, value);
+        this.syncFlag.add(key);
     }
     
     /** set data in STRING state map */
-    public void setStringState(Short key, String value)
+    public void setStringState(AttrStr key, String value)
     {
-        this.statesStringMap.put(key, value);
+        this.statesString.put(key, value);
+        this.syncString.add(key);
     }
     
     /** add value to number state */
-    public void addNumberState(Short key, int value)
+    public void addIntegerState(AttrNum key, int value)
     {
-        this.statesNumberMap.put(key, this.statesNumberMap.get(key).intValue() + value);
+        this.statesNumber.put(key, this.statesNumber.get(key).intValue() + value);
+        this.syncNumber.add(key);
     }
     
     /** inverse boolean state */
-    public void inverseBooleanState(Short key)
+    public void inverseBooleanState(AttrBoo key)
     {
-        this.statesFlagMap.put(key, !this.statesFlagMap.get(key));
+        this.statesFlag.put(key, !this.statesFlag.get(key));
+        this.syncFlag.add(key);
     }
     
     /** last combat time */
     public int getLastCombatTick()
     {
-        return this.getStateInt(ID.Keys.LastCombatTime);
+        return this.getStateInt(AttrNum.LastCombatTime);
     }
     
     /** @see #getLastCombatTick() */
     public void setLastCombatTick(int value)
     {
-        this.setNumberState(ID.Keys.LastCombatTime, value);
+        this.setNumberState(AttrNum.LastCombatTime, value);
+    }
+    
+    public int getAttackTick()
+    {
+        return this.getStateInt(AttrNum.AttackTime);
+    }
+    
+    public void setAttackTick(int value)
+    {
+        this.setNumberState(AttrNum.AttackTime, value);
+    }
+    
+    public int getAttackTick2()
+    {
+        return this.getStateInt(AttrNum.AttackTime2);
+    }
+    
+    public void setAttackTick2(int value)
+    {
+        this.setNumberState(AttrNum.AttackTime2, value);
+    }
+    
+    public int getAttackTick3()
+    {
+        return this.getStateInt(AttrNum.AttackTime3);
+    }
+    
+    public void setAttackTick3(int value)
+    {
+        this.setNumberState(AttrNum.AttackTime3, value);
     }
     
     

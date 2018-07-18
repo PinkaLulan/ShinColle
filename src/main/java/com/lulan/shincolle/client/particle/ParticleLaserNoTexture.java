@@ -4,7 +4,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.LogHelper;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,8 +11,8 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
@@ -39,11 +38,11 @@ public class ParticleLaserNoTexture extends Particle
 	private float shotYaw, shotPitch, scaleOut, scaleIn, alphaOut, alphaIn;
 	private double tarX, tarY, tarZ, par1, par2, par3;
 	private double[][] vt, vt2;				//cube vertex
-	private EntityLivingBase host;
+	private Entity host;
 	private Entity target;
 	
 	
-    public ParticleLaserNoTexture(World world, EntityLivingBase host, Entity target, double par1, double par2, double par3, float scale, int type)
+    public ParticleLaserNoTexture(World world, Entity host, Entity target, double par1, double par2, double par3, float scale, int type)
     {
         super(world, host.posX, host.posY, host.posZ);
         this.setSize(0F, 0F);
@@ -154,7 +153,7 @@ public class ParticleLaserNoTexture extends Particle
         }//end switch
     }
     
-    public ParticleLaserNoTexture(World world, EntityLivingBase host, double tarX, double tarY, double tarZ, float scale, int type)
+    public ParticleLaserNoTexture(World world, Entity host, double tarX, double tarY, double tarZ, float scale, int type)
     {
         super(world, host.posX, host.posY, host.posZ);
         this.setSize(0F, 0F);
@@ -500,7 +499,14 @@ public class ParticleLaserNoTexture extends Particle
         	break;
     		default:	//red laser
     			//force host look vector
-    			this.host.renderYawOffset = shotYaw * Values.N.DIV_180_PI;
+    		    if (this.host instanceof EntityLivingBase)
+    		    {
+    		        ((EntityLivingBase) this.host).renderYawOffset = shotYaw * Values.N.DIV_180_PI;
+    		    }
+    		    else
+    		    {
+    		        this.host.rotationYaw = shotYaw * Values.N.DIV_180_PI;
+    		    }
     			
     			lookDeg = CalcHelper.getLookDegree(tarX-posX, tarY-posY, tarZ-posZ, false);
             	posOffset = CalcHelper.rotateXYZByYawPitch((float)par1, 0F, 0.78F, lookDeg[0], lookDeg[1], 1F);

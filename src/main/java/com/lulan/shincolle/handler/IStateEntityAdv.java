@@ -1,13 +1,16 @@
 package com.lulan.shincolle.handler;
 
 /**
- * entity with attrs
+ * entity with states, attrs and buffs
  */
 public interface IStateEntityAdv extends IStateEntity
 {
     
-    /** get handler */
+    /** get state and attr handler */
     @Override
     AttrStateHandler getStateHandler();
+    
+    /** get buff handler */
+    BuffHandler getBuffHandler();
     
 }

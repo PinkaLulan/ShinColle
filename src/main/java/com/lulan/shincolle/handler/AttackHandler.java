@@ -185,7 +185,7 @@ public class AttackHandler
     }
     
     /** set combat start time */
-    public static void setLastCombatTime(IAttackEntity host)
+    protected static void setLastCombatTime(IAttackEntity host)
     {
         StateHandler state = HandlerHelper.getStateHandler(host);
         
@@ -225,25 +225,27 @@ public class AttackHandler
     public static boolean attackTarget(AtkType type, IAttackEntity host, Entity target)
     {
         /* check ammo number */
-        if (!this.decrAmmo(type)) return false;
+        if (!decrAmmo(type, host)) return false;
         
         /* grudge-- */
-        this.decrGrudge(type);
+        decrGrudge(type, host);
         
         /* morale-- */
-        this.decrMorale(type);
+        decrMorale(type, host);
         
         /* set combat tick to recording combat start time */
-        this.setLastCombatTime();
+        setLastCombatTime(host);
         
         /* exp++ */
-        this.addExp(type);
+        addExp(type, host);
         
         /* get distance vector */
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this.host, target);
+        Dist4d distVec = CalcHelper.getDistanceFromA2B(host, target);
         
-        /* apply sound and particle at attacker */
-        this.applySoundAtAttacker(1, target);
+        /* apply sound at attacker */
+        host.getSoundHandler().applySoundAtShipAttacker(type, target);
+
+        /* apply particle at attacker */
         this.applyParticleAtAttacker(1, target, distVec);
         
         
@@ -287,7 +289,7 @@ public class AttackHandler
     
     
     
-    /** TODO refactoring */
+    /********************* TODO refactoring *********************/
     
     //melee attack method, no ammo cost, no attack speed, damage = 12.5% atk
     @Override
@@ -811,28 +813,6 @@ public class AttackHandler
         applyAttackPostMotion(4, target, true, 0F);
         
         return true;
-    }
-    
-    /** attack particle at attacker
-     * 
-     *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-     */
-    public void applyParticleAtAttacker(int type, Entity target, Dist4d distance)
-    {
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-      
-        switch (type)
-        {
-        case 1:  //light cannon
-            CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 6, this.posX, this.posY, this.posZ, distance.x, distance.y, distance.z, true), point);
-        break;
-        case 2:  //heavy cannon
-        case 3:  //light aircraft
-        case 4:  //heavy aircraft
-      default: //melee
-          CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(this, 0, true), point);
-      break;
-        }
     }
     
     /** attack particle at target

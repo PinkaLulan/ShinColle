@@ -33,7 +33,7 @@ public class ParticleEmotion extends Particle
 	
 	private Entity host = null;
 	private int particleType, playTimes, fadeTick, fadeState, stayTick, stayTickCount, frameSize;
-	private float playSpeed, playSpeedCount, particleIconX, particleIconY, addHeight, entType;
+	private float playSpeed, playSpeedCount, particleIconX, particleIconY, addHeight, hostType;
 	private float[] spawnRange;
 	private double px, py, pz, addx, addy, addz;
 	
@@ -41,7 +41,7 @@ public class ParticleEmotion extends Particle
 	/**
 	 *  par1: entityType by command /emotes
 	 */
-    public ParticleEmotion(World world, Entity host, double posX, double posY, double posZ, float height, int entType, int type)
+    public ParticleEmotion(World world, Entity host, double posX, double posY, double posZ, float height, int hostType, int emoType)
     {
         super(world, posX, posY, posZ);
         this.host = host;
@@ -53,7 +53,7 @@ public class ParticleEmotion extends Particle
         this.motionX = 0D;
         this.motionZ = 0D;
         this.motionY = 0D;
-        this.particleType = type;
+        this.particleType = emoType;
         this.particleScale = this.rand.nextFloat() * 0.05F + 0.275F;
         this.particleAlpha = 0F;
         this.playSpeed = 1F;
@@ -64,7 +64,7 @@ public class ParticleEmotion extends Particle
         this.fadeState = 0;  //0:fade in, 1:normal, 2:fade out, 3:set dead
         this.frameSize = 1;
         this.addHeight = height;
-        this.entType = entType;  //0:any entity, 1:entity, 2:block
+        this.hostType = hostType;  //0:any entity, 1:entity, 2:block
         this.particleAge = -1;  //prevent showing the emo's initial moving from posY = 0
         this.canCollide = false;
         
@@ -614,7 +614,7 @@ public class ParticleEmotion extends Particle
         float[] newPos;
         
         //tweak emote position by entity type
-        if (entType == 1)  //entity type
+        if (hostType == 1)  //entity type
         {
         	//replace emotes into player's view cone
         	float frontDist = 0.7F;

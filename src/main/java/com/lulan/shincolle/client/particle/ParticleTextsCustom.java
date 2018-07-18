@@ -1,23 +1,25 @@
 package com.lulan.shincolle.client.particle;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.lwjgl.opengl.GL11;
 
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.utility.LogHelper;
+import com.lulan.shincolle.reference.dataclass.ParticleData;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 
 /**
  * CUSTOM TEXT PARTICLE
@@ -27,65 +29,65 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ParticleTextsCustom extends Particle
 {
 
-	private int particleType, textWidth, textHeight;
-	private double[] parms;
-	private RenderManager rm;
-	private FontRenderer fr;
-	private String text;
-	private Entity host;
-	
-	
-    public ParticleTextsCustom(Entity host, World world, double posX, double posY, double posZ, float scale, int type, String text, int...parms)
+    private int particleType, textWidth, textHeight;
+    private ArrayList<Float> parms;
+    private RenderManager rm;
+    private FontRenderer fr;
+    private String text;
+    private Entity host;
+    
+    
+    public ParticleTextsCustom(Entity host, World world, ParticleData data)
     {
         super(world, 0D, 0D, 0D);
         this.setSize(0F, 0F);
-        this.prevPosX = posX;
-        this.prevPosY = posY;
-        this.prevPosZ = posZ;
+        this.posX = data.getFloatData(0);
+        this.posY = data.getFloatData(1);
+        this.posZ = data.getFloatData(2);
         this.motionX = 0D;
         this.motionY = 0D;
         this.motionZ = 0D;
-        this.particleScale = scale;
-        this.particleType = type;
-        this.canCollide = false;	//can clip = false
+        this.particleScale = data.getFloatData(3);
+        this.particleType = data.getIntData(1);
+        this.canCollide = false;    //can clip = false
         this.host = host;
         
         this.rm = ClientProxy.getMineraft().getRenderManager();
         this.fr = rm.getFontRenderer();
         
-        switch (type)
+        switch (this.particleType)
         {
-        case 0:	//draw string with specific #lines and width
-        	this.particleMaxAge = 30;
-        	this.textHeight = parms[0] - 1;
-        	this.textWidth = parms[1] / 2;
-        	this.text = text;
-        	this.setPosition(posX, posY, posZ);
-    	break;
-        case 1:	//draw string with entity
-        	this.particleMaxAge = 30;
-        	this.textHeight = parms[0] - 1;
-        	this.textWidth = parms[1] / 2;
-        	this.text = text;
-        	this.parms = new double[] {posX, posY, posZ};
-        	this.setPosition(this.host.posX + this.parms[0], this.host.posY + this.parms[1], this.host.posZ + this.parms[2]);
-    	break;
+        case 0: //draw string with specific #lines and width
+            this.particleMaxAge = 30;
+            this.textHeight = data.getIntData(2) - 1;
+            this.textWidth = data.getIntData(3) / 2;
+            this.text = data.getStringData(0);
+            this.setPosition(posX, posY, posZ);
+        break;
+        case 1: //draw string with entity
+            this.particleMaxAge = 30;
+            this.textHeight = data.getIntData(2) - 1;
+            this.textWidth = data.getIntData(3) / 2;
+            this.text = data.getStringData(0);
+            this.parms = new ArrayList<Float>(Arrays.asList((float)posX, (float)posY, (float)posZ));
+            this.setPosition(this.host.posX + this.parms.get(0), this.host.posY + this.parms.get(1), this.host.posZ + this.parms.get(2));
+        break;
         }
         
         //init position
-		this.prevPosX = this.posX;
+        this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
     }
 
     @Override
-    public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
+    public void renderParticle(BufferBuilder render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
     {
         float x = (float)(this.prevPosX + (this.posX - this.prevPosX) * ptick - interpPosX);
         float y = (float)(this.prevPosY + (this.posY - this.prevPosY) * ptick - interpPosY);
         float z = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * ptick - interpPosZ);
         
-    	GlStateManager.pushMatrix();
+        GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
         GlStateManager.glNormal3f(0F, 1F, 0F);
         GlStateManager.color(1F, 1F, 1F, 1F);
@@ -127,9 +129,9 @@ public class ParticleTextsCustom extends Particle
      * Called to update the entity's position/logic.
      */
     @Override
-	public void onUpdate()
+    public void onUpdate()
     {
-		this.prevPosX = this.posX;
+        this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
 
@@ -142,14 +144,14 @@ public class ParticleTextsCustom extends Particle
         switch (this.particleType)
         {
         case 1:
-        	if (this.host == null)
-        	{
+            if (this.host == null)
+            {
                 this.setExpired();
                 return;
-        	}
-        	
-        	this.setPosition(this.host.posX + this.parms[0], this.host.posY + this.parms[1], this.host.posZ + this.parms[2]);
-    	break;
+            }
+            
+            this.setPosition(this.host.posX + this.parms.get(0), this.host.posY + this.parms.get(1), this.host.posZ + this.parms.get(2));
+        break;
         }
     }
     

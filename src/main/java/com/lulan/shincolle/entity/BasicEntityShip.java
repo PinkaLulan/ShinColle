@@ -12,7 +12,6 @@ import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.capability.CapaInventoryExtend;
 import com.lulan.shincolle.capability.CapaShipSavedValues;
-import com.lulan.shincolle.client.render.ICustomTexture;
 import com.lulan.shincolle.crafting.EquipCalc;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.handler.AIHandler;
@@ -20,11 +19,13 @@ import com.lulan.shincolle.handler.AttackHandler;
 import com.lulan.shincolle.handler.BuffHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.GuardHandler;
-import com.lulan.shincolle.handler.IAIShip;
+import com.lulan.shincolle.handler.IAIEntity;
+import com.lulan.shincolle.handler.IAttackEntity;
 import com.lulan.shincolle.handler.IGuardEntity;
 import com.lulan.shincolle.handler.IInventoryShip;
 import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.handler.IPacketShip;
+import com.lulan.shincolle.handler.IParticleEntity;
 import com.lulan.shincolle.handler.IReactionShip;
 import com.lulan.shincolle.handler.IRenderEntity;
 import com.lulan.shincolle.handler.IStateShip;
@@ -94,10 +95,10 @@ import net.minecraftforge.items.CapabilityItemHandler;
  */
 public abstract class BasicEntityShip extends EntityTameable
 implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
-           IAIShip, IReactionShip, IShipMorph, IGuardEntity, IFloatingEntity,
-           IShipCannonAttack //TODO to IAttackEntity
+           IAIEntity, IReactionShip, IShipMorph, IGuardEntity, IFloatingEntity,
+           IAttackEntity, IParticleEntity
 {
-
+    
     //override attribute
     public static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
     
@@ -268,20 +269,6 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
     public float getEyeHeight()
     {
         return this.height * 0.8F;
-    }
-    
-    //check world time is 0~23 hour, -1 for fail
-    private int getWorldHourTime()
-    {
-        long time = this.world.provider.getWorldTime();
-        int checkTime = (int) (time % 1000L);
-        
-        if (checkTime == 0)
-        {
-            return (int) (time / 1000L) % 24;
-        }
-        
-        return -1;
     }
     
     //音量大小
@@ -1089,6 +1076,13 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                         this.initAI = true;
                     }
                     
+                    //play timekeeping sound
+                    if (ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper) && this.isEntityAlive())
+                    {
+                        int checkHour = getWorldHourTime();
+                        if (checkHour >= 0) playTimeSound(checkHour);
+                    }//end timekeeping
+                    
                     //update task
                     TaskHelper.onUpdateTask(this);
                 }
@@ -1258,13 +1252,6 @@ implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
                     }//end every 32 ticks
                 }//end every 16 ticks
             }//end every 8 ticks
-            
-            //play timekeeping sound
-            if (!this.isMorph && ConfigHandler.timeKeeping && this.getStateFlag(ID.F.TimeKeeper) && this.isEntityAlive())
-            {
-                int checkHour = getWorldHourTime();
-                if (checkHour >= 0) playTimeSound(checkHour);
-            }//end timekeeping
         }//end server side
         /** client side */
         else

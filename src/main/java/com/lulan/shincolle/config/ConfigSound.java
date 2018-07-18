@@ -44,35 +44,48 @@ public class ConfigSound extends BasicShipConfig
                 else
                 {
                     str = str.replaceAll("\\s", "");    //remove all whitespace
-                    String strs[] = str.split(",");        //split strins by ','
-                    int[] ints = new int[10];
+                    String strs[] = str.split(",");     //split strins by ','
+                    int shipID = -1;
+                    float[] rate = new float[32];
+                    EnumMap<SoundType, Float> rateMap = null;
                     
                     //check length
-                    if (strs != null && strs.length == 10)
+                    if (strs != null && strs.length == 33)
                     {
                         //get int value
                         try
                         {
-                            for (int i = 0; i < 10; i++)
+                            //parse ship id
+                            shipID = Integer.parseInt(strs[0]);
+                            
+                            //parse rate
+                            for (int i = 0; i < 32; i++)
                             {
-                                ints[i] = Integer.parseInt(strs[i]);
+                                //conv int rate (0 ~ 100) to float rate (0.0 ~ 1.0)
+                                rate[i] = (float) Integer.parseInt(strs[i + 1]) * 0.01F;
                             }
                             
-                            //conv int rate (0 ~ 100) to float rate (0.0 ~ 1.0)
-                            float[] rate = new float[9];
+                            //put rate into map
+                            rateMap = new EnumMap<SoundType, Float>(SoundType.class);
                             
-                            for (int i = 0; i < 9; i++)
+                            for (SoundType st : SoundType.values())
                             {
-                                rate[i] = (float)ints[i + 1] * 0.01F;
+                                rateMap.put(st, rate[st.ordinal()]);
                             }
-                            
-                            //add rate to map
-                            this.SOUNDRATE.put(ints[0], rate);
                         }
                         catch (Exception e)
                         {
-                            //set item entry fail, discard this string
-                            continue;    //go to next line
+                            //set sound entry fail, discard this line
+                            shipID = -1;
+                            continue;  //go to next line
+                        }
+                        finally
+                        {
+                            if (shipID >= 0)
+                            {
+                                //add rate to map
+                                this.SOUNDRATE.put(shipID, rateMap);
+                            }
                         }
                     }//end parse string
                 }//end not comment
@@ -87,18 +100,18 @@ public class ConfigSound extends BasicShipConfig
         
         strs.add("# Custom Sound Rate"+NEW_LINE);
         strs.add("#"+NEW_LINE);
-        strs.add("# format: ship_ID, idle, attack, hurt, dead, marry, knockback, item, feed, timekeep"+NEW_LINE);
+        strs.add("# format: ship_ID, idle, attack, hurt, dead, marry, knockback, item, feed, timekeep00 ~ timekeep23"+NEW_LINE);
         strs.add("#"+NEW_LINE);
-        strs.add("# for each value: 70 = 70% play custom sound and 30% play general sound"+NEW_LINE);
+        strs.add("# value: 70 = 70% play custom sound and 30% play general sound"+NEW_LINE);
         strs.add("#"+NEW_LINE);
         strs.add("# for any non-zero number, you must add a corresponding entry in sounds.json"+NEW_LINE);
         strs.add("# see CustomSoundReadme.txt in mod jar file"+NEW_LINE);
         strs.add("#"+NEW_LINE);
         strs.add(""+NEW_LINE);
-        strs.add("54,25,0,25,0,50,0,50,0,0"+NEW_LINE);
-        strs.add("56,50,50,50,100,0,0,50,0,0"+NEW_LINE);
-        strs.add("60,25,50,0,0,0,0,0,0,0"+NEW_LINE);
-        strs.add("62,0,35,0,0,0,0,0,0,0"+NEW_LINE);
+        strs.add("54,25,0,25,0,50,0,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"+NEW_LINE);
+        strs.add("56,50,50,50,100,0,0,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"+NEW_LINE);
+        strs.add("60,25,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"+NEW_LINE);
+        strs.add("62,0,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"+NEW_LINE);
         
         return strs;
     }

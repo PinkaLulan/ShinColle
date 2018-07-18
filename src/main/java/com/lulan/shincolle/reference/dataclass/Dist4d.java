@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class Dist4d
 {
-	
+    
     public static final Dist4d ZERO = new Dist4d(0D, 0D, 0D, 0D);
     public static final Dist4d ONE = new Dist4d(1D, 1D, 1D, 1.732051D);
     public double x;
@@ -39,22 +39,22 @@ public class Dist4d
      */
     public void normalize()
     {
-		d = MathHelper.sqrt(x * x + y * y + z * z);
-		
-		//避免sqrt過小時, 算出的xyz過大
-		if (d > 1.0E-4D)
+        d = MathHelper.sqrt(x * x + y * y + z * z);
+        
+        //避免sqrt過小時, 算出的xyz過大
+        if (d > 1.0E-4D)
         {
             x = x / d;
             y = y / d;
             z = z / d;
         }
-		else
-		{
-			x = 0D;
-			y = 0D;
-			z = 0D;
-			d = 0D;
-		}
+        else
+        {
+            x = 0D;
+            y = 0D;
+            z = 0D;
+            d = 0D;
+        }
     }
     
     /**
@@ -62,10 +62,10 @@ public class Dist4d
      */
     public void scale(double s)
     {
-    	x *= s;
-    	y *= s;
-    	z *= s;
-    	d *= s;
+        x *= s;
+        y *= s;
+        z *= s;
+        d *= s;
     }
     
     
