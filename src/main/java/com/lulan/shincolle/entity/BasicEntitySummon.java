@@ -22,7 +22,7 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -34,7 +34,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-abstract public class BasicEntitySummon extends EntityLiving implements IShipCannonAttack, ICustomTexture, IShipMorph
+abstract public class BasicEntitySummon extends EntityCreature implements IShipCannonAttack, ICustomTexture, IShipMorph
 {
 	
     //attributes

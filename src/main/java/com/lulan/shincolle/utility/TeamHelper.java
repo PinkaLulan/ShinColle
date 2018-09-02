@@ -196,6 +196,12 @@ public class TeamHelper
 		return false;
 	}
 	
+	/** check is same owner */
+	public static boolean checkSameOwner(IShipOwner host, Entity target)
+    {
+	    return checkSameOwner(host.getHostEntity(), target);
+    }
+	
 	/** check is same owner for ship (host's owner == target's owner) */
 	public static boolean checkSameOwner(Entity enta, Entity entb)
 	{

@@ -458,22 +458,6 @@ public class ID
         public static final byte HEAVY = 3;     //大破
     }
     
-    /** morale level */
-    public static final class Morale
-    {
-        /* morale id */
-        public static final byte Excited = 0;
-        public static final byte Happy = 1;
-        public static final byte Normal = 2;
-        public static final byte Tired = 3;
-        public static final byte Exhausted = 4;
-        /* morale level value */
-        public static final int L_Excited = 5100;
-        public static final int L_Happy = 3900;
-        public static final int L_Normal = 2100;
-        public static final int L_Tired = 900;
-    }
-    
     /** packet type ID */
     public static final class Packets
     {

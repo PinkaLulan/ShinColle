@@ -131,7 +131,7 @@ public class ConfigHandler
     public static int[] baseAttackSpeed = new int[] { 40,    80,   120,  100, 100};
     public static int[] fixedAttackDelay = new int[] {0,     20,   50,   35,  35};
     //exp gain                               melee, LAtk, HAtk, LAir, HAir, move/b, pick
-    public static int[] expGain = new int[] {2,     4,    12,   8,    24,   1,      2};
+    public static int[] expGain = new int[] {2,     4,    5,    8,    10,   1,      2};
     //exp gain by task                           cook fish mine craft
     public static int[] expGainTask = new int[] {2,   20,  10,  1};
     //fishing time                               base, random
@@ -165,7 +165,7 @@ public class ConfigHandler
     public static int baseGrudge = 300;      //base grudge value per item
     public static int baseLightAmmo = 30;    //base light ammo value per item
     public static int baseHeavyAmmo = 15;    //base heavy ammo value per item
-    
+    public static int maxDmgOnPlayer = 59;   //ship's max damage on player target
     
     public static boolean timeKeeping = true;
     public static boolean canFlare = true;
@@ -383,6 +383,7 @@ public class ConfigHandler
         baseGrudge = config.getInt("Item_Grudge", CATE_SHIP, 300, 1, 30000, "Grudge value per grudge item. Block = 9x");
         baseLightAmmo = config.getInt("Item_LightAmmo", CATE_SHIP, 30, 1, 30000, "Light ammo value per light ammo item. Container = 9x");
         baseHeavyAmmo = config.getInt("Item_HeavyAmmo", CATE_SHIP, 15, 1, 30000, "Heavy ammo value per heavy ammo item. Container = 9x");
+        maxDmgOnPlayer = config.getInt("Max_Damage_Player", CATE_SHIP, 59, 0, 30000, "Max ship damage on player target.");
         
         String totalItemSlots = "Total Item Slots = ship level / Slots_Item_ByLevel + Slots_Item_ByIcon + Slots_Item_ByType.";
         itemSlotsLevel = config.getInt("Slots_Item_ByLevel", CATE_SHIP, 10, 1, 151, "item slots +1 per N level. " + totalItemSlots);

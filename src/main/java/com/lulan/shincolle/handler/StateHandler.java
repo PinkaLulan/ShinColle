@@ -9,6 +9,9 @@ import com.lulan.shincolle.reference.Enums.AttrBoo;
 import com.lulan.shincolle.reference.Enums.AttrNum;
 import com.lulan.shincolle.reference.Enums.AttrStr;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityTameable;
+
 /**
  * store data in Number or Boolean map
  */
@@ -110,6 +113,21 @@ public class StateHandler
     public EnumMap<AttrBoo, Boolean> getAllBoolean()
     {
         return this.statesFlag;
+    }
+    
+    public void setSyncString(AttrStr key)
+    {
+        this.syncString.add(key);
+    }
+    
+    public void setSyncNumber(AttrNum key)
+    {
+        this.syncNumber.add(key);
+    }
+    
+    public void setSyncFlag(AttrBoo key)
+    {
+        this.syncFlag.add(key);
     }
     
     public void setAllString(EnumMap<AttrStr, String> map)
@@ -308,6 +326,60 @@ public class StateHandler
     public void setAttackTick3(int value)
     {
         this.setNumberState(AttrNum.AttackTime3, value);
+    }
+    
+    public void setIsSitting(boolean value)
+    {
+        if (host instanceof EntityTameable)
+        {
+            ((EntityTameable) host).setSitting(value);
+        }
+    }
+    
+    public void setIsSprinting(boolean value)
+    {
+        if (host instanceof Entity)
+        {
+            ((Entity) host).setSprinting(value);
+        }
+    }
+    
+    public void setIsSneaking(boolean value)
+    {
+        if (host instanceof Entity)
+        {
+            ((Entity) host).setSneaking(value);
+        }
+    }
+    
+    public boolean isSitting()
+    {
+        if (host instanceof EntityTameable)
+        {
+            return ((EntityTameable) host).isSitting();
+        }
+        
+        return false;
+    }
+    
+    public boolean isSprinting()
+    {
+        if (host instanceof Entity)
+        {
+            return ((Entity) host).isSprinting();
+        }
+        
+        return false;
+    }
+    
+    public boolean isSneaking()
+    {
+        if (host instanceof Entity)
+        {
+            return ((Entity) host).isSneaking();
+        }
+        
+        return false;
     }
     
     

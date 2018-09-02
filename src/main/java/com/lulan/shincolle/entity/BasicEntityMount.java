@@ -37,7 +37,6 @@ import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -65,7 +64,9 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
  * mount use cannon attack, no aircraft attack
  * all states get from host ex: sitting, leashed, sprinting...
  */
-abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture, IShipMorph
+abstract public class BasicEntityMount extends BasicEntitySummon
+implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
+           IShipMorph
 {
 	
 	public BasicEntityShip host;  				//host

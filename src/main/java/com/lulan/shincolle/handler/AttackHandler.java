@@ -1,20 +1,16 @@
 package com.lulan.shincolle.handler;
 
 
-import java.util.EnumMap;
-
 import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.Enums.ActType;
-import com.lulan.shincolle.reference.Enums.Ammo;
 import com.lulan.shincolle.reference.Enums.AtkType;
+import com.lulan.shincolle.reference.Enums.AttrBoo;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.dataclass.Dist4d;
 import com.lulan.shincolle.reference.dataclass.MissileData;
@@ -22,15 +18,11 @@ import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.HandlerHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 /**
@@ -41,8 +33,17 @@ public class AttackHandler
     
     /** host object */
     protected IAttackEntity host;
-    /** missile data for each attack type */
-    protected EnumMap<AtkType, MissileData> missileData;
+    /** host's missile data */
+    protected MissileData missileData;
+    /**
+     * host's attack type, 5 slots, default:
+     *   0:GENERIC_MELEE
+     *   1:GENERIC_LIGHT
+     *   2:GENERIC_HEAVY_LAUNCH
+     *   3:GENERIC_AIR_LIGHT_LAUNCH
+     *   4:GENERIC_AIR_HEAVY_LAUNCH
+     */
+    protected AtkType[] attackType;
     
     
     public AttackHandler(IAttackEntity host)
@@ -55,233 +56,40 @@ public class AttackHandler
     /** init data on construct */
     protected void initFirst()
     {
-        this.missileData = new EnumMap<AtkType, MissileData>(AtkType.class);
+        AttrStateHandler sh = this.host.getStateHandler();
+        
+        //set default attack type
+        this.attackType = new AtkType[5];
+        this.attackType[0] = AtkType.GENERIC_MELEE;
+        if (sh.getBooleanState(AttrBoo.CanAtkLight)) this.attackType[1] = AtkType.GENERIC_LIGHT;
+        if (sh.getBooleanState(AttrBoo.CanAtkHeavy)) this.attackType[2] = AtkType.GENERIC_HEAVY_LAUNCH;
+        if (sh.getBooleanState(AttrBoo.CanAtkAirLight)) this.attackType[3] = AtkType.GENERIC_AIR_LIGHT_LAUNCH;
+        if (sh.getBooleanState(AttrBoo.CanAtkAirHeavy)) this.attackType[4] = AtkType.GENERIC_AIR_HEAVY_LAUNCH;
     }
     
-    public MissileData getMissileData(AtkType type)
+    public void setAttackType(int slotID, AtkType type)
     {
-        MissileData md = this.missileData.get(type);
-        
-        if (type == null)
-        {
-            md = new MissileData();
-            this.setMissileData(type, md);
-        }
-        
-        return md;
+        if (slotID >= 0 && slotID < this.attackType.length) this.attackType[slotID] = type;
     }
     
-    public void setMissileData(AtkType type, MissileData md)
+    public AtkType getAttackType(int slotID)
     {
-        this.missileData.put(type, md);
+        if (slotID >= 0 && slotID < this.attackType.length) return this.attackType[slotID];
+        return null;
     }
     
-    /** add exp to ship by attack type, only for SHIP host for now */
-    public static void addExp(AtkType type, IAttackEntity host)
+    public MissileData getMissileData()
     {
-        BasicEntityShip ship = EntityHelper.getShipEntity(host);
-        
-        if (ship != null) ship.getStateHandler().addShipExp(CombatHelper.getExpByAction(type));
+        if (this.missileData == null) this.missileData = new MissileData();
+        return this.missileData;
     }
     
-    /** decrease morale by attack type, only for SHIP host for now */
-    public static void decrMorale(AtkType type, IAttackEntity host)
+    public void setMissileData(MissileData md)
     {
-        BasicEntityShip ship = EntityHelper.getShipEntity(host);
-        ActType t2 = ActType.ATTACK_MELEE;
-        
-        if (ship != null)
-        {
-            switch (type)
-            {
-            case GENERIC_LIGHT:
-                t2 = ActType.ATTACK_LIGHT;
-            break;
-            case GENERIC_HEAVY:
-            case YAMATO_CANNON:
-                t2 = ActType.ATTACK_HEAVY;
-            break;
-            case GENERIC_AIR_LIGHT:
-                t2 = ActType.ATTACK_AIR_LIGHT;
-            break;
-            case GENERIC_AIR_HEAVY:
-                t2 = ActType.ATTACK_AIR_HEAVY;
-            break;
-            }
-            
-            ship.getStateHandler().decrMorale(t2);
-        }
+        if (md == null) this.missileData = new MissileData();
+        else this.missileData = md;
     }
     
-    /**
-     * decrease ammo by attack type, only for SHIP host for now
-     * 
-     * @return <tt>true</tt> if ammo consumed
-     */
-    public static boolean decrAmmo(AtkType type, IAttackEntity host)
-    {
-        BasicEntityShip ship = EntityHelper.getShipEntity(host);
-        
-        //if not ship = no ammo checking
-        if (ship == null) return true;
-        
-        //if ship, decr ammo
-        Ammo at = Ammo.LIGHT;
-        int amount = ship.getStateHandler().getAmmoConsumption();
-        
-        switch (type)
-        {
-        case GENERIC_MELEE:      //melee without ammo
-            return true;
-        case GENERIC_HEAVY:      //use heavy ammo
-            at = Ammo.HEAVY;
-        break;
-        case YAMATO_CANNON:      //use heavy ammo
-            at = Ammo.HEAVY;
-        break;
-        case GENERIC_AIR_LIGHT:  //airplane cost 6x LightAmmo
-            amount *= 6;
-        break;
-        case GENERIC_AIR_HEAVY:  //airplane cost 2x HeavyAmmo
-            at = Ammo.HEAVY;
-            amount *= 2;
-        break;
-        }
-        
-        return ship.getStateHandler().decrAmmo(at, amount);
-    }
-    
-    /** decrease grudge by attack type, only for SHIP host for now */
-    public static void decrGrudge(AtkType type, IAttackEntity host)
-    {
-        BasicEntityShip ship = EntityHelper.getShipEntity(host);
-        
-        //if not ship = no checking
-        if (ship == null) return;
-        
-        //if ship, decr grudge
-        int amount = 0;
-        
-        switch (type)
-        {
-        case GENERIC_MELEE:      //melee without grudge
-            return;
-        case GENERIC_LIGHT:
-            amount = ConfigHandler.consumeGrudgeAction[0];
-        break;
-        case GENERIC_HEAVY:
-        case YAMATO_CANNON:
-            amount = ConfigHandler.consumeGrudgeAction[1];
-        break;
-        case GENERIC_AIR_LIGHT:
-            amount = ConfigHandler.consumeGrudgeAction[2];
-        break;
-        case GENERIC_AIR_HEAVY:
-            amount = ConfigHandler.consumeGrudgeAction[3];
-        break;
-        }
-        
-        ship.getStateHandler().decrGrudge(amount);
-    }
-    
-    /** set combat start time */
-    protected static void setLastCombatTime(IAttackEntity host)
-    {
-        StateHandler state = HandlerHelper.getStateHandler(host);
-        
-        if (state != null)
-        {
-            if (host instanceof Entity)
-            {
-                state.setLastCombatTick(((Entity) host).ticksExisted);
-            }
-        }
-    }
-    
-    /** get attack base damage */
-    protected static float getAttackDamage(AtkType type, IAttackEntity host, Entity target)
-    {
-        //TODO
-//        float baseDmg = this.host
-//        
-//        switch (type)
-//        {
-//        case 1:  //light cannon
-//            return CombatHelper.modDamageByAttrs(state, target, dmg)
-//        case 2:  //heavy cannon
-//            return this.shipAttrs.getAttackDamageHeavy();
-//        case 3:  //light aircraft
-//            return this.shipAttrs.getAttackDamageAir();
-//        case 4:  //heavy aircraft
-//            return this.shipAttrs.getAttackDamageAirHeavy();
-//      default: //melee
-//          return this.shipAttrs.getAttackDamage() * 0.125F;
-//        }
-    }
-    
-    /**
-     * generic attack method for "entity" host
-     */
-    public static boolean attackTarget(AtkType type, IAttackEntity host, Entity target)
-    {
-        /* check ammo number */
-        if (!decrAmmo(type, host)) return false;
-        
-        /* grudge-- */
-        decrGrudge(type, host);
-        
-        /* morale-- */
-        decrMorale(type, host);
-        
-        /* set combat tick to recording combat start time */
-        setLastCombatTime(host);
-        
-        /* exp++ */
-        addExp(type, host);
-        
-        /* get distance vector */
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(host, target);
-        
-        /* apply sound at attacker */
-        host.getSoundHandler().applySoundAtShipAttacker(type, target);
-
-        /* apply particle at attacker */
-        this.applyParticleAtAttacker(1, target, distVec);
-        
-        
-        
-        
-        
-        
-        
-        //roll miss, cri, dhit, thit
-        atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
-          
-          //damage limit on player target
-        atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
-          
-          //check friendly fire
-        if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
-        
-          //確認攻擊是否成功
-        boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
-        
-        //if attack success
-        if (isTargetHurt)
-        {
-            //check owner
-            if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
-            applySoundAtTarget(1, target);
-            applyParticleAtTarget(1, target, distVec);
-            applyEmotesReaction(3);
-            
-            if (ConfigHandler.canFlare) flareTarget(target);
-        }
-        
-        applyAttackPostMotion(1, target, isTargetHurt, atk);
-
-        return isTargetHurt;
-    }
     
     
     
@@ -291,241 +99,8 @@ public class AttackHandler
     
     /********************* TODO refactoring *********************/
     
-    //melee attack method, no ammo cost, no attack speed, damage = 12.5% atk
-    @Override
-    public boolean attackEntityAsMob(Entity target)
-    {
-        //get attack value
-        float atk = getAttackBaseDamage(0, target);
-        
-        //experience++
-        addShipExp(ConfigHandler.expGain[0]);
-        
-        //morale--
-        decrMorale(0);
-        setCombatTick(this.ticksExisted);
-        
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
-                
-        //entity attack effect
-        applySoundAtAttacker(0, target);
-        applyParticleAtAttacker(0, target, distVec);
-        
-        //是否成功傷害到目標
-        boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this), atk);
-
-        //target attack effect
-        if (isTargetHurt)
-        {
-            if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
-            applySoundAtTarget(0, target);
-            applyParticleAtTarget(0, target, distVec);
-            applyEmotesReaction(3);
-            
-            if (ConfigHandler.canFlare)
-            {
-                flareTarget(target);
-            }
-        }
-        
-        applyAttackPostMotion(0, target, isTargetHurt, atk);
-
-        return isTargetHurt;
-    }
     
-  //range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
-    @Override
-    public boolean attackEntityWithAmmo(Entity target)
-    {
-        //light ammo -1
-        if (!decrAmmoNum(0, this.getAmmoConsumption())) return false;
-        
-        //experience++
-          addShipExp(ConfigHandler.expGain[1]);
-          
-          //grudge--
-          decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAtk]);
-          
-          //morale--
-          decrMorale(1);
-          setCombatTick(this.ticksExisted);
-          
-          //get attack value
-          float atk = getAttackBaseDamage(1, target);
-          
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
-        
-        //play cannon fire sound at attacker
-        applySoundAtAttacker(1, target);
-        applyParticleAtAttacker(1, target, distVec);
-        
-        //roll miss, cri, dhit, thit
-        atk = CombatHelper.applyCombatRateToDamage(this, target, true, (float)distVec.d, atk);
-          
-          //damage limit on player target
-        atk = CombatHelper.applyDamageReduceOnPlayer(target, atk);
-          
-          //check friendly fire
-        if (!TeamHelper.doFriendlyFire(this, target)) atk = 0F;
-        
-          //確認攻擊是否成功
-        boolean isTargetHurt = target.attackEntityFrom(DamageSource.causeMobDamage(this).setProjectile(), atk);
-        
-        //if attack success
-        if (isTargetHurt)
-        {
-            //check owner
-            if (!TeamHelper.checkSameOwner(this, target)) BuffHelper.applyBuffOnTarget(target, this.AttackEffectMap);
-            applySoundAtTarget(1, target);
-            applyParticleAtTarget(1, target, distVec);
-            applyEmotesReaction(3);
-            
-            if (ConfigHandler.canFlare) flareTarget(target);
-        }
-        
-        applyAttackPostMotion(1, target, isTargetHurt, atk);
-
-        return isTargetHurt;
-    }
     
-    /**
-     * attack a position with missile, NOTE: SHIP MOUNTS REQUIRED
-     */
-    public boolean attackEntityWithHeavyAmmo(BlockPos target)
-    {
-        //ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-        
-        //experience++
-        addShipExp(ConfigHandler.expGain[2]);
-        
-        //grudge--
-        decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-        
-          //morale--
-        decrMorale(2);
-          setCombatTick(this.ticksExisted);
-    
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPosition(), target);
-        
-        //play sound and particle
-        applySoundAtAttacker(2, this);
-        applyParticleAtAttacker(2, this, distVec);
-        
-        float tarX = (float) target.getX();
-        float tarY = (float) target.getY();
-        float tarZ = (float) target.getZ();
-        
-        //calc miss rate
-        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
-        {
-            tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-            tarY = tarY + this.rand.nextFloat() * 5F;
-            tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-            
-            ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-        }
-        
-        //get attack value
-          float atk = getAttackBaseDamage(2, null);
-        
-        //spawn missile
-          summonMissile(2, atk, tarX, tarY, tarZ, 1F);
-        
-        //play target effect
-        applySoundAtTarget(2, this);
-        applyParticleAtTarget(2, this, distVec);
-        applyEmotesReaction(3);
-        
-        if (ConfigHandler.canFlare) flareTarget(target);
-        
-        applyAttackPostMotion(2, this, true, atk);
-        
-        return true;
-    }
-
-    //range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
-    @Override
-    public boolean attackEntityWithHeavyAmmo(Entity target)
-    {
-        //ammo--
-        if (!decrAmmoNum(1, this.getAmmoConsumption())) return false;
-        
-        //experience++
-        addShipExp(ConfigHandler.expGain[2]);
-        
-        //grudge--
-        decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAtk]);
-        
-          //morale--
-        decrMorale(2);
-          setCombatTick(this.ticksExisted);
-    
-        //calc dist to target
-        Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
-        
-        //play sound and particle
-        applySoundAtAttacker(2, target);
-        applyParticleAtAttacker(2, target, distVec);
-        
-        float tarX = (float) target.posX;
-        float tarY = (float) target.posY;
-        float tarZ = (float) target.posZ;
-        
-        //calc miss rate
-        if (this.rand.nextFloat() <= CombatHelper.calcMissRate(this, (float)distVec.d))
-        {
-            tarX = tarX - 5F + this.rand.nextFloat() * 10F;
-            tarY = tarY + this.rand.nextFloat() * 5F;
-            tarZ = tarZ - 5F + this.rand.nextFloat() * 10F;
-            
-            ParticleHelper.spawnAttackTextParticle(this, 0);  //miss particle
-        }
-        
-        //get attack value
-          float atk = getAttackBaseDamage(2, target);
-        
-        //spawn missile
-        summonMissile(2, atk, tarX, tarY, tarZ, target.height);
-        
-        //play target effect
-        applySoundAtTarget(2, target);
-        applyParticleAtTarget(2, target, distVec);
-        applyEmotesReaction(3);
-        
-        if (ConfigHandler.canFlare) flareTarget(target);
-        
-        applyAttackPostMotion(2, target, true, atk);
-        
-        return true;
-    }
-    
-    /**
-     * spawn attack missile, used in light or heavy attack method
-     * 
-     * attackType: 0:melee, 1:light, 2:heavy
-     */
-    public void summonMissile(int attackType, float atk, float tarX, float tarY, float tarZ, float targetHeight)
-    {
-        //missile type
-        float launchPos = (float) posY + height * 0.5F;
-        if (this.isMorph) launchPos += 0.5F;
-        int moveType = CombatHelper.calcMissileMoveType(this, tarY, attackType);
-        if (moveType == 0) launchPos = (float) posY + height * 0.3F;
-        
-        MissileData md = this.getMissileData(attackType);
-        float[] data = new float[] {atk, 0.15F, launchPos, tarX, tarY + targetHeight * 0.1F, tarZ, 140, 0.25F, md.vel0, md.accY1, md.accY2};
-        EntityAbyssMissile missile = new EntityAbyssMissile(this.world, this, md.type, moveType, data);
-        this.world.spawnEntity(missile);
-    }
-    
-    /** apply motion after attack
-     *  type: 0:melee, 1:light, 2:heavy, 3:light air, 4:heavy air
-     */
-    public void applyAttackPostMotion(int type, Entity target, boolean isTargetHurt, float atk) {}
 
     @Override
     public boolean updateSkillAttack(Entity target)
@@ -815,81 +390,6 @@ public class AttackHandler
         return true;
     }
     
-    /** attack particle at target
-     * 
-     *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-     */
-    public void applyParticleAtTarget(int type, Entity target, Dist4d distance)
-    {
-        TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-        
-        switch (type)
-        {
-        case 1:  //light cannon
-          CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 9, false), point);
-        break;
-        case 2:  //heavy cannon
-        break;
-        case 3:  //light aircraft
-        break;
-        case 4:  //heavy aircraft
-        break;
-      default: //melee
-          CommonProxy.channelP.sendToAllAround(new S2CSpawnParticle(target, 1, false), point);
-      break;
-        }
-    }
-    
-    
-    
-    /** attack particle at target
-     * 
-     *  type: 0:melee, 1:light cannon, 2:heavy cannon, 3:light air, 4:heavy air
-     */
-    public void applySoundAtTarget(int type, Entity target)
-    {
-        switch (type)
-        {
-        case 1:  //light cannon
-        break;
-        case 2:  //heavy cannon
-        break;
-        case 3:  //light aircraft
-        break;
-        case 4:  //heavy aircraft
-        break;
-      default: //melee
-      break;
-        }
-    }
-    
-    
-    
-    /** set flare on target */
-    public void flareTarget(Entity target)
-    {
-        //server side, send flare packet
-        if (!this.world.isRemote)
-        {
-              if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
-              {
-                  this.flareTarget(target.getPosition());
-              }
-        }
-    }
-    
-    public void flareTarget(BlockPos target)
-    {
-        //server side, send flare packet
-        if (!this.world.isRemote)
-        {
-            if (this.getStateMinor(ID.M.LevelFlare) > 0 && target != null)
-              {
-              TargetPoint point = new TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 64D);
-              CommonProxy.channelI.sendToAllAround(new S2CReactPackets(S2CReactPackets.PID.FlareEffect, target.getX(), target.getY(), target.getZ()), point);
-              }
-        }
-    }
     
     @Override
     public MissileData getMissileData(int type)

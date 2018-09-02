@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.Enums.AtkType;
 import com.lulan.shincolle.reference.Enums.SoundType;
+import com.lulan.shincolle.reference.dataclass.AttackData;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -208,10 +209,10 @@ public class SoundHandler
     }
     
     /** play ship attack sound at ship attacker */
-    public void applySoundAtShipAttacker(AtkType type, Entity target)
+    public void applySoundAtShipAttacker(AttackData ad)
     {
         //play sound
-        switch (type)
+        switch (ad.atkType)
         {
         case GENERIC_MELEE:
             //entity sound
@@ -223,22 +224,24 @@ public class SoundHandler
             //entity sound
             if (this.rand.nextInt(8) == 0) this.playSound(SoundType.HIT);
         break;
-        case GENERIC_HEAVY:
+        case GENERIC_HEAVY_LAUNCH:
             //weapon sound
             this.playSound(ModSounds.SHIP_FIREHEAVY, ConfigHandler.volumeFire, host.getSoundHandler().getPitch() * 0.85F);
             //entity sound
             if (this.rand.nextInt(8) == 0) this.playSound(SoundType.HIT);
         break;
-        case GENERIC_AIR_LIGHT:
-        case GENERIC_AIR_HEAVY:
+        case GENERIC_AIR_LIGHT_LAUNCH:
+        case GENERIC_AIR_HEAVY_LAUNCH:
             //weapon sound
             this.playSound(ModSounds.SHIP_AIRCRAFT, ConfigHandler.volumeFire * 0.5F, host.getSoundHandler().getPitch() * 0.85F);
             //entity sound
             if (this.rand.nextInt(8) == 0) this.playSound(SoundType.HIT);
         break;
-        case YAMATO_CANNON:
+        case YAMATO_CANNON_LAUNCH:
         break;
         case AP91_FIST:
+        break;
+        default:
         break;
         }//end switch
     }

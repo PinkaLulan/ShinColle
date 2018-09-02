@@ -1,7 +1,5 @@
 package com.lulan.shincolle.network;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +7,6 @@ import java.util.Map;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.IShipMorph;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.entity.IShipProjectile;
@@ -18,12 +15,9 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.IPacketEntity;
 import com.lulan.shincolle.handler.IStateEntity;
 import com.lulan.shincolle.handler.IStateEntityAdv;
-import com.lulan.shincolle.handler.PacketHandler;
 import com.lulan.shincolle.handler.StateHandler;
 import com.lulan.shincolle.proxy.ClientProxy;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.reference.dataclass.AttrsAdv;
+import com.lulan.shincolle.reference.Enums.AttrNum;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.PacketHelper;
@@ -50,6 +44,7 @@ public class S2CEntitySync implements IMessage
 {
     
     private IPacketEntity host;
+    private Entity entity;
     private byte packetType;
     private int entityID, valueInt;
     private int[] valueInt1;
@@ -64,12 +59,11 @@ public class S2CEntitySync implements IMessage
     //packet id
     public static final class PID
     {
-        public static final byte SyncShip_AllMisc = 0;
+        public static final byte SyncShip_All = 0;
         public static final byte SyncShip_Update = 1;
         public static final byte SyncShip_Riders = 2;
         public static final byte SyncShip_Buffmap = 3;
         
-        public static final byte SyncEntity_Riders = 50;
         public static final byte SyncEntity_PlayerUID = 51;
         public static final byte SyncEntity_PosRot = 52;
         public static final byte SyncEntity_Rot = 53;
@@ -125,17 +119,17 @@ public class S2CEntitySync implements IMessage
         /* send packet content */
         switch (this.packetType)
         {
-        case PID.SyncShip_AllMisc:    //sync all data
+        case PID.SyncShip_All:      //sync all data
         {
-            PacketHandler.processSendAttrsAll((IStateEntity) this.host, buf);
+            PacketHelper.processSendAttrsAll((IStateEntity) this.host, buf);
         }
         break;
-        case PID.SyncShip_Update:     //sync updated data
+        case PID.SyncShip_Update:   //sync updated data
         {
-            PacketHandler.processSendAttrs((IStateEntity) this.host, buf);
+            PacketHelper.processSendAttrs((IStateEntity) this.host, buf);
         }
         break;
-        case PID.SyncEntity_Riders:   //sync rider list
+        case PID.SyncShip_Riders:   //sync rider list
         {
             Entity ent = (Entity) this.host;
             List<Entity> list = ent.getPassengers();
@@ -299,11 +293,9 @@ public class S2CEntitySync implements IMessage
         break;
         case PID.SyncShip_Buffmap:    //sync buff map
         {
-            BasicEntityShip ship = (BasicEntityShip) this.host;
-            
-            if (ship.getBuffMap() != null)
+            if (this.host instanceof IStateEntityAdv)
             {
-                PacketHelper.sendMapInt(buf, ship.getBuffMap());
+                PacketHelper.sendMapInt(buf, ((IStateEntityAdv) this.host).getBuffHandler().getBuffMap());
             }
         }
         break;
@@ -311,9 +303,9 @@ public class S2CEntitySync implements IMessage
         {
             if (this.entity instanceof EntityShipFishingHook)
             {
-                if (((EntityShipFishingHook)entity).host != null)
+                if (((EntityShipFishingHook) this.entity).host != null)
                 {
-                    buf.writeInt(((EntityShipFishingHook)entity).host.getEntityId());
+                    buf.writeInt(((EntityShipFishingHook) this.entity).host.getEntityId());
                 }
                 else
                 {
@@ -345,11 +337,15 @@ public class S2CEntitySync implements IMessage
         
         switch (this.packetType)
         {
-        case PID.SyncShip_AllMisc:    //sync all misc states
-            //TODO
+        case PID.SyncShip_All:
+        {
+            valueList1 = PacketHelper.processGetAttrsAll(buf);
+        }
         break;
         case PID.SyncShip_Update:
-            
+        {
+            valueList1 = PacketHelper.processGetAttrs(buf);
+        }  
         break;
         case PID.SyncShip_Riders:  //player mount sync
             this.valueInt = buf.readInt();
@@ -410,8 +406,6 @@ public class S2CEntitySync implements IMessage
     {
         boolean getTarget = false;
         Entity entity = null;
-        IStateEntity host = null;
-        CapaTeitoku capa = null;
         
         /* get host */
         if (msg.entityID > 0)
@@ -422,14 +416,14 @@ public class S2CEntitySync implements IMessage
         //check host existed
         switch(msg.packetType)
         {
-        case PID.SyncShip_AllMisc:
+        case PID.SyncShip_All:
         case PID.SyncShip_Update:
+        case PID.SyncShip_Riders:
             if (entity instanceof IStateEntity) getTarget = true;
         break;
         case PID.SyncShip_Buffmap:
             if (entity instanceof IStateEntityAdv) getTarget = true;
         break;
-        case PID.SyncShip_Riders:
         case PID.SyncProjectile:
         case PID.SyncEntity_AttackTime:
         case PID.SyncEntity_PosRot:
@@ -447,264 +441,34 @@ public class S2CEntitySync implements IMessage
         
         if (!getTarget)
         {
-            LogHelper.debug("EXCEPTION: packet handler: S2CEntitySync: entity is null, type: "+
+            LogHelper.debug("EXCEPTION: S2C entity sync packet: entity is null, type: "+
                     msg.packetType+" eid: "+msg.entityID);
             return;
         }
         
+        try
+        {
+        
         /* apply new data to host */
         switch (msg.packetType)
         {
-        case PID.SyncShip_AllMisc:    //sync all attr
+        case PID.SyncShip_All:    //sync all attr
         {
-            ship = getHostWithMorphChecking(entity);
-            if (ship == null) return;
+            IStateEntity ship = getHostWithMorphChecking(entity);
             
-            ship.setStateMinor(ID.M.ShipLevel, msg.valueInt1[0]);
-            ship.setStateMinor(ID.M.Kills, msg.valueInt1[1]);
-            ship.setStateMinor(ID.M.ExpCurrent, msg.valueInt1[2]);
-            ship.setStateMinor(ID.M.NumAmmoLight, msg.valueInt1[3]);
-            ship.setStateMinor(ID.M.NumAmmoHeavy, msg.valueInt1[4]);
-            ship.setStateMinor(ID.M.NumGrudge, msg.valueInt1[5]);
-            ship.setStateMinor(ID.M.NumAirLight, msg.valueInt1[6]);
-            ship.setStateMinor(ID.M.NumAirHeavy, msg.valueInt1[7]);
-            ship.setStateMinor(ID.M.FollowMin, msg.valueInt1[8]);
-            ship.setStateMinor(ID.M.FollowMax, msg.valueInt1[9]);
-            ship.setStateMinor(ID.M.FleeHP, msg.valueInt1[10]);
-            ship.setStateMinor(ID.M.GuardX, msg.valueInt1[11]);
-            ship.setStateMinor(ID.M.GuardY, msg.valueInt1[12]);
-            ship.setStateMinor(ID.M.GuardZ, msg.valueInt1[13]);
-            ship.setStateMinor(ID.M.GuardDim, msg.valueInt1[14]);
-            ship.setStateMinor(ID.M.GuardID, msg.valueInt1[15]);
-            ship.setStateMinor(ID.M.GuardType, msg.valueInt1[16]);
-            ship.setStateMinor(ID.M.PlayerUID, msg.valueInt1[17]);
-            ship.setStateMinor(ID.M.ShipUID, msg.valueInt1[18]);
-            ship.setStateMinor(ID.M.PlayerEID, msg.valueInt1[19]);
-            ship.setStateMinor(ID.M.FormatType, msg.valueInt1[20]);
-            ship.setStateMinor(ID.M.FormatPos, msg.valueInt1[21]);
-            ship.setStateMinor(ID.M.Morale, msg.valueInt1[22]);
-            ship.setStateMinor(ID.M.DrumState, msg.valueInt1[23]);
-            ship.setStateMinor(ID.M.LevelChunkLoader, msg.valueInt1[24]);
-            ship.setStateMinor(ID.M.LevelFlare, msg.valueInt1[25]);
-            ship.setStateMinor(ID.M.LevelSearchlight, msg.valueInt1[26]);
-            ship.setStateMinor(ID.M.WpStay, msg.valueInt1[27]);
-            ship.setStateMinor(ID.M.UseCombatRation, msg.valueInt1[28]);
-            ship.setStateTimer(ID.T.CraneTime, msg.valueInt1[29]);
-            ship.setStateMinor(ID.M.SensBody, msg.valueInt1[30]);
-            ship.setStateMinor(ID.M.NumState, msg.valueInt1[31]);
-            ship.setStateMinor(ID.M.Task, msg.valueInt1[32]);
-            ship.setStateMinor(ID.M.TaskSide, msg.valueInt1[33]);
-            ship.setStateEmotion(ID.S.State, msg.valueInt1[34], false);
-            ship.setStateEmotion(ID.S.HPState, msg.valueInt1[35], false);
-            ship.setStateEmotion(ID.S.Emotion, msg.valueInt1[36], false);
-            ship.setStateEmotion(ID.S.Emotion4, msg.valueInt1[37], false);
-            ship.setStateEmotion(ID.S.Phase, msg.valueInt1[38], false);
-
-            ship.setStateFlag(ID.F.CanFloatUp, msg.valueBoolean1[0]);
-            ship.setStateFlag(ID.F.IsMarried, msg.valueBoolean1[1]);
-            ship.setStateFlag(ID.F.NoFuel, msg.valueBoolean1[2]);
-            ship.setStateFlag(ID.F.UseMelee, msg.valueBoolean1[3]);
-            ship.setStateFlag(ID.F.UseAmmoLight, msg.valueBoolean1[4]);
-            ship.setStateFlag(ID.F.UseAmmoHeavy, msg.valueBoolean1[5]);
-            ship.setStateFlag(ID.F.UseAirLight, msg.valueBoolean1[6]);
-            ship.setStateFlag(ID.F.UseAirHeavy, msg.valueBoolean1[7]);
-            ship.setStateFlag(ID.F.UseRingEffect, msg.valueBoolean1[8]);
-            ship.setStateFlag(ID.F.OnSightChase, msg.valueBoolean1[9]);
-            ship.setStateFlag(ID.F.PVPFirst, msg.valueBoolean1[10]);
-            ship.setStateFlag(ID.F.AntiAir, msg.valueBoolean1[11]);
-            ship.setStateFlag(ID.F.AntiSS, msg.valueBoolean1[12]);
-            ship.setStateFlag(ID.F.PassiveAI, msg.valueBoolean1[13]);
-            ship.setStateFlag(ID.F.TimeKeeper, msg.valueBoolean1[14]);
-            ship.setStateFlag(ID.F.PickItem, msg.valueBoolean1[15]);
-            ship.setStateFlag(ID.F.CanPickItem, msg.valueBoolean1[16]);
-            ship.setStateFlag(ID.F.ShowHeldItem, msg.valueBoolean1[17]);
-            ship.getCapaShipInventory().setStackInSlot(22, msg.stacks[0]);
-            ship.getCapaShipInventory().setStackInSlot(23, msg.stacks[1]);
-        }
-        break;
-        case PID.SyncShip_Attrs:    //sync all attrs
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            AttrsAdv attrs = (AttrsAdv) ship.getAttrs();
-            int flag = 0;
-            
-            //get data
-            if (msg.valueByte1 != null) { attrs.setAttrsBonus(Arrays.copyOf(msg.valueByte1, msg.valueByte1.length)); }
-            if (msg.valueFloat1 != null) { attrs.setAttrsRaw(Arrays.copyOf(msg.valueFloat1, msg.valueFloat1.length)); }
-            if (msg.valueFloat2 != null) { attrs.setAttrsEquip(Arrays.copyOf(msg.valueFloat2, msg.valueFloat2.length)); }
-            if (msg.valueFloat3 != null) { attrs.setAttrsMorale(Arrays.copyOf(msg.valueFloat3, msg.valueFloat3.length)); }
-            if (msg.valueFloat4 != null) { attrs.setAttrsPotion(Arrays.copyOf(msg.valueFloat4, msg.valueFloat4.length)); }
-            if (msg.valueFloat5 != null)
+            if (ship != null)
             {
-                attrs.setAttrsFormation(Arrays.copyOf(msg.valueFloat5, Attrs.AttrsLength));
-                attrs.setMinMOV(msg.valueFloat5[Attrs.AttrsLength]);
-            }
-            if (msg.valueFloat6 != null)
-            {
-                attrs.setAttrsBuffed(Arrays.copyOf(msg.valueFloat6, Attrs.AttrsLength));
-                attrs.setMinMOV(msg.valueFloat6[Attrs.AttrsLength]);
+                PacketHelper.processSetAttrsAll(ship, msg.valueList1);
             }
         }
         break;
-        case PID.SyncShip_Emo: //entity emotion only
-        case PID.SyncEntity_Emo: //IShipEmotion sync emtion
+        case PID.SyncShip_Update:  //sync updated attr
         {
-            IShipEmotion entity2 = null;
+            IStateEntity ship = getHostWithMorphChecking(entity);
             
-            if (entity instanceof IShipEmotion)
+            if (ship != null)
             {
-                entity2 = (IShipEmotion) entity;
-            }
-            //sync emotion to morph entity
-            else if (entity instanceof EntityPlayer)
-            {
-                capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) entity);
-                
-                if (capa != null && capa.morphEntity instanceof IShipEmotion)
-                {
-                    entity2 = (IShipEmotion) capa.morphEntity;
-                }
-            }
-            
-            if (entity2 != null)
-            {
-                entity2.setStateEmotion(ID.S.State, msg.valueInt1[0], false);
-                entity2.setStateEmotion(ID.S.HPState, msg.valueInt1[1], false);
-                entity2.setStateEmotion(ID.S.Emotion, msg.valueInt1[2], false);
-                entity2.setStateEmotion(ID.S.Emotion4, msg.valueInt1[3], false);
-                entity2.setStateEmotion(ID.S.Phase, msg.valueInt1[4], false);
-                
-                entity2.setStateFlag(ID.F.NoFuel, msg.valueBoolean1[0]);
-                entity2.setEntitySit(msg.valueBoolean1[1]);
-            }
-        }
-        break;
-        case PID.SyncShip_Flag: //entity flag only
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setStateFlag(ID.F.CanFloatUp, msg.valueBoolean1[0]);
-            ship.setStateFlag(ID.F.IsMarried, msg.valueBoolean1[1]);
-            ship.setStateFlag(ID.F.NoFuel, msg.valueBoolean1[2]);
-            ship.setStateFlag(ID.F.UseMelee, msg.valueBoolean1[3]);
-            ship.setStateFlag(ID.F.UseAmmoLight, msg.valueBoolean1[4]);
-            ship.setStateFlag(ID.F.UseAmmoHeavy, msg.valueBoolean1[5]);
-            ship.setStateFlag(ID.F.UseAirLight, msg.valueBoolean1[6]);
-            ship.setStateFlag(ID.F.UseAirHeavy, msg.valueBoolean1[7]);
-            ship.setStateFlag(ID.F.UseRingEffect, msg.valueBoolean1[8]);
-            ship.setStateFlag(ID.F.OnSightChase, msg.valueBoolean1[9]);
-            ship.setStateFlag(ID.F.PVPFirst, msg.valueBoolean1[10]);
-            ship.setStateFlag(ID.F.AntiAir, msg.valueBoolean1[11]);
-            ship.setStateFlag(ID.F.AntiSS, msg.valueBoolean1[12]);
-            ship.setStateFlag(ID.F.PassiveAI, msg.valueBoolean1[13]);
-            ship.setStateFlag(ID.F.TimeKeeper, msg.valueBoolean1[14]);
-            ship.setStateFlag(ID.F.PickItem, msg.valueBoolean1[15]);
-            ship.setStateFlag(ID.F.CanPickItem, msg.valueBoolean1[16]);
-            ship.setStateFlag(ID.F.ShowHeldItem, msg.valueBoolean1[17]);
-        }
-        break;
-        case PID.SyncShip_Formation: //ship formation data only
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setStateMinor(ID.M.GuardX, msg.valueInt1[0]);
-            ship.setStateMinor(ID.M.GuardY, msg.valueInt1[1]);
-            ship.setStateMinor(ID.M.GuardZ, msg.valueInt1[2]);
-            ship.setStateMinor(ID.M.GuardDim, msg.valueInt1[3]);
-            ship.setStateMinor(ID.M.GuardType, msg.valueInt1[4]);
-            ship.setStateMinor(ID.M.FormatType, msg.valueInt1[5]);
-            ship.setStateMinor(ID.M.FormatPos, msg.valueInt1[6]);
-            ((AttrsAdv)ship.getAttrs()).setMinMOV(msg.valueFloat1[0]);
-        }
-        break;
-        case PID.SyncShip_Minor: //entity minor only
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setStateMinor(ID.M.ShipLevel, msg.valueInt1[0]);
-            ship.setStateMinor(ID.M.Kills, msg.valueInt1[1]);
-            ship.setStateMinor(ID.M.ExpCurrent, msg.valueInt1[2]);
-            ship.setStateMinor(ID.M.NumAmmoLight, msg.valueInt1[3]);
-            ship.setStateMinor(ID.M.NumAmmoHeavy, msg.valueInt1[4]);
-            ship.setStateMinor(ID.M.NumGrudge, msg.valueInt1[5]);
-            ship.setStateMinor(ID.M.NumAirLight, msg.valueInt1[6]);
-            ship.setStateMinor(ID.M.NumAirHeavy, msg.valueInt1[7]);
-            ship.setStateMinor(ID.M.FollowMin, msg.valueInt1[8]);
-            ship.setStateMinor(ID.M.FollowMax, msg.valueInt1[9]);
-            ship.setStateMinor(ID.M.FleeHP, msg.valueInt1[10]);
-            ship.setStateMinor(ID.M.GuardX, msg.valueInt1[11]);
-            ship.setStateMinor(ID.M.GuardY, msg.valueInt1[12]);
-            ship.setStateMinor(ID.M.GuardZ, msg.valueInt1[13]);
-            ship.setStateMinor(ID.M.GuardDim, msg.valueInt1[14]);
-            ship.setStateMinor(ID.M.GuardID, msg.valueInt1[15]);
-            ship.setStateMinor(ID.M.GuardType, msg.valueInt1[16]);
-            ship.setStateMinor(ID.M.PlayerUID, msg.valueInt1[17]);
-            ship.setStateMinor(ID.M.ShipUID, msg.valueInt1[18]);
-            ship.setStateMinor(ID.M.PlayerEID, msg.valueInt1[19]);
-            ship.setStateMinor(ID.M.FormatType, msg.valueInt1[20]);
-            ship.setStateMinor(ID.M.FormatPos, msg.valueInt1[21]);
-            ship.setStateMinor(ID.M.Morale, msg.valueInt1[22]);
-            ship.setStateMinor(ID.M.DrumState, msg.valueInt1[23]);
-            ship.setStateMinor(ID.M.LevelChunkLoader, msg.valueInt1[24]);
-            ship.setStateMinor(ID.M.LevelFlare, msg.valueInt1[25]);
-            ship.setStateMinor(ID.M.LevelSearchlight, msg.valueInt1[26]);
-            ship.setStateMinor(ID.M.WpStay, msg.valueInt1[27]);
-            ship.setStateMinor(ID.M.UseCombatRation, msg.valueInt1[28]);
-            ship.setStateMinor(ID.M.SensBody, msg.valueInt1[29]);
-        }
-        break;
-        case PID.SyncShip_Guard:  //sync guard for particle display
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setStateMinor(ID.M.GuardX, msg.valueInt1[0]);
-            ship.setStateMinor(ID.M.GuardY, msg.valueInt1[1]);
-            ship.setStateMinor(ID.M.GuardZ, msg.valueInt1[2]);
-            ship.setStateMinor(ID.M.GuardDim, msg.valueInt1[3]);
-            ship.setStateMinor(ID.M.GuardID, msg.valueInt1[4]);
-            ship.setStateMinor(ID.M.GuardType, msg.valueInt1[5]);
-        }
-        break;
-        case PID.SyncShip_ID:
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setStateMinor(ID.M.PlayerUID, msg.valueInt1[0]);
-            ship.setStateMinor(ID.M.ShipUID, msg.valueInt1[1]);
-            ship.setStateMinor(ID.M.PlayerEID, msg.valueInt1[2]);
-        }
-        break;
-        case PID.SyncShip_Timer: //ship timer only
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setStateTimer(ID.T.CraneTime, msg.valueInt);
-        }
-        break;
-        case PID.SyncShip_PlayerSkillTimer: //ship timer only
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setStateTimer(ID.T.MountSkillCD1, msg.valueInt1[0]);
-            ship.setStateTimer(ID.T.MountSkillCD2, msg.valueInt1[1]);
-            ship.setStateTimer(ID.T.MountSkillCD3, msg.valueInt1[2]);
-            ship.setStateTimer(ID.T.MountSkillCD4, msg.valueInt1[3]);
-        }
-        break;
-        case PID.SyncShip_Scale:
-        {
-            if (entity instanceof IShipEmotion)
-            {
-                ((IShipEmotion) entity).setScaleLevel(msg.valueInt);
+                PacketHelper.processSetAttrs(ship, msg.valueList1);
             }
         }
         break;
@@ -737,7 +501,7 @@ public class S2CEntitySync implements IMessage
                     //set mount pose if riders > 1
                     if (msg.valueInt > 1)
                     {
-                        ((BasicEntityMount) entity).setStateEmotion(ID.S.Emotion, 1, false);
+                        ((IStateEntity) entity).getStateHandler().setNumberState(AttrNum.Emotion, 1);
                     }
                 }
             }//end set entity's riders
@@ -878,20 +642,9 @@ public class S2CEntitySync implements IMessage
             }
         }
         break;
-        case PID.SyncShip_UnitName:    //sync ship unit names
-        {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.unitNames = (ArrayList<String>) msg.valueString1;
-        }
-        break;
         case PID.SyncShip_Buffmap:    //sync buff map
         {
-            ship = getShipByEntity(entity);
-            if (ship == null) return;
-            
-            ship.setBuffMap((HashMap<Integer, Integer>) msg.valueMap1);
+            ((IStateEntityAdv) entity).getBuffHandler().setBuffMap((HashMap<Integer, Integer>) msg.valueMap1);
         }
         break;
         case PID.SyncEntity_Host:    //sync host
@@ -907,6 +660,13 @@ public class S2CEntitySync implements IMessage
         }
         break;
         }//end switch
+        
+        }
+        catch (Exception e)
+        {
+            LogHelper.info("EXCEPTION: S2C entity sync packet: set data fail: "+e);
+            e.printStackTrace();
+        }
     }
     
     /**

@@ -134,18 +134,131 @@ public class Enums
         HEAVY
     }
     
+//    /**
+//     * action enum for attack, model render, sound...
+//     */
+//    public static enum Action
+//    {
+//        /** generic attack start */
+//        GENERIC_ATTACK_START(),
+//        /** generic attack continue */
+//        GENERIC_ATTACK_CONT(),
+//        /** generic attack end */
+//        GENERIC_ATTACK_END(),
+//        /* idle */
+//        IDLE_START(),
+//        IDLE_CONT(),
+//        IDLE_END(),
+//        /* ride */
+//        RIDE_START(),
+//        RIDE_CONT(),
+//        RIDE_END(),
+//        /* walk */
+//        WALK_START(),
+//        WALK_CONT,
+//        WALK_END(),
+//        /* run */
+//        RUN_START(),
+//        RUN_CONT(),
+//        RUN_END(),
+//        /* sneak */
+//        SNEAK_START(),
+//        SNEAK_CONT(),
+//        SNEAK_END(),
+//        /* cast skill */
+//        CAST_START(),
+//        CAST_CONT(),
+//        CAST_END(),
+//        /* fly, jump or fall */
+//        ONAIR_START(),
+//        ONAIR_CONT(),
+//        ONAIR_END();
+//        
+//        
+//        private Action()
+//        {
+//            //TODO
+//        }
+//        
+//    }
+    
     /**
      * attack type
      */
     public static enum AtkType
     {
-        GENERIC_MELEE,
-        GENERIC_LIGHT,
-        GENERIC_HEAVY,
-        GENERIC_AIR_LIGHT,
-        GENERIC_AIR_HEAVY,
-        YAMATO_CANNON,
-        AP91_FIST
+        /** direct attack */
+        GENERIC_MELEE(false, true, true, true, true, false),
+        /** direct attack */
+        GENERIC_LIGHT(false, true, true, true, true, false),
+        /** summon */
+        GENERIC_HEAVY_LAUNCH(true, true, false, false, false, true),
+        /** collide attack */
+        GENERIC_HEAVY_COLLIDE(false, true, true, true, true, false),
+        /** summon */
+        GENERIC_AIR_LIGHT_LAUNCH(false, false, false, false, false, true),
+        /** direct attack */
+        GENERIC_AIR_LIGHT_ATTACK(false, true, true, true, true, false),
+        /** summon */
+        GENERIC_AIR_HEAVY_LAUNCH(true, false, false, false, false, true),
+        /** collide attack */
+        GENERIC_AIR_HEAVY_COLLIDE(false, true, true, true, true, false),
+        /** summon */
+        YAMATO_CANNON_LAUNCH(true, false, false, false, false, true),
+        /** collide attack */
+        YAMATO_CANNON_COLLIDE(false, true, true, true, true, false),
+        /** direct attack */
+        AP91_FIST(true, true, true, true, true, false);
+        
+        private final boolean canHitGround;  //can attack without Entity target
+        private final boolean canMiss;       //can miss
+        private final boolean canCri;        //can critical hit
+        private final boolean canDHit;       //can double hit
+        private final boolean canTHit;       //can triple hit
+        private final boolean justLaunch;    //just launch object
+        
+        
+        private AtkType(boolean canHitGround, boolean canMiss, boolean canCri,
+                        boolean canDHit, boolean canTHit, boolean justLaunch)
+        {
+            this.canHitGround = canHitGround;
+            this.canMiss = canMiss;
+            this.canCri = canCri;
+            this.canDHit = canDHit;
+            this.canTHit = canTHit;
+            this.justLaunch = justLaunch;
+        }
+        
+        public boolean canHitGround()
+        {
+            return this.canHitGround;
+        }
+        
+        public boolean canMiss()
+        {
+            return this.canMiss;
+        }
+
+        public boolean canCri()
+        {
+            return this.canCri;
+        }
+        
+        public boolean canDHit()
+        {
+            return this.canDHit;
+        }
+        
+        public boolean canTHit()
+        {
+            return this.canTHit;
+        }
+        
+        public boolean justLaunch()
+        {
+            return this.justLaunch;
+        }
+        
     }
     
     /**
@@ -157,6 +270,36 @@ public class Enums
         FLY,
         SEA,
         UNDERSEA
+    }
+    
+    /** morale level */
+    public static enum Morale
+    {
+        Excited(0, 5100),
+        Happy(1, 3900),
+        Normal(2, 2100),
+        Tired(3, 900),
+        Exhausted(4, 0);
+        
+        private final int moraleID;
+        private final int moraleLowerBound;
+        
+        private Morale(int id, int lv)
+        {
+            this.moraleID = id;
+            this.moraleLowerBound = lv;
+        }
+        
+        public int getID()
+        {
+            return this.moraleID;
+        }
+        
+        public int getLowerBound()
+        {
+            return this.moraleLowerBound;
+        }
+        
     }
     
     /**
@@ -230,6 +373,7 @@ public class Enums
         IsPassive,
         IsTimeKeeper,
         ShowHeldItem,
+        Vanilla,            //vanilla flag: sit, sprint, sneak
         
         //attrs update flag
         UpdateAttrsBuffed,
@@ -247,6 +391,7 @@ public class Enums
      */
     public static enum AttrNum
     {
+        /* number attrs */
         Phase,              //skill phase
         FollowMin,          //follow range min/max
         FollowMax,    
@@ -494,9 +639,9 @@ public class Enums
         TEXT_TRIPLEHIT,
         /** f0:posX, f1:posY, f2:posZ, f3:offsetY */
         TEXT_DODGE,
-        /** i0:NO_USE, i1:type, i2:textH, i3:textW, f0:posX, f1:posY, f2:posZ, f3:scale */
+        /** i0:NO_USE, i1:type, i2:textH, i3:textW, f0:posX, f1:posY, f2:posZ, f3:scale, s0:text */
         TEXT_BLOCK,
-        /** i0:host entity ID, i1:type, i2:textH, i3:textW, f0:posX, f1:posY, f2:posZ, f3:scale */
+        /** i0:host entity ID, i1:type, i2:textH, i3:textW, f0:posX, f1:posY, f2:posZ, f3:scale, s0:text */
         TEXT_ENTITY,
         /** f0:posX, f1:posY, f2:posZ, f3:tarX, f4:tarY, f5:tarZ, f6:text offsetY */
         TYPE91APFIST_ATTACK,

@@ -93,7 +93,7 @@ public class ShipStateHandler extends AttrStateHandler
         this.setBooleanState(AttrBoo.ShowHeldItem, true);
         this.setNumberState(AttrNum.ModelStateNum, 1);
         this.setNumberState(AttrNum.ModelState, 0);
-        this.setNumberState(AttrNum.Emotion, 0);
+        this.setNumberState(AttrNum.Emotion, ID.Emotion.NORMAL);
         this.setNumberState(AttrNum.Emotion2, 0);
         this.setNumberState(AttrNum.Emotion3, 0);
         this.setNumberState(AttrNum.Emotion4, 0);
@@ -106,7 +106,6 @@ public class ShipStateHandler extends AttrStateHandler
         this.setNumberState(AttrNum.Scale, 0);
         this.setNumberState(AttrNum.ShipType, 0);
         this.setNumberState(AttrNum.IconType, 0);
-        this.setNumberState(AttrNum.ShipLevel, 1);
         this.setNumberState(AttrNum.ShipUID, -1);
         this.setNumberState(AttrNum.PlayerUID, -1);
         this.setNumberState(AttrNum.PlayerEID, -1);
@@ -195,16 +194,6 @@ public class ShipStateHandler extends AttrStateHandler
         this.setNumberState(AttrNum.IconType, value);  //ID.IconType
     }
     
-    public int getShipLevel()
-    {
-        return this.getStateInt(AttrNum.ShipLevel);
-    }
-    
-    public void setShipLevel(int value)
-    {
-        this.setNumberState(AttrNum.ShipLevel, value);
-    }
-    
     public int getShipScale()
     {
         return this.getStateInt(AttrNum.Scale);
@@ -274,6 +263,46 @@ public class ShipStateHandler extends AttrStateHandler
     public void setShipStateNumber(byte value)
     {
         this.setNumberState(AttrNum.ShipType, value);  //max state number <= 32
+    }
+    
+    public int getShipEmotion()
+    {
+        return this.getStateInt(AttrNum.Emotion);
+    }
+    
+    public void setShipEmotion(byte value)
+    {
+        this.setNumberState(AttrNum.Emotion, value);
+    }
+    
+    public int getShipEmotion2()
+    {
+        return this.getStateInt(AttrNum.Emotion2);
+    }
+    
+    public void setShipEmotion2(byte value)
+    {
+        this.setNumberState(AttrNum.Emotion2, value);
+    }
+    
+    public int getShipEmotion3()
+    {
+        return this.getStateInt(AttrNum.Emotion3);
+    }
+    
+    public void setShipEmotion3(byte value)
+    {
+        this.setNumberState(AttrNum.Emotion3, value);
+    }
+    
+    public int getShipEmotion4()
+    {
+        return this.getStateInt(AttrNum.Emotion4);
+    }
+    
+    public void setShipEmotion4(byte value)
+    {
+        this.setNumberState(AttrNum.Emotion4, value);
     }
     
     /** change ship outfit (model state) */
@@ -817,20 +846,21 @@ public class ShipStateHandler extends AttrStateHandler
                 
                 curLevel++;
                 curExp -= nextExp;
-                nextExp = this.calcExpNext(curLevel);
             }
             
             this.setNumberState(AttrNum.ExpCurrent, curExp);
-            this.setNumberState(AttrNum.ExpNext, nextExp);
-            this.addShipLevel(curLevel, true);
+            this.setShipLevel(curLevel, true);
         }//end below cap level
     }
     
-    //called when entity level up
-    public void addShipLevel(int targetLevel, boolean update)
+    /** set ship level and update ship attrs */
+    public void setShipLevel(int targetLevel, boolean update)
     {
         //set level
-        this.setShipLevel(targetLevel);
+        this.setLevel(targetLevel);
+        
+        //set next exp
+        this.setNumberState(AttrNum.ExpNext, this.calcExpNext(targetLevel));
         
         //update attributes
         if (update)

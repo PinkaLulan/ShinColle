@@ -25,7 +25,6 @@ import com.lulan.shincolle.handler.IGuardEntity;
 import com.lulan.shincolle.handler.IInventoryShip;
 import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.handler.IPacketShip;
-import com.lulan.shincolle.handler.IParticleEntity;
 import com.lulan.shincolle.handler.IReactionShip;
 import com.lulan.shincolle.handler.IRenderEntity;
 import com.lulan.shincolle.handler.IStateShip;
@@ -94,9 +93,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
  * basic ship entity class
  */
 public abstract class BasicEntityShip extends EntityTameable
-implements IInventoryShip, IStateShip, IMoveShip, IRenderEntity, IPacketShip,
-           IAIEntity, IReactionShip, IShipMorph, IGuardEntity, IFloatingEntity,
-           IAttackEntity, IParticleEntity
+implements IInventoryShip, IStateShip, IMoveShip, IPacketShip, IReactionShip,
+           IAIEntity, IShipMorph, IGuardEntity, IFloatingEntity, IAttackEntity,
+           IRenderEntity
 {
     
     //override attribute

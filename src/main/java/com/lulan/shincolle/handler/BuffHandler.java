@@ -8,43 +8,61 @@ import java.util.HashMap;
 public class BuffHandler
 {
     /** buffs */
-    protected HashMap<Integer, Integer> BuffMap;
-    protected HashMap<Integer, int[]> AttackEffectMap;
+    protected HashMap<Integer, Integer> buffMap;
+    protected HashMap<Integer, int[]> attackEffectMap;
+    /** host object */
+    protected IAttackEntity host;
     
     
+    public BuffHandler(IAttackEntity host)
+    {
+        this.host = host;
+        
+        this.initFirst();
+    }
     
+    /** init data on construct */
+    protected void initFirst()
+    {
+        this.buffMap = new HashMap<Integer, Integer>();
+        this.attackEffectMap = new HashMap<Integer, int[]>();
+    }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    @Override
     public HashMap<Integer, Integer> getBuffMap()
     {
-        if (this.BuffMap == null) this.BuffMap = new HashMap<Integer, Integer>();
-        return this.BuffMap;
-    }
-
-    @Override
-    public void setBuffMap(HashMap<Integer, Integer> map)
-    {
-        if (map != null) this.BuffMap = map;
+        if (this.buffMap == null) this.buffMap = new HashMap<Integer, Integer>();
+        return this.buffMap;
     }
     
-    @Override
     public HashMap<Integer, int[]> getAttackEffectMap()
     {
-        if (this.AttackEffectMap == null) this.AttackEffectMap = new HashMap<Integer, int[]>();
-        return this.AttackEffectMap;
+        if (this.attackEffectMap == null) this.attackEffectMap = new HashMap<Integer, int[]>();
+        return this.attackEffectMap;
     }
-
-    @Override
+    
+    public void setBuffMap(HashMap<Integer, Integer> map)
+    {
+        if (map == null)
+        {
+            this.buffMap = new HashMap<Integer, Integer>();
+        }
+        else
+        {
+            this.buffMap = map;
+        }
+    }
+    
     public void setAttackEffectMap(HashMap<Integer, int[]> map)
     {
-        this.AttackEffectMap = map;
+        if (map == null)
+        {
+            this.attackEffectMap = new HashMap<Integer, int[]>();
+        }
+        else
+        {
+            this.attackEffectMap = map;
+        }
     }
+    
+    
 }

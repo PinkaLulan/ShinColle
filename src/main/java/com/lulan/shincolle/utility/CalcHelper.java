@@ -604,7 +604,7 @@ public class CalcHelper
     {
         if (host instanceof Entity)
         {
-            return getDistanceFromA2B(host, target);
+            return getDistanceFromA2B((Entity) host, target);
         }
         else if (host instanceof TileEntity)
         {

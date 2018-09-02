@@ -19,14 +19,22 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 public class ReactionHandler
 {
     
-    protected EntityLivingBase host;
+    protected IReactionEntity host;
     protected Random rand;
     
     
-    public ReactionHandler(EntityLivingBase host)
+    public ReactionHandler(IReactionEntity host)
     {
         this.host = host;
-        this.rand = this.host.getRNG();
+        
+        if (host instanceof EntityLivingBase)
+        {
+            this.rand = ((EntityLivingBase) this.host).getRNG();
+        }
+        else
+        {
+            this.rand = new Random();
+        }
     }
     
     /** eat item */
@@ -69,6 +77,40 @@ public class ReactionHandler
         }
     }
     
+    /** attack start */
+    public void reactAttackStart()
+    {
+        switch (this.rand.nextInt(9))
+        {
+        case 1:
+            applyParticleEmotion(33);  //:p
+        break;
+        case 2:
+            applyParticleEmotion(17);  //gg
+        break;
+        case 3:
+            applyParticleEmotion(19);  //lick
+        break;
+        case 4:
+            applyParticleEmotion(16);  //ha
+        break;
+        case 5:
+            applyParticleEmotion(7);   //note
+        break;
+        case 6:
+            applyParticleEmotion(14);  //+_+
+        break;
+        case 7:
+            applyParticleEmotion(30);  //pif
+        break;
+        case 8:
+            applyParticleEmotion(4);   //!
+        break;
+        default:
+            applyParticleEmotion(6);   //angry
+        break;
+        }
+    }
     
     
     
@@ -78,7 +120,7 @@ public class ReactionHandler
     
     
     
-    /** TODO OLD METHODS */
+    /*************** TODO refactoring ****************/
     
     /** knockback AI target */
     public void pushAITarget()
@@ -588,65 +630,7 @@ public class ReactionHandler
             }
           }
       }
-      
-      /** damaged emotes */
-      public void reactionAttack()
-      {
-          //show emotes by morale level
-        switch (EntityHelper.getMoraleLevel(this.getMorale()))
-        {
-        case 0:   //excited
-              //apply emotion
-              this.setStateEmotion(ID.S.Emotion, ID.Emotion.XD, true);
-              
-            switch (this.rand.nextInt(8))
-            {
-            case 1:
-                applyParticleEmotion(33);  //:p
-                break;
-            case 2:
-                applyParticleEmotion(17);  //gg
-                break;
-            case 3:
-                applyParticleEmotion(19);  //lick
-                break;
-            case 4:
-                applyParticleEmotion(16);  //ha
-                break;
-            default:
-                applyParticleEmotion(7);  //note
-                break;
-            }
-            break;
-        case 1:   //happy
-        case 2:   //normal
-        case 3:   //tired
-        default:  //exhausted
-            switch (this.rand.nextInt(8))
-            {
-            case 1:
-                applyParticleEmotion(14);  //+_+
-                break;
-            case 2:
-                applyParticleEmotion(30);  //pif
-                break;
-            case 3:
-                applyParticleEmotion(7);  //note
-                break;
-            case 4:
-                applyParticleEmotion(4);  //!
-                break;
-            case 5:
-                applyParticleEmotion(7);  //note
-                break;
-            default:
-                applyParticleEmotion(6);  //angry
-                break;
-            }
-            break;
-        }//end morale level switch
-      }
-      
+
       /** damaged emotes */
       public void reactionDamaged()
       {

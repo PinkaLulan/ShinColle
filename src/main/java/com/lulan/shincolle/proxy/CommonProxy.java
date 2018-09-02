@@ -69,7 +69,7 @@ public abstract class CommonProxy implements IProxy
         return channelP;
     }
     
-    public static SimpleNetworkWrapper getChannelKeyMouseEvent()
+    public static SimpleNetworkWrapper getChannelRequest()
     {
         return channelI;
     }

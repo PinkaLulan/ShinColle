@@ -23,6 +23,7 @@ public class AttrStateHandler extends StateHandler
     {
         super.initFirst();
         
+        this.setNumberState(AttrNum.ShipLevel, 1);
         this.setNumberState(AttrNum.ShipClass, 0);
     }
     
@@ -46,6 +47,16 @@ public class AttrStateHandler extends StateHandler
     public void setAttrClass(short value)
     {
         this.setNumberState(AttrNum.ShipClass, value);
+    }
+    
+    public int getLevel()
+    {
+        return this.getStateInt(AttrNum.ShipLevel);
+    }
+    
+    public void setLevel(int value)
+    {
+        this.setNumberState(AttrNum.ShipLevel, value);
     }
     
     

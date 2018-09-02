@@ -52,7 +52,7 @@ public class S2CSpawnParticle implements IMessage
     {   
         try
         {
-            PacketHelper.readParticleData(buf);
+            this.pdata = PacketHelper.readParticleData(buf);
         }
         catch (Exception e)
         {

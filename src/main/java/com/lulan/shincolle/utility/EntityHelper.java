@@ -33,6 +33,7 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Enums;
+import com.lulan.shincolle.reference.Enums.Morale;
 import com.lulan.shincolle.reference.Enums.MoveType;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
@@ -96,7 +97,64 @@ public class EntityHelper
 	
 	public EntityHelper() {}
 	
-	/** get host position */
+	
+	/** get host world */
+	public static World getWorld(Object host)
+	{
+	    if (host instanceof Entity)
+	    {
+	        return ((Entity) host).getEntityWorld();
+	    }
+	    else if (host instanceof TileEntity)
+	    {
+	        return ((TileEntity) host).getWorld();
+	    }
+	    
+	    return null;
+	}
+	
+	/** get host entity */
+    public static Entity getEntity(Object host)
+    {
+        if (host instanceof Entity)
+        {
+            return (Entity) host;
+        }
+        {
+            return null;
+        }
+    }
+    
+	/** get host entity id */
+    public static int getEntityID(Object host)
+    {
+        if (host instanceof Entity)
+        {
+            return ((Entity) host).getEntityId();
+        }
+        {
+            return -1;
+        }
+    }
+    
+    /** get host position in BlockPos */
+    public static BlockPos getHostBlokcPosition(Object host)
+    {
+        if (host instanceof Entity)
+        {
+            return ((Entity) host).getPosition();
+        }
+        else if (host instanceof TileEntity)
+        {
+            return ((TileEntity) host).getPos();
+        }
+        else
+        {
+            return BlockPos.ORIGIN;
+        }
+    }
+	
+	/** get host position in Vec3d */
 	public static Vec3d getHostPosition(Object host)
 	{
 	    if (host instanceof Entity)
@@ -177,7 +235,7 @@ public class EntityHelper
 		return MoveType.LAND;
 	}
 	
-	/**replace isInWater, check water block with NO extend AABB */
+	/** replace isInWater, check water block with NO extend AABB */
 	public static void checkDepth(IFloatingEntity host)
 	{
 		Entity host2 = (Entity) host;
@@ -1746,27 +1804,27 @@ public class EntityHelper
   	/** morale level
   	 *  0:excited, 1:happy, 2:normal, 3:tired, 4:exhausted
   	 */
-  	public static int getMoraleLevel(int m)
+  	public static Morale getMoraleLevel(int m)
   	{
-  		if (m > ID.Morale.L_Excited)
+  		if (m > Morale.Excited.getLowerBound())
   		{  //excited
-			return ID.Morale.Excited;
+			return Morale.Excited;
 		}
-		else if (m > ID.Morale.L_Happy)
+		else if (m > Morale.Happy.getLowerBound())
 		{
-			return ID.Morale.Happy;
+			return Morale.Happy;
 		}
-		else if (m > ID.Morale.L_Normal)
+		else if (m > Morale.Normal.getLowerBound())
 		{
-			return ID.Morale.Normal;
+			return Morale.Normal;
 		}
-		else if (m > ID.Morale.L_Tired)
+		else if (m > Morale.Tired.getLowerBound())
 		{
-			return ID.Morale.Tired;
+			return Morale.Tired;
 		}
 		else
 		{
-			return ID.Morale.Exhausted;
+			return Morale.Exhausted;
 		}
   	}
   	
