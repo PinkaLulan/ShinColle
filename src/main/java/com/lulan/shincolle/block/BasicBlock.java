@@ -2,7 +2,6 @@ package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -51,13 +50,21 @@ abstract public class BasicBlock extends Block implements ICustomModels
 	{
 		return unlocalizedName.substring(unlocalizedName.indexOf(".") + 1);
 	}
+
+	@Override
+	public Block setTranslationKey(String name)
+	{
+		super.setTranslationKey(name);
+		this.setRegistryName(Reference.MOD_ID + ":" + name.toLowerCase());
+		return this;
+	}
 	
 	//將name冠上mod名稱 用於之後給各語系檔案放上正確名稱
 	//格式為tile.MOD名稱:方塊名稱.name
 	@Override
-	public String getUnlocalizedName()
+	public String getTranslationKey()
 	{
-		return String.format("tile.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("tile.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getTranslationKey()));
 	}
 
 

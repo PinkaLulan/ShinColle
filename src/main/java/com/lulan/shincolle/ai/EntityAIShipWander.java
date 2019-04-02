@@ -5,7 +5,6 @@ import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
@@ -86,7 +85,6 @@ public class EntityAIShipWander extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    @Override
     public boolean shouldContinueExecuting()
     {
         return !this.host.getShipNavigate().noPath();

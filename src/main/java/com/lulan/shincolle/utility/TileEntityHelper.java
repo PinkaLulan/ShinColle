@@ -1,11 +1,6 @@
 package com.lulan.shincolle.utility;
 
-import com.lulan.shincolle.tileentity.BasicTileInventory;
-import com.lulan.shincolle.tileentity.ITileFurnace;
-import com.lulan.shincolle.tileentity.ITileLiquidFurnace;
-import com.lulan.shincolle.tileentity.ITileWaypoint;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-
+import com.lulan.shincolle.tileentity.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -18,12 +13,9 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 public class TileEntityHelper
 {
@@ -35,7 +27,7 @@ public class TileEntityHelper
 	public static boolean decrItemFuel(BasicTileInventory tile)
 	{
 		ITileFurnace tile2 = (ITileFurnace) tile;
-		ItemStack stack = null;
+		ItemStack stack;
 		boolean sendUpdate = false;
 		
 		//check power storage first
@@ -46,7 +38,7 @@ public class TileEntityHelper
 		{
 			stack = tile.getStackInSlot(i);
 			
-			if (stack != null)
+			if (!stack.isEmpty())
 			{
 				//get normal fuel value
 				int fuelx = TileEntityFurnace.getItemBurnTime(stack);
@@ -62,17 +54,17 @@ public class TileEntityHelper
 				{
 					ItemStack container = stack.getItem().getContainerItem(stack);
 					
-					//if item has container, ignore item with stackSize > 1
-					if (container != null && stack.stackSize > 1)
+					//if item has container, ignore item with getCount() > 1
+					if (!container.isEmpty() && stack.getCount() > 1)
 					{
 						continue;
 					}
 					
-					stack.stackSize--;	//fuel size -1
+					stack.shrink(1);	//fuel size -1
 					tile2.setPowerRemained(tile2.getPowerRemained() + fuelx);	//fuel++
 					
 					//若該物品用完, 用getContainerItem處理是否要清空還是留下桶子 ex: lava bucket -> empty bucket
-					if (stack.stackSize <= 0)
+					if (stack.getCount() <= 0)
 					{
 						stack = container;
 					}
@@ -82,41 +74,6 @@ public class TileEntityHelper
 					sendUpdate = true;
 					break;	//only consume 1 fuel per tick
 				}//end disposable fuel
-				
-				//add disposable fuel FAILED, try fluid container (ex: drum, universal cell)
-				if (stack.getItem() instanceof IFluidContainerItem)
-				{
-					IFluidContainerItem container = (IFluidContainerItem) stack.getItem();
-					FluidStack fluid = container.getFluid(stack);
-					
-					//is lava and stack size = 1
-					if (stack.stackSize > 1)
-					{
-						fuelx = 0;
-					}
-					else if (checkLiquidIsLava1000(fluid))
-					{
-						fuelx = 20000;
-						
-						//calc config setting
-						if (tile instanceof ITileFurnace)
-						{
-							fuelx *= ((ITileFurnace) tile).getFuelMagni();
-						}
-						
-						if (fuelx > 0 && fuelx + tile2.getPowerRemained() < tile2.getPowerMax())
-						{
-							//drain lava, capacity is checked in checkLiquidIsLava(), no check again
-							container.drain(stack, 1000, true);
-							//fuel++
-							tile2.setPowerRemained(tile2.getPowerRemained() + fuelx);
-							//update slot
-							tile.setInventorySlotContents(i, stack);
-							sendUpdate = true;
-							break;	//only consume 1 fuel per tick
-						}
-					}//has enough lava
-				}//end fluid container fuel
 				
 				//check capability (1.10.2 new)
 				if (fuelx <= 0)
@@ -178,74 +135,8 @@ public class TileEntityHelper
 	/** get item burn time, include fluid container, used for fuel item check only!! */
 	public static int getItemFuelValue(ItemStack fuel)
 	{
-		int fuelx = 0;
-		
 		//check fuel item
-		fuelx = TileEntityFurnace.getItemBurnTime(fuel);
-		
-		//若一般的getFuelValue無效, 則改查詢liquid fuel
-		if (fuelx <= 0)
-		{
-			FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(fuel);
-
-			//只接受岩漿為液體燃料 : fluid.tile.lava
-			if (checkLiquidIsLava1000(fluid))
-			{
-				//not support for large container
-				if (fluid.amount > 1000)
-				{
-					return 0;
-				}
-				else
-				{
-					fuelx = 20000;
-				}
-			}
-		}
-		
-		//add fluid container fuel (ex: drum, universal cell)
-		if (fuel.getItem() instanceof IFluidContainerItem)
-		{
-			IFluidContainerItem container = (IFluidContainerItem) fuel.getItem();
-			FluidStack fluid = container.getFluid(fuel);
-			
-			if (fuel.stackSize > 1)
-			{
-				return 0;
-			}
-			
-			//check is lava
-			if (checkLiquidIsLava1000(fluid))
-			{
-				//lava fuel = 20k
-				fuelx = 20000;
-			}//has enough lava
-		}//end fluid container fuel
-		
-		return fuelx;
-	}
-	
-	/** check liquid is a bucket of lava for 1.7.10 */
-	public static boolean checkLiquidIsLava1000(FluidStack fluid)
-	{
-		return checkLiquidIsLavaWithAmount(fluid, 1000);
-	}
-	
-	/** check liquid is lava for 1.7.10 */
-	public static boolean checkLiquidIsLava(FluidStack fluid)
-	{
-		return checkLiquidIsLavaWithAmount(fluid, 0);
-	}
-	
-	/** check liquid is lava and enough amount for 1.7.10 */
-	public static boolean checkLiquidIsLavaWithAmount(FluidStack fluid, int amount)
-	{
-		if (fluid != null && checkLiquidIsLava(fluid.getFluid()) && fluid.amount == amount)
-		{
-			return true;
-		}
-		
-		return false;
+		return TileEntityFurnace.getItemBurnTime(fuel);
 	}
 	
 	/** check liquid is lava for 1.7.10 */
@@ -259,25 +150,6 @@ public class TileEntityHelper
 		return false;
 	}
 	
-	/**
-	 * check and get inventory tile, now accept IInventory or IItemHandler
-	 * 
-	 * @return TileEntity if inventory found, otherwise null
-	 */
-	public static TileEntity getTileInventory(World world, BlockPos pos)
-	{
-		//null check
-		if (pos == null) return null;
-		
-		//check tile entity
-		TileEntity te = world.getTileEntity(pos);
-		
-		if (te != null && !te.isInvalid() && (te instanceof IInventory ||
-			te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))) return te;
-		
-		return null;
-	}
-	
 	/**增減large shipyard的matBuild[] */
 	public static void setLargeShipyardBuildMats(TileMultiGrudgeHeavy tile, int button, int matType, int value)
 	{
@@ -285,7 +157,6 @@ public class TileEntityHelper
 		if (tile == null) return;
 		
 		int num = 0;
-		int num2 = 0;
 		boolean stockToBuild = true;	//false = build -> stock , true = stock -> build
 		
 		//value轉換為數量
@@ -348,8 +219,7 @@ public class TileEntityHelper
 		if (pos1 instanceof ITileWaypoint && pos2 instanceof IInventory)
 		{
 			ITileWaypoint wp = (ITileWaypoint) pos1;
-			IInventory chest = (IInventory) pos2;
-			
+
 			//check owner
 			if (wp.getPlayerUID() != pid)
 			{

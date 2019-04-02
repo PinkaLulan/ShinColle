@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -78,7 +77,7 @@ public class ContainerLargeShipyard extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-        ItemStack newStack = null;
+        ItemStack newStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
 
         if (slot != null && slot.getHasStack())
@@ -89,28 +88,28 @@ public class ContainerLargeShipyard extends Container
             //點擊output slot時, 將output slot的物品嘗試跟inventory的slot合併, 不能合併則傳回null
             if (slotid == SLOT_OUTPUT)
             {
-            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_ALL, true)) return null;
+            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_ALL, true)) return ItemStack.EMPTY;
             }  
             //點擊hot bar => 移動到inventory or player inv
             else if (slotid >= SLOT_HOTBAR)
             {
-            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false)) return null;
+            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false)) return ItemStack.EMPTY;
             }
             //點擊player inv => 移動到inventory or hot bar
             else if (slotid >= SLOT_PLAYERINV && slotid < SLOT_HOTBAR)
             {
-            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true)) return null;
+            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true)) return ItemStack.EMPTY;
             } 
             //點擊inventory => 移動到player inv or hot bar
             else
             {
-            	if (!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false)) return null;
+            	if (!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false)) return ItemStack.EMPTY;
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if (orgStack.stackSize <= 0)
+            if (orgStack.getCount() <= 0)
             {
-                slot.putStack(null);
+                slot.putStack(ItemStack.EMPTY);
             }
             //還沒放完, 先跑一次slot update
             else
@@ -135,38 +134,38 @@ public class ContainerLargeShipyard extends Container
 
             if (this.guiBuildType != this.tile.getBuildType())
             {  	//更新建造類型
-            	tileListener.sendProgressBarUpdate(this, 0, this.tile.getBuildType());
+            	tileListener.sendWindowProperty(this, 0, this.tile.getBuildType());
             }
             
             if (this.guiSelectMat != this.tile.getSelectMat())
             {  	//更新資材選擇
-            	tileListener.sendProgressBarUpdate(this, 1, this.tile.getSelectMat());
+            	tileListener.sendWindowProperty(this, 1, this.tile.getSelectMat());
             }
             
             if (this.guiInvMode != this.tile.getInvMode())
             {	//更新inv mode
-            	tileListener.sendProgressBarUpdate(this, 2, this.tile.getInvMode());
+            	tileListener.sendWindowProperty(this, 2, this.tile.getInvMode());
                 
             }
             
             if (this.guiMatBuild[0] != this.tile.getMatBuild(0))
             {	//更新MatBuild材料量0
-            	tileListener.sendProgressBarUpdate(this, 3, this.tile.getMatBuild(0));
+            	tileListener.sendWindowProperty(this, 3, this.tile.getMatBuild(0));
             }
             
             if (this.guiMatBuild[1] != this.tile.getMatBuild(1))
             {	//更新MatBuild材料量1
-            	tileListener.sendProgressBarUpdate(this, 4, this.tile.getMatBuild(1));
+            	tileListener.sendWindowProperty(this, 4, this.tile.getMatBuild(1));
             }
             
             if (this.guiMatBuild[2] != this.tile.getMatBuild(2))
             {	//更新MatBuild材料量2
-            	tileListener.sendProgressBarUpdate(this, 5, this.tile.getMatBuild(2));
+            	tileListener.sendWindowProperty(this, 5, this.tile.getMatBuild(2));
             }
             
             if (this.guiMatBuild[3] != this.tile.getMatBuild(3))
             {	//更新MatBuild材料量3
-            	tileListener.sendProgressBarUpdate(this, 6, this.tile.getMatBuild(3));
+            	tileListener.sendWindowProperty(this, 6, this.tile.getMatBuild(3));
             }
 
             //燃料值: 用自訂封包更新

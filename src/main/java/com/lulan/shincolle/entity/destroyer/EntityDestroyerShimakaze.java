@@ -12,14 +12,9 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -43,13 +38,13 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 	{
 		super(world);
 		this.setSize(0.5F, 1.6F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DESTROYER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDShimakaze);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 6);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.DD]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 45F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
 		
 		this.numRensouhou = 6;
 		
@@ -58,7 +53,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.initPre();
+		this.postInit();
 	}
 	
 	//for morph
@@ -103,7 +98,7 @@ public class EntityDestroyerShimakaze extends BasicEntityShipSmall implements IS
   				
   				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSq(player) < 256D)
   				{
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(MobEffects.SPEED , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 35 + 1, false, false));

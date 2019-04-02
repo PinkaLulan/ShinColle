@@ -1,7 +1,6 @@
 package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.tileentity.TileMultiPolymetal;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -24,8 +23,7 @@ public class BlockPolymetal extends BasicBlockMulti
 	public BlockPolymetal()
 	{
 		super(Material.IRON);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(3F);
 	}

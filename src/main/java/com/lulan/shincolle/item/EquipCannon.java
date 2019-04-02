@@ -1,7 +1,6 @@
 package com.lulan.shincolle.item;
 
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -34,15 +33,14 @@ public class EquipCannon extends BasicEquip
 	public EquipCannon()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
 	}
 	
 	/** rearrange item order in creative tab */
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-    {
+	{
 		//S
 		list.add(new ItemStack(this, 1, 0));
 		list.add(new ItemStack(this, 1, 1));

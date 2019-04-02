@@ -6,7 +6,6 @@ import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,8 +26,7 @@ public class BlockVolCore extends BasicBlockContainer
 	public BlockVolCore()
 	{
 	    super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHardness(6F);
 		this.setResistance(600F);
 	    this.setHarvestLevel("pickaxe", 0);
@@ -73,7 +71,7 @@ public class BlockVolCore extends BasicBlockContainer
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		//sync player UID while right click
 		if (!world.isRemote)
@@ -86,7 +84,7 @@ public class BlockVolCore extends BasicBlockContainer
 			}
 		}
 		
-		return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+		return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 	}
 		
 		

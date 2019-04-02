@@ -1,15 +1,7 @@
 package com.lulan.shincolle.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -21,6 +13,12 @@ import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** Command: /shipemotes
  * 
@@ -233,9 +231,9 @@ public class ShipCmdEmotes extends CommandBase
 			height = 0.5F;
 			entityType = 0;
 			
-			px = (float) sender.getPositionVector().xCoord;
-			py = (float) sender.getPositionVector().yCoord;
-			pz = (float) sender.getPositionVector().zCoord;
+			px = (float) sender.getPositionVector().x;
+			py = (float) sender.getPositionVector().y;
+			pz = (float) sender.getPositionVector().z;
 		}
 
 		if (sender instanceof Entity)

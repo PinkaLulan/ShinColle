@@ -11,7 +11,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
-
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,11 +18,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
-import net.minecraftforge.fluids.IFluidContainerItem;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
@@ -124,7 +121,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 		//is output slot
 		if (slot == 5) return true;
 		//is fuel slot
-		else if (slot == 4 && stack != null)
+		else if (slot == 4 && !stack.isEmpty())
 		{
 			//is bucket
 			if (stack.getItem() == Items.BUCKET) return true;
@@ -135,29 +132,10 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 				FluidStack fstack = fluid.drain(BlockHelper.SampleFluidLava, false);
 				if (fstack == null) return true;
 			}
-			//is IFluidContainerItem (1.7.10 old container)
-			else if (stack.getItem() instanceof IFluidContainerItem)
-			{
-				IFluidContainerItem container = (IFluidContainerItem) stack.getItem();
-				FluidStack fluid = container.getFluid(stack);
-				
-				if (fluid == null || fluid.amount < 1000) return true;
-			}
 			else
 			{
 				//check is solid fuel
 				if (TileEntityHelper.getItemFuelValue(stack) > 0 || stack.getItem() == ModItems.InstantConMat) return false;
-				
-				//check 1.7.10 FluidContainerRegistry
-				FluidStack fluid = FluidContainerRegistry.getFluidForFilledItem(stack);
-				
-				//fluid empty
-				if (fluid == null) return true;
-				//fluid remaining
-				else if (fluid.amount < 1000)
-				{
-					return true;
-				}
 			}
 		}
 		
@@ -220,7 +198,7 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack)
 	{
-		if (stack != null)
+		if (!stack.isEmpty())
 		{
 			Item item = stack.getItem();
 			int meta = stack.getItemDamage();
@@ -238,18 +216,14 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 			case 4:		//fuel slot
 				ItemStack stack2 = this.itemHandler.getStackInSlot(slot);
 				
-				if (stack2 != null)
+				if (!stack2.isEmpty())
 				{
 					//if fluid container is already in slot, return false
-					if (stack2.getItem() instanceof IFluidContainerItem ||
-						FluidContainerRegistry.getFluidForFilledItem(stack2) != null ||
-						stack2.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
+					if (stack2.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP))
 						return false;
 				}
 				
 				return TileEntityHelper.getItemFuelValue(stack) > 0 || item == ModItems.InstantConMat ||
-					   item instanceof IFluidContainerItem ||
-					   FluidContainerRegistry.getFluidForFilledItem(stack) != null ||
 					   stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, EnumFacing.UP);
 			}
 		}
@@ -268,16 +242,16 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 				ItemStack item = itemHandler.getStackInSlot(i);
 				
 				//檢查材料是否足夠
-				if (item == null || item.stackSize < getBuildRecord(i))
+				if (item.isEmpty() || item.getCount() < getBuildRecord(i))
 				{
 					return;
 				}
 				//吃掉材料
 				else
 				{
-					item.stackSize -= getBuildRecord(i);
+					item.shrink(getBuildRecord(i));
 					//材料用光, 清空該slot
-					if (item.stackSize <= 0) itemHandler.setStackInSlot(i, null);
+					if (item.getCount() <= 0) itemHandler.setStackInSlot(i, ItemStack.EMPTY);
 				}
 			}
 
@@ -301,10 +275,10 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 			matAmount = SmallRecipes.getMaterialAmount(itemHandler.getStacksInSlots(0, 4));
 
 			//將輸入材料全部吃掉
-			itemHandler.setStackInSlot(0, null);
-			itemHandler.setStackInSlot(1, null);
-			itemHandler.setStackInSlot(2, null);
-			itemHandler.setStackInSlot(3, null);
+			itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+			itemHandler.setStackInSlot(1, ItemStack.EMPTY);
+			itemHandler.setStackInSlot(2, ItemStack.EMPTY);
+			itemHandler.setStackInSlot(3, ItemStack.EMPTY);
 			
 			//輸入材料數量, 取得build output到slot 5
 			switch (this.buildType)
@@ -351,18 +325,18 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 				{
 					ItemStack item = itemHandler.getStackInSlot(i);
 					
-					if (item == null || item.stackSize < getBuildRecord(i))
+					if (item.isEmpty() || item.getCount() < getBuildRecord(i))
 					{
 						return false;
 					}
 				}
 				
-				return itemHandler.getStackInSlot(5) == null;
+				return itemHandler.getStackInSlot(5).isEmpty();
 			}
 		}
 		else
 		{
-			return itemHandler.getStackInSlot(5) == null;
+			return itemHandler.getStackInSlot(5).isEmpty();
 		}
 		
 		return false;
@@ -433,14 +407,14 @@ public class TileEntitySmallShipyard extends BasicTileInventory implements ITile
 				ItemStack item = itemHandler.getStackInSlot(4);
 				
 				//在燃料格使用快速建造材料
-				if (item != null && item.getItem() == ModItems.InstantConMat)
+				if (!item.isEmpty() && item.getItem() == ModItems.InstantConMat)
 				{
-					item.stackSize--;
+					item.shrink(1);
 					this.powerConsumed += POWERINST;
 					
-					if (item.stackSize == 0)
+					if (item.getCount() == 0)
 					{
-						itemHandler.setStackInSlot(4, null);
+						itemHandler.setStackInSlot(4, ItemStack.EMPTY);
 					}
 					
 					sendUpdate = true;

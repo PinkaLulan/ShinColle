@@ -1,19 +1,13 @@
 package com.lulan.shincolle.block;
 
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.IShipOwner;
-import com.lulan.shincolle.init.ModItems;
+import com.lulan.shincolle.item.TargetWrench;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
-
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -35,6 +29,10 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
+
 public class BlockWaypoint extends BasicBlockContainer
 {
 
@@ -46,8 +44,7 @@ public class BlockWaypoint extends BasicBlockContainer
 	public BlockWaypoint()
 	{
 	    super(Material.GLASS);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setResistance(0F);
 		this.setHardness(0F);
 		this.setLightOpacity(0);
@@ -74,7 +71,7 @@ public class BlockWaypoint extends BasicBlockContainer
     }
 	
 	@Override
-	public MapColor getMapColor(IBlockState state, IBlockAccess world, BlockPos pos)
+    public MapColor getMapColor(IBlockState state, IBlockAccess world, BlockPos pos)
     {
         return MapColor.IRON;
     }
@@ -82,8 +79,7 @@ public class BlockWaypoint extends BasicBlockContainer
 	//用於pathing AI檢查是否卡到方塊
 	@Override
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
-    {
-    }
+    {}
 	
 	//用於檢查火把植物之類是否可以貼在方塊上
 	@Override
@@ -170,7 +166,7 @@ public class BlockWaypoint extends BasicBlockContainer
 
 	//right click on block
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		//sync player UID while right click
 		if (!world.isRemote)
@@ -186,10 +182,10 @@ public class BlockWaypoint extends BasicBlockContainer
 		//server side
 		if (!world.isRemote && player != null && !player.isSneaking())
 		{
-			ItemStack item = player.getHeldItem(player.getActiveHand());
-			
+			ItemStack item = player.getHeldItemMainhand();
+
 			//change stay time if holding target wrench
-			if (item != null && item.getItem() == ModItems.TargetWrench)
+			if (!item.isEmpty() && item.getItem() instanceof TargetWrench)
 			{
 				TileEntity tile = world.getTileEntity(pos);
 				

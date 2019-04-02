@@ -10,13 +10,12 @@ import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
@@ -35,20 +34,20 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 	{
 		super(world);
 		this.setSize(0.7F, 1.85F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.SS]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 45F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override
@@ -86,7 +85,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
   					if (getStateFlag(ID.F.IsMarried))
   					{
   						EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+  	  	  				if (player != null && getDistanceSq(player) < 256D)
   	  	  				{
   	  	  					//potion effect: id, time, level
   	  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 80+getLevel(), 0, false, false));
@@ -130,7 +129,7 @@ public class EntitySubmHime extends BasicEntityShipSmall implements IShipInvisib
 	public void setInvisibleLevel(float level) {}
 	
 	@Override
-	public double getEntityFloatingDepth()
+	public double getShipFloatingDepth()
 	{
 		return 1D;
 	}

@@ -1,14 +1,8 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.capability.CapaFluidContainer;
-import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
-
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,24 +14,18 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidBlock;
+import net.minecraftforge.fluids.*;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * ship liquid tank
@@ -60,8 +48,7 @@ public class ShipTank extends BasicItem
 	public ShipTank()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(1);
 		this.setHasSubtypes(true);
 	}
@@ -78,21 +65,22 @@ public class ShipTank extends BasicItem
 		switch (meta)
 		{
 		case 1:
-			return ConfigHandler.itemShipTank[1];
+			return 128000;
 		case 2:
-			return ConfigHandler.itemShipTank[2];
+			return 512000;
 		case 3:
-			return ConfigHandler.itemShipTank[3];
+			return 2048000;
 		default:
-			return ConfigHandler.itemShipTank[0];
+			return 32000;
 		}
 	}
 	
 	//right click: place liquid block or fill tank
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
-		if (player == null) return new ActionResult(EnumActionResult.PASS, null);
+		if (player == null) return new ActionResult(EnumActionResult.PASS, ItemStack.EMPTY);
+
 		ItemStack stack = player.getHeldItem(hand);
 		
 		//server side
@@ -230,7 +218,7 @@ public class ShipTank extends BasicItem
                     {
                         return new ActionResult(EnumActionResult.FAIL, stack);
                     }
-                    else if (tryPlaceContainedLiquid(player, world, pos2, fh))
+                    else if (tryPlaceContainedLiquid(player, world, pos, pos2, fh))
                     {
                         return new ActionResult(EnumActionResult.SUCCESS, stack);
                     }
@@ -271,7 +259,7 @@ public class ShipTank extends BasicItem
 	}
     
 	//place liquid block to world
-    public static boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World world, BlockPos pos, IFluidHandler fh)
+    public static boolean tryPlaceContainedLiquid(@Nullable EntityPlayer player, World world, BlockPos fromPos, BlockPos pos, IFluidHandler fh)
     {
     	//null check
     	if (fh == null) return false;
@@ -317,9 +305,9 @@ public class ShipTank extends BasicItem
                 
                 //liquid--
                 fh.drain(1000, true);
-                
+
                 //send block update
-                world.notifyNeighborsOfStateChange(pos, world.getBlockState(pos).getBlock(), true);
+                world.neighborChanged(pos, world.getBlockState(pos).getBlock(), fromPos);
                 
                 return true;
             }//end can place block
@@ -335,11 +323,11 @@ public class ShipTank extends BasicItem
     
 	//display equip information
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag par4)
     {
     	list.add(TextFormatting.GRAY + I18n.format("gui.shincolle:shiptank"));
     	
-    	if (stack != null)
+    	if (!stack.isEmpty())
     	{
     		FluidStack fs = FluidUtil.getFluidContained(stack);
     		String name = "";

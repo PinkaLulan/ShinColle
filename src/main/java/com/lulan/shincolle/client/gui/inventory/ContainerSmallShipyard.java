@@ -2,7 +2,6 @@ package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.crafting.SmallRecipes;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -70,7 +69,7 @@ public class ContainerSmallShipyard extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
         int itemID = -1;
 
@@ -83,7 +82,7 @@ public class ContainerSmallShipyard extends Container
             if (slotid == 5)
             {	//若點擊output slot時
             	//將output slot的物品嘗試跟player inventory or hot bar的slot合併, 不能合併則傳回null
-            	if (!this.mergeItemStack(itemstack1, 6, 42, true)) return null;
+            	if (!this.mergeItemStack(itemstack1, 6, 42, true)) return ItemStack.EMPTY;
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
             }
             //如果是點擊player inventory slot時, 判定是否能丟進input slot
@@ -93,29 +92,29 @@ public class ContainerSmallShipyard extends Container
             	//物品是材料或燃料, 嘗試塞進slot 0~4中
             	if (itemID >= 0)
             	{
-            		if (!this.mergeItemStack(itemstack1, itemID, itemID+1, false)) return null;
+            		if (!this.mergeItemStack(itemstack1, itemID, itemID+1, false)) return ItemStack.EMPTY;
                 }
             	//若物品不是可用材料, 且物品在player inventory, 則改放到hot bar
                 else if (slotid > 5 && slotid < 33)
                 {
-                	if (!this.mergeItemStack(itemstack1, 33, 42, false)) return null;
+                	if (!this.mergeItemStack(itemstack1, 33, 42, false)) return ItemStack.EMPTY;
                 }
             	//若物品不是可用材料, 且物品在hot bar, 則改放到player inventory
                 else if (slotid > 32 && !this.mergeItemStack(itemstack1, 6, 33, false))
             	{
-                	return null;
+                	return ItemStack.EMPTY;
             	}
             }
             //如果是點擊slot 0~4, 則改放到player inventory or hot bar
             else if (!this.mergeItemStack(itemstack1, 6, 42, true))
             {
-                return null;
+                return ItemStack.EMPTY;
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.getCount() == 0)
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.EMPTY);
             }
             //還沒放完, 先跑一次slot update
             else
@@ -124,10 +123,10 @@ public class ContainerSmallShipyard extends Container
             }
 
             //如果itemstack的數量跟原先的數量相同, 表示都不能移動物品
-            if (itemstack1.stackSize == itemstack.stackSize) return null;
+            if (itemstack1.getCount() == itemstack.getCount()) return ItemStack.EMPTY;
             
             //最後再發送一次slot update
-            slot.onPickupFromSlot(player, itemstack1);
+            slot.onTake(player, itemstack1);
         }
         
         //物品移動完成, 回傳剩下的物品
@@ -159,7 +158,7 @@ public class ContainerSmallShipyard extends Container
             //建造類型: 用內建更新方法
             if (this.guiBuildType != this.tile.getBuildType())
             {  			
-            	tileListener.sendProgressBarUpdate(this, 0, this.tile.getBuildType());
+            	tileListener.sendWindowProperty(this, 0, this.tile.getBuildType());
             }
             
             //燃料值: 用自訂封包更新

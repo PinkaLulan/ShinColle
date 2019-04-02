@@ -1,7 +1,7 @@
 package com.lulan.shincolle.block;
 
-import com.lulan.shincolle.utility.BlockHelper;
-
+import com.lulan.shincolle.ShinColle;
+import com.lulan.shincolle.tileentity.BasicTileEntity;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -35,12 +35,7 @@ abstract public class BasicBlockFacingContainer extends BasicBlockFacing impleme
 	public BasicBlockFacingContainer(Material material, MapColor color)
     {
         super(material, color);
-    }
-	
-	@Override
-	public boolean hasTileEntity(IBlockState state)
-    {
-        return true;
+        this.hasTileEntity = true;
     }
 	
 	//new tile entity instance in child class 
@@ -84,9 +79,28 @@ abstract public class BasicBlockFacingContainer extends BasicBlockFacing impleme
 	 * 參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z
 	 */	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		return BlockHelper.handleBlockClick(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+		//client端: 只需要收到true
+        if (world.isRemote)
+        {
+            return true;
+        }
+        
+        //server端: 若玩家不是sneaking, 則開啟gui
+        if (!player.isSneaking())
+        {
+        	TileEntity tile = world.getTileEntity(pos);
+        	
+        	//open gui
+        	if (tile instanceof BasicTileEntity && ((BasicTileEntity) tile).getGuiIntID() >= 0)
+        	{
+        		player.openGui(ShinColle.instance, ((BasicTileEntity) tile).getGuiIntID(), world, pos.getX(), pos.getY(), pos.getZ());
+                return true;
+        	}
+        }
+
+		return false;
     }
 
 

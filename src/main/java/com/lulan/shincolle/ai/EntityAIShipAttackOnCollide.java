@@ -2,7 +2,6 @@ package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.utility.CombatHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -104,7 +103,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase
         	}
         	else
         	{
-        		this.host.getShipNavigate().clearPathEntity();
+        		this.host.getShipNavigate().clearPath();
         	}
         }
 
@@ -113,7 +112,7 @@ public class EntityAIShipAttackOnCollide extends EntityAIBase
         {
         	this.delayAttack = this.delayMax;
 
-            if(this.host2.getHeldItem(EnumHand.MAIN_HAND) != null)
+            if(!this.host2.getHeldItem(EnumHand.MAIN_HAND).isEmpty())
             {
                 this.host2.swingArm(EnumHand.MAIN_HAND);
             }

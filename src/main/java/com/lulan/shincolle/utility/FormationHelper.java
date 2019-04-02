@@ -1,8 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -12,12 +9,14 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.AttrsAdv;
-
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /** FORMATION HELPER
  * 
@@ -1024,7 +1023,7 @@ public class FormationHelper
 			for (BasicEntityShip ship : ships)
 			{
 				if (ship.world.provider.getDimension() == worldID &&
-					player.getDistanceToEntity(ship) < 64F)
+					player.getDistance(ship) < 64F)
 				{
 					//設定ship攻擊目標
 					ship.setSitting(false);
@@ -1062,7 +1061,7 @@ public class FormationHelper
 				for (BasicEntityShip ship : ships)
 				{
 					if (ship.world.provider.getDimension() == parms[1] &&
-						player.getDistanceToEntity(ship) < 64F)
+						player.getDistance(ship) < 64F)
 					{
 						//設定ship移動地點
 						applyShipGuardEntity(ship, target);
@@ -1099,7 +1098,7 @@ public class FormationHelper
 				for (BasicEntityShip ship : ships)
 				{
 					if (ship.world.provider.getDimension() == parms[1] &&
-						player.getDistanceToEntity(ship) < 64F)
+						player.getDistance(ship) < 64F)
 					{
 						//設定ship移動地點
 						applyShipGuard(ship, parms[4], parms[5], parms[6], false);
@@ -1117,7 +1116,7 @@ public class FormationHelper
 					{
 						//check formation id is same, distance < 64, same dimension
 						if (s.getStateMinor(ID.M.FormatType) != formatID ||
-							player.getDistanceToEntity(s) > 64F ||
+							player.getDistance(s) > 64F ||
 							player.dimension != s.dimension)
 						{
 							return;	//can't move

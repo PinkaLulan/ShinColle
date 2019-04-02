@@ -1,9 +1,5 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -11,7 +7,6 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.InteractHelper;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -25,6 +20,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 
 public class CombatRation extends BasicItem implements IShipCombatRation
 {
@@ -35,8 +33,7 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 	public CombatRation()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(16);
         this.setHasSubtypes(true);
 	}
@@ -107,16 +104,14 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
-		ItemStack stack = player.getHeldItem(hand);
-		
 		if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && hand == EnumHand.MAIN_HAND)
         {
             player.setActiveHand(hand);
-            return new ActionResult(EnumActionResult.SUCCESS, stack);
+            return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItemMainhand());
         }
         else
         {
-            return new ActionResult(EnumActionResult.FAIL, stack);
+            return new ActionResult(EnumActionResult.FAIL, player.getHeldItem(hand));
         }
     }
 	
@@ -209,11 +204,11 @@ public class CombatRation extends BasicItem implements IShipCombatRation
 	
 	//display equip information
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag par4)
     {
-    	if (stack != null)
+    	if (!itemstack.isEmpty())
     	{
-    		int meta = stack.getItemDamage();
+    		int meta = itemstack.getItemDamage();
     		String str = I18n.format("gui.shincolle:combatration"+meta);
     		String[] strs =  CalcHelper.stringConvNewlineToArray(str);
     		

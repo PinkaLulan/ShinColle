@@ -1,9 +1,5 @@
 package com.lulan.shincolle.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lulan.shincolle.client.gui.inventory.ContainerCrane;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -13,13 +9,16 @@ import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.GuiHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiCrane extends GuiContainer
 {
@@ -126,7 +125,7 @@ public class GuiCrane extends GuiContainer
 				}
 			}
 			
-			this.drawHoveringText(list, mx, my+10, this.fontRendererObj);
+			this.drawHoveringText(list, mx, my+10, this.fontRenderer);
 		}
 		else if (my > 35 && my < 50)
 		{
@@ -161,7 +160,7 @@ public class GuiCrane extends GuiContainer
 //				}
 //			}
 			
-			this.drawHoveringText(list, mx, my+10, this.fontRendererObj);
+			this.drawHoveringText(list, mx, my+10, this.fontRenderer);
 		}
 		
 		//draw wait mode
@@ -192,7 +191,7 @@ public class GuiCrane extends GuiContainer
 			break;
 			}
 			
-			this.drawHoveringText(list, -50, 37, this.fontRendererObj);
+			this.drawHoveringText(list, -50, 37, this.fontRenderer);
 		}
 	}
 	
@@ -241,20 +240,20 @@ public class GuiCrane extends GuiContainer
 		break;
 		}
 		
-		len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);
-		fontRendererObj.drawStringWithShadow(str, 57 - len, 9, Enums.EnumColors.YELLOW.getValue());
+		len = (int) (fontRenderer.getStringWidth(str) * 0.5F);
+		fontRenderer.drawStringWithShadow(str, 57 - len, 9, Enums.EnumColors.YELLOW.getValue());
 		
 		//draw slot string
-		fontRendererObj.drawString(strLoad, 21, 54, Enums.EnumColors.RED_LIGHT.getValue());
-		fontRendererObj.drawString(strUnload, 21, 85, Enums.EnumColors.BLACK.getValue());
+		fontRenderer.drawString(strLoad, 21, 54, Enums.EnumColors.RED_LIGHT.getValue());
+		fontRenderer.drawString(strUnload, 21, 85, Enums.EnumColors.BLACK.getValue());
 		
 		//draw ship info
 		if (tile.getShip() != null)
 		{
 			//draw ship wait time
 			str = String.valueOf(CalcHelper.getTimeFormated((int) (tile.getShip().getStateTimer(ID.T.CraneTime) * 0.05F)));
-			len = (int) (fontRendererObj.getStringWidth(str) * 0.5F);
-			fontRendererObj.drawString(str, 133 - len, 10, Enums.EnumColors.GRAY_DARK.getValue());
+			len = (int) (fontRenderer.getStringWidth(str) * 0.5F);
+			fontRenderer.drawString(str, 133 - len, 10, Enums.EnumColors.GRAY_DARK.getValue());
 			
 			//draw ship name
 			if (tile.getShip().getCustomNameTag() != null && tile.getShip().getCustomNameTag().length() > 0)
@@ -266,7 +265,7 @@ public class GuiCrane extends GuiContainer
 				str = I18n.format("entity.shincolle."+tile.getShip().getClass().getSimpleName()+".name");
 			}
 			
-			fontRendererObj.drawStringWithShadow(str, 80, 24, Enums.EnumColors.WHITE.getValue());
+			fontRenderer.drawStringWithShadow(str, 80, 24, Enums.EnumColors.WHITE.getValue());
 		}
 		
 		//畫出tooltip

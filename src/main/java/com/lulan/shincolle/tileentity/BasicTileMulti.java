@@ -1,14 +1,12 @@
 package com.lulan.shincolle.tileentity;
 
 import com.lulan.shincolle.block.BasicBlockMulti;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-/**
- * BASIC MULTI BLOCK TILE ENTITY
+/**BASIC MULTI BLOCK TILE ENTITY
  * tut by Lomeli
  * web: https://lomeli12.net/tutorials/tutorial-how-to-make-a-simple-multiblock-structure/
  * 
@@ -19,7 +17,7 @@ import net.minecraft.world.World;
  */
 abstract public class BasicTileMulti extends BasicTileInventory
 {
-	
+
 	protected BasicTileMulti masterTile = null;
 	protected boolean hasMaster, isMaster;			//master flag
 	protected String customName;
@@ -70,6 +68,7 @@ abstract public class BasicTileMulti extends BasicTileInventory
         structType = data.getInteger("structType");
         hasMaster = data.getBoolean("hasMaster");
         isMaster = data.getBoolean("isMaster");
+        
     }
 
     //getter

@@ -1,20 +1,7 @@
 package com.lulan.shincolle.utility;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.base.Predicate;
-import com.lulan.shincolle.entity.BasicEntityAirplane;
-import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipHostile;
-import com.lulan.shincolle.entity.BasicEntitySummon;
-import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipInvisible;
-import com.lulan.shincolle.entity.IShipOwner;
+import com.lulan.shincolle.entity.*;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -23,15 +10,8 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAreaEffectCloud;
-import net.minecraft.entity.EntityHanging;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityOwnable;
-import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.*;
 import net.minecraft.entity.item.EntityFireworkRocket;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
@@ -40,6 +20,11 @@ import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
+import org.lwjgl.input.Keyboard;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 /** some targeting class/method
  * 
@@ -68,8 +53,8 @@ public class TargetHelper
 		@Override
         public int compare(Entity target1, Entity target2)
         {
-            double d0 = this.targetEntity.getDistanceSqToEntity(target1);
-            double d1 = this.targetEntity.getDistanceSqToEntity(target2);
+            double d0 = this.targetEntity.getDistanceSq(target1);
+            double d1 = this.targetEntity.getDistanceSq(target2);
             return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
         }       
     }//end sorter class
@@ -651,7 +636,7 @@ public class TargetHelper
 		ItemStack optool = player.inventory.getCurrentItem();
 		
 		//key press
-		if (optool != null && optool.getItem() == ModItems.OPTool)
+		if (!optool.isEmpty() && optool.getItem() == ModItems.OPTool)
 		{
 			//numpad 1: add/remove target to unattackable list
 			if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1))

@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.transport;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
@@ -12,9 +10,10 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * model state:
@@ -28,13 +27,13 @@ public class EntityTransportWa extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 1.53F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.TRANSPORT);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.TRANSPORT);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.APWA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.UNDEFINED);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.AP]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.AP]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.AP]);
-		this.modelPosInGUI = new float[] {-3F, 20F, 0F, 45F};
+		this.ModelPos = new float[] {-3F, 20F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_Light] = false;
@@ -43,7 +42,7 @@ public class EntityTransportWa extends BasicEntityShipSmall
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override

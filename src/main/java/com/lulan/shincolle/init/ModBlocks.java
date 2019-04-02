@@ -1,134 +1,132 @@
 package com.lulan.shincolle.init;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.lulan.shincolle.block.BlockAbyssium;
-import com.lulan.shincolle.block.BlockCrane;
-import com.lulan.shincolle.block.BlockDesk;
-import com.lulan.shincolle.block.BlockFrame;
-import com.lulan.shincolle.block.BlockGrudge;
-import com.lulan.shincolle.block.BlockGrudgeHeavy;
-import com.lulan.shincolle.block.BlockGrudgeHeavyDeco;
-import com.lulan.shincolle.block.BlockGrudgeXP;
-import com.lulan.shincolle.block.BlockLightAir;
-import com.lulan.shincolle.block.BlockLightLiquid;
-import com.lulan.shincolle.block.BlockPolymetal;
-import com.lulan.shincolle.block.BlockPolymetalGravel;
-import com.lulan.shincolle.block.BlockPolymetalOre;
-import com.lulan.shincolle.block.BlockSmallShipyard;
-import com.lulan.shincolle.block.BlockVolBlock;
-import com.lulan.shincolle.block.BlockVolCore;
-import com.lulan.shincolle.block.BlockWaypoint;
-import com.lulan.shincolle.block.ICustomModels;
-import com.lulan.shincolle.block.ItemBlockGrudgeHeavy;
-import com.lulan.shincolle.block.ItemBlockResourceBlock;
-import com.lulan.shincolle.block.ItemBlockWaypoint;
-import com.lulan.shincolle.tileentity.TileEntityCrane;
-import com.lulan.shincolle.tileentity.TileEntityDesk;
-import com.lulan.shincolle.tileentity.TileEntityLightBlock;
-import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-import com.lulan.shincolle.tileentity.TileEntityVolCore;
-import com.lulan.shincolle.tileentity.TileEntityWaypoint;
-import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-import com.lulan.shincolle.tileentity.TileMultiPolymetal;
+import com.lulan.shincolle.block.*;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.tileentity.*;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Mod.EventBusSubscriber
+@GameRegistry.ObjectHolder(Reference.MOD_ID)
 public class ModBlocks
 {
 
 	//blocks
-	public static BlockAbyssium BlockAbyssium;
-	public static BlockCrane BlockCrane;
-	public static BlockDesk BlockDesk;
-	public static BlockFrame BlockFrame;
-	public static BlockGrudge BlockGrudge;
-	public static BlockGrudgeXP BlockGrudgeXP;
-	public static BlockGrudgeHeavy BlockGrudgeHeavy;
-	public static BlockGrudgeHeavyDeco BlockGrudgeHeavyDeco;
-	public static BlockLightAir BlockLightAir;
-	public static BlockLightLiquid BlockLightLiquid;
-	public static BlockPolymetal BlockPolymetal;
-	public static BlockPolymetalGravel BlockPolymetalGravel;
-	public static BlockPolymetalOre BlockPolymetalOre;
-	public static BlockSmallShipyard BlockSmallShipyard;
-	public static BlockVolBlock BlockVolBlock;
-	public static BlockVolCore BlockVolCore;
-	public static BlockWaypoint BlockWaypoint;
-	
+	public static final Block BlockAbyssium = null;
+	public static final Block BlockCrane = null;
+	public static final Block BlockDesk = null;
+	public static final Block BlockFrame = null;
+	public static final Block BlockGrudge = null;
+	public static final Block BlockGrudgeXP = null;
+	public static final Block BlockGrudgeHeavy = null;
+	public static final Block BlockGrudgeHeavyDeco = null;
+	public static final Block BlockLightAir = null;
+	public static final Block BlockLightLiquid = null;
+	public static final Block BlockPolymetal = null;
+	public static final Block BlockPolymetalGravel = null;
+	public static final Block BlockPolymetalOre = null;
+	public static final Block BlockSmallShipyard = null;
+	public static final Block BlockVolBlock = null;
+	public static final Block BlockVolCore = null;
+	public static final Block BlockWaypoint = null;
+
 	//list for blocks
 	private static List<Block> ListBlocks;
-	
-	
-	/** register block */
-	public static void register(RegistryEvent.Register<Block> event) throws Exception
+
+	private static Block[] BLOCKS;
+
+	static
 	{
-		ListBlocks = new ArrayList();
-		
-		BlockAbyssium = (BlockAbyssium) initBlocks(event, BlockAbyssium.class, null, null, ItemBlockResourceBlock.class);
-		BlockCrane = (BlockCrane) initBlocks(event, BlockCrane.class, TileEntityCrane.class, BlockCrane.TILENAME, null);
-		BlockDesk = (BlockDesk) initBlocks(event, BlockDesk.class, TileEntityDesk.class, BlockDesk.TILENAME, null);
-		BlockFrame = (BlockFrame) initBlocks(event, BlockFrame.class, null, null, null);
-		BlockGrudge = (BlockGrudge) initBlocks(event, BlockGrudge.class, null, null, ItemBlockResourceBlock.class);
-		BlockGrudgeXP = (BlockGrudgeXP) initBlocks(event, BlockGrudgeXP.class, null, null, null);
-		BlockGrudgeHeavy = (BlockGrudgeHeavy) initBlocks(event, BlockGrudgeHeavy.class, TileMultiGrudgeHeavy.class, BlockGrudgeHeavy.TILENAME, ItemBlockGrudgeHeavy.class);
-		BlockGrudgeHeavyDeco = (BlockGrudgeHeavyDeco) initBlocks(event, BlockGrudgeHeavyDeco.class, null, null, ItemBlockResourceBlock.class);
-		BlockLightAir = (BlockLightAir) initBlocks(event, BlockLightAir.class, TileEntityLightBlock.class, BlockLightAir.TILENAME, null);
-		BlockLightLiquid = (BlockLightLiquid) initBlocks(event, BlockLightLiquid.class, null, null, null);
-		BlockPolymetal = (BlockPolymetal) initBlocks(event, BlockPolymetal.class, TileMultiPolymetal.class, BlockPolymetal.TILENAME, ItemBlockResourceBlock.class);
-		BlockPolymetalGravel = (BlockPolymetalGravel) initBlocks(event, BlockPolymetalGravel.class, null, null, ItemBlockResourceBlock.class);
-		BlockPolymetalOre = (BlockPolymetalOre) initBlocks(event, BlockPolymetalOre.class, null, null, null);
-		BlockSmallShipyard = (BlockSmallShipyard) initBlocks(event, BlockSmallShipyard.class, TileEntitySmallShipyard.class, BlockSmallShipyard.TILENAME, null);
-		BlockVolBlock = (BlockVolBlock) initBlocks(event, BlockVolBlock.class, null, null, null);
-		BlockVolCore = (BlockVolCore) initBlocks(event, BlockVolCore.class, TileEntityVolCore.class, BlockVolCore.TILENAME, null);
-		BlockWaypoint = (BlockWaypoint) initBlocks(event, BlockWaypoint.class, TileEntityWaypoint.class, BlockWaypoint.TILENAME, ItemBlockWaypoint.class);
+        ListBlocks = new ArrayList();
+
+		try
+		{
+			BLOCKS = new Block[]
+					{
+							initBlocks(BlockAbyssium.class),
+							initBlocks(BlockCrane.class),
+			                initBlocks(BlockDesk.class),
+	                		initBlocks(BlockFrame.class),
+	                		initBlocks(BlockGrudge.class),
+	                		initBlocks(BlockGrudgeXP.class),
+	                		initBlocks(BlockGrudgeHeavy.class),
+	                		initBlocks(BlockGrudgeHeavyDeco.class),
+		                	initBlocks(BlockLightAir.class),
+		                	initBlocks(BlockLightLiquid.class),
+		                	initBlocks(BlockPolymetal.class),
+		                	initBlocks(BlockPolymetalGravel.class),
+		                	initBlocks(BlockPolymetalOre.class),
+		                	initBlocks(BlockSmallShipyard.class),
+		                	initBlocks(BlockVolBlock.class),
+		                	initBlocks(BlockVolCore.class),
+		                	initBlocks(BlockWaypoint.class)
+					};
+		} catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
-	
-	/**
-	 * create instance and add the instance to list
-	 * tileClass and itemClass can be null (will register with normal tile and itemblock)
-	 */
-	private static Block initBlocks(RegistryEvent.Register<Block> event,
-									Class<? extends Block> blockClass,
-									Class<? extends TileEntity> tileClass, String tileName,
-									Class<? extends ItemBlock> itemClass) throws Exception
+
+	@SubscribeEvent
+	public static void registerBlocks(RegistryEvent.Register<Block> event)
+	{
+		event.getRegistry().registerAll(BLOCKS);
+	}
+
+	@SubscribeEvent
+	public static void registerItemBlocks(RegistryEvent.Register<Item> event)
+	{
+		for(Block block : BLOCKS)
+		{
+		    if(block instanceof BlockAbyssium || block instanceof BlockGrudge || block instanceof BlockPolymetal || block instanceof BlockPolymetalGravel || block instanceof BlockGrudgeHeavyDeco)
+            {
+                event.getRegistry().register(new ItemBlockResourceBlock(block).setRegistryName(block.getRegistryName()));
+            } else if(block instanceof BlockWaypoint)
+            {
+                event.getRegistry().register(new ItemBlockWaypoint(block).setRegistryName(block.getRegistryName()));
+            } else if(block instanceof BlockGrudgeHeavy)
+            {
+                event.getRegistry().register(new ItemBlockGrudgeHeavy(block).setRegistryName(block.getRegistryName()));
+            } else
+            {
+                event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
+            }
+		}
+	}
+
+	public static void init()
+    {
+        GameRegistry.registerTileEntity(TileEntityWaypoint.class, new ResourceLocation(Reference.MOD_ID, "TileEntityWaypoint"));
+        GameRegistry.registerTileEntity(TileEntityVolCore.class, new ResourceLocation(Reference.MOD_ID, "TileEntityVolCore"));
+        GameRegistry.registerTileEntity(TileEntitySmallShipyard.class, new ResourceLocation(Reference.MOD_ID, "TileEntitySmallShipyard"));
+        GameRegistry.registerTileEntity(TileMultiPolymetal.class, new ResourceLocation(Reference.MOD_ID, "TileMultiPolymetal"));
+        GameRegistry.registerTileEntity(TileEntityLightBlock.class, new ResourceLocation(Reference.MOD_ID, "TileEntityLightBlock"));
+        GameRegistry.registerTileEntity(TileEntityDesk.class, new ResourceLocation(Reference.MOD_ID, "TileEntityDesk"));
+        GameRegistry.registerTileEntity(TileEntityCrane.class, new ResourceLocation(Reference.MOD_ID, "TileEntityCrane"));
+        GameRegistry.registerTileEntity(TileMultiGrudgeHeavy.class, new ResourceLocation(Reference.MOD_ID, "TileMultiLargeShipyard"));
+    }
+
+	//create instance and add instance to list
+	private static Block initBlocks(Class<? extends Block> blockClass) throws Exception
 	{
 		try
 		{
-			//new instance
-			Block b = blockClass.newInstance();
-			
-			//add block to list (for model init)
-			ListBlocks.add(b);
-			
-			//register block
-			event.getRegistry().register(b);
-			
-			//rehister itemblock
-			if (itemClass != null)
-			{
-				itemClass.newInstance().setRegistryName(b.getRegistryName());
-			}
-			else
-			{
-				new ItemBlock(b).setRegistryName(b.getRegistryName());
-			}
-			
-			//register tile entity
-			if (tileClass != null && tileName != null)
-			{
-				GameRegistry.registerTileEntity(tileClass, tileName);
-			}
-	        
-			return b;
+			Block i = blockClass.newInstance();
+			ListBlocks.add(i);
+			return i;
 		}
 		catch (Exception e)
 		{
@@ -138,10 +136,10 @@ public class ModBlocks
 			throw e;
 		}
 	}
-	
-	/** item model init, used in CLIENT PROXY INIT */
+
 	@SideOnly(Side.CLIENT)
-    public static void initModels() throws Exception
+	@SubscribeEvent
+	public static void loadBlockModels(ModelRegistryEvent event)
 	{
 		for (Block b : ListBlocks)
 		{
@@ -157,7 +155,5 @@ public class ModBlocks
 				throw e;
 			}
 		}
-    }
-	
-	
+	}
 }

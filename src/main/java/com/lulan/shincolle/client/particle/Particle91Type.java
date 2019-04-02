@@ -1,23 +1,21 @@
 package com.lulan.shincolle.client.particle;
 
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 
 /**91TYPE PARTICLE
@@ -54,10 +52,10 @@ public class Particle91Type extends Particle
 
     /**
      * parms:
-     * VertexBuffer, particle entity, cos(Yaw), cos(Pitch), -sin(Yaw) * sin(Pitch), cos(Yaw) * sin(Pitch)
+     * BufferBuilder, particle entity, cos(Yaw), cos(Pitch), -sin(Yaw) * sin(Pitch), cos(Yaw) * sin(Pitch)
      */
     @Override
-    public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
+    public void renderParticle(BufferBuilder render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
     {
     	Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE1);
     	
@@ -125,7 +123,7 @@ public class Particle91Type extends Particle
     }
 
     //add quad with size
-	private void addQuad(VertexBuffer render, float scale, float x, float y, float z, float offx, float offy, float offz, float minu, float maxu, float minv, float maxv)
+	private void addQuad(BufferBuilder render, float scale, float x, float y, float z, float offx, float offy, float offz, float minu, float maxu, float minv, float maxv)
 	{
         float offsetX = offx * scale;
         float offsetY = offy * scale;

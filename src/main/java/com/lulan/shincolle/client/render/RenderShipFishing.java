@@ -2,10 +2,9 @@ package com.lulan.shincolle.client.render;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.other.EntityShipFishingHook;
-
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -47,7 +46,7 @@ public class RenderShipFishing extends Render<EntityShipFishingHook>
         GlStateManager.scale(0.5F, 0.5F, 0.5F);
         this.bindEntityTexture(entity);
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
         int i = 1;
         int j = 2;
         float f = 0.0625F;

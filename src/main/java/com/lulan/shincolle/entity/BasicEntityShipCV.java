@@ -6,9 +6,8 @@ import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAirplane;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.BlockHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -158,7 +157,7 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 		{
 			ItemStack stack = this.itemHandler.getStackInSlot(i);
 			
-			if (stack != null && stack.getItem() instanceof EquipAirplane) airNum++;
+			if (!stack.isEmpty() && stack.getItem() instanceof EquipAirplane) airNum++;
 		}
 		
 		return airNum;
@@ -177,7 +176,117 @@ abstract public class BasicEntityShipCV extends BasicEntityShip implements IShip
 		}
 	}
 	
+	//range attack method, cost light ammo, attack delay = 20 / attack speed, damage = 100% atk 
+	@Override
+	public boolean attackEntityWithAircraft(Entity target)
+	{
+		//light ammo--
+        if (this.getNumAircraftLight() <= 0 ||
+        	!decrAmmoNum(0, 6 * this.getAmmoConsumption())) return false;
+        
+		//50% clear target every attack
+		if (this.rand.nextInt(2) == 0) this.setEntityTarget(null);
+		
+		//num aircraft--, number check in carrier AI
+		this.setNumAircraftLight(this.getNumAircraftLight()-1);
+		
+        //experience++
+        addShipExp(ConfigHandler.expGain[3]);
+  		
+  		//grudge--
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.LAir]);
+  		
+  		//morale--
+  		decrMorale(3);
+  		setCombatTick(this.ticksExisted);
+        
+  		//play attacker effect
+        applySoundAtAttacker(3, target);
+	    applyParticleAtAttacker(3, target, Dist4d.ONE);
+        
+    	float summonHeight = (float)(posY + launchHeight);
+    	
+    	//check the summon block
+    	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
+    	{
+    		summonHeight = (float)posY + 1F;
+    	}
+    	
+    	if (this.getRidingEntity() instanceof BasicEntityMount)
+    	{
+    		summonHeight -= 1.5F;
+    	}
+    	
+    	//spawn airplane
+    	BasicEntityAirplane plane = getAttackAirplane(true);
+        plane.initAttrs(this, target, 0, summonHeight);
+    	this.world.spawnEntity(plane);
+    	
+    	//play target effect
+    	applySoundAtTarget(3, target);
+        applyParticleAtTarget(3, target, Dist4d.ONE);
+        applyEmotesReaction(3);
+        
+        applyAttackPostMotion(3, target, true, 0F);
+        
+        return true;
+	}
 
+	//range attack method, cost heavy ammo, attack delay = 100 / attack speed, damage = 500% atk
+	@Override
+	public boolean attackEntityWithHeavyAircraft(Entity target)
+	{
+		//heavy ammo--
+        if (this.getNumAircraftHeavy() <= 0 ||
+        	!decrAmmoNum(1, 2 * this.getAmmoConsumption())) return false;
+        
+		//50% clear target every attack
+		if (this.rand.nextInt(2) == 0) this.setEntityTarget(null);
+		
+		//num aircraft--, number check in carrier AI
+		this.setNumAircraftHeavy(this.getNumAircraftHeavy()-1);
+		
+        //experience++
+  		addShipExp(ConfigHandler.expGain[4]);
+  		
+  		//grudge--
+  		decrGrudgeNum(ConfigHandler.consumeGrudgeAction[ID.ShipConsume.HAir]);
+  		
+  		//morale--
+  		decrMorale(4);
+  		setCombatTick(this.ticksExisted);
+        
+        //play attacker effect
+        applySoundAtAttacker(4, target);
+	    applyParticleAtAttacker(4, target, Dist4d.ONE);
+        
+    	float summonHeight = (float)(posY + launchHeight);
+    	
+    	//check the summon block
+    	if (!BlockHelper.checkBlockSafe(world, (int)posX, (int)(posY+launchHeight), (int)(posZ)))
+    	{
+    		summonHeight = (float)posY + 0.5F;
+    	}
+    	
+    	if (this.getRidingEntity() instanceof BasicEntityMount)
+    	{
+    		summonHeight -= 1.5F;
+    	}
+    	
+    	//spawn airplane
+    	BasicEntityAirplane plane = getAttackAirplane(false);
+    	plane.initAttrs(this, target, 0, summonHeight);
+    	this.world.spawnEntity(plane);
+    	
+    	//play target effect
+    	applySoundAtTarget(4, target);
+        applyParticleAtTarget(4, target, Dist4d.ONE);
+        applyEmotesReaction(3);
+        
+        applyAttackPostMotion(4, target, true, 0F);
+        
+        return true;
+	}
 	
 	
 }

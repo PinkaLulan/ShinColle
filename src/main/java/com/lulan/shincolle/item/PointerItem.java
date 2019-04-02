@@ -1,10 +1,5 @@
 package com.lulan.shincolle.item;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -14,13 +9,7 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.ITileGuardPoint;
-import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.utility.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -47,6 +36,9 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PointerItem extends BasicItem
 {
 
@@ -59,17 +51,16 @@ public class PointerItem extends BasicItem
 	public PointerItem()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(1);
 		this.setHasSubtypes(true);
 		this.setFull3D();
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack)
+	public String getTranslationKey(ItemStack itemstack)
 	{
-		return String.format("item.%s", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("item.%s", getUnwrappedUnlocalizedName(super.getTranslationKey()));
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -101,7 +92,7 @@ public class PointerItem extends BasicItem
 	/** add only 1 type of item to creative tab */
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-    {
+	{
 		list.add(new ItemStack(this));
 	}
 	
@@ -402,8 +393,9 @@ public class PointerItem extends BasicItem
 	 */
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
-    {
+	{
 		ItemStack stack = player.getHeldItem(hand);
+
 		int meta = stack.getMetadata();
 		
 		if (meta > 2) return new ActionResult(EnumActionResult.SUCCESS, stack);
@@ -706,7 +698,21 @@ public class PointerItem extends BasicItem
 			}//end format flag
 			
 			//not using
-			if (inUse)
+			if (!inUse)
+			{
+				//TODO dep
+//				if (item.hasTagCompound() && item.getTagCompound().getBoolean("chgHB"))
+//				{
+//					int orgCurrentItem = item.getTagCompound().getInteger("orgHB");
+//					LogHelper.debug("DEBUG: change hotbar "+((EntityPlayer)player).inventory.currentItem+" to "+orgCurrentItem);
+//					
+//					((EntityPlayer)player).inventory.currentItem = orgCurrentItem;
+//					CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.SyncHandheld, orgCurrentItem));
+//					item.getTagCompound().setBoolean("chgHB", false);
+//				}
+			}
+			//if using
+			else
 			{
 				GameSettings keys = ClientProxy.getGameSetting();
 				
@@ -730,7 +736,7 @@ public class PointerItem extends BasicItem
 		
 		//show team mark
 		if (player instanceof EntityPlayer &&
-			EntityHelper.getPointerInUse((EntityPlayer) player) != null &&
+			!EntityHelper.getPointerInUse((EntityPlayer) player).isEmpty() &&
 			item.getMetadata() < 3 ||
 			ConfigHandler.alwaysShowTeamParticle)
 		{
@@ -805,7 +811,7 @@ public class PointerItem extends BasicItem
 	
 	//display equip information
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    public void addInformation(ItemStack itemstack, World world, List list, ITooltipFlag par4)
     {  	
     	CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
 		
@@ -824,7 +830,7 @@ public class PointerItem extends BasicItem
     			str3 = TextFormatting.GOLD + I18n.format("gui.shincolle:formation.format"+fid);
     		}
     		
-    		switch (stack.getItemDamage())
+    		switch (itemstack.getItemDamage())
     		{
         	case 1:
         		str1 = TextFormatting.RED+I18n.format("gui.shincolle:pointer1")+" : "+str3;

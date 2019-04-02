@@ -6,7 +6,6 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -21,8 +20,7 @@ public class KaitaiHammer extends BasicItem
 	public KaitaiHammer()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(20);
 		this.setFull3D();
@@ -53,7 +51,7 @@ public class KaitaiHammer extends BasicItem
 
 	//避免meta值影響到物品名稱
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack)
+	public String getTranslationKey(ItemStack itemstack)
 	{
 		return String.format("item.%s", Reference.MOD_ID + ":KaitaiHammer");
 	}
@@ -92,10 +90,10 @@ public class KaitaiHammer extends BasicItem
 				if (meta >= stack.getMaxDamage())
 				{
 					//destroy the hammer
-					if (player.inventory.getCurrentItem() != null && 
+					if (!player.inventory.getCurrentItem().isEmpty() &&
 						player.inventory.getCurrentItem().getItem() == ModItems.KaitaiHammer)
 					{
-						player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
+						player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
 					}
 				}
 				else

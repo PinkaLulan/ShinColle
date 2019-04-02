@@ -6,7 +6,6 @@ import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,8 +28,7 @@ public class BlockCrane extends BasicBlockContainer
 	public BlockCrane()
 	{
 	    super(Material.IRON);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHardness(1F);
 		this.setResistance(10F);
 	    this.setHarvestLevel("pickaxe", 0);
@@ -124,7 +122,7 @@ public class BlockCrane extends BasicBlockContainer
     }
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		//sync player UID while right click
 		if (!world.isRemote)
@@ -137,7 +135,7 @@ public class BlockCrane extends BasicBlockContainer
 			}
 		}
 		
-		return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+		return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 	}
 	
 	

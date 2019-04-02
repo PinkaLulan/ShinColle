@@ -1,99 +1,18 @@
 package com.lulan.shincolle.init;
 
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.entity.battleship.EntityBBHaruna;
-import com.lulan.shincolle.entity.battleship.EntityBBHarunaMob;
-import com.lulan.shincolle.entity.battleship.EntityBBHiei;
-import com.lulan.shincolle.entity.battleship.EntityBBHieiMob;
-import com.lulan.shincolle.entity.battleship.EntityBBKirishima;
-import com.lulan.shincolle.entity.battleship.EntityBBKirishimaMob;
-import com.lulan.shincolle.entity.battleship.EntityBBKongou;
-import com.lulan.shincolle.entity.battleship.EntityBBKongouMob;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipNGT;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipNGTMob;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipRe;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipRu;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipTa;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipYMT;
-import com.lulan.shincolle.entity.battleship.EntityBattleshipYMTMob;
-import com.lulan.shincolle.entity.carrier.EntityCarrierAkagi;
-import com.lulan.shincolle.entity.carrier.EntityCarrierAkagiMob;
-import com.lulan.shincolle.entity.carrier.EntityCarrierKaga;
-import com.lulan.shincolle.entity.carrier.EntityCarrierKagaMob;
-import com.lulan.shincolle.entity.carrier.EntityCarrierWo;
-import com.lulan.shincolle.entity.cruiser.EntityCAAtago;
-import com.lulan.shincolle.entity.cruiser.EntityCAAtagoMob;
-import com.lulan.shincolle.entity.cruiser.EntityCANe;
-import com.lulan.shincolle.entity.cruiser.EntityCARi;
-import com.lulan.shincolle.entity.cruiser.EntityCATakao;
-import com.lulan.shincolle.entity.cruiser.EntityCATakaoMob;
-import com.lulan.shincolle.entity.cruiser.EntityCLTatsuta;
-import com.lulan.shincolle.entity.cruiser.EntityCLTatsutaMob;
-import com.lulan.shincolle.entity.cruiser.EntityCLTenryuu;
-import com.lulan.shincolle.entity.cruiser.EntityCLTenryuuMob;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsuki;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerAkatsukiMob;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerHa;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerHibiki;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerHibikiMob;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerI;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchi;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerIkazuchiMob;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazuma;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerInazumaMob;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerNi;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerRo;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakaze;
-import com.lulan.shincolle.entity.destroyer.EntityDestroyerShimakazeMob;
-import com.lulan.shincolle.entity.hime.EntityAirfieldHime;
-import com.lulan.shincolle.entity.hime.EntityBattleshipHime;
-import com.lulan.shincolle.entity.hime.EntityCAHime;
-import com.lulan.shincolle.entity.hime.EntityCarrierHime;
-import com.lulan.shincolle.entity.hime.EntityCarrierWD;
-import com.lulan.shincolle.entity.hime.EntityDestroyerHime;
-import com.lulan.shincolle.entity.hime.EntityHarbourHime;
-import com.lulan.shincolle.entity.hime.EntityIsolatedHime;
-import com.lulan.shincolle.entity.hime.EntityMidwayHime;
-import com.lulan.shincolle.entity.hime.EntityNorthernHime;
-import com.lulan.shincolle.entity.hime.EntitySSNH;
-import com.lulan.shincolle.entity.hime.EntitySubmHime;
-import com.lulan.shincolle.entity.mounts.EntityMountAfH;
-import com.lulan.shincolle.entity.mounts.EntityMountBaH;
-import com.lulan.shincolle.entity.mounts.EntityMountCaH;
-import com.lulan.shincolle.entity.mounts.EntityMountCaWD;
-import com.lulan.shincolle.entity.mounts.EntityMountHbH;
-import com.lulan.shincolle.entity.mounts.EntityMountIsH;
-import com.lulan.shincolle.entity.mounts.EntityMountMiH;
-import com.lulan.shincolle.entity.mounts.EntityMountSuH;
-import com.lulan.shincolle.entity.other.EntityAbyssMissile;
-import com.lulan.shincolle.entity.other.EntityAirplane;
-import com.lulan.shincolle.entity.other.EntityAirplaneT;
-import com.lulan.shincolle.entity.other.EntityAirplaneTMob;
-import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
-import com.lulan.shincolle.entity.other.EntityAirplaneZero;
-import com.lulan.shincolle.entity.other.EntityAirplaneZeroMob;
-import com.lulan.shincolle.entity.other.EntityFloatingFort;
-import com.lulan.shincolle.entity.other.EntityProjectileBeam;
-import com.lulan.shincolle.entity.other.EntityProjectileStatic;
-import com.lulan.shincolle.entity.other.EntityRensouhou;
-import com.lulan.shincolle.entity.other.EntityRensouhouMob;
-import com.lulan.shincolle.entity.other.EntityRensouhouS;
-import com.lulan.shincolle.entity.other.EntityShipFishingHook;
-import com.lulan.shincolle.entity.submarine.EntitySubmKa;
-import com.lulan.shincolle.entity.submarine.EntitySubmRo500;
-import com.lulan.shincolle.entity.submarine.EntitySubmRo500Mob;
-import com.lulan.shincolle.entity.submarine.EntitySubmSo;
-import com.lulan.shincolle.entity.submarine.EntitySubmU511;
-import com.lulan.shincolle.entity.submarine.EntitySubmU511Mob;
-import com.lulan.shincolle.entity.submarine.EntitySubmYo;
+import com.lulan.shincolle.entity.battleship.*;
+import com.lulan.shincolle.entity.carrier.*;
+import com.lulan.shincolle.entity.cruiser.*;
+import com.lulan.shincolle.entity.destroyer.*;
+import com.lulan.shincolle.entity.hime.*;
+import com.lulan.shincolle.entity.mounts.*;
+import com.lulan.shincolle.entity.other.*;
+import com.lulan.shincolle.entity.submarine.*;
 import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.item.BasicEntityItem;
-import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.ID.NameMinions;
+import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
@@ -119,115 +38,108 @@ public class ModEntity
 {
 	
 	private static int modEntityID = 1;  //start id
-	
+
 	
 	public static void init()
 	{
 		/** entity */
 		//register ship entity
-		regShipEntity(EntityAirfieldHime.class, ID.ShipClass.AirfieldHime, modEntityID++);
-		regShipEntity(EntityBattleshipHime.class, ID.ShipClass.BBHime, modEntityID++);
-		regShipEntity(EntityBBKongou.class, ID.ShipClass.BBKongou, modEntityID++);
-		regShipEntity(EntityBBKongouMob.class, ID.ShipClass.BBKongou+2000, modEntityID++);
-		regShipEntity(EntityBBHiei.class, ID.ShipClass.BBHiei, modEntityID++);
-		regShipEntity(EntityBBHieiMob.class, ID.ShipClass.BBHiei+2000, modEntityID++);
-		regShipEntity(EntityBBHaruna.class, ID.ShipClass.BBHaruna, modEntityID++);
-		regShipEntity(EntityBBHarunaMob.class, ID.ShipClass.BBHaruna+2000, modEntityID++);
-		regShipEntity(EntityBBKirishima.class, ID.ShipClass.BBKirishima, modEntityID++);
-		regShipEntity(EntityBBKirishimaMob.class, ID.ShipClass.BBKirishima+2000, modEntityID++);
-		regShipEntity(EntityBattleshipNGT.class, ID.ShipClass.BBNagato, modEntityID++);
-		regShipEntity(EntityBattleshipNGTMob.class, ID.ShipClass.BBNagato+2000, modEntityID++);
-		regShipEntity(EntityBattleshipYMT.class, ID.ShipClass.BBYamato, modEntityID++);
-		regShipEntity(EntityBattleshipYMTMob.class, ID.ShipClass.BBYamato+2000, modEntityID++);
-		regShipEntity(EntityBattleshipRe.class, ID.ShipClass.BBRE, modEntityID++);
-		regShipEntity(EntityBattleshipRu.class, ID.ShipClass.BBRU, modEntityID++);
-		regShipEntity(EntityBattleshipTa.class, ID.ShipClass.BBTA, modEntityID++);
-		regShipEntity(EntityCAHime.class, ID.ShipClass.CAHime, modEntityID++);
-		regShipEntity(EntityCarrierAkagi.class, ID.ShipClass.CVAkagi, modEntityID++);
-		regShipEntity(EntityCarrierAkagiMob.class, ID.ShipClass.CVAkagi+2000, modEntityID++);
-		regShipEntity(EntityCarrierKaga.class, ID.ShipClass.CVKaga, modEntityID++);
-		regShipEntity(EntityCarrierKagaMob.class, ID.ShipClass.CVKaga+2000, modEntityID++);
-		regShipEntity(EntityCarrierHime.class, ID.ShipClass.CVHime, modEntityID++);
-		regShipEntity(EntityCarrierWD.class, ID.ShipClass.CVWD, modEntityID++);
-		regShipEntity(EntityCarrierWo.class, ID.ShipClass.CVWO, modEntityID++);
-		regShipEntity(EntityCAAtago.class, ID.ShipClass.CAAtago, modEntityID++);
-		regShipEntity(EntityCAAtagoMob.class, ID.ShipClass.CAAtago+2000, modEntityID++);
-		regShipEntity(EntityCATakao.class, ID.ShipClass.CATakao, modEntityID++);
-		regShipEntity(EntityCATakaoMob.class, ID.ShipClass.CATakao+2000, modEntityID++);
-		regShipEntity(EntityCLTenryuu.class, ID.ShipClass.CLTenryuu, modEntityID++);
-		regShipEntity(EntityCLTenryuuMob.class, ID.ShipClass.CLTenryuu+2000, modEntityID++);
-		regShipEntity(EntityCLTatsuta.class, ID.ShipClass.CLTatsuta, modEntityID++);
-		regShipEntity(EntityCLTatsutaMob.class, ID.ShipClass.CLTatsuta+2000, modEntityID++);
-		regShipEntity(EntityDestroyerI.class, ID.ShipClass.DDI, modEntityID++);
-		regShipEntity(EntityDestroyerRo.class, ID.ShipClass.DDRO, modEntityID++);
-		regShipEntity(EntityDestroyerHa.class, ID.ShipClass.DDHA, modEntityID++);
-		regShipEntity(EntityDestroyerNi.class, ID.ShipClass.DDNI, modEntityID++);
-		regShipEntity(EntityDestroyerHime.class, ID.ShipClass.DDHime, modEntityID++);
-		regShipEntity(EntityDestroyerAkatsuki.class, ID.ShipClass.DDAkatsuki, modEntityID++);
-		regShipEntity(EntityDestroyerAkatsukiMob.class, ID.ShipClass.DDAkatsuki+2000, modEntityID++);
-		regShipEntity(EntityDestroyerHibiki.class, ID.ShipClass.DDHibiki, modEntityID++);
-		regShipEntity(EntityDestroyerHibikiMob.class, ID.ShipClass.DDHibiki+2000, modEntityID++);
-		regShipEntity(EntityDestroyerIkazuchi.class, ID.ShipClass.DDIkazuchi, modEntityID++);
-		regShipEntity(EntityDestroyerIkazuchiMob.class, ID.ShipClass.DDIkazuchi+2000, modEntityID++);
-		regShipEntity(EntityDestroyerInazuma.class, ID.ShipClass.DDInazuma, modEntityID++);
-		regShipEntity(EntityDestroyerInazumaMob.class, ID.ShipClass.DDInazuma+2000, modEntityID++);
-		regShipEntity(EntityDestroyerShimakaze.class, ID.ShipClass.DDShimakaze, modEntityID++);
-		regShipEntity(EntityDestroyerShimakazeMob.class, ID.ShipClass.DDShimakaze+2000, modEntityID++);
-		regShipEntity(EntityHarbourHime.class, ID.ShipClass.HarbourHime, modEntityID++);
-		regShipEntity(EntityIsolatedHime.class, ID.ShipClass.IsolatedHime, modEntityID++);
-		regShipEntity(EntityMidwayHime.class, ID.ShipClass.MidwayHime, modEntityID++);
-		regShipEntity(EntityCARi.class, ID.ShipClass.CARI, modEntityID++);
-		regShipEntity(EntityCANe.class, ID.ShipClass.CANE, modEntityID++);
-		regShipEntity(EntityNorthernHime.class, ID.ShipClass.NorthernHime, modEntityID++);
-		regShipEntity(EntitySubmHime.class, ID.ShipClass.SSHime, modEntityID++);
-		regShipEntity(EntitySSNH.class, ID.ShipClass.SSNH, modEntityID++);
-		regShipEntity(EntitySubmKa.class, ID.ShipClass.SSKA, modEntityID++);
-		regShipEntity(EntitySubmYo.class, ID.ShipClass.SSYO, modEntityID++);
-		regShipEntity(EntitySubmSo.class, ID.ShipClass.SSSO, modEntityID++);
-		regShipEntity(EntitySubmRo500.class, ID.ShipClass.SSRo500, modEntityID++);
-		regShipEntity(EntitySubmRo500Mob.class, ID.ShipClass.SSRo500+2000, modEntityID++);
-		regShipEntity(EntitySubmU511.class, ID.ShipClass.SSU511, modEntityID++);
-		regShipEntity(EntitySubmU511Mob.class, ID.ShipClass.SSU511, modEntityID++);
-		regShipEntity(EntityTransportWa.class, ID.ShipClass.APWA, modEntityID++);
+		createEntity(EntityAirfieldHime.class, "EntityAirfieldHime", modEntityID++);
+		createEntity(EntityBattleshipHime.class, "EntityBattleshipHime", modEntityID++);
+		createEntity(EntityBBKongou.class, "EntityBattleshipKongou", modEntityID++);
+		createEntity(EntityBBKongouMob.class, "EntityBattleshipKongouMob", modEntityID++);
+		createEntity(EntityBBHiei.class, "EntityBattleshipHiei", modEntityID++);
+		createEntity(EntityBBHieiMob.class, "EntityBattleshipHieiMob", modEntityID++);
+		createEntity(EntityBBHaruna.class, "EntityBattleshipHaruna", modEntityID++);
+		createEntity(EntityBBHarunaMob.class, "EntityBattleshipHarunaMob", modEntityID++);
+		createEntity(EntityBBKirishima.class, "EntityBattleshipKirishima", modEntityID++);
+		createEntity(EntityBBKirishimaMob.class, "EntityBattleshipKirishimaMob", modEntityID++);
+		createEntity(EntityBattleshipNGT.class, "EntityBattleshipNGT", modEntityID++);
+		createEntity(EntityBattleshipNGTMob.class, "EntityBattleshipNGTMob", modEntityID++);
+		createEntity(EntityBattleshipYMT.class, "EntityBattleshipYMT", modEntityID++);
+		createEntity(EntityBattleshipYMTMob.class, "EntityBattleshipYMTMob", modEntityID++);
+		createEntity(EntityBattleshipRe.class, "EntityBattleshipRe", modEntityID++);
+		createEntity(EntityBattleshipRu.class, "EntityBattleshipRu", modEntityID++);
+		createEntity(EntityBattleshipTa.class, "EntityBattleshipTa", modEntityID++);
+		createEntity(EntityCAHime.class, "EntityCAHime", modEntityID++);
+		createEntity(EntityCarrierAkagi.class, "EntityCarrierAkagi", modEntityID++);
+		createEntity(EntityCarrierAkagiMob.class, "EntityCarrierAkagiMob", modEntityID++);
+		createEntity(EntityCarrierKaga.class, "EntityCarrierKaga", modEntityID++);
+		createEntity(EntityCarrierKagaMob.class, "EntityCarrierKagaMob", modEntityID++);
+		createEntity(EntityCarrierHime.class, "EntityCarrierHime", modEntityID++);
+		createEntity(EntityCarrierWD.class, "EntityCarrierWD", modEntityID++);
+		createEntity(EntityCarrierWo.class, "EntityCarrierWo", modEntityID++);
+		createEntity(EntityCAAtago.class, "EntityCruiserAtago", modEntityID++);
+		createEntity(EntityCAAtagoMob.class, "EntityCruiserAtagoMob", modEntityID++);
+		createEntity(EntityCATakao.class, "EntityCruiserTakao", modEntityID++);
+		createEntity(EntityCATakaoMob.class, "EntityCruiserTakaoMob", modEntityID++);
+		createEntity(EntityCLTenryuu.class, "EntityCruiserTenryuu", modEntityID++);
+		createEntity(EntityCLTenryuuMob.class, "EntityCruiserTenryuuMob", modEntityID++);
+		createEntity(EntityCLTatsuta.class, "EntityCruiserTatsuta", modEntityID++);
+		createEntity(EntityCLTatsutaMob.class, "EntityCruiserTatsutaMob", modEntityID++);
+		createEntity(EntityDestroyerI.class, "EntityDestroyerI", modEntityID++);
+		createEntity(EntityDestroyerRo.class, "EntityDestroyerRo", modEntityID++);
+		createEntity(EntityDestroyerHa.class, "EntityDestroyerHa", modEntityID++);
+		createEntity(EntityDestroyerNi.class, "EntityDestroyerNi", modEntityID++);
+		createEntity(EntityDestroyerHime.class, "EntityDestroyerHime", modEntityID++);
+		createEntity(EntityDestroyerAkatsuki.class, "EntityDestroyerAkatsuki", modEntityID++);
+		createEntity(EntityDestroyerAkatsukiMob.class, "EntityDestroyerAkatsukiMob", modEntityID++);
+		createEntity(EntityDestroyerHibiki.class, "EntityDestroyerHibiki", modEntityID++);
+		createEntity(EntityDestroyerHibikiMob.class, "EntityDestroyerHibikiMob", modEntityID++);
+		createEntity(EntityDestroyerIkazuchi.class, "EntityDestroyerIkazuchi", modEntityID++);
+		createEntity(EntityDestroyerIkazuchiMob.class, "EntityDestroyerIkazuchiMob", modEntityID++);
+		createEntity(EntityDestroyerInazuma.class, "EntityDestroyerInazuma", modEntityID++);
+		createEntity(EntityDestroyerInazumaMob.class, "EntityDestroyerInazumaMob", modEntityID++);
+		createEntity(EntityDestroyerShimakaze.class, "EntityDestroyerShimakaze", modEntityID++);
+		createEntity(EntityDestroyerShimakazeMob.class, "EntityDestroyerShimakazeMob", modEntityID++);
+		createEntity(EntityHarbourHime.class, "EntityHarbourHime", modEntityID++);
+		createEntity(EntityIsolatedHime.class, "EntityIsolatedHime", modEntityID++);
+		createEntity(EntityMidwayHime.class, "EntityMidwayHime", modEntityID++);
+		createEntity(EntityCARi.class, "EntityHeavyCruiserRi", modEntityID++);
+		createEntity(EntityCANe.class, "EntityHeavyCruiserNe", modEntityID++);
+		createEntity(EntityNorthernHime.class, "EntityNorthernHime", modEntityID++);
+		createEntity(EntityRensouhou.class, "EntityRensouhou", modEntityID++);
+		createEntity(EntityRensouhouMob.class, "EntityRensouhouMob", modEntityID++);
+		createEntity(EntityRensouhouS.class, "EntityRensouhouS", modEntityID++);
+		createEntity(EntitySubmHime.class, "EntitySubmHime", modEntityID++);
+		createEntity(EntitySSNH.class, "EntitySubmNewHime", modEntityID++);
+		createEntity(EntitySubmKa.class, "EntitySubmKa", modEntityID++);
+		createEntity(EntitySubmYo.class, "EntitySubmYo", modEntityID++);
+		createEntity(EntitySubmSo.class, "EntitySubmSo", modEntityID++);
+		createEntity(EntitySubmRo500.class, "EntitySubmRo500", modEntityID++);
+		createEntity(EntitySubmRo500Mob.class, "EntitySubmRo500Mob", modEntityID++);
+		createEntity(EntitySubmU511.class, "EntitySubmU511", modEntityID++);
+		createEntity(EntitySubmU511Mob.class, "EntitySubmU511Mob", modEntityID++);
+		createEntity(EntityTransportWa.class, "EntityTransportWa", modEntityID++);
 		
 		//register mount entity
-		regMiscEntity(EntityMountAfH.class, NameMinions.MountAfH, modEntityID++);
-		regMiscEntity(EntityMountBaH.class, NameMinions.MountBaH, modEntityID++);
-		regMiscEntity(EntityMountCaH.class, NameMinions.MountCaH, modEntityID++);
-		regMiscEntity(EntityMountCaWD.class, NameMinions.MountCaWD, modEntityID++);
-		regMiscEntity(EntityMountHbH.class, NameMinions.MountHbH, modEntityID++);
-		regMiscEntity(EntityMountIsH.class, NameMinions.MountIsH, modEntityID++);
-		regMiscEntity(EntityMountMiH.class, NameMinions.MountMiH, modEntityID++);
-		regMiscEntity(EntityMountSuH.class, NameMinions.MountSuH, modEntityID++);
+		createEntity(EntityMountAfH.class, "EntityMountAfH", modEntityID++);
+		createEntity(EntityMountBaH.class, "EntityMountBaH", modEntityID++);
+		createEntity(EntityMountCaH.class, "EntityMountCaH", modEntityID++);
+		createEntity(EntityMountCaWD.class, "EntityMountCaWD", modEntityID++);
+		createEntity(EntityMountHbH.class, "EntityMountHbH", modEntityID++);
+		createEntity(EntityMountIsH.class, "EntityMountIsH", modEntityID++);
+		createEntity(EntityMountMiH.class, "EntityMountMiH", modEntityID++);
+		createEntity(EntityMountSuH.class, "EntityMountSuH", modEntityID++);
 		
-		//register projectile entity
-		regMiscEntity(EntityAbyssMissile.class, NameMinions.AbyssMissile, modEntityID++);
-		regMiscEntity(EntityProjectileBeam.class, NameMinions.ProjectileBeam, modEntityID++);
-		regMiscEntity(EntityProjectileStatic.class, NameMinions.ProjectileStatic, modEntityID++);
-		regMiscEntity(EntityShipFishingHook.class, NameMinions.ShipFishingHook, modEntityID++);
+		//register misc entity
+		createProjectileEntity(EntityAbyssMissile.class, "EntityAbyssMissile", modEntityID++);
+		createProjectileEntity(EntityProjectileBeam.class, "EntityProjectileBeam", modEntityID++);
+		createProjectileEntity(EntityProjectileStatic.class, "EntityProjectileStatic", modEntityID++);
+		createProjectileEntity(EntityShipFishingHook.class, "EntityShipFishingHook", modEntityID++);
 		
 		//register summons entity
-		regMiscEntity(EntityAirplane.class, NameMinions.Airplane, modEntityID++);
-		regMiscEntity(EntityAirplaneTakoyaki.class, NameMinions.AirplaneTakoyaki, modEntityID++);
-		regMiscEntity(EntityAirplaneT.class, NameMinions.AirplaneT, modEntityID++);
-		regMiscEntity(EntityAirplaneTMob.class, NameMinions.AirplaneTMob, modEntityID++);
-		regMiscEntity(EntityAirplaneZero.class, NameMinions.AirplaneZero, modEntityID++);
-		regMiscEntity(EntityAirplaneZeroMob.class, NameMinions.AirplaneZeroMob, modEntityID++);
-		regMiscEntity(EntityFloatingFort.class, NameMinions.FloatingFort, modEntityID++);
-		regMiscEntity(EntityRensouhou.class, NameMinions.Rensouhou, modEntityID++);
-		regMiscEntity(EntityRensouhouMob.class, NameMinions.RensouhouMob, modEntityID++);
-		regMiscEntity(EntityRensouhouS.class, NameMinions.RensouhouS, modEntityID++);
+		createProjectileEntity(EntityAirplane.class, "EntityAirplane", modEntityID++);
+		createProjectileEntity(EntityAirplaneTakoyaki.class, "EntityAirplaneTakoyaki", modEntityID++);
+		createProjectileEntity(EntityAirplaneT.class, "EntityAirplaneT", modEntityID++);
+		createProjectileEntity(EntityAirplaneZero.class, "EntityAirplaneZero", modEntityID++);
+		createProjectileEntity(EntityAirplaneTMob.class, "EntityAirplaneTMob", modEntityID++);
+		createProjectileEntity(EntityAirplaneZeroMob.class, "EntityAirplaneZeroMob", modEntityID++);
+		createProjectileEntity(EntityFloatingFort.class, "EntityFloatingFort", modEntityID++);
 		
 		//register item entity
-		regStaticEntity(BasicEntityItem.class, NameMinions.BasicEntityItem, modEntityID++);
+		createItemEntity(BasicEntityItem.class, "BasicEntityItem", modEntityID++);
 		
-	}
-	
-	/** get ship register name by id */
-	@Nullable
-	public static String getRegNameByID(int classID)
-	{
-		return ID.NameMap.get((short)classID);
 	}
 	
 //	/** mob自然生成方法, 必須放在postInit才呼叫, 以取得全部mod註冊的全部biome
@@ -251,57 +163,29 @@ public class ModEntity
 //		}
 //	}
 	
-	/**
-	 * register ship entity
-	 */
-	public static void regShipEntity(Class entityClass, int classID, int entityID)
+	//登錄生物方法
+	//參數: 該生物class, 生物名稱, 生物id
+	public static void createEntity(Class entityClass, String entityName, int entityId)
 	{
-		String name = getRegNameByID(classID);
-		LogHelper.debug("DEBUG: register entity: "+entityID+" "+entityClass+" "+name);
-		
-		if (name != null)
-		{
-			//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
-			EntityRegistry.registerModEntity(new ResourceLocation(name), entityClass, name, entityID, ShinColle.instance, 64, 1, true);
-		}
-		else
-		{
-			LogHelper.info("INFO: register entity fail, entity null: id: "+classID);
-		}
+		LogHelper.debug("DEBUG: register entity: "+entityId+" "+entityClass+" "+entityName);
+		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
+		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
-	/**
-	 * register misc entity
-	 */
-	public static void regMiscEntity(Class entityClass, String entityName, int entityID)
+	//登錄非生物方法 (無生怪蛋)
+	//參數: 該生物class, 生物名稱, 生物id
+	public static void createProjectileEntity(Class entityClass, String entityName, int entityId)
 	{
-		LogHelper.debug("DEBUG: register entity: "+entityID+" "+entityClass+" "+entityName);
-		
-		if (entityName != null)
-		{
-			EntityRegistry.registerModEntity(new ResourceLocation(entityName), entityClass, entityName, entityID, ShinColle.instance, 64, 1, true);
-		}
-		else
-		{
-			LogHelper.info("INFO: register entity fail, entity null: id: "+entityID);
-		}
+		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
+		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
 	}
 	
-	/**
-	 * register static entity, less velocity update
-	 */
-	public static void regStaticEntity(Class entityClass, String entityName, int entityID)
+	//登錄item entity方法 (無生怪蛋)
+	//參數: 該生物class, 生物名稱, 生物id
+	public static void createItemEntity(Class entityClass, String entityName, int entityId)
 	{
-		LogHelper.debug("DEBUG: register entity: "+entityID+" "+entityClass+" "+entityName);
-		
-		if (entityName != null)
-		{
-			EntityRegistry.registerModEntity(new ResourceLocation(entityName), entityClass, entityName, entityID, ShinColle.instance, 64, 4, false);
-		}
-		else
-		{
-			LogHelper.info("INFO: register entity fail, entity null: id: "+entityID);
-		}
+		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
+		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, entityName, entityId, ShinColle.instance, 64, 4, false);
 	}
 	
 	

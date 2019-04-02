@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
@@ -12,12 +10,11 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TargetHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +26,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * model state:
@@ -46,16 +45,16 @@ public class EntityBattleshipRe extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.6F, 1.55F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBRE);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BBV]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
-		this.modelPosInGUI = new float[] {-6F, 25F, 0F, 40F};
+		this.ModelPos = new float[] {-6F, 25F, 0F, 40F};
 		this.launchHeight = this.height * 0.8F;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -107,7 +106,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
   				//add aura to master
   				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSq(player) < 256D)
   				{
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 50, false, false));
@@ -138,7 +137,7 @@ public class EntityBattleshipRe extends BasicEntityShipCV
         		}
         		else
         		{
-        			float distPush = this.getDistanceToEntity(this.targetPush);
+        			float distPush = this.getDistance(this.targetPush);
         			
             		if (distPush <= 2.5F)
             		{

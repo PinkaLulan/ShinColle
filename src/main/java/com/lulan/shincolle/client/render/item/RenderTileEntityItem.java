@@ -3,7 +3,6 @@ package com.lulan.shincolle.client.render.item;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
 import com.lulan.shincolle.tileentity.TileEntitySmallShipyard;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -32,11 +31,11 @@ public class RenderTileEntityItem extends TileEntityItemStackRenderer
         //mod特製模型的tile entity
         if (block == ModBlocks.BlockSmallShipyard)
         {
-			TileEntityRendererDispatcher.instance.renderTileEntityAt(SmallShipyard, 0D, 0D, 0D, 0F);
+			TileEntityRendererDispatcher.instance.render(SmallShipyard, 0D, 0D, 0D, 0F);
         }
         else if (block == ModBlocks.BlockDesk)
         {
-			TileEntityRendererDispatcher.instance.renderTileEntityAt(Desk, 0D, 0D, 0D, 0F);
+			TileEntityRendererDispatcher.instance.render(Desk, 0D, 0D, 0D, 0F);
         }
         //其他mc的tile entity
         else

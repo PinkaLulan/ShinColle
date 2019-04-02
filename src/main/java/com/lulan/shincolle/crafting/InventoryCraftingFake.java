@@ -1,10 +1,11 @@
 package com.lulan.shincolle.crafting;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+
+import javax.annotation.Nullable;
 
 /**
  * fake crafting matrix for crafting simulation
@@ -14,7 +15,7 @@ public class InventoryCraftingFake extends InventoryCrafting
 {
 	
     /** List of the stacks in the crafting matrix. */
-    protected final ItemStack[] stacks;
+    protected final NonNullList<ItemStack> stacks;
     /** the width of the crafting inventory */
     protected final int width;
     protected final int height;
@@ -24,9 +25,8 @@ public class InventoryCraftingFake extends InventoryCrafting
     public InventoryCraftingFake(int width, int height)
     {
     	super(null, width, height);
-    	
-        int i = width * height;
-        this.stacks = new ItemStack[i];
+
+        this.stacks = NonNullList.<ItemStack>withSize(width * height, ItemStack.EMPTY);
         this.width = width;
         this.height = height;
     }
@@ -34,21 +34,21 @@ public class InventoryCraftingFake extends InventoryCrafting
     @Override
     public int getSizeInventory()
     {
-        return this.stacks.length;
+        return this.stacks.size();
     }
 
     @Override
     @Nullable
     public ItemStack getStackInSlot(int index)
     {
-        return index >= this.getSizeInventory() ? null : this.stacks[index];
+        return index >= this.getSizeInventory() ? ItemStack.EMPTY : this.stacks.get(index);
     }
     
     @Override
     @Nullable
     public ItemStack getStackInRowAndColumn(int row, int column)
     {
-        return row >= 0 && row < this.width && column >= 0 && column <= this.height ? this.getStackInSlot(row + column * this.width) : null;
+        return row >= 0 && row < this.width && column >= 0 && column <= this.height ? this.getStackInSlot(row + column * this.width) : ItemStack.EMPTY;
     }
 
     @Override
@@ -68,15 +68,15 @@ public class InventoryCraftingFake extends InventoryCrafting
     @Override
     public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
-        this.stacks[index] = stack;
+        this.stacks.set(index, stack);
     }
 
     @Override
     public void clear()
     {
-        for (int i = 0; i < this.stacks.length; ++i)
+        for (int i = 0; i < this.stacks.size(); ++i)
         {
-            this.stacks[i] = null;
+            this.stacks.set(i, ItemStack.EMPTY);
         }
     }
 

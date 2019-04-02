@@ -1,7 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import java.util.List;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -17,7 +15,6 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -29,6 +26,8 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * metods for interact with ship
@@ -47,11 +46,11 @@ public class InteractHelper
 		{
 			if (!player.capabilities.isCreativeMode)
 			{
-                --stack.stackSize;
+                stack.shrink(1);
                 
-                if (stack.stackSize <= 0)
+                if (stack.getCount() <= 0)
                 {	//物品用完時要設定為null清空該slot
-                	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+                	player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
                 }
             }
 			
@@ -106,11 +105,11 @@ public class InteractHelper
 		{
 			if (!player.capabilities.isCreativeMode)
 			{  //item-1 in non-creative mode
-				--stack.stackSize;
+				stack.shrink(1);
 				
-				if (stack.stackSize <= 0)
+				if (stack.getCount() <= 0)
 	            {  
-	            	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+	            	player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
 	            }
             }
 
@@ -143,7 +142,7 @@ public class InteractHelper
 		//stack-1 in non-creative mode
 		if (!player.capabilities.isCreativeMode)
 		{
-            --stack.stackSize;
+            stack.shrink(1);
         }
 
 		//set marriage flag
@@ -179,9 +178,9 @@ public class InteractHelper
         ship.calcShipAttributes(31, true);
         
         //物品用完時要設定為null清空該slot
-        if (stack.stackSize <= 0)
+        if (stack.getCount() <= 0)
         {
-        	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+        	player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
         }
         
         return true;
@@ -197,7 +196,7 @@ public class InteractHelper
         	stack.setItemDamage(stack.getItemDamage() + 1);
             
             //set item amount
-            ItemStack[] items = ShipCalc.getKaitaiItems(ship.getAttrClass());
+            ItemStack[] items = ShipCalc.getKaitaiItems(ship.getShipClass());
                         
             EntityItem entityItem0 = new EntityItem(ship.world, ship.posX+0.5D, ship.posY+0.8D, ship.posZ+0.5D, items[0]);
             EntityItem entityItem1 = new EntityItem(ship.world, ship.posX+0.5D, ship.posY+0.8D, ship.posZ-0.5D, items[1]);
@@ -214,23 +213,23 @@ public class InteractHelper
         	{
 				ItemStack invitem = ship.getCapaShipInventory().getStackInSlot(i);
 
-				if (invitem != null)
+				if (!invitem.isEmpty())
 				{
 					//設定要隨機噴出的range
 					float f = ship.getRNG().nextFloat() * 0.8F + 0.1F;
 					float f1 = ship.getRNG().nextFloat() * 0.8F + 0.1F;
 					float f2 = ship.getRNG().nextFloat() * 0.8F + 0.1F;
 
-					while (invitem.stackSize > 0)
+					while (invitem.getCount() > 0)
 					{
 						int j = ship.getRNG().nextInt(21) + 10;
 						//如果物品超過一個隨機數量, 會分更多疊噴出
-						if (j > invitem.stackSize)
+						if (j > invitem.getCount())
 						{  
-							j = invitem.stackSize;
+							j = invitem.getCount();
 						}
 
-						invitem.stackSize -= j;
+						invitem.shrink(j);
 						
 						//將item做成entity, 生成到世界上
 						EntityItem item = new EntityItem(ship.world, ship.posX+f, ship.posY+f1, ship.posZ+f2, new ItemStack(invitem.getItem(), j, invitem.getItemDamage()));
@@ -238,7 +237,7 @@ public class InteractHelper
 						//如果有NBT tag, 也要複製到物品上
 						if (invitem.hasTagCompound())
 						{
-							item.getEntityItem().setTagCompound((NBTTagCompound)invitem.getTagCompound().copy());
+							item.getItem().setTagCompound(invitem.getTagCompound().copy());
 						}
 						
 						ship.world.spawnEntity(item);	//生成item entity
@@ -254,7 +253,7 @@ public class InteractHelper
         //物品用完時要設定為null清空該slot
         if (stack.getItemDamage() >= stack.getMaxDamage())
         {  //物品耐久度用完時要設定為null清空該slot
-        	player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+        	player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
         }
         
         //show emotes
@@ -338,7 +337,7 @@ public class InteractHelper
 			//play marriage sound
 			ship.playSound(BasicEntityShip.getCustomSound(4, ship), ConfigHandler.volumeShip, 1F);
 	        
-			player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+			player.inventory.setInventorySlotContents(player.inventory.currentItem, ItemStack.EMPTY);
 			return true;
 		}
 		
@@ -507,7 +506,7 @@ public class InteractHelper
 				
 	            //apply damage
 				lvPotion = BuffHelper.checkPotionDamage(pbuffs);
-				if (lvPotion > 0) ship.attackEntityFrom(DamageSource.magic, (hp1p * 2F + 2F) * lvPotion);
+				if (lvPotion > 0) ship.attackEntityFrom(DamageSource.MAGIC, (hp1p * 2F + 2F) * lvPotion);
 	            
 				//update potion buff
 	    		ship.calcShipAttributes(8, true);
@@ -529,7 +528,7 @@ public class InteractHelper
 			{
 				if (!player.capabilities.isCreativeMode)
 				{
-		            if (--itemstack.stackSize <= 0)
+		            if (itemstack.getCount() - 1 <= 0)
 		            {
 		            	//update slot
 		            	itemstack = itemstack.getItem().getContainerItem(itemstack);

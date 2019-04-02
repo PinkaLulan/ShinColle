@@ -4,14 +4,9 @@ import com.lulan.shincolle.client.model.ShipModelBaseAdv;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.EventHandler;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -54,12 +49,12 @@ public class LayerShipHeldItem implements LayerRenderer<EntityLivingBase>
 //        stackMain = new ItemStack(Item.getItemFromBlock(Blocks.GRASS));
 //        stackOff = new ItemStack(Item.getItemFromBlock(Blocks.GRASS));
         
-        if (stackMain != null)
+        if (!stackMain.isEmpty())
         {
             this.renderHeldItem(entity, stackMain, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, EnumHandSide.RIGHT);
         }
         
-        if (stackOff != null)
+        if (!stackOff.isEmpty())
         {
         	this.renderHeldItem(entity, stackOff, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, EnumHandSide.LEFT);
         }

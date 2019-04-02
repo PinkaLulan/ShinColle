@@ -1,9 +1,7 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
+import baubles.api.BaubleType;
+import baubles.api.IBauble;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -11,9 +9,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
-import baubles.api.BaubleType;
-import baubles.api.IBauble;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -30,6 +25,8 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
+
 @Optional.Interface(iface = "baubles.api.IBauble", modid = Reference.MOD_ID_Baubles)
 public class MarriageRing extends BasicItem implements IBauble
 {
@@ -40,17 +37,16 @@ public class MarriageRing extends BasicItem implements IBauble
 	public MarriageRing()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(1);
 	}
 	
 	//activate or deactivate ring
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
-    {
+	{
 		ItemStack stack = player.getHeldItem(hand);
-		
+		//right click to launch
 		if (!world.isRemote)
 		{
 			//change ring state
@@ -187,9 +183,9 @@ public class MarriageRing extends BasicItem implements IBauble
 	
 	//show ability text, this is CLIENT side
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
-    {  		
-		CapaTeitoku capa = CapaTeitoku.getTeitokuCapabilityClientOnly();
+    public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag par4)
+	{  		
+		CapaTeitoku capa = CapaTeitoku.getTeitokuCapability(net.minecraft.client.Minecraft.getMinecraft().player);
 		
 		if (capa != null)
 		{

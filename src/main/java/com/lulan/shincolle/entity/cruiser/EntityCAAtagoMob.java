@@ -1,11 +1,8 @@
 package com.lulan.shincolle.entity.cruiser;
 
-import java.util.HashMap;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -13,6 +10,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
 
 /**
  * model state:
@@ -81,10 +80,10 @@ public class EntityCAAtagoMob extends BasicEntityShipHostile
 	{
 		boolean attack = super.attackEntityFrom(source, atk);
 		
-		if (attack && source.getEntity() instanceof EntityLivingBase)
+		if (attack && source.getTrueSource() instanceof EntityLivingBase)
 		{
 			//slow attacker
-			((EntityLivingBase) source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100+this.getScaleLevel()*50, this.getScaleLevel() / 3, false, false));
+			((EntityLivingBase) source.getTrueSource()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100+this.getScaleLevel()*50, this.getScaleLevel() / 3, false, false));
 		}
 		
 		return attack;

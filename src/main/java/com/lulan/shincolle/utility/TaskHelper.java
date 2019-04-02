@@ -1,10 +1,6 @@
 package com.lulan.shincolle.utility;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import com.lulan.shincolle.capability.CapaInventoryExtend;
+import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.config.ConfigMining;
 import com.lulan.shincolle.config.ConfigMining.ItemEntry;
 import com.lulan.shincolle.crafting.InventoryCraftingFake;
@@ -18,9 +14,8 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
-
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -43,6 +38,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -56,6 +52,10 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * helper for cooking, mining, fishing... etc.
@@ -110,9 +110,9 @@ public class TaskHelper
 		if (host == null) return;
 		
 		//check held item is recipe paper
-		CapaInventoryExtend invShip = host.getCapaShipInventory();
+		CapaShipInventory invShip = host.getCapaShipInventory();
 		ItemStack paper = host.getHeldItemMainhand();
-		if (paper == null || paper.getItem() != ModItems.RecipePaper) return;
+		if (paper.isEmpty() || paper.getItem() != ModItems.RecipePaper) return;
 		
 		//check guard position
 		BlockPos pos = new BlockPos(host.getGuardedPos(0), host.getGuardedPos(1), host.getGuardedPos(2));
@@ -147,7 +147,7 @@ public class TaskHelper
 		
 		//check recipe is valid
 		InventoryCraftingFake recipe = new InventoryCraftingFake(3, 3);
-		ItemStack result = null;
+		ItemStack result = ItemStack.EMPTY;
 		
 		if (paper.hasTagCompound())
         {
@@ -162,15 +162,15 @@ public class TaskHelper
 
                 if (slot >= 0 && slot < 9)
                 {
-                	recipe.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(itemTags));
+                	recipe.setInventorySlotContents(slot, new ItemStack(itemTags));
                 }
             }
             
             //get result
-            result = CraftingManager.getInstance().findMatchingRecipe(recipe, host.world);
+            result = CraftingManager.findMatchingResult(recipe, host.world);
             
             //check result exist
-            if (result == null) return;
+            if (result.isEmpty()) return;
         }
 		else
 		{
@@ -179,7 +179,7 @@ public class TaskHelper
 		
 		/** start crafting */
 		int maxCraft = host.getLevel() / 20 + 1;	//max item per 8 ticks
-		ItemStack tempStack = null;
+		ItemStack tempStack = ItemStack.EMPTY;
 		int taskSide = host.getStateMinor(ID.M.TaskSide);
 		boolean checkMetadata = (taskSide & Values.N.Pow2[18]) == Values.N.Pow2[18];
 		boolean checkOredict = (taskSide & Values.N.Pow2[19]) == Values.N.Pow2[19];
@@ -202,7 +202,7 @@ public class TaskHelper
 			for (int i = 0; i < 9; i++)
 			{
 				//check target slot in ship inventory is empty
-				if (invShip.getStackInSlot(i + 12) != null)
+				if (!invShip.getStackInSlot(i + 12).isEmpty())
 				{
 					//get item in ship inventory, add to recipe temp
 					recipeTemp.setInventorySlotContents(i, invShip.getStackInSlot(i + 12));
@@ -212,9 +212,9 @@ public class TaskHelper
 				//check recipe
 				tempStack = recipe.getStackInSlot(i);
 				
-				if (tempStack == null)
+				if (tempStack.isEmpty())
 				{
-					recipeTemp.setInventorySlotContents(i, null);
+					recipeTemp.setInventorySlotContents(i, ItemStack.EMPTY);
 					continue;
 				}
 				
@@ -224,10 +224,10 @@ public class TaskHelper
 			}
 			
 			//check recipeTemp valid
-            resultTemp = CraftingManager.getInstance().findMatchingRecipe(recipeTemp, host.world);
+            resultTemp = CraftingManager.findMatchingResult(recipeTemp, host.world);
 
             //get crafting result
-            if (resultTemp != null)
+            if (!resultTemp.isEmpty())
             {
             	//check result is same with recipe result
             	if (!InventoryHelper.matchTargetItem(resultTemp, result, checkMetadata, checkNbt, checkOredict))
@@ -248,29 +248,29 @@ public class TaskHelper
             	{
             		tempStack = invShip.getStackInSlot(i + 12);
             		
-            		if (tempStack != null)
+            		if (!tempStack.isEmpty())
             		{
-            			tempStack.stackSize--;
+            			tempStack.shrink(1);
             			
-            			if (tempStack.stackSize <= 0)
+            			if (tempStack.getCount() <= 0)
             			{
-            				invShip.setInventorySlotContents(i + 12, null);
+            				invShip.setInventorySlotContents(i + 12, ItemStack.EMPTY);
             			}
             		}
             	}
             	
             	//move remaining item to chest (bucket, bottle...)
-            	ItemStack[] remainStacks = CraftingManager.getInstance().getRemainingItems(recipeTemp, host.world);
+            	NonNullList<ItemStack> remainStacks = CraftingManager.getRemainingItems(recipeTemp, host.world);
             	
-                for (int i = 0; i < remainStacks.length; ++i)
+                for (int i = 0; i < remainStacks.size(); ++i)
                 {
-                    if (remainStacks[i] != null)
+                    if (!remainStacks.get(i).isEmpty())
                     {
                     	//move to chest
-                    	if (!InventoryHelper.moveItemstackToInv(chest, remainStacks[i], null) && remainStacks[i].stackSize > 0)
+                    	if (!InventoryHelper.moveItemstackToInv(chest, remainStacks.get(i), null) && remainStacks.get(i).getCount() > 0)
                     	{
                     		//move failed, drop on ground
-                    		EntityItem entityitem = new EntityItem(host.world, host.posX, host.posY, host.posZ, remainStacks[i]);
+                    		EntityItem entityitem = new EntityItem(host.world, host.posX, host.posY, host.posZ, remainStacks.get(i));
                     		entityitem.motionX = host.getRNG().nextGaussian() * 0.08D;
             	            entityitem.motionY = host.getRNG().nextGaussian() * 0.05D + 0.2D;
             	            entityitem.motionZ = host.getRNG().nextGaussian() * 0.08D;
@@ -335,7 +335,7 @@ public class TaskHelper
 		
 		//check held item is pickaxe
 		ItemStack pickaxe = host.getHeldItemMainhand();
-		if (pickaxe == null || !isToolEffective(pickaxe, 0, 0)) return;
+		if (pickaxe.isEmpty() || !isToolEffective(pickaxe, 0, 0)) return;
 		
 		//check not in moving
 		if (MathHelper.abs((float) host.motionX) > 0.1F ||
@@ -462,7 +462,7 @@ public class TaskHelper
 		
 		//check held item is fishing rod
 		ItemStack rod = host.getHeldItemMainhand();
-		if (rod == null || rod.getItem() != Items.FISHING_ROD) return;
+		if (rod.isEmpty() || rod.getItem() != Items.FISHING_ROD) return;
 		
 		//check guard position
 		BlockPos pos = new BlockPos(host.getGuardedPos(0), host.getGuardedPos(1), host.getGuardedPos(2));
@@ -584,7 +584,7 @@ public class TaskHelper
 		//check held item
 		ItemStack mainstack = host.getHeldItemMainhand();
 		ItemStack offstack = host.getHeldItemOffhand();
-		if (mainstack == null) return;
+		if (mainstack.isEmpty()) return;
 		
 		//check guard position
 		BlockPos pos = new BlockPos(host.getGuardedPos(0), host.getGuardedPos(1), host.getGuardedPos(2));
@@ -622,14 +622,14 @@ public class TaskHelper
 		
 		//check smelt recipe
         ItemStack resultStack = FurnaceRecipes.instance().getSmeltingResult(mainstack);
-        if (resultStack == null) return;
+        if (resultStack.isEmpty()) return;
 		
 		if (!canItemStackSmelt(mainstack)) return;
 		
-		ItemStack targetStack = null;
-		ItemStack fuelStack = null;
-		ItemStack ouputStack = null;
-		CapaInventoryExtend inv = host.getCapaShipInventory();
+		ItemStack targetStack = ItemStack.EMPTY;
+		ItemStack fuelStack = ItemStack.EMPTY;
+		ItemStack ouputStack = ItemStack.EMPTY;
+		CapaShipInventory inv = host.getCapaShipInventory();
 		int taskSide = host.getStateMinor(ID.M.TaskSide);
 		boolean checkMetadata = (taskSide & Values.N.Pow2[18]) == Values.N.Pow2[18];
 		boolean checkOredict = (taskSide & Values.N.Pow2[19]) == Values.N.Pow2[19];
@@ -645,7 +645,7 @@ public class TaskHelper
 		//get fuel stack
 		int fuelID = -1;
 		
-		if (offstack != null)
+		if (!offstack.isEmpty())
 		{
 			fuelID = InventoryHelper.matchTargetItemExceptSlots(inv, offstack, checkMetadata, checkNbt, checkOredict, exceptSlots);
 			if (fuelID >= 0) fuelStack = inv.getStackInSlot(fuelID);
@@ -667,22 +667,22 @@ public class TaskHelper
 			swing = swing || moved;
 			
 			//if moved, check stacksize
-			if (moved && targetStack.stackSize <= 0)
+			if (moved && targetStack.getCount() <= 0)
 			{
-				inv.setInventorySlotWithPageCheck(targetID, null);
+				inv.setInventorySlotWithPageCheck(targetID, ItemStack.EMPTY);
 			}
 		}//end put target stack
 		
 		//put fuel stack into slots
-		if (fuSlots.length > 0 && fuelStack != null)
+		if (fuSlots.length > 0 && !fuelStack.isEmpty())
 		{
 			moved = InventoryHelper.moveItemstackToInv(furnace, fuelStack, fuSlots);
 			swing = swing || moved;
 			
 			//if moved, check stacksize
-			if (moved && fuelStack.stackSize <= 0)
+			if (moved && fuelStack.getCount() <= 0)
 			{
-				inv.setInventorySlotWithPageCheck(fuelID, null);
+				inv.setInventorySlotWithPageCheck(fuelID, ItemStack.EMPTY);
 			}
 		}//end put fuel stack
 		
@@ -697,17 +697,17 @@ public class TaskHelper
 				ouputStack = furnace.getStackInSlot(id);
 				
 				//dont take out input and fuel item
-				if (ouputStack != null && InventoryHelper.matchTargetItem(ouputStack, resultStack, checkMetadata, checkNbt, checkOredict))
+				if (!ouputStack.isEmpty() && InventoryHelper.matchTargetItem(ouputStack, resultStack, checkMetadata, checkNbt, checkOredict))
 				{
 					outID = id;
 					break;
 				}
 				
-				ouputStack = null;
+				ouputStack = ItemStack.EMPTY;
 			}
 			
 			//get output item
-			if (ouputStack != null)
+			if (!ouputStack.isEmpty())
 			{
 				moved = InventoryHelper.moveItemstackToInv(inv, ouputStack, null);
 				swing = swing || moved;
@@ -716,9 +716,9 @@ public class TaskHelper
 				if (moved)
 				{
 					//remove itemstack
-					if (ouputStack.stackSize <= 0)
+					if (ouputStack.getCount() <= 0)
 					{
-						furnace.setInventorySlotContents(outID, null);
+						furnace.setInventorySlotContents(outID, ItemStack.EMPTY);
 					}
 					
 					//add exp and consume grudge
@@ -780,12 +780,12 @@ public class TaskHelper
 	public static boolean canItemStackSmelt(ItemStack stack)
     {
 		//null check
-        if (stack == null) return false;
+        if (stack.isEmpty()) return false;
         else
         {
         	//check smelt recipe
             ItemStack itemstack = FurnaceRecipes.instance().getSmeltingResult(stack);
-            if (itemstack == null) return false;
+            if (itemstack.isEmpty()) return false;
             return true;
         }
     }
@@ -838,7 +838,7 @@ public class TaskHelper
 		{
 			BasicEntityShip ship = (BasicEntityShip) host;
 			ItemStack pickaxe = ship.getHeldItemMainhand();
-			if (pickaxe == null) return;
+			if (pickaxe.isEmpty()) return;
 			
 			//get mining loot map
 			List<ItemEntry> list1 = getMiningLootList(ship.world.provider.getDimension(),
@@ -975,7 +975,7 @@ public class TaskHelper
 	 */
 	public static boolean isToolEffective(ItemStack stack, int targetType, int targetLevel)
 	{
-		if (stack == null) return false;
+		if (stack.isEmpty()) return false;
 		
 		String type = "pickaxe";
 		
@@ -1009,10 +1009,10 @@ public class TaskHelper
   		//pump liquid
   		if ((ship.ticksExisted & delay) == 0)
   		{
-  			CapaInventoryExtend inv = ship.getCapaShipInventory();
+  			CapaShipInventory inv = ship.getCapaShipInventory();
   			
   	  		//check pump equip if not transport ship
-  			if (ship.getShipType() != ID.ShipIconType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
+  			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
   			{
   				if (!InventoryHelper.checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
   			}
@@ -1099,10 +1099,10 @@ public class TaskHelper
   		//collect xp orb
   		if ((ship.ticksExisted & 3) == 0)
   		{
-  			CapaInventoryExtend inv = ship.getCapaShipInventory();
+  			CapaShipInventory inv = ship.getCapaShipInventory();
 			
 	  		//check pump equip if not transport ship
-			if (ship.getShipType() != ID.ShipIconType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
+			if (ship.getShipType() != ID.ShipType.TRANSPORT || !ship.getStateFlag(ID.F.IsMarried))
 			{
 				if (!InventoryHelper.checkItemInShipInventory(inv, ModItems.EquipDrum, 1, 0, 6)) return;
 			}
@@ -1131,7 +1131,7 @@ public class TaskHelper
 				
 				for (EntityXPOrb xp : getlist)
 				{
-					double dist = ship.getDistanceSqToEntity(xp);
+					double dist = ship.getDistanceSq(xp);
 					
 					if (dist > 9D)
 					{
@@ -1143,7 +1143,7 @@ public class TaskHelper
 					else
 					{
 						//collect xp orb
-						ship.world.playSound((EntityPlayer)null, ship.posX, ship.posY, ship.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_TOUCH, SoundCategory.PLAYERS, 0.1F, 0.5F * ((ship.getRNG().nextFloat() - ship.getRNG().nextFloat()) * 0.7F + 1.8F));
+						ship.world.playSound((EntityPlayer)null, ship.posX, ship.posY, ship.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.1F, 0.5F * ((ship.getRNG().nextFloat() - ship.getRNG().nextFloat()) * 0.7F + 1.8F));
 						
 		                if (xp.xpValue > 0)
 		                {
@@ -1164,8 +1164,8 @@ public class TaskHelper
 				ship.setStateMinor(ID.M.XP, xpvalue - 8);
 				
 				//bottle--
-				bot.stackSize--;
-				if (bot.stackSize <= 0) ship.getCapaShipInventory().setStackInSlot(botid, null);
+				bot.shrink(1);
+				if (bot.getCount() <= 0) ship.getCapaShipInventory().setStackInSlot(botid, ItemStack.EMPTY);
 				
 				//xp bottle++
 				ItemStack xpbot = new ItemStack(Items.EXPERIENCE_BOTTLE);

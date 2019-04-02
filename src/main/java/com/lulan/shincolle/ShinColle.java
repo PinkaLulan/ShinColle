@@ -4,31 +4,23 @@ import com.lulan.shincolle.handler.ChunkLoaderHandler;
 import com.lulan.shincolle.handler.CommandHandler;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.handler.GuiHandler;
-import com.lulan.shincolle.init.ModEvents;
-import com.lulan.shincolle.init.ModOres;
-import com.lulan.shincolle.init.ModWorldGen;
+import com.lulan.shincolle.init.*;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.IProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 
 @Mod(modid = Reference.MOD_ID,
 	 name = Reference.MOD_NAME,
 	 version = Reference.MOD_VERSION,
-	 dependencies="required-after:Forge@[14.23.2.2611,)",
+	 dependencies="required-after:forge@[14.23.4.2765,)",
 	 guiFactory = "com.lulan.shincolle.config.ConfigGuiFactory")
 public class ShinColle
 {
@@ -49,7 +41,11 @@ public class ShinColle
 	{		
 		//config inti
 		ConfigHandler.init(event);	//load config file
+
+		ModEntity.init();
 		
+		ModSounds.init();
+
 		//render & model register
 		proxy.registerRender();
 		
@@ -68,6 +64,8 @@ public class ShinColle
 	@Mod.EventHandler
 	public void Init(FMLInitializationEvent event)
 	{
+		ModBlocks.init();
+
 		//GUI register
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 		
@@ -75,7 +73,7 @@ public class ShinColle
 		
 		ModEvents.init();
 		
-//		ModRecipes.init(); //TODO dep
+		ModRecipes.init();
 		
 		LogHelper.info("INFO: Init completed.");
 		

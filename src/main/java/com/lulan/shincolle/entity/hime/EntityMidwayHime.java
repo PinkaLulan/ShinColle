@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.hime;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
@@ -13,12 +11,13 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * model state:
@@ -31,19 +30,19 @@ public class EntityMidwayHime extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.7F, 2.0F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.MidwayHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BBV]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
-		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
+		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 0.7F;
 		
 		//misc
 		this.setFoodSaturationMax(35);
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override
@@ -98,7 +97,7 @@ public class EntityMidwayHime extends BasicEntityShipCV
   					
   					//apply buff to owner
   					EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  				if (player != null && getDistanceSqToEntity(player) < 256D && !this.isMorph)
+  	  				if (player != null && getDistanceSq(player) < 256D && !this.isMorph)
   	  				{
   	  					//potion effect: id, time, level
   	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION , 50+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 50, false, false));

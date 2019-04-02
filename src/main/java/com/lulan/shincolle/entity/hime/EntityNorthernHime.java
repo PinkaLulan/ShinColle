@@ -1,9 +1,5 @@
 package com.lulan.shincolle.entity.hime;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -16,13 +12,8 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,6 +25,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * model state:
@@ -51,13 +44,13 @@ public class EntityNorthernHime extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.5F, 0.9F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.NorthernHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.AVIATION);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BBV]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BBV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BBV]);
-		this.modelPosInGUI = new float[] {-6F, 8F, 0F, 50F};
+		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		this.goRidingTicks = 0;
 		this.goRideEntity = null;
 		this.goRiding = false;
@@ -66,7 +59,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(16);
 		
-		this.initPre();
+		this.postInit();
 	}
 	
 	@Override
@@ -171,7 +164,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
         		float distRiding = 0F;
         		if (this.goRideEntity != null)
         		{
-        			distRiding = this.getDistanceToEntity(this.goRideEntity);
+        			distRiding = this.getDistance(this.goRideEntity);
         		}
         		
         		//每32 tick找一次路徑
@@ -190,7 +183,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
         				this.getPassengers().size() == 0 && this.goRideEntity.getPassengers().size() == 0)
         			{
         				this.startRiding(goRideEntity, true);
-        				this.getShipNavigate().clearPathEntity();
+        				this.getShipNavigate().clearPath();
         				this.cancelGoRiding();
         			}
         		}
@@ -272,19 +265,21 @@ public class EntityNorthernHime extends BasicEntityShipCV
 	}
 
 	@Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
     	//禁用副手
     	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
     	
     	//死亡時不反應
     	if (!this.isEntityAlive()) return EnumActionResult.FAIL;
-    		
+
 		//pick up northern for riding
 		if (this.world.isRemote)
 		{
+			ItemStack stack = player.getHeldItemMainhand();
+
 			if (this.isSitting() && this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED &&
-				(stack == null || stack.getItem() != ModItems.PointerItem))
+				(stack.isEmpty() || stack.getItem() != ModItems.PointerItem))
 			{
 				//send riding request packet
 				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_Riding, this.getEntityId(), this.world.provider.getDimension()));
@@ -293,7 +288,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
 			}
 		}
 		
-		return super.applyPlayerInteraction(player, vec, stack, hand);
+		return super.applyPlayerInteraction(player, vec, hand);
   	}
 	
 	@Override
@@ -316,7 +311,7 @@ public class EntityNorthernHime extends BasicEntityShipCV
   		float launchPos = (float)posY + height;
         Dist4d distVec = CalcHelper.getDistanceFromA2B(this, target);
 		
-        if (getEntityDepth() > 0D) launchPos += 0.2D;
+        if (getShipDepth() > 0D) launchPos += 0.2D;
 		
 		//experience++
 		addShipExp(ConfigHandler.expGain[2]);

@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.cruiser;
 
-import java.util.ArrayList;
-
 import com.google.common.base.Predicate;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.ai.EntityAIShipSkillAttack;
@@ -15,13 +13,8 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
@@ -31,6 +24,8 @@ import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.ArrayList;
 
 /**
  * model state:
@@ -140,9 +135,9 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 		if (this.stateEmotion[ID.S.Phase] == 1)
 		{
 			//apply motion
-			this.motionX = this.skillMotion.xCoord;
-			this.motionY = this.skillMotion.yCoord;
-			this.motionZ = this.skillMotion.zCoord;
+			this.motionX = this.skillMotion.x;
+			this.motionY = this.skillMotion.y;
+			this.motionZ = this.skillMotion.z;
 			
 			//sync motion
 			this.sendSyncPacket(1);
@@ -150,9 +145,9 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 		else if (this.stateEmotion[ID.S.Phase] == 2)
 		{
 			//apply motion
-			this.motionX = this.skillMotion.xCoord;
-			this.motionY = this.skillMotion.yCoord;
-			this.motionZ = this.skillMotion.zCoord;
+			this.motionX = this.skillMotion.x;
+			this.motionY = this.skillMotion.y;
+			this.motionZ = this.skillMotion.z;
 			
 			//attack on colliding
 			this.damageNearbyEntity();
@@ -297,7 +292,7 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 		else
 		{
 			//if target dead or too far away, find new target
-			if (!target.isEntityAlive() || target.getDistanceSqToEntity(this) > (this.getAttrs().getAttackRange() * this.getAttrs().getAttackRange()))
+			if (!target.isEntityAlive() || target.getDistanceSq(this) > (this.getAttrs().getAttackRange() * this.getAttrs().getAttackRange()))
 			{
 				if (this.remainAttack > 0)
 				{
@@ -330,7 +325,7 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 			vecpos.normalize();
 			
 			//calc rotation
-			float[] degree = CalcHelper.getLookDegree(vecpos.xCoord, vecpos.yCoord, vecpos.zCoord, true);
+			float[] degree = CalcHelper.getLookDegree(vecpos.x, vecpos.y, vecpos.z, true);
 			this.rotationYaw = degree[0];
 			this.rotationYawHead = degree[0];
 			
@@ -344,7 +339,7 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 		else if (this.attackTime3 == 6)
 		{
 			//apply particle
-			this.applyParticleAtTarget(5, target, new Dist4d(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, 1D));
+			this.applyParticleAtTarget(5, target, new Dist4d(this.skillMotion.x, this.skillMotion.y, this.skillMotion.z, 1D));
 		}
 	}
 
@@ -391,7 +386,7 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 			Vec3d vecpos = new Vec3d(target.posX - this.posX, target.posY - this.posY - 1D, target.posZ - this.posZ);
 			
 			//calc rotation
-			float[] degree = CalcHelper.getLookDegree(vecpos.xCoord, vecpos.yCoord, vecpos.zCoord, true);
+			float[] degree = CalcHelper.getLookDegree(vecpos.x, vecpos.y, vecpos.z, true);
 			this.rotationYaw = degree[0];
 			this.rotationYawHead = degree[0];
 			
@@ -410,14 +405,14 @@ public class EntityCLTatsutaMob extends BasicEntityShipHostile
 		{
 			//shot gae bolg
 			EntityProjectileBeam gaebolg = new EntityProjectileBeam(this.world);
-			gaebolg.initAttrs(this, 1, (float)this.skillMotion.xCoord, (float)this.skillMotion.yCoord, (float)this.skillMotion.zCoord, this.getAttackBaseDamage(3, target), 0.15F);
+			gaebolg.initAttrs(this, 1, (float)this.skillMotion.x, (float)this.skillMotion.y, (float)this.skillMotion.z, this.getAttackBaseDamage(3, target), 0.15F);
 			this.world.spawnEntity(gaebolg);
 		}
 		else if (this.attackTime3 == 4)
 		{
 			//apply sound and particle
 			this.playSound(ModSounds.SHIP_AP_ATTACK, ConfigHandler.volumeFire * 1.1F, this.getSoundPitch() * 0.6F);
-			this.applyParticleAtTarget(6, target, new Dist4d(this.skillMotion.xCoord, this.skillMotion.yCoord, this.skillMotion.zCoord, 1D));
+			this.applyParticleAtTarget(6, target, new Dist4d(this.skillMotion.x, this.skillMotion.y, this.skillMotion.z, 1D));
 		}
 	}
 	

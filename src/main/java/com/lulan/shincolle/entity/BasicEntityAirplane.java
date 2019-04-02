@@ -1,8 +1,5 @@
 package com.lulan.shincolle.entity;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.google.common.base.Predicate;
 import com.lulan.shincolle.ai.EntityAIShipAircraftAttack;
 import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
@@ -14,17 +11,12 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +24,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.Collections;
+import java.util.List;
 
 abstract public class BasicEntityAirplane extends BasicEntitySummon implements IShipFlyable
 {
@@ -100,17 +95,17 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 
     //移動計算, 去除gravity部份
     @Override
-	public void moveEntityWithHeading(float strafe, float forward)
+	public void travel(float strafe, float vertical, float forward)
     { 	
-        this.moveRelative(strafe, forward, this.shipAttrs.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
-        this.move(this.motionX, this.motionY, this.motionZ);
+        this.moveRelative(strafe, 0f, forward, this.shipAttrs.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
+        this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
 
         this.motionX *= 0.91D;
         this.motionY *= 0.91D;
         this.motionZ *= 0.91D;
         
         //撞到東西會上升
-        if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D, this.motionZ))
+        if (this.collidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6D, this.motionZ))
         {
             this.motionY += 0.2D;
         }
@@ -152,7 +147,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 					if (this.host == null || !((Entity)this.host).isEntityAlive()) setDead();
 					
 					//get host, fly to host
-					float dist = this.getDistanceToEntity(hostent);
+					float dist = this.getDistance(hostent);
 					
 					//get home path
 					if (dist > 2F + hostent.height)
@@ -162,7 +157,7 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
 							this.getShipNavigate().tryMoveToXYZ(hostent.posX, hostent.posY + hostent.height + 1D, hostent.posZ, 1D);
 						
 							//host is too far away
-							if (this.getShipNavigate().noPath() && this.getDistanceSqToEntity((Entity) this.host) >= 4095F)
+							if (this.getShipNavigate().noPath() && this.getDistanceSq((Entity) this.host) >= 4095F)
 							{
 								this.returnSummonResource();
 								this.setDead();
@@ -286,8 +281,8 @@ abstract public class BasicEntityAirplane extends BasicEntitySummon implements I
         if (this.deathTime == 1)
         {
         	this.deadMotion = new Vec3d(this.motionX, this.motionY, this.motionZ);
-        	this.motionX = this.deadMotion.xCoord;
-        	this.motionZ = this.deadMotion.zCoord;
+        	this.motionX = this.deadMotion.x;
+        	this.motionZ = this.deadMotion.z;
         }
         
         this.motionY -= 0.08D;

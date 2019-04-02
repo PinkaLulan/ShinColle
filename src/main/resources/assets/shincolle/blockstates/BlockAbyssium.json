@@ -6,7 +6,11 @@
   },
   
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "normal": {
+      "model": "shincolle:BlockAbyssium"
+    },
+    "inventory": {
+      "model": "shincolle:BlockAbyssium"
+    }
   }
 }

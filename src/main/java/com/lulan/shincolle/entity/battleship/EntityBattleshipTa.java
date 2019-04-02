@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipSummonAttack;
@@ -13,12 +11,13 @@ import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * model state:
@@ -34,19 +33,19 @@ public class EntityBattleshipTa extends BasicEntityShip implements IShipSummonAt
 	{
 		super(world);
 		this.setSize(0.7F, 1.8F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBTA);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BB]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override

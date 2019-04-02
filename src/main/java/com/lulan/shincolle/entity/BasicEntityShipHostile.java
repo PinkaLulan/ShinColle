@@ -1,19 +1,9 @@
 package com.lulan.shincolle.entity;
 
-import java.util.HashMap;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
-import com.lulan.shincolle.ai.EntityAIShipRangeTarget;
-import com.lulan.shincolle.ai.EntityAIShipRevengeTarget;
-import com.lulan.shincolle.ai.EntityAIShipWander;
-import com.lulan.shincolle.ai.EntityAIShipWatchClosest;
+import com.lulan.shincolle.ai.*;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.client.render.ICustomTexture;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -26,18 +16,11 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.reference.dataclass.AttrsAdv;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -51,18 +34,18 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IFloatingEntity, ICustomTexture, IShipMorph
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Random;
+
+public abstract class BasicEntityShipHostile extends EntityMob implements IShipCannonAttack, IShipFloating, IShipCustomTexture, IShipMorph
 {
 	
 	//attributes
@@ -238,11 +221,11 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		switch (this.getScaleLevel())
 		{
 		case 0:		//20%
-			return this.rand.nextInt(5) == 0 ? this.dropItem : null;
+			return this.rand.nextInt(5) == 0 ? this.dropItem : ItemStack.EMPTY;
 		case 1:		//33%
-			return this.rand.nextInt(3) == 0 ? this.dropItem : null;
+			return this.rand.nextInt(3) == 0 ? this.dropItem : ItemStack.EMPTY;
 		case 2:		//90%
-			return this.rand.nextInt(10) > 0 ? this.dropItem : null;
+			return this.rand.nextInt(10) > 0 ? this.dropItem : ItemStack.EMPTY;
 		default:	//100%
 			return this.dropItem;
 		}
@@ -263,7 +246,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	protected void setAttrsWithScaleLevel()
 	{
 		//calc ship attrs
-		this.shipAttrs = new Attrs(this.getAttrClass());
+		this.shipAttrs = new Attrs(this.getShipClass());
 		this.calcShipAttributes(9);
         
 		//renew health
@@ -286,14 +269,14 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void calcShipAttributes(int flag)
 	{
 		//null check
-		if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getAttrClass());
+		if (this.shipAttrs == null) this.shipAttrs = new AttrsAdv(this.getShipClass());
 		
 		this.stepHeight = 1F + this.getScaleLevel();
 		
 		//recalc raw attrs
 		if ((flag & 1) == 1)
 		{
-			BuffHelper.updateAttrsRawHostile(this.shipAttrs, this.getScaleLevel(), this.getAttrClass());
+			BuffHelper.updateAttrsRawHostile(this.shipAttrs, this.getScaleLevel(), this.getShipClass());
 		}
 		//recalc potion buff
 		if ((flag & 8) == 8)
@@ -383,7 +366,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	//受傷音效
     @Override
     @Nullable
-    protected SoundEvent getHurtSound()
+    protected SoundEvent getHurtSound(DamageSource source)
     {
 		if (rand.nextInt(2) == 0 && this.soundHurtDelay <= 0)
 		{
@@ -501,20 +484,20 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     	boolean checkDEF = true;
     	
 		//damage disabled
-		if (source == DamageSource.inWall || source == DamageSource.starve ||
-			source == DamageSource.cactus || source == DamageSource.fall)
+		if (source == DamageSource.IN_WALL || source == DamageSource.STARVE ||
+			source == DamageSource.CACTUS || source == DamageSource.FALL)
 		{
 			return false;
 		}
 		//damage ignore def value
-		else if (source == DamageSource.magic || source == DamageSource.dragonBreath)
+		else if (source == DamageSource.MAGIC || source == DamageSource.DRAGON_BREATH)
 		{
 			//ignore atk < 1% max hp
 			if (atk < this.getMaxHealth() * 0.01F) return false;
 			return super.attackEntityFrom(source, atk);
 		}
 		//out of world
-		else if (source == DamageSource.outOfWorld)
+		else if (source == DamageSource.OUT_OF_WORLD)
 		{
 			//取消坐下動作
 			this.setDead();
@@ -535,15 +518,15 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 		{
             return false;
         }
-		else if (source.getEntity() != null)
+		else if (source.getTrueSource() != null)
 		{
-			Entity attacker = source.getEntity();
+			Entity attacker = source.getTrueSource();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 			if (attacker.equals(this)) return false;
 			
 			//進行dodge計算
-			float dist = (float) this.getDistanceSqToEntity(attacker);
+			float dist = (float) this.getDistanceSq(attacker);
 			
 			if (CombatHelper.canDodge(this, dist))
 			{
@@ -753,7 +736,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	public void setAmmoHeavy(int num) {}
 
 	@Override
-	public double getEntityDepth()
+	public double getShipDepth()
 	{
 		return this.ShipDepth;
 	}
@@ -765,7 +748,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 	
 	@Override
-    public void moveEntityWithHeading(float strafe, float forward)
+    public void travel(float strafe, float vertical, float forward)
 	{
 		EntityHelper.moveEntityWithHeading(this, strafe, forward);
     }
@@ -1079,7 +1062,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 
 	@Override
-	public void setEntityDepth(double par1)
+	public void setShipDepth(double par1)
 	{
 		ShipDepth = par1;
 	}
@@ -1210,12 +1193,12 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
   	
   	@Override
-  	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+  	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
 		//use kaitai hammer to kill hostile ship (creative mode only)
 		if (!this.world.isRemote && player.capabilities.isCreativeMode)
 		{
-			if (player.inventory.getCurrentItem() != null && 
+			if (!player.inventory.getCurrentItem().isEmpty() &&
 				player.inventory.getCurrentItem().getItem() == ModItems.KaitaiHammer)
 			{
 				this.setDead();
@@ -1609,7 +1592,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
   	
 	public int getTextureID()
 	{
-		return this.getAttrClass();
+		return this.getShipClass();
 	}
 	
 	//for model display
@@ -1664,13 +1647,13 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	}
 	
 	@Override
-	public double getEntityFloatingDepth()
+	public double getShipFloatingDepth()
 	{
 		return 0.3D + this.scaleLevel * 0.05D;
 	}
 
 	@Override
-	public void setEntityFloatingDepth(double par1) {}
+	public void setShipFloatingDepth(double par1) {}
 	
 	@Override
     protected void onDeathUpdate()
@@ -1699,7 +1682,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
     			
     			ItemStack bossEgg = this.getDropEgg();
     			
-    			if (bossEgg != null)
+    			if (!bossEgg.isEmpty())
     			{
     				BasicEntityItem entityItem1 = new BasicEntityItem(this.world, this.posX, this.posY+0.5D, this.posZ, bossEgg);
     				this.world.spawnEntity(entityItem1);

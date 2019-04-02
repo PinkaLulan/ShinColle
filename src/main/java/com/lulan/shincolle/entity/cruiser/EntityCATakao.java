@@ -4,9 +4,8 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.MissileData;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.EmotionHelper;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -25,13 +24,13 @@ public class EntityCATakao extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 1.75F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HEAVY_CRUISER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CATakao);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CA]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -40,7 +39,7 @@ public class EntityCATakao extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(16);
 		
-		this.initPre();
+		this.postInit();
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -90,11 +89,11 @@ public class EntityCATakao extends BasicEntityShipSmall
 	@Override
     public boolean attackEntityFrom(DamageSource source, float atk)
 	{
-		if (super.attackEntityFrom(source, atk) && source.getEntity() instanceof EntityLivingBase &&
-			!source.getEntity().equals(this.getHostEntity()))
+		if (super.attackEntityFrom(source, atk) && source.getTrueSource() instanceof EntityLivingBase &&
+			!source.getTrueSource().equals(this.getHostEntity()))
 		{
 			//slow attacker
-			((EntityLivingBase) source.getEntity()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100+this.getLevel(), this.getLevel() / 100, false, false));
+			((EntityLivingBase) source.getTrueSource()).addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 100+this.getLevel(), this.getLevel() / 100, false, false));
 			
 			return true;
 		}

@@ -8,13 +8,12 @@ import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -37,13 +36,13 @@ public class EntityBattleshipRu extends BasicEntityShip
 	{
 		super(world);
 		this.setSize(0.7F, 1.8F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBRU);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BB]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -52,7 +51,7 @@ public class EntityBattleshipRu extends BasicEntityShip
 		this.remainAttack = 0;
 		this.skillTarget = BlockPos.ORIGIN;
 		
-		this.initPre();
+		this.postInit();
 	}
 	
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

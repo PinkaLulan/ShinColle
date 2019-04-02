@@ -1,9 +1,5 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -11,6 +7,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
 
 /**
  * OP tool
@@ -29,8 +27,7 @@ public class OPTool extends BasicItem
 	public OPTool()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(1);
 		this.setFull3D();
 	}
@@ -44,8 +41,8 @@ public class OPTool extends BasicItem
     }
 	
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
-    {
+    public void addInformation(ItemStack itemstack, World world, List list, ITooltipFlag par4)
+	{
     	list.add(TextFormatting.RED + I18n.format("gui.shincolle:optool1"));
     	list.add(TextFormatting.AQUA + I18n.format("gui.shincolle:optool2"));
 	}

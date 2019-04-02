@@ -3,8 +3,6 @@ package com.lulan.shincolle.client.gui.inventory;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.item.BasicEquip;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -84,7 +82,7 @@ public class ContainerMorphInventory extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = (Slot) this.inventorySlots.get(slotid);
         boolean isEquip = false;
         int slotsEnd = SLOTS_SHIPINV + 36;
@@ -101,7 +99,7 @@ public class ContainerMorphInventory extends Container
             {
             	if (!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, slotsEnd, true))
             	{	//take out equip
-                	return null;
+                	return ItemStack.EMPTY;
                 }
             	
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
@@ -113,19 +111,19 @@ public class ContainerMorphInventory extends Container
         		{	//把equip塞進slot 0~5
         			if (!this.mergeItemStack(itemstack1, 0, SLOTS_SHIPINV, false))
         			{
-            			return null;
+            			return ItemStack.EMPTY;
                     }
         		} 
         		else
         		{	//non-equip
-    				return null;
+    				return ItemStack.EMPTY;
         		}
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if (itemstack1.stackSize <= 0)
+            if (itemstack1.getCount() <= 0)
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.EMPTY);
             }
             else
             {	//還沒放完, 先跑一次slot update
@@ -133,13 +131,13 @@ public class ContainerMorphInventory extends Container
             }
 
             //如果itemstack的數量跟原先的數量相同, 表示都不能移動物品
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.getCount() == itemstack.getCount())
             {
-                return null;
+                return ItemStack.EMPTY;
             }
             
             //最後再發送一次slot update
-            slot.onPickupFromSlot(player, itemstack1);
+            slot.onTake(player, itemstack1);
         }
         
         return itemstack;	//物品移動完成, 回傳剩下的物品
@@ -160,7 +158,7 @@ public class ContainerMorphInventory extends Container
             //if page number or itemstack changed, send sync packet
             if (!ItemStack.areItemStacksEqual(itemBackup, itemNew) || pageTemp != this.valueTemp[27])
             {
-            	itemBackup = itemNew == null ? null : itemNew.copy();
+            	itemBackup = itemNew.isEmpty() ? ItemStack.EMPTY : itemNew.copy();
                 this.inventoryItemStacks.set(i, itemBackup);
 
                 for (int j = 0; j < this.listeners.size(); ++j)
@@ -196,7 +194,7 @@ public class ContainerMorphInventory extends Container
                 		update = true;
                 	break;
             		default:	//使用vanilla方法更新, 此數值最大僅能以short發送
-                    	listener.sendProgressBarUpdate(this, j, temp);
+                    	listener.sendWindowProperty(this, j, temp);
             		break;
                 	}
             	}

@@ -13,16 +13,9 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.S2CGUIPackets;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
-import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.InventoryHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.utility.*;
 import mchorse.metamorph.api.EntityUtils;
 import mchorse.metamorph.api.MorphAPI;
 import mchorse.metamorph.api.MorphManager;
@@ -210,15 +203,15 @@ public class MetamorphHelper
 		float atk = event.getAmount();
 		
 		//damage disabled
-		if (event.getSource() == DamageSource.inWall || event.getSource() == DamageSource.cactus ||
-			event.getSource() == DamageSource.fall)
+		if (event.getSource() == DamageSource.IN_WALL || event.getSource() == DamageSource.CACTUS ||
+			event.getSource() == DamageSource.FALL)
 		{
 			event.setAmount(0F);
 			return;
 		}
 		//damage ignore def value
-		else if (event.getSource() == DamageSource.magic || event.getSource() == DamageSource.dragonBreath ||
-				 event.getSource() == DamageSource.outOfWorld)
+		else if (event.getSource() == DamageSource.MAGIC || event.getSource() == DamageSource.DRAGON_BREATH ||
+				 event.getSource() == DamageSource.OUT_OF_WORLD)
 		{
 			//set hurt face
 	    	ship.setStateEmotion(ID.S.Emotion, ID.Emotion.O_O, true);
@@ -237,9 +230,9 @@ public class MetamorphHelper
 		}
         
         //其他有attacker的傷害
-		if (event.getSource().getEntity() != null)
+		if (event.getSource().getTrueSource() != null)
 		{
-			Entity attacker = event.getSource().getEntity();
+			Entity attacker = event.getSource().getTrueSource();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 			if (attacker.equals(player))
@@ -260,7 +253,7 @@ public class MetamorphHelper
 			}
 			
 			//進行dodge計算
-			float dist = (float) player.getDistanceSqToEntity(attacker);
+			float dist = (float) player.getDistanceSq(attacker);
 			
 			if (CombatHelper.canDodge(ship, dist))
 			{
@@ -542,12 +535,12 @@ public class MetamorphHelper
 				//melee attack
 				if (data[0] == 4)
 				{
-					if (ship.getDistanceSqToEntity(target) > 6D) target = null;
+					if (ship.getDistanceSq(target) > 6D) target = null;
 				}
 				//other attack
 				else
 				{
-					if (ship.getDistanceSqToEntity(target) > rangeSq) target = null;
+					if (ship.getDistanceSq(target) > rangeSq) target = null;
 				}
 			}
 		}
@@ -618,7 +611,7 @@ public class MetamorphHelper
 	}
 	
 	/** decr ammo in morph ship, type: 0:light, 1:heavy */
-	public static boolean decrAmmoNum(BasicEntityShip morph, Enums.Ammo type, int amount)
+	public static boolean decrAmmoNum(BasicEntityShip morph, int type, int amount)
 	{
 		int ammoType = type == 1 ? ID.M.NumAmmoHeavy : ID.M.NumAmmoLight;
 		int remain = morph.getStateMinor(ammoType) - amount;
@@ -772,7 +765,7 @@ public class MetamorphHelper
 	{
 		int itemNum = 1;
 		boolean noMeta = false;
-		ItemStack itemType = null;
+		ItemStack itemType = ItemStack.EMPTY;
 		
 		//find ammo
 		switch (type)
@@ -810,7 +803,7 @@ public class MetamorphHelper
 		ItemStack itemGet = InventoryHelper.getAndRemoveItem(inv, itemType, 1, true, false, false, null);
 		
 		//item not found
-		if (itemGet == null) return false;
+		if (!itemGet.isEmpty()) return false;
 		else return true;
 	}
 	

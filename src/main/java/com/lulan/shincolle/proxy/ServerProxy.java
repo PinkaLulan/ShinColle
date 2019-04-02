@@ -1,11 +1,5 @@
 package com.lulan.shincolle.proxy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -17,7 +11,6 @@ import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -29,6 +22,8 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import java.util.*;
 
 public class ServerProxy extends CommonProxy
 {
@@ -670,7 +665,7 @@ public class ServerProxy extends CommonProxy
 			
 			//create ship cache data
 			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
-									ship.getAttrClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
+									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
 									ship.writeToNBT(new NBTTagCompound()));
 
 			//update ship cache
@@ -697,7 +692,7 @@ public class ServerProxy extends CommonProxy
 			LogHelper.debug("DEBUG: update ship: create sid: "+uid+" eid: "+ship.getEntityId()+" world: "+ship.world.provider.getDimension());
 			ship.setShipUID(uid);
 			CacheDataShip sdata = new CacheDataShip(ship.getEntityId(), ship.world.provider.getDimension(),
-									ship.getAttrClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
+									ship.getShipClass(), ship.isDead, ship.posX, ship.posY, ship.posZ,
 									ship.writeToNBT(new NBTTagCompound()));
 	
 			setShipWorldData(uid, sdata);	//cache in server proxy
@@ -775,7 +770,7 @@ public class ServerProxy extends CommonProxy
 					//init value: add empty list for each player
 					mapPlayerID.forEach((pid, pdata) ->
 					{
-						List<Integer> newlist = new ArrayList();	//empty list
+						List<Integer> newlist = new ArrayList<>();	//empty list
 						
 						//get player entity
 						EntityPlayer pe = EntityHelper.getEntityPlayerByUID(pid);

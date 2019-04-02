@@ -2,7 +2,6 @@ package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.item.BasicEquip;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -19,6 +18,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class ContainerShipInventory extends Container
 {
+	
+	public static final byte SLOTS_PLAYERINV = 24;  //player inventory start id
+	public static final byte SLOTS_SHIPINV = 6;		//ship inventory start id
 	
 	private BasicEntityShip entity;
 	private int lenTemp;
@@ -87,7 +89,7 @@ public class ContainerShipInventory extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
         boolean isEquip = false;
         int slotsEnd = SLOTS_PLAYERINV + 36;
@@ -103,7 +105,7 @@ public class ContainerShipInventory extends Container
             {  		//click equip slot
             	if (!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, slotsEnd, true))
             	{	//take out equip
-                	return null;
+                	return ItemStack.EMPTY;
                 }	
                 slot.onSlotChange(itemstack1, itemstack); //若物品成功搬動過, 則呼叫slot change事件
             }
@@ -117,7 +119,7 @@ public class ContainerShipInventory extends Container
             			{
                 			if (!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, slotsEnd, true))
                 			{
-                				return null;
+                				return ItemStack.EMPTY;
                 			}			
                         }
             		}  
@@ -125,7 +127,7 @@ public class ContainerShipInventory extends Container
             		{					//non-equip, put into player inventory (23~58)
             			if (!this.mergeItemStack(itemstack1, SLOTS_PLAYERINV, slotsEnd, true))
             			{
-            				return null;
+            				return ItemStack.EMPTY;
             			}
             		}
             	}
@@ -137,7 +139,7 @@ public class ContainerShipInventory extends Container
             			{
                 			if (!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, SLOTS_PLAYERINV, true))
                 			{
-                				return null;
+                				return ItemStack.EMPTY;
                 			}			
                         }
             		} 
@@ -145,16 +147,16 @@ public class ContainerShipInventory extends Container
             		{					//non-equip, put into ship inventory (5~22)
             			if (!this.mergeItemStack(itemstack1, SLOTS_SHIPINV, SLOTS_PLAYERINV, false))
             			{
-            				return null;
+            				return ItemStack.EMPTY;
             			}
             		}
             	}
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if (itemstack1.stackSize <= 0)
+            if (itemstack1.getCount() <= 0)
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.EMPTY);
             }
             else
             {	//還沒放完, 先跑一次slot update
@@ -162,13 +164,13 @@ public class ContainerShipInventory extends Container
             }
 
             //如果itemstack的數量跟原先的數量相同, 表示都不能移動物品
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.getCount() == itemstack.getCount())
             {
-                return null;
+                return ItemStack.EMPTY;
             }
             
             //最後再發送一次slot update
-            slot.onPickupFromSlot(player, itemstack1);
+            slot.onTake(player, itemstack1);
         }
         
         return itemstack;	//物品移動完成, 回傳剩下的物品
@@ -189,7 +191,7 @@ public class ContainerShipInventory extends Container
             //if page number or itemstack changed, send sync packet
             if (!ItemStack.areItemStacksEqual(itemBackup, itemNew) || pageTemp != this.valueTemp[27])
             {
-            	itemBackup = itemNew == null ? null : itemNew.copy();
+            	itemBackup = itemNew.isEmpty() ? ItemStack.EMPTY : itemNew.copy();
                 this.inventoryItemStacks.set(i, itemBackup);
 
                 for (int j = 0; j < this.listeners.size(); ++j)
@@ -225,7 +227,7 @@ public class ContainerShipInventory extends Container
                 		update = true;
                 	break;
             		default:	//使用vanilla方法更新
-                    	listener.sendProgressBarUpdate(this, j, temp);
+                    	listener.sendWindowProperty(this, j, temp);
             		break;
                 	}
             	}

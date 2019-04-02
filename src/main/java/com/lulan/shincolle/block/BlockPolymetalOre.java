@@ -1,13 +1,12 @@
 package com.lulan.shincolle.block;
 
-import java.util.Random;
-
 import com.lulan.shincolle.init.ModItems;
-
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+
+import java.util.Random;
 
 public class BlockPolymetalOre extends BasicBlock
 {
@@ -19,8 +18,7 @@ public class BlockPolymetalOre extends BasicBlock
 	public BlockPolymetalOre()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("pickaxe", 1);
 	    this.setHardness(3F);
 	}

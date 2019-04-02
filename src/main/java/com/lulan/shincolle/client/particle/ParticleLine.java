@@ -1,17 +1,14 @@
 package com.lulan.shincolle.client.particle;
 
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -19,6 +16,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 
 /**
@@ -68,7 +66,7 @@ public class ParticleLine extends Particle
     }
 
     @Override
-    public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
+    public void renderParticle(BufferBuilder render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
     {
 		//particle是以玩家視野來render, 因此座標要扣掉interpPos轉換為玩家視野座標
 		double px = this.posX - interpPosX;
@@ -116,35 +114,35 @@ public class ParticleLine extends Particle
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
         
         //front plane1
-        render.pos(px + plane1[0].xCoord, py + plane1[0].yCoord, pz + plane1[0].zCoord).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane1[1].xCoord, py + plane1[1].yCoord, pz + plane1[1].zCoord).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane1[2].xCoord, py + plane1[2].yCoord, pz + plane1[2].zCoord).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane1[3].xCoord, py + plane1[3].yCoord, pz + plane1[3].zCoord).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[0].x, py + plane1[0].y, pz + plane1[0].z).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[1].x, py + plane1[1].y, pz + plane1[1].z).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[2].x, py + plane1[2].y, pz + plane1[2].z).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[3].x, py + plane1[3].y, pz + plane1[3].z).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         //back plane1
-        render.pos(px + plane1[3].xCoord, py + plane1[3].yCoord, pz + plane1[3].zCoord).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane1[2].xCoord, py + plane1[2].yCoord, pz + plane1[2].zCoord).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane1[1].xCoord, py + plane1[1].yCoord, pz + plane1[1].zCoord).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane1[0].xCoord, py + plane1[0].yCoord, pz + plane1[0].zCoord).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[3].x, py + plane1[3].y, pz + plane1[3].z).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[2].x, py + plane1[2].y, pz + plane1[2].z).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[1].x, py + plane1[1].y, pz + plane1[1].z).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane1[0].x, py + plane1[0].y, pz + plane1[0].z).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         //front plane2
-        render.pos(px + plane2[0].xCoord, py + plane2[0].yCoord, pz + plane2[0].zCoord).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane2[1].xCoord, py + plane2[1].yCoord, pz + plane2[1].zCoord).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane2[2].xCoord, py + plane2[2].yCoord, pz + plane2[2].zCoord).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane2[3].xCoord, py + plane2[3].yCoord, pz + plane2[3].zCoord).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[0].x, py + plane2[0].y, pz + plane2[0].z).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[1].x, py + plane2[1].y, pz + plane2[1].z).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[2].x, py + plane2[2].y, pz + plane2[2].z).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[3].x, py + plane2[3].y, pz + plane2[3].z).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         //back plane2
-        render.pos(px + plane2[3].xCoord, py + plane2[3].yCoord, pz + plane2[3].zCoord).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane2[2].xCoord, py + plane2[2].yCoord, pz + plane2[2].zCoord).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane2[1].xCoord, py + plane2[1].yCoord, pz + plane2[1].zCoord).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane2[0].xCoord, py + plane2[0].yCoord, pz + plane2[0].zCoord).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[3].x, py + plane2[3].y, pz + plane2[3].z).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[2].x, py + plane2[2].y, pz + plane2[2].z).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[1].x, py + plane2[1].y, pz + plane2[1].z).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane2[0].x, py + plane2[0].y, pz + plane2[0].z).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         //front plane3
-        render.pos(px + plane3[0].xCoord, py + plane3[0].yCoord, pz + plane3[0].zCoord).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane3[1].xCoord, py + plane3[1].yCoord, pz + plane3[1].zCoord).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane3[2].xCoord, py + plane3[2].yCoord, pz + plane3[2].zCoord).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane3[3].xCoord, py + plane3[3].yCoord, pz + plane3[3].zCoord).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[0].x, py + plane3[0].y, pz + plane3[0].z).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[1].x, py + plane3[1].y, pz + plane3[1].z).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[2].x, py + plane3[2].y, pz + plane3[2].z).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[3].x, py + plane3[3].y, pz + plane3[3].z).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         //back plane3
-        render.pos(px + plane3[3].xCoord, py + plane3[3].yCoord, pz + plane3[3].zCoord).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane3[2].xCoord, py + plane3[2].yCoord, pz + plane3[2].zCoord).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane3[1].xCoord, py + plane3[1].yCoord, pz + plane3[1].zCoord).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
-        render.pos(px + plane3[0].xCoord, py + plane3[0].yCoord, pz + plane3[0].zCoord).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[3].x, py + plane3[3].y, pz + plane3[3].z).tex(0D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[2].x, py + plane3[2].y, pz + plane3[2].z).tex(0D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[1].x, py + plane3[1].y, pz + plane3[1].z).tex(1D, 0D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
+        render.pos(px + plane3[0].x, py + plane3[0].y, pz + plane3[0].z).tex(1D, 1D).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).endVertex();
         
         Tessellator.getInstance().draw();
         

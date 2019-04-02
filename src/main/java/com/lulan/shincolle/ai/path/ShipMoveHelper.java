@@ -2,12 +2,11 @@ package com.lulan.shincolle.ai.path;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.handler.IMoveShip;
+import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.math.MathHelper;
@@ -25,7 +24,7 @@ public class ShipMoveHelper
 	
     /** The EntityLiving that is being moved */
     private EntityLiving entity;
-    private IMoveShip entityN;
+    private IShipNavigator entityN;
     private double posX;
     private double posY;
     private double posZ;
@@ -39,7 +38,7 @@ public class ShipMoveHelper
     public ShipMoveHelper(EntityLiving entity, float rotlimit)
     {
         this.entity = entity;
-        this.entityN = (IMoveShip) entity;
+        this.entityN = (IShipNavigator) entity;
         this.posX = entity.posX;
         this.posY = entity.posY;
         this.posZ = entity.posZ;

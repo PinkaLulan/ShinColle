@@ -1,14 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
@@ -19,9 +10,8 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.item.EquipAmmo;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.reference.dataclass.AttrsAdv;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLivingBase;
@@ -35,6 +25,9 @@ import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * BUFF HELPER
@@ -56,7 +49,7 @@ import net.minecraftforge.common.util.Constants;
    14 invis:          no special effect (clear invis target every 64 ticks)
    15 blind:          range--
    16 night vision:   night battle effect -80%
-   17 hunger:         resources consumption +200%/lv (multiplier)
+   17 hunger:         grudge consumption +200%/lv (multiplier)
    18 weak:           dmg, kb
    19 poison:         def, kb
    20 wither:         hurt (1% + 2)/lv until dead
@@ -350,7 +343,7 @@ public class BuffHelper
 				if (host.getHealth() < host.getMaxHealth()) host.heal((hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
 			break;
 			case 20: //wither: hurt X until dead
-				host.attackEntityFrom(DamageSource.magic, (hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
+				host.attackEntityFrom(DamageSource.MAGIC, (hp1p * 1F + 4F) * (1F + (float)lv * 0.5F));
 			break;
 			case 23: //saturation: morale +N/lv, friendly ship only
 				if (host.getHealth() < host.getMaxHealth()) host.heal((hp1p * 1F + 2F) * (0.8F + (float)lv * 0.2F));
@@ -469,20 +462,20 @@ public class BuffHelper
 			int level = 1;
 			
 			//get potion level from potion entity
-			if (source.getSourceOfDamage() instanceof EntityPotion)
+			if (source.getImmediateSource() instanceof EntityPotion)
 			{
-				ItemStack pot = ((EntityPotion)source.getSourceOfDamage()).getPotion();
+				ItemStack pot = ((EntityPotion)source.getImmediateSource()).getPotion();
 				
-				if (pot != null)
+				if (!pot.isEmpty())
 				{
 					level = getPotionLevel(PotionUtils.getEffectsFromStack(pot), 7);
 				}
 			}
 			//from cloud entity
-			else if (source.getSourceOfDamage() instanceof EntityAreaEffectCloud)
+			else if (source.getImmediateSource() instanceof EntityAreaEffectCloud)
 			{
 				level = getPotionLevel(PotionUtils.getEffectsFromTag(
-						source.getSourceOfDamage().writeToNBT(new NBTTagCompound())), 7);
+						source.getImmediateSource().writeToNBT(new NBTTagCompound())), 7);
 			}
 			//not potion
 			else
@@ -518,7 +511,7 @@ public class BuffHelper
 		 *  11: resist, reduce missile
 		 *  12: fire resist, reduce non-missile
 		 */
-		if (source.getSourceOfDamage() instanceof EntityAbyssMissile)
+		if (source.getImmediateSource() instanceof EntityAbyssMissile)
 		{
 			if ((level = getPotionLevel(buffmap, 11)) > 0)
 			{
@@ -528,7 +521,7 @@ public class BuffHelper
 				atk = atk * (1f - level * 0.2f);
 			}
 		}
-		else if (source.getSourceOfDamage() instanceof IShipAttackBase)
+		else if (source.getImmediateSource() instanceof IShipAttackBase)
 		{
 			if ((level = getPotionLevel(buffmap, 12)) > 0)
 			{
@@ -555,7 +548,7 @@ public class BuffHelper
 		if (host == null || source == null) return atk;
 		
 		//night vision potion work in ship vs ship only
-		if (source.getEntity() instanceof IShipAttackBase)
+		if (source.getTrueSource() instanceof IShipAttackBase)
 		{
 			/**
 			 * light coefficient for CalcHelper.calcDamageByType:
@@ -570,13 +563,13 @@ public class BuffHelper
 			else if (lightCoeff > 1F) lightCoeff = 1F;
 			
 			//check night vision potion level
-			float level = getPotionLevel(((IShipAttackBase)source.getEntity()).getBuffMap(), 16);
+			float level = getPotionLevel(((IShipAttackBase)source.getTrueSource()).getBuffMap(), 16);
 			
 			//apply night vision potion to coef
 			if (level > 0) lightCoeff += 0.8F;
 			
 			atk = CombatHelper.modDamageByLight(atk,
-					((IShipAttackBase) source.getEntity()).getDamageType(),
+					((IShipAttackBase) source.getTrueSource()).getDamageType(),
 					host.getDamageType(), lightCoeff);
 		}
 		
@@ -644,7 +637,7 @@ public class BuffHelper
 			{
 				ItemStack pstack = potion.getPotion();
 				
-				if (pstack != null)
+				if (!pstack.isEmpty())
 				{
 					pts = PotionUtils.getEffectsFromStack(pstack);
 					level = checkPotionHeal(pts);
@@ -1059,7 +1052,7 @@ public class BuffHelper
   	public static void addEffectToAttackEffectMapFromStack(BasicEntityShip ship, ItemStack stack)
   	{
   		//null check
-  		if (ship == null || stack == null || !stack.hasTagCompound()) return;
+  		if (ship == null || stack.isEmpty() || !stack.hasTagCompound()) return;
   		
   		//get ship map
   		Map<Integer, int[]> smap = ship.getAttackEffectMap();

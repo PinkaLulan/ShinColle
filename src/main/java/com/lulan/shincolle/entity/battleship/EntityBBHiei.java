@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
@@ -10,17 +8,18 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * model state:
@@ -33,13 +32,13 @@ public class EntityBBHiei extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.6F, 1.875F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBHiei);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BB]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -48,7 +47,7 @@ public class EntityBBHiei extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(19);
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc

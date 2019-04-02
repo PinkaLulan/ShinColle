@@ -1,31 +1,16 @@
 package com.lulan.shincolle.entity.other;
 
-import java.util.HashMap;
-import java.util.List;
-
-import com.lulan.shincolle.client.render.ICustomTexture;
-import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipAttrs;
-import com.lulan.shincolle.entity.IShipFlyable;
-import com.lulan.shincolle.entity.IShipOwner;
-import com.lulan.shincolle.entity.IShipProjectile;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
+import com.lulan.shincolle.entity.*;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -40,11 +25,14 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * ENTITY ABYSS MISSILE
  * XZ為等速運動, Y軸為等加速度移動的entity, 有數種移動方式
  */
-public class EntityAbyssMissile extends EntityLiving implements IShipOwner, IShipAttrs, IShipFlyable, ICustomTexture, IShipProjectile
+public class EntityAbyssMissile extends Entity implements IShipOwner, IShipAttrs, IShipFlyable, IShipCustomTexture, IShipProjectile
 {
 	
     protected IShipAttackBase host;	//main host type
@@ -387,7 +375,7 @@ public class EntityAbyssMissile extends EntityLiving implements IShipOwner, IShi
                 
                 if (raytrace != null)
                 {
-                	posEnd = new Vec3d(raytrace.hitVec.xCoord, raytrace.hitVec.yCoord, raytrace.hitVec.zCoord);
+                	posEnd = new Vec3d(raytrace.hitVec.x, raytrace.hitVec.y, raytrace.hitVec.z);
                     
                     if (raytrace.typeOfHit == RayTraceResult.Type.ENTITY)
                     {
@@ -715,23 +703,23 @@ public class EntityAbyssMissile extends EntityLiving implements IShipOwner, IShi
 		}
 		
 		//damage disabled
-		if (source == DamageSource.inWall || source == DamageSource.starve ||
-			source == DamageSource.cactus || source == DamageSource.fall  ||
-			source == DamageSource.lava || source == DamageSource.inFire ||
-			source == DamageSource.hotFloor || source == DamageSource.anvil ||
-			source == DamageSource.fallingBlock || source == DamageSource.onFire)
+		if (source == DamageSource.IN_WALL || source == DamageSource.STARVE ||
+			source == DamageSource.CACTUS || source == DamageSource.FALL  ||
+			source == DamageSource.LAVA || source == DamageSource.IN_FIRE ||
+			source == DamageSource.HOT_FLOOR || source == DamageSource.ANVIL ||
+			source == DamageSource.FALLING_BLOCK || source == DamageSource.ON_FIRE)
 		{
 			return false;
 		}
 		//damage ignore def value
-		else if (source == DamageSource.magic || source == DamageSource.dragonBreath ||
-				 source == DamageSource.wither)
+		else if (source == DamageSource.MAGIC || source == DamageSource.DRAGON_BREATH ||
+				 source == DamageSource.WITHER)
 		{
         	this.onImpact(null);
 			return true;
 		}
 		//out of world
-		else if (source == DamageSource.outOfWorld)
+		else if (source == DamageSource.OUT_OF_WORLD)
 		{
         	this.onImpact(null);
         	return true;
@@ -761,7 +749,7 @@ public class EntityAbyssMissile extends EntityLiving implements IShipOwner, IShi
 
     //render用, entity亮度
     @Override
-	public float getBrightness(float parTicks)
+	public float getBrightness()
     {
         return 1F;
     }
@@ -769,7 +757,7 @@ public class EntityAbyssMissile extends EntityLiving implements IShipOwner, IShi
     //render用, lightmap位置
     @Override
 	@SideOnly(Side.CLIENT)
-    public int getBrightnessForRender(float parTicks)
+    public int getBrightnessForRender()
     {
         return 15728880;
     }

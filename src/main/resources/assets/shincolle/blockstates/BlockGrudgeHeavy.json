@@ -6,7 +6,155 @@
   },
   
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "normal": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "inventory": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=0,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=0,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=0,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=1,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=1,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=1,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=2,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=2,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=2,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=3,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=3,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=3,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=4,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=4,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=4,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=5,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=5,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=5,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=6,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=6,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=6,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=7,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=7,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=7,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=8,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=8,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=8,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=9,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=9,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=9,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=10,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=10,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=10,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=11,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=11,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=11,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=12,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=12,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=12,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=13,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=13,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=13,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=14,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=14,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=14,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=15,mbs=0": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=15,mbs=1": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    },
+    "level=15,mbs=2": {
+      "model": "shincolle:BlockGrudgeHeavy"
+    }
   }
 }

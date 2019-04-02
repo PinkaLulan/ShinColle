@@ -9,15 +9,9 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipSummonAttack;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.DamageSource;

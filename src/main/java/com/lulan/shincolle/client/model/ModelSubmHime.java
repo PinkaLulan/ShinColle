@@ -5,8 +5,6 @@ import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -670,7 +668,7 @@ public class ModelSubmHime extends ShipModelBaseAdv
     	GlStateManager.enableLighting();
     	
     	//reset light
-    	int j = entity.getBrightnessForRender(f5);
+    	int j = entity.getBrightnessForRender();
         int k = j % 65536;
         int l = j / 65536;
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k, (float)l);

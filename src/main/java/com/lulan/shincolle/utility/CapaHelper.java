@@ -65,16 +65,16 @@ public class CapaHelper
 			{
 				for (int i = 0; i < 6; i++)
 				{
-					if (host.hasCapability(capa, EnumFacing.getFront(i)))
+					if (host.hasCapability(capa, EnumFacing.byIndex(i)))
 					{
-						return (T) host.getCapability(capa, EnumFacing.getFront(i));
+						return (T) host.getCapability(capa, EnumFacing.byIndex(i));
 					}
 				}
 			}
 			//check spec side
 			else
 			{
-				return (T) host.getCapability(capa, EnumFacing.getFront(side));
+				return (T) host.getCapability(capa, EnumFacing.byIndex(side));
 			}
 		}
 		

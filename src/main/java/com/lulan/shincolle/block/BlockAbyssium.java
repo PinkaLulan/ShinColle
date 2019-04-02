@@ -13,8 +13,7 @@ public class BlockAbyssium extends BasicBlock
 	public BlockAbyssium()
 	{
 		super(Material.IRON);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(3F);
 	}

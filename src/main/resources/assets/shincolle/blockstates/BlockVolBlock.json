@@ -6,7 +6,11 @@
   },
   
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "normal": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "inventory": {
+      "model": "shincolle:BlockVolCore"
+    }
   }
 }

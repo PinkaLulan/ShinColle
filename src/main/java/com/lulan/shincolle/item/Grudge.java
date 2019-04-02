@@ -14,8 +14,7 @@ public class Grudge extends BasicItem implements IShipResourceItem, IShipFoodIte
 	public Grudge()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHasSubtypes(true);
 	}
 	

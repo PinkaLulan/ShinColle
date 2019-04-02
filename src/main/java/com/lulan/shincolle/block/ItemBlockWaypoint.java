@@ -1,7 +1,6 @@
 package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.utility.EntityHelper;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -27,24 +26,20 @@ public class ItemBlockWaypoint extends BasicItemBlock
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
 	{
+		ItemStack stack = player.getHeldItemMainhand();
+
 		//server side
 		if (!world.isRemote)
 		{
-			ItemStack stack = player.getHeldItem(hand);
-			if (stack == null) return new ActionResult(EnumActionResult.PASS, stack);
-			
 			//get ray trace block
 	    	RayTraceResult hitobj = EntityHelper.getMouseoverTarget(world, player, 6D, true, false, false);
-
+	        
 	    	if (hitobj != null)
 	    	{
 	        	//get block
 	            if (hitobj.typeOfHit == RayTraceResult.Type.BLOCK)
 	            {
 	            	BlockPos pos = hitobj.getBlockPos();
-	                int x = pos.getX();
-	                int y = pos.getY();
-	                int z = pos.getZ();
 	                
 	                //若player沒有放置方塊權限, 則return pass
 	                if (!player.canPlayerEdit(pos, hitobj.sideHit, stack))
@@ -72,7 +67,7 @@ public class ItemBlockWaypoint extends BasicItemBlock
 	                        //if creative mode, item not consumed
 	                        if (!player.capabilities.isCreativeMode)
 	                        {
-	                            stack.grow(-1);
+	                            stack.shrink(1);
 	                        }
 	                    }
 

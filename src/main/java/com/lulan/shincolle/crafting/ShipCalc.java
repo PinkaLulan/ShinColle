@@ -1,21 +1,15 @@
 package com.lulan.shincolle.crafting;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.*;
 
 /**SHIP SPAWN CALC
  * 
@@ -214,135 +208,135 @@ public class ShipCalc
   		switch(type)
   		{
   		case ID.ShipClass.DDI:
-  			return "shincolle.EntityDestroyerI";
+  			return "EntityDestroyerI";
   		case ID.ShipClass.DDRO:
-  			return "shincolle.EntityDestroyerRo";
+  			return "EntityDestroyerRo";
   		case ID.ShipClass.DDHA:
-  			return "shincolle.EntityDestroyerHa";
+  			return "EntityDestroyerHa";
   		case ID.ShipClass.DDNI:
-  			return "shincolle.EntityDestroyerNi";
+  			return "EntityDestroyerNi";
   		case ID.ShipClass.CARI:
-  			return "shincolle.EntityHeavyCruiserRi";
+  			return "EntityHeavyCruiserRi";
   		case ID.ShipClass.CANE:
-  			return "shincolle.EntityHeavyCruiserNe";
+  			return "EntityHeavyCruiserNe";
   		case ID.ShipClass.CVWO:
-  			return "shincolle.EntityCarrierWo";
+  			return "EntityCarrierWo";
   		case ID.ShipClass.BBRU:
-  			return "shincolle.EntityBattleshipRu";
+  			return "EntityBattleshipRu";
   		case ID.ShipClass.BBTA:
-  			return "shincolle.EntityBattleshipTa";
+  			return "EntityBattleshipTa";
   		case ID.ShipClass.BBRE:
-  			return "shincolle.EntityBattleshipRe";
+  			return "EntityBattleshipRe";
   		case ID.ShipClass.APWA:
-  			return "shincolle.EntityTransportWa";
+  			return "EntityTransportWa";
   		case ID.ShipClass.SSKA:
-  			return "shincolle.EntitySubmKa";
+  			return "EntitySubmKa";
   		case ID.ShipClass.SSYO:
-  			return "shincolle.EntitySubmYo";
+  			return "EntitySubmYo";
   		case ID.ShipClass.SSSO:
-  			return "shincolle.EntitySubmSo";
+  			return "EntitySubmSo";
   		case ID.ShipClass.AirfieldHime:
-  			return "shincolle.EntityAirfieldHime";
+  			return "EntityAirfieldHime";
   		case ID.ShipClass.CVHime:
-  			return "shincolle.EntityCarrierHime";
+  			return "EntityCarrierHime";
   		case ID.ShipClass.BBHime:
-  			return "shincolle.EntityBattleshipHime";
+  			return "EntityBattleshipHime";
   		case ID.ShipClass.DDHime:
-  			return "shincolle.EntityDestroyerHime";	
+  			return "EntityDestroyerHime";	
   		case ID.ShipClass.HarbourHime:
-  			return "shincolle.EntityHarbourHime";
+  			return "EntityHarbourHime";
   		case ID.ShipClass.IsolatedHime:
-  			return "shincolle.EntityIsolatedHime";
+  			return "EntityIsolatedHime";
   		case ID.ShipClass.MidwayHime:
-  			return "shincolle.EntityMidwayHime";
+  			return "EntityMidwayHime";
   		case ID.ShipClass.NorthernHime:
-  			return "shincolle.EntityNorthernHime";
+  			return "EntityNorthernHime";
   		case ID.ShipClass.SSHime:
-  			return "shincolle.EntitySubmHime";
+  			return "EntitySubmHime";
   		case ID.ShipClass.SSNH:
-  			return "shincolle.EntitySubmNewHime";
+  			return "EntitySubmNewHime";
   		case ID.ShipClass.CVWD:
-  			return "shincolle.EntityCarrierWD";
+  			return "EntityCarrierWD";
   		case ID.ShipClass.DDShimakaze:
-  			return "shincolle.EntityDestroyerShimakaze";
+  			return "EntityDestroyerShimakaze";
   		case ID.ShipClass.DDShimakaze+2000:
-  			return "shincolle.EntityDestroyerShimakazeMob";
+  			return "EntityDestroyerShimakazeMob";
   		case ID.ShipClass.BBKongou:
-  			return "shincolle.EntityBattleshipKongou";
+  			return "EntityBattleshipKongou";
   		case ID.ShipClass.BBKongou+2000:
-  			return "shincolle.EntityBattleshipKongouMob";
+  			return "EntityBattleshipKongouMob";
   		case ID.ShipClass.BBHiei:
-  			return "shincolle.EntityBattleshipHiei";
+  			return "EntityBattleshipHiei";
   		case ID.ShipClass.BBHiei+2000:
-  			return "shincolle.EntityBattleshipHieiMob";
+  			return "EntityBattleshipHieiMob";
   		case ID.ShipClass.BBHaruna:
-  			return "shincolle.EntityBattleshipHaruna";
+  			return "EntityBattleshipHaruna";
   		case ID.ShipClass.BBHaruna+2000:
-  			return "shincolle.EntityBattleshipHarunaMob";
+  			return "EntityBattleshipHarunaMob";
   		case ID.ShipClass.BBKirishima:
-  			return "shincolle.EntityBattleshipKirishima";
+  			return "EntityBattleshipKirishima";
   		case ID.ShipClass.BBKirishima+2000:
-  			return "shincolle.EntityBattleshipKirishimaMob";
+  			return "EntityBattleshipKirishimaMob";
   		case ID.ShipClass.BBNagato:
-  			return "shincolle.EntityBattleshipNGT";
+  			return "EntityBattleshipNGT";
   		case ID.ShipClass.BBNagato+2000:
-  			return "shincolle.EntityBattleshipNGTMob";
+  			return "EntityBattleshipNGTMob";
   		case ID.ShipClass.BBYamato:
-  			return "shincolle.EntityBattleshipYMT";
+  			return "EntityBattleshipYMT";
   		case ID.ShipClass.BBYamato+2000:
-  			return "shincolle.EntityBattleshipYMTMob";
+  			return "EntityBattleshipYMTMob";
   		case ID.ShipClass.SSU511:
-  			return "shincolle.EntitySubmU511";
+  			return "EntitySubmU511";
   		case ID.ShipClass.SSU511+2000:
-  			return "shincolle.EntitySubmU511Mob";
+  			return "EntitySubmU511Mob";
   		case ID.ShipClass.SSRo500:
-  			return "shincolle.EntitySubmRo500";
+  			return "EntitySubmRo500";
   		case ID.ShipClass.SSRo500+2000:
-  			return "shincolle.EntitySubmRo500Mob";
+  			return "EntitySubmRo500Mob";
   		case ID.ShipClass.CVKaga:
-  			return "shincolle.EntityCarrierKaga";
+  			return "EntityCarrierKaga";
   		case ID.ShipClass.CVKaga+2000:
-  			return "shincolle.EntityCarrierKagaMob";
+  			return "EntityCarrierKagaMob";
   		case ID.ShipClass.CVAkagi:
-  			return "shincolle.EntityCarrierAkagi";
+  			return "EntityCarrierAkagi";
   		case ID.ShipClass.CVAkagi+2000:
-  			return "shincolle.EntityCarrierAkagiMob";
+  			return "EntityCarrierAkagiMob";
   		case ID.ShipClass.DDAkatsuki:
-  			return "shincolle.EntityDestroyerAkatsuki";
+  			return "EntityDestroyerAkatsuki";
   		case ID.ShipClass.DDAkatsuki+2000:
-  			return "shincolle.EntityDestroyerAkatsukiMob";
+  			return "EntityDestroyerAkatsukiMob";
   		case ID.ShipClass.DDHibiki:
-  			return "shincolle.EntityDestroyerHibiki";
+  			return "EntityDestroyerHibiki";
   		case ID.ShipClass.DDHibiki+2000:
-  			return "shincolle.EntityDestroyerHibikiMob";
+  			return "EntityDestroyerHibikiMob";
   		case ID.ShipClass.DDIkazuchi:
-  			return "shincolle.EntityDestroyerIkazuchi";
+  			return "EntityDestroyerIkazuchi";
   		case ID.ShipClass.DDIkazuchi+2000:
-  			return "shincolle.EntityDestroyerIkazuchiMob";
+  			return "EntityDestroyerIkazuchiMob";
   		case ID.ShipClass.DDInazuma:
-  			return "shincolle.EntityDestroyerInazuma";
+  			return "EntityDestroyerInazuma";
   		case ID.ShipClass.DDInazuma+2000:
-  			return "shincolle.EntityDestroyerInazumaMob";
+  			return "EntityDestroyerInazumaMob";
   		case ID.ShipClass.CLTenryuu:
-  			return "shincolle.EntityCruiserTenryuu";
+  			return "EntityCruiserTenryuu";
   		case ID.ShipClass.CLTenryuu+2000:
-  			return "shincolle.EntityCruiserTenryuuMob";
+  			return "EntityCruiserTenryuuMob";
   		case ID.ShipClass.CLTatsuta:
-  			return "shincolle.EntityCruiserTatsuta";
+  			return "EntityCruiserTatsuta";
   		case ID.ShipClass.CLTatsuta+2000:
-  			return "shincolle.EntityCruiserTatsutaMob";
+  			return "EntityCruiserTatsutaMob";
   		case ID.ShipClass.CAAtago:
-  			return "shincolle.EntityCruiserAtago";
+  			return "EntityCruiserAtago";
   		case ID.ShipClass.CAAtago+2000:
-  			return "shincolle.EntityCruiserAtagoMob";
+  			return "EntityCruiserAtagoMob";
   		case ID.ShipClass.CATakao:
-  			return "shincolle.EntityCruiserTakao";
+  			return "EntityCruiserTakao";
   		case ID.ShipClass.CATakao+2000:
-  			return "shincolle.EntityCruiserTakaoMob";
+  			return "EntityCruiserTakaoMob";
   		case ID.ShipClass.CAHime:
-  			return "shincolle.EntityCAHime";
+  			return "EntityCAHime";
   		default:
-  			return "shincolle.EntityDestroyerI";
+  			return "EntityDestroyerI";
   		}	
   	}
   	

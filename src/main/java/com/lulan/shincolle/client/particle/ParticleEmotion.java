@@ -1,24 +1,22 @@
 package com.lulan.shincolle.client.particle;
 
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 
 /**EMOTION PARTICLE
@@ -33,7 +31,7 @@ public class ParticleEmotion extends Particle
 	
 	private Entity host = null;
 	private int particleType, playTimes, fadeTick, fadeState, stayTick, stayTickCount, frameSize;
-	private float playSpeed, playSpeedCount, particleIconX, particleIconY, addHeight, hostType;
+	private float playSpeed, playSpeedCount, particleIconX, particleIconY, addHeight, entType;
 	private float[] spawnRange;
 	private double px, py, pz, addx, addy, addz;
 	
@@ -41,7 +39,7 @@ public class ParticleEmotion extends Particle
 	/**
 	 *  par1: entityType by command /emotes
 	 */
-    public ParticleEmotion(World world, Entity host, double posX, double posY, double posZ, float height, int hostType, int emoType)
+    public ParticleEmotion(World world, Entity host, double posX, double posY, double posZ, float height, int entType, int type)
     {
         super(world, posX, posY, posZ);
         this.host = host;
@@ -53,7 +51,7 @@ public class ParticleEmotion extends Particle
         this.motionX = 0D;
         this.motionZ = 0D;
         this.motionY = 0D;
-        this.particleType = emoType;
+        this.particleType = type;
         this.particleScale = this.rand.nextFloat() * 0.05F + 0.275F;
         this.particleAlpha = 0F;
         this.playSpeed = 1F;
@@ -64,7 +62,7 @@ public class ParticleEmotion extends Particle
         this.fadeState = 0;  //0:fade in, 1:normal, 2:fade out, 3:set dead
         this.frameSize = 1;
         this.addHeight = height;
-        this.hostType = hostType;  //0:any entity, 1:entity, 2:block
+        this.entType = entType;  //0:any entity, 1:entity, 2:block
         this.particleAge = -1;  //prevent showing the emo's initial moving from posY = 0
         this.canCollide = false;
         
@@ -452,13 +450,13 @@ public class ParticleEmotion extends Particle
     
     //設定此particle是否會被透明物件 ex: ice, water等擋住
     @Override
-    public boolean isTransparent()
+    public boolean shouldDisableDepth()
     {
     	return false;
     }
 
     @Override
-    public void renderParticle(VertexBuffer render, Entity entity, float ptick, float rotX, float rotZ, float rotYZ, float rotXY, float rotXZ)
+    public void renderParticle(BufferBuilder render, Entity entity, float ptick, float rotX, float rotZ, float rotYZ, float rotXY, float rotXZ)
     {
     	if (particleAge < 0) return;
     	
@@ -614,7 +612,7 @@ public class ParticleEmotion extends Particle
         float[] newPos;
         
         //tweak emote position by entity type
-        if (hostType == 1)  //entity type
+        if (entType == 1)  //entity type
         {
         	//replace emotes into player's view cone
         	float frontDist = 0.7F;

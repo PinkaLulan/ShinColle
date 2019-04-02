@@ -1,65 +1,16 @@
 package com.lulan.shincolle.client.render;
 
-import java.util.ArrayList;
-
-import javax.annotation.Nonnull;
-
-import com.lulan.shincolle.client.model.ModelAirfieldHime;
-import com.lulan.shincolle.client.model.ModelBBHaruna;
-import com.lulan.shincolle.client.model.ModelBBHiei;
-import com.lulan.shincolle.client.model.ModelBBKirishima;
-import com.lulan.shincolle.client.model.ModelBBKongou;
-import com.lulan.shincolle.client.model.ModelBattleshipHime;
-import com.lulan.shincolle.client.model.ModelBattleshipNagato;
-import com.lulan.shincolle.client.model.ModelBattleshipRe;
-import com.lulan.shincolle.client.model.ModelBattleshipRu;
-import com.lulan.shincolle.client.model.ModelBattleshipTa;
-import com.lulan.shincolle.client.model.ModelBattleshipYamato;
-import com.lulan.shincolle.client.model.ModelCAHime;
-import com.lulan.shincolle.client.model.ModelCarrierAkagi;
-import com.lulan.shincolle.client.model.ModelCarrierHime;
-import com.lulan.shincolle.client.model.ModelCarrierKaga;
-import com.lulan.shincolle.client.model.ModelCarrierWDemon;
-import com.lulan.shincolle.client.model.ModelCarrierWo;
-import com.lulan.shincolle.client.model.ModelCruiserAtago;
-import com.lulan.shincolle.client.model.ModelCruiserTakao;
-import com.lulan.shincolle.client.model.ModelCruiserTatsuta;
-import com.lulan.shincolle.client.model.ModelCruiserTenryuu;
-import com.lulan.shincolle.client.model.ModelDestroyerAkatsuki;
-import com.lulan.shincolle.client.model.ModelDestroyerHa;
-import com.lulan.shincolle.client.model.ModelDestroyerHibiki;
-import com.lulan.shincolle.client.model.ModelDestroyerHime;
-import com.lulan.shincolle.client.model.ModelDestroyerI;
-import com.lulan.shincolle.client.model.ModelDestroyerIkazuchi;
-import com.lulan.shincolle.client.model.ModelDestroyerInazuma;
-import com.lulan.shincolle.client.model.ModelDestroyerNi;
-import com.lulan.shincolle.client.model.ModelDestroyerRo;
-import com.lulan.shincolle.client.model.ModelDestroyerShimakaze;
-import com.lulan.shincolle.client.model.ModelHarbourHime;
-import com.lulan.shincolle.client.model.ModelHeavyCruiserNe;
-import com.lulan.shincolle.client.model.ModelHeavyCruiserRi;
-import com.lulan.shincolle.client.model.ModelIsolatedHime;
-import com.lulan.shincolle.client.model.ModelMidwayHime;
-import com.lulan.shincolle.client.model.ModelNorthernHime;
-import com.lulan.shincolle.client.model.ModelSSNH;
-import com.lulan.shincolle.client.model.ModelSubmHime;
-import com.lulan.shincolle.client.model.ModelSubmKa;
-import com.lulan.shincolle.client.model.ModelSubmRo500;
-import com.lulan.shincolle.client.model.ModelSubmSo;
-import com.lulan.shincolle.client.model.ModelSubmU511;
-import com.lulan.shincolle.client.model.ModelSubmYo;
-import com.lulan.shincolle.client.model.ModelTransportWa;
+import com.lulan.shincolle.client.model.*;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.entity.other.EntityAirplaneTakoyaki;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
-
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -69,6 +20,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
 
 public class RenderShipEntity extends RenderBasic
 {
@@ -194,7 +148,7 @@ public class RenderShipEntity extends RenderBasic
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		//AP
 		case ID.ShipClass.APWA:
@@ -310,7 +264,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected void setModel()
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		//AP
 		case ID.ShipClass.APWA:
@@ -471,7 +425,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected void setMiscModel()
     {
-    	switch (this.textuerID)
+    	switch (this.shipClass)
 		{
 		case ID.ShipClass.MidwayHime:
 			this.miscModelList = new ArrayList<MiscModel>();
@@ -495,7 +449,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected void setShadowSize()
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		case ID.ShipClass.NorthernHime:
 		case ID.ShipClass.SSNH:
@@ -538,7 +492,7 @@ public class RenderShipEntity extends RenderBasic
     @Override
     protected boolean hasMiscModel()
     {
-    	switch (this.textuerID)
+    	switch (this.shipClass)
 		{
 		case ID.ShipClass.MidwayHime:
 			return true;
@@ -550,7 +504,7 @@ public class RenderShipEntity extends RenderBasic
 	//get leash height
 	protected float[] getLeashHeight()
 	{
-		float[] f = Values.ShipLeashHeight.get(this.textuerID);
+		float[] f = Values.ShipLeashHeight.get(this.shipClass);
 		
 		if (f == null)
 		{
@@ -564,7 +518,7 @@ public class RenderShipEntity extends RenderBasic
 	@Override
     protected void renderLeash(EntityLiving host, double x, double y, double z, float yaw, float parTick)
     {
-        Entity entity = host.getLeashedToEntity();
+        Entity entity = host.getLeashHolder();
         float[] leashHeight = getLeashHeight();
         
         if (entity != null)
@@ -598,7 +552,7 @@ public class RenderShipEntity extends RenderBasic
         	}
             
             Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer vertexbuffer = tessellator.getBuffer();
+            BufferBuilder vertexbuffer = tessellator.getBuffer();
             double d3 = this.interp((double)entity.prevRotationYaw, (double)entity.rotationYaw, (double)(parTick * 0.5F)) * 0.01745329238474369D;
             double d4 = this.interp((double)entity.prevRotationPitch, (double)entity.rotationPitch, (double)(parTick * 0.5F)) * 0.01745329238474369D;
             double d5 = Math.cos(d3);

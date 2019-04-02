@@ -3,7 +3,6 @@ package com.lulan.shincolle.ai;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 
@@ -36,8 +35,7 @@ public class EntityAIShipLookIdle extends EntityAIBase
     	
         return this.host.getRNG().nextFloat() < 0.02F;
     }
-    
-    @Override
+
     public boolean shouldContinueExecuting()
     {
         return this.idleTime >= 0;

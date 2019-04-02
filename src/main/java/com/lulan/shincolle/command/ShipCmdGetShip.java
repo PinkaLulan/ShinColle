@@ -1,11 +1,5 @@
 package com.lulan.shincolle.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.network.S2CReactPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -13,7 +7,6 @@ import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.utility.EntityHelper;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -27,6 +20,11 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /** Command: /ship
  * 
@@ -179,9 +177,9 @@ public class ShipCmdGetShip extends CommandBase
 					
 					//check dist
 					Vec3d pos1 = sender.getPositionVector();
-					float dx = (float) pos1.xCoord - data.posX;
-					float dy = (float) pos1.yCoord - data.posY;
-					float dz = (float) pos1.zCoord - data.posZ;
+					float dx = (float) pos1.x - data.posX;
+					float dy = (float) pos1.y - data.posY;
+					float dz = (float) pos1.z - data.posZ;
 					float dist = dx * dx + dy * dy + dz * dz;
 					
 					if (dist < 4096F)
@@ -207,11 +205,11 @@ public class ShipCmdGetShip extends CommandBase
 								ship.motionY = 0D;
 								ship.motionZ = 0D;
 								//teleport ship
-								ship.setPosition(pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord);
+								ship.setPosition(pos1.x, pos1.y + 0.5D, pos1.z);
 								//set guard pos
 								ship.setSitting(false);
 								ship.setGuardedEntity(null);
-								ship.setGuardedPos((int)pos1.xCoord, (int)(pos1.yCoord + 0.5D), (int)pos1.zCoord, ship.world.provider.getDimension(), 1);
+								ship.setGuardedPos((int)pos1.x, (int)(pos1.y + 0.5D), (int)pos1.z, ship.world.provider.getDimension(), 1);
 								ship.setStateFlag(ID.F.CanFollow, false);
 								//update ship cache
 								ship.updateShipCacheDataWithoutNewID();
@@ -231,7 +229,7 @@ public class ShipCmdGetShip extends CommandBase
 							{
 								ent = EntityHelper.createShipEntity(player.world,
 										data.classID, data.entityNBT,
-										pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord, true);
+										pos1.x, pos1.y + 0.5D, pos1.z, true);
 								
 								if (ent != null)
 					            {
@@ -262,7 +260,7 @@ public class ShipCmdGetShip extends CommandBase
 						{
 							ent = EntityHelper.createShipEntity(player.world,
 									data.classID, data.entityNBT,
-									pos1.xCoord, pos1.yCoord + 0.5D, pos1.zCoord, true);
+									pos1.x, pos1.y + 0.5D, pos1.z, true);
 							
 							if (ent != null)
 				            {

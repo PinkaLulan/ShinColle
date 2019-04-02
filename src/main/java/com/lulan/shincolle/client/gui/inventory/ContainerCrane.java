@@ -1,14 +1,8 @@
 package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.tileentity.TileEntityCrane;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -74,7 +68,7 @@ public class ContainerCrane extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-		return null;
+		return ItemStack.EMPTY;
     }
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
@@ -108,7 +102,7 @@ public class ContainerCrane extends Container
                 		if (this.tile.getShip() != null) this.tile.getShip().sendSyncPacketTimer(0);
                 	break;
             		default:	//使用官方方法更新
-                    	listener.sendProgressBarUpdate(this, j, temp);
+                    	listener.sendWindowProperty(this, j, temp);
             		break;
                 	}
             	}
@@ -141,13 +135,13 @@ public class ContainerCrane extends Container
         	Slot slot = (Slot) this.inventorySlots.get(id);
         	
         	//click slot with item
-        	if (itemstack != null)
+        	if (!itemstack.isEmpty())
         	{
         		//set NOT MODE item
         		if (key == 1)
         		{
             		ItemStack itemstack2 = itemstack.copy();
-            		itemstack2.stackSize = 1;
+            		itemstack2.setCount(1);
             		slot.putStack(itemstack2);
             		tile.setItemMode(id, true);
         		}
@@ -156,15 +150,15 @@ public class ContainerCrane extends Container
         		{
         			ItemStack oldSlot = slot.getStack();
             		ItemStack itemstack2 = itemstack.copy();
-            		int size = itemstack.stackSize;
+            		int size = itemstack.getCount();
             		
             		//if same item, add stack size
             		if (ItemStack.areItemsEqual(itemstack2, oldSlot))
             		{
-            			size += oldSlot.stackSize;
+            			size += oldSlot.getCount();
             		}
             		
-            		itemstack2.stackSize = size;
+            		itemstack2.setCount(size);
             		slot.putStack(itemstack2);
             		tile.setItemMode(id, false);
         		}
@@ -172,12 +166,12 @@ public class ContainerCrane extends Container
         	//any key without item
         	else
         	{
-        		slot.putStack(null);
+        		slot.putStack(ItemStack.EMPTY);
         		tile.setItemMode(id, false);
         	}
         	
         	detectAndSendChanges();
-        	return null;
+        	return ItemStack.EMPTY;
         }
 
         return super.slotClick(id, key, type, player);

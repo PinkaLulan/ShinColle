@@ -1,5 +1,7 @@
 package com.lulan.shincolle.block;
 
+import com.lulan.shincolle.creativetab.CreativeTabSC;
+import com.lulan.shincolle.reference.Reference;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -7,9 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.lulan.shincolle.creativetab.CreativeTabSC;
-import com.lulan.shincolle.reference.Reference;
 
 abstract public class BasicBlockFalling extends BlockFalling implements ICustomModels
 {
@@ -36,9 +35,9 @@ abstract public class BasicBlockFalling extends BlockFalling implements ICustomM
 	//將name冠上mod名稱 用於之後給各語系檔案放上正確名稱
 	//格式為tile.MOD名稱:方塊名稱.name
 	@Override
-	public String getUnlocalizedName()
+	public String getTranslationKey()
 	{
-		return String.format("tile.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("tile.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getTranslationKey()));
 	}
 	
 	@SideOnly(Side.CLIENT)

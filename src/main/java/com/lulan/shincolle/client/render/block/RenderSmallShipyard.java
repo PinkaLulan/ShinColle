@@ -3,7 +3,7 @@ package com.lulan.shincolle.client.render.block;
 import com.lulan.shincolle.client.model.ModelSmallShipyard;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
-
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
@@ -27,7 +27,7 @@ public class RenderSmallShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 	}
 	
 	@Override
-	public void renderTileEntityAt(BasicTileEntity tile, double x, double y, double z, float partick, int deststage)
+	public void renderTileEntityFast(BasicTileEntity tile, double x, double y, double z, float partick, int deststage, float partial, BufferBuilder buffer)
 	{
 		//get blockstate: get real meta if tile exist in world, or get meta = -1
 		int meta = tile.getRenderMetadata();

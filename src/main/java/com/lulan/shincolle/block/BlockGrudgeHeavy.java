@@ -1,9 +1,5 @@
 package com.lulan.shincolle.block;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.render.block.RenderLargeShipyard;
 import com.lulan.shincolle.entity.IShipOwner;
@@ -13,7 +9,6 @@ import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
-
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -27,10 +22,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -38,6 +30,9 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
+import java.util.Random;
 
 public class BlockGrudgeHeavy extends BasicBlockMulti
 {
@@ -49,14 +44,14 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 	public BlockGrudgeHeavy()
 	{
 		super(Material.WATER);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("shovel", 0);
 	    this.setHardness(3F);
 	    this.setLightLevel(1F);
 	    this.setResistance(600F);
 	    this.setSoundType(SoundType.SAND);
 	    this.setDefaultState(this.blockState.getBaseState().withProperty(BlockLiquid.LEVEL, 15));
+
 	}
 	
 	@Override
@@ -128,7 +123,7 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 	@Override
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 	{
-		return new ArrayList<ItemStack>();	//直接回傳空的array (不能傳null會噴出NPE)
+		return NonNullList.withSize(1, ItemStack.EMPTY);	//直接回傳空的array (不能傳null會噴出NPE)
     }
 	
 	//方塊放置時, 將物品的mats數量取出存到tile的nbt中
@@ -244,7 +239,7 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
     }
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		//sync player UID while right click
 		if (!world.isRemote)
@@ -257,7 +252,7 @@ public class BlockGrudgeHeavy extends BasicBlockMulti
 			}
 		}
 		
-		return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+		return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 	}
 	
 	

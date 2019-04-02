@@ -1,11 +1,8 @@
 package com.lulan.shincolle.client.render;
 
-import javax.annotation.Nonnull;
-
 import com.lulan.shincolle.client.model.ModelAbyssMissile;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
@@ -13,6 +10,8 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
+
+import javax.annotation.Nonnull;
 
 public class RenderMiscEntity extends Render<Entity>
 {
@@ -81,7 +80,7 @@ public class RenderMiscEntity extends Render<Entity>
     	//model init
     	if (this.initModel)
     	{
-    		this.mobID = ((ICustomTexture) entity).getTextureID();
+    		this.mobID = ((IShipCustomTexture) entity).getTextureID();
     		this.initModel = false;
     		setModel();
     	}

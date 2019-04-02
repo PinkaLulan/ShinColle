@@ -1,7 +1,6 @@
 package com.lulan.shincolle.init;
 
 import com.lulan.shincolle.handler.ConfigHandler;
-
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 

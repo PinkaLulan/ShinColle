@@ -1,12 +1,5 @@
 package com.lulan.shincolle.crafting;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerShipInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -15,16 +8,17 @@ import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.BasicEquip;
 import com.lulan.shincolle.item.IShipEffectItem;
 import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
-import com.lulan.shincolle.reference.dataclass.Attrs;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EnchantHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+
+import java.util.*;
 
 /**
  * equip calculation class
@@ -185,7 +179,7 @@ public class EquipCalc
 		}
 		
 		//apply item effect of missile
-		if (equip != null)
+		if (!equip.isEmpty())
 		{
 			if (equip.getItem() instanceof IShipEffectItem)
 			{
@@ -258,10 +252,10 @@ public class EquipCalc
 		}//end special effect
 	}
 	
-	/** get equip attributes from {@link Values.EquipAttrsMain} */
+	/** get equip attributes from Values.EquipAttrsMain */
 	public static float[] getEquipAttrsMain(BasicEntityShip entity, ItemStack stack)
 	{
-		if (entity != null && stack != null && stack.getItem() instanceof BasicEquip)
+		if (entity != null && !stack.isEmpty() && stack.getItem() instanceof BasicEquip)
 		{
 			float[] itemRaw = Values.EquipAttrsMain.get(((BasicEquip) stack.getItem()).getEquipID(stack.getItemDamage()));
 			int[] itemMisc = Values.EquipAttrsMisc.get(((BasicEquip) stack.getItem()).getEquipID(stack.getItemDamage()));
@@ -289,7 +283,7 @@ public class EquipCalc
 	 */
 	public static int[] getEquipAttrsMisc(ItemStack stack)
 	{
-		if (stack != null && stack.getItem() instanceof BasicEquip)
+		if (!stack.isEmpty() && stack.getItem() instanceof BasicEquip)
 		{
 			int[] itemStat = new int[] {0, 0, 0, 0};
 			EnumEquipEffectSP effect = ((BasicEquip) stack.getItem()).getSpecialEffect(stack);
@@ -523,7 +517,7 @@ public class EquipCalc
 	public static ItemStack rollEquipsOfTheType(int type, int totalMats, int buildType)
 	{
 		//null item
-		if (type == -1) return null;
+		if (type == -1) return ItemStack.EMPTY;
 		
 		//equip roll list: <equip id, float[0:mean value  1:prob parameter]>
 		Map<Integer, Float> equipList = new HashMap<Integer, Float>();
@@ -639,7 +633,7 @@ public class EquipCalc
 	private static ItemStack getItemStackFromId(int itemID, int enchLv)
 	{
 		//itemID = Equip Type ID + Equip Sub ID * 100
-		ItemStack item = null;
+		ItemStack item;
 		int itemType = itemID % 100;	 //item type value
 		int itemSubType = itemID / 100;  //item meta value
 		int enchType = 0;				 //enchant type: 0:weapon, 1:armor, 2:misc
@@ -729,12 +723,12 @@ public class EquipCalc
 			enchType = 0;
 		break;
 		default:
-			item = null;
+			item = ItemStack.EMPTY;
 		break;
 		}
 		
 		//set item sub type
-		if (item != null) item.setItemDamage(itemSubType);
+		if (!item.isEmpty()) item.setItemDamage(itemSubType);
 		
 		//apply random enchant
 		if (enchLv > 0)

@@ -1,21 +1,10 @@
 package com.lulan.shincolle.entity;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.ShinColle;
-import com.lulan.shincolle.ai.EntityAIShipAttackOnCollide;
-import com.lulan.shincolle.ai.EntityAIShipFloating;
-import com.lulan.shincolle.ai.EntityAIShipFollowOwner;
-import com.lulan.shincolle.ai.EntityAIShipGuarding;
-import com.lulan.shincolle.ai.EntityAIShipOpenDoor;
-import com.lulan.shincolle.ai.EntityAIShipWander;
+import com.lulan.shincolle.ai.*;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.client.render.ICustomTexture;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModItems;
@@ -25,22 +14,18 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.reference.dataclass.AttrsAdv;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
@@ -60,14 +45,20 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+
 /**MOUNT ENTITY
  * mount use cannon attack, no aircraft attack
  * all states get from host ex: sitting, leashed, sprinting...
  */
-abstract public class BasicEntityMount extends BasicEntitySummon
-implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
-           IShipMorph
+abstract public class BasicEntityMount extends EntityCreature implements IShipMount, IShipCannonAttack, IShipGuardian, IShipCustomTexture, IShipMorph
 {
+	
+	protected static final IAttribute MAX_HP = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 4D, 0D, 30000D)).setDescription("Max Health").setShouldWatch(true);
+	protected Attrs shipAttrs;
 	
 	public BasicEntityShip host;  				//host
 	protected ShipPathNavigate shipNavigator;	//水空移動用navigator
@@ -135,7 +126,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 	//受傷音效
     @Override
     @Nullable
-    protected SoundEvent getHurtSound()
+    protected SoundEvent getHurtSound(DamageSource source)
     {
 		if (ConfigHandler.useWakamoto && rand.nextInt(30) == 0 && this.soundHurtDelay <= 0)
 		{
@@ -213,19 +204,19 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 		boolean checkDEF = true;
 		
 		//damage disabled
-		if (source == DamageSource.inWall || source == DamageSource.starve ||
-			source == DamageSource.cactus || source == DamageSource.fall)
+		if (source == DamageSource.IN_WALL || source == DamageSource.STARVE ||
+			source == DamageSource.CACTUS || source == DamageSource.FALL)
 		{
 			return false;
 		}
 		//damage ignore def value
-		else if (source == DamageSource.magic || source == DamageSource.wither ||
-				 source == DamageSource.dragonBreath)
+		else if (source == DamageSource.MAGIC || source == DamageSource.WITHER ||
+				 source == DamageSource.DRAGON_BREATH)
 		{
 			checkDEF = false;
 		}
 		//out of world
-		else if (source == DamageSource.outOfWorld)
+		else if (source == DamageSource.OUT_OF_WORLD)
 		{
 			this.setDead();
 			return false;
@@ -238,8 +229,8 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
   		if (this.rand.nextInt(10) == 0) this.host.randomSensitiveBody();
         
     	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
-		if (source.getEntity() instanceof EntityPlayer &&
-			TeamHelper.checkSameOwner(source.getEntity(), this))
+		if (source.getTrueSource() instanceof EntityPlayer &&
+			TeamHelper.checkSameOwner(source.getTrueSource(), this))
 		{
 			this.host.setSitting(false);
 			return super.attackEntityFrom(source, atk);
@@ -251,9 +242,9 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
             return false;
         }
 		//只對entity damage類有效
-		else if (source.getEntity() != null)
+		else if (source.getTrueSource() != null)
 		{
-			Entity entity = source.getEntity();
+			Entity entity = source.getTrueSource();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 			if (entity.equals(this))
@@ -274,7 +265,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 			}
 			
 			//進行dodge計算
-			float dist = (float) this.getDistanceSqToEntity(entity);
+			float dist = (float) this.getDistanceSq(entity);
 			
 			if (CombatHelper.canDodge(this, dist))
 			{
@@ -337,15 +328,17 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
     }
 	
 	@Override
-	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
 		if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
 		
 		//server side
 		if (!this.world.isRemote)
 		{
+			ItemStack stack = player.getHeldItem(hand);
+
 			//use item
-			if (stack != null && host != null)
+			if (!stack.isEmpty() && host != null)
 			{
 				//caress head mode: morale +5
 				if (stack.getItem() == ModItems.PointerItem && stack.getItemDamage() > 2)
@@ -362,7 +355,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 				//use lead: clear path
 				else if (stack.getItem() == Items.LEAD)
 				{
-					this.getShipNavigate().clearPathEntity();
+					this.getShipNavigate().clearPath();
 					return EnumActionResult.SUCCESS;
 		        }
 			}//end use item
@@ -371,7 +364,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 			if (!player.isSneaking())
 			{
 				//ride mount, only for friendly player
-				if (!TeamHelper.checkIsBanned(this, player) && this.getDistanceSqToEntity(player) < 16D)
+				if (!TeamHelper.checkIsBanned(this, player) && this.getDistanceSq(player) < 16D)
 				{
 	  	  			player.startRiding(this, true);
 	  	  			this.stateEmotion = 1;
@@ -384,8 +377,8 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 				{
 					this.host.setEntitySit(!this.host.isSitting());
 					this.isJumping = false;
-			        this.getShipNavigate().clearPathEntity();
-			        this.getNavigator().clearPathEntity();
+			        this.getShipNavigate().clearPath();
+			        this.getNavigator().clearPath();
 			        this.setAttackTarget(null);
 			        this.setEntityTarget(null);
 
@@ -394,8 +387,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 	        }
 			//shift+right click時打開host GUI
 			else if (TeamHelper.checkSameOwner(player, this.host))
-			{  
-				int eid = this.host.getEntityId();
+			{
 	    		FMLNetworkHandler.openGui(player, ShinColle.instance, ID.Gui.SHIPINVENTORY, this.world, this.host.getEntityId(), 0, 0);
 	    		return EnumActionResult.SUCCESS;
 			}
@@ -438,7 +430,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
             //clear path if player controlling
             if (this.keyTick > 0)
 	      	{
-				this.getShipNavigate().clearPathEntity();
+				this.getShipNavigate().clearPath();
 	      	}
             
         	//update movement, NOTE: 1.9.4: must done before vanilla MoveHelper updating in super.onLivingUpdate()
@@ -672,7 +664,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 			this.jumpHelper.setJumping();
 			
 			//if in water, add motionY
-			if (this.getEntityDepth() > 0D)
+			if (this.getShipDepth() > 0D)
 			{
 				this.motionY += movSpeed * 0.1F;
 				if (motionY > 1F) motionY = 1F;
@@ -744,7 +736,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 			}
 			
 			//若水平撞到東西, 則嘗試往上擠
-			if (this.isCollidedHorizontally)
+			if (this.collidedHorizontally)
 			{
 				this.motionY += 0.4D;
 			}
@@ -819,7 +811,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 	}
 	
 	@Override
-	public void setEntityDepth(double par1)
+	public void setShipDepth(double par1)
 	{
 		this.shipDepth = par1;
 	}
@@ -1195,7 +1187,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
 	@Override
-    public void moveEntityWithHeading(float strafe, float forward)
+    public void travel(float strafe, float vertical, float forward)
 	{
 		EntityHelper.moveEntityWithHeading(this, strafe, forward);
     }
@@ -1327,7 +1319,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 	}
 
 	@Override
-	public double getEntityDepth()
+	public double getShipDepth()
 	{
 		return this.shipDepth;
 	}
@@ -1342,7 +1334,7 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 		case 2:
 			if (this.host != null)
 			{
-				return this.host.getEntityDepth();
+				return this.host.getShipDepth();
 			}
 			else
 			{
@@ -1714,13 +1706,13 @@ implements IShipMount, IShipCannonAttack, IShipGuardian, ICustomTexture,
 	}
 	
 	@Override
-	public double getEntityFloatingDepth()
+	public double getShipFloatingDepth()
 	{
 		return 0.3D;
 	}
 
 	@Override
-	public void setEntityFloatingDepth(double par1) {}
+	public void setShipFloatingDepth(double par1) {}
 	
 	@Override
 	public float[] getSeatPos()

@@ -8,8 +8,7 @@ public class InstantConMat extends BasicItem
 	public InstantConMat()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 	}
 
 

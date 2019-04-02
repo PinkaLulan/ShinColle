@@ -3,7 +3,6 @@ package com.lulan.shincolle.item;
 import com.lulan.shincolle.block.ICustomModels;
 import com.lulan.shincolle.creativetab.CreativeTabSC;
 import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,8 +19,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 abstract public class BasicItem extends Item implements ICustomModels
 {
-
-	
 	public BasicItem()
 	{
 		super();
@@ -37,7 +34,7 @@ abstract public class BasicItem extends Item implements ICustomModels
 	/** add item to creative tabs according to type value */
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-    {
+	{
 		if (getTypes() <= 1)
 		{
 			list.add(new ItemStack(this));
@@ -49,7 +46,7 @@ abstract public class BasicItem extends Item implements ICustomModels
 				list.add(new ItemStack(this, 1, i));
 			}
 		}
-    }
+	}
 	
 	//name設定用方法: 去掉.之前的字串 以便另外串上mod名稱形成的字串
 	protected String getUnwrappedUnlocalizedName(String unlocalizedName)
@@ -60,26 +57,34 @@ abstract public class BasicItem extends Item implements ICustomModels
 	//將name冠上mod名稱 用於之後給各語系檔案放上正確名稱
 	//格式為item.MOD名稱:物品名稱.name
 	@Override
-	public String getUnlocalizedName()
+	public String getTranslationKey()
 	{
-		return String.format("item.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("item.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getTranslationKey()));
 	}
 	
 	//同getUnlocalizedName() 此為加上itemstack版本
 	//格式為item.MOD名稱:物品名稱.name
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack)
+	public String getTranslationKey(ItemStack itemstack)
 	{
 		int meta = itemstack.getItemDamage();
 		
 		if (meta > 0)
 		{
-			return String.format("item.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()) + meta);
+			return String.format("item.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getTranslationKey()) + meta);
 		}
 		else
 		{
-			return String.format("item.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+			return String.format("item.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getTranslationKey()));
 		}		
+	}
+
+	@Override
+	public Item setTranslationKey(String name)
+	{
+		super.setTranslationKey(name);
+		this.setRegistryName(Reference.MOD_ID + ":" + name.toLowerCase());
+		return this;
 	}
 	
 	/** 依照meta值設定要使用的texture
@@ -121,8 +126,5 @@ abstract public class BasicItem extends Item implements ICustomModels
 	        ModelLoader.setCustomModelResourceLocation(
 	        		this, 0, new ModelResourceLocation(getRegistryName(), "inventory"));
 		}
-
     }
-
-
 }

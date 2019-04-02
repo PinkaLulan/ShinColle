@@ -16,8 +16,7 @@ public class Ammo extends BasicItem implements IShipResourceItem, IShipFoodItem
 	public Ammo()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
 	}
 	

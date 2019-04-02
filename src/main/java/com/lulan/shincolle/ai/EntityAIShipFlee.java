@@ -7,7 +7,6 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.Vec3d;
@@ -80,7 +79,7 @@ public class EntityAIShipFlee extends EntityAIBase
 	public void resetTask()
     {
         this.owner = null;
-        this.ShipPathfinder.clearPathEntity();
+        this.ShipPathfinder.clearPath();
     }
     
     @Override

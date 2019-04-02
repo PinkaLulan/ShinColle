@@ -1,8 +1,5 @@
 package com.lulan.shincolle.tileentity;
 
-import java.util.List;
-import java.util.Random;
-
 import com.lulan.shincolle.block.BlockVolCore;
 import com.lulan.shincolle.capability.CapaInventory;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
@@ -20,7 +17,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -30,6 +26,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
+import java.util.Random;
 
 /** Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
  *  Total Build Time = FuelCost / buildSpeed
@@ -122,7 +121,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack)
 	{
-		if (stack != null)
+		if (!stack.isEmpty())
 		{
 			Item item = stack.getItem();
 
@@ -145,8 +144,8 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 	/** consume fuel item , return true = add fuel success */
 	public boolean decrItemFuel()
 	{
-		ItemStack stack = null;
-		Item item = null;
+		ItemStack stack;
+		Item item;
 		boolean sendUpdate = false;
 		int fuelx = 0;
 		
@@ -155,7 +154,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 		{
 			stack = getStackInSlot(i);
 			
-			if (stack != null)
+			if (!stack.isEmpty())
 			{
 				item = stack.getItem();
 				
@@ -172,11 +171,11 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
 				//add disposable fuel (ex: coal, lava bucket, lava cell)
 				if (fuelx > 0 && fuelx + this.remainedPower < this.POWERMAX)
 				{
-					stack.stackSize--;	//fuel item --
+					stack.shrink(1);	//fuel item --
 					this.remainedPower += fuelx;
 					
 					//若該物品用完, 用getContainerItem處理是否要清空還是留下桶子 ex: lava bucket -> empty bucket
-					if (stack.stackSize <= 0)
+					if (stack.getCount() <= 0)
 					{
 						stack = stack.getItem().getContainerItem(stack);
 					}
@@ -374,7 +373,7 @@ public class TileEntityVolCore extends BasicTileInventory implements ITickable
                 		ent.setFire(2);
                 		
                 		//hurt target
-                		ent.attackEntityFrom(DamageSource.inFire, 4F);
+                		ent.attackEntityFrom(DamageSource.FALL, 4F);
                 		
                 		//show hot emotes
                 		int emotes;

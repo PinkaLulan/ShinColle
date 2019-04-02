@@ -2,7 +2,6 @@ package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.item.IShipResourceItem;
-
 import net.minecraft.block.Block;
 
 public class ItemBlockResourceBlock extends BasicItemBlock implements IShipResourceItem

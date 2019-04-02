@@ -24,7 +24,7 @@ public class ContainerFormation extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-        return null;
+        return ItemStack.EMPTY;
     }
 
 	

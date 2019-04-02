@@ -1,9 +1,5 @@
 package com.lulan.shincolle.entity.hime;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -16,14 +12,9 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,6 +27,8 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * model state:
@@ -53,13 +46,13 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 	{
 		super(world);
 		this.setSize(0.5F, 0.9F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSNH);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.SS]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
-		this.modelPosInGUI = new float[] {-6F, 8F, 0F, 50F};
+		this.ModelPos = new float[] {-6F, 8F, 0F, 50F};
 		this.goRidingTicks = 0;
 		this.goRideEntity = null;
 		this.goRiding = false;
@@ -69,7 +62,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override
@@ -116,7 +109,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 	  					if (getStateFlag(ID.F.IsMarried))
 	  					{
 	  						EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-	  	  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+	  	  	  				if (player != null && getDistanceSq(player) < 256D)
 	  	  	  				{
 	  	  	  					//potion effect: id, time, level
 	  	  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 80+getLevel(), 0, false, false));
@@ -153,7 +146,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
         		float distRiding = 0F;
         		if (this.goRideEntity != null)
         		{
-        			distRiding = this.getDistanceToEntity(this.goRideEntity);
+        			distRiding = this.getDistance(this.goRideEntity);
         		}
         		
         		//每32 tick找一次路徑
@@ -172,7 +165,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
         				this.getPassengers().size() == 0 && this.goRideEntity.getPassengers().size() == 0)
         			{
         				this.startRiding(goRideEntity, true);
-        				this.getShipNavigate().clearPathEntity();
+        				this.getShipNavigate().clearPath();
         				this.cancelGoRiding();
         			}
         		}
@@ -223,7 +216,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 	public void setInvisibleLevel(float level) {}
 	
 	@Override
-	public double getEntityFloatingDepth()
+	public double getShipFloatingDepth()
 	{
 		return 1D;
 	}
@@ -384,7 +377,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 	}
 
 	@Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand)
     {
     	//禁用副手
     	if (hand == EnumHand.OFF_HAND) return EnumActionResult.FAIL;
@@ -395,8 +388,10 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 		//pick up for riding
 		if (this.world.isRemote)
 		{
+			ItemStack stack = player.getHeldItem(hand);
+
 			if (this.isSitting() && this.getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED &&
-				(stack == null || stack.getItem() != ModItems.PointerItem))
+				(stack.isEmpty() || stack.getItem() != ModItems.PointerItem))
 			{
 				//send riding request packet
 				CommonProxy.channelI.sendToServer(new C2SInputPackets(C2SInputPackets.PID.Request_Riding, this.getEntityId(), this.world.provider.getDimension()));
@@ -405,7 +400,7 @@ public class EntitySSNH extends BasicEntityShipSmall implements IShipInvisible
 			}
 		}
 		
-		return super.applyPlayerInteraction(player, vec, stack, hand);
+		return super.applyPlayerInteraction(player, vec, hand);
   	}
 	
 	@Override

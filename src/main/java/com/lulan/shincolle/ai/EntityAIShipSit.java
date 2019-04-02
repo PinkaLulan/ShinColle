@@ -1,7 +1,6 @@
 package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 
@@ -37,7 +36,7 @@ public class EntityAIShipSit extends EntityAIBase
 	public void updateTask()
     {
 //    	LogHelper.info("DEBUG : exec sitting");
-    	this.host.getNavigator().clearPath();    
+    	this.host.getNavigator().clearPath();
         this.host.setAttackTarget(null);
         this.host.setEntityTarget(null);
     }

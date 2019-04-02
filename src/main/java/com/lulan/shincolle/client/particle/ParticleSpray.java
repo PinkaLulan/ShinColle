@@ -1,10 +1,8 @@
 package com.lulan.shincolle.client.particle;
 
-import java.util.ArrayList;
-
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -181,7 +179,7 @@ public class ParticleSpray extends Particle
             this.particleMaxAge = 100;
             this.setSize(0F, 0F);
         break;
-        case 15:   //transparent light cyan
+        case 15:   //transparent cyan
         	this.speedLimit = 0.3D;
         	this.particleRed = 0.7F;
             this.particleGreen = 1F;
@@ -242,7 +240,7 @@ public class ParticleSpray extends Particle
      *   0:missile spray, data: 0:vel0, 1:index
      * 
      */
-    public ParticleSpray(Entity host, int type, ArrayList<Float> data)
+    public ParticleSpray(Entity host, int type, double[] data)
     {
         super(host.world, host.posX, host.posY, host.posZ);
         this.ptype = type;
@@ -324,7 +322,7 @@ public class ParticleSpray extends Particle
     }
 
     @Override
-    public void renderParticle(VertexBuffer render, Entity entity, float ptick, float rotX, float rotZ, float rotYZ, float rotXY, float rotXZ)
+    public void renderParticle(BufferBuilder render, Entity entity, float ptick, float rotX, float rotZ, float rotYZ, float rotXY, float rotXZ)
     {
     	if (this.particleAge == 1) return;
     	
@@ -381,7 +379,7 @@ public class ParticleSpray extends Particle
             this.motionY *= 0.96D;
             this.motionZ *= 0.96D;
             
-            if (this.isCollided)
+            if (this.onGround)
             {
                 this.motionX *= 0.7D;
                 this.motionZ *= 0.7D;

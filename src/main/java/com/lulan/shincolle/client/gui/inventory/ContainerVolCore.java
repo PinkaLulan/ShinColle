@@ -1,7 +1,6 @@
 package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -72,7 +71,7 @@ public class ContainerVolCore extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-		ItemStack newStack = null;
+		ItemStack newStack = ItemStack.EMPTY;
         Slot slot = (Slot)this.inventorySlots.get(slotid);
 
         //若slot有東西
@@ -84,23 +83,23 @@ public class ContainerVolCore extends Container
             //點擊hot bar => 移動到inventory or player inv
             if (slotid >= SLOT_HOTBAR)
             {
-            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false)) return null;
+            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_HOTBAR, false)) return ItemStack.EMPTY;
             }
             //點擊player inv => 移動到inventory or hot bar
             else if (slotid >= SLOT_PLAYERINV)
             {
-            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true)) return null;
+            	if (!this.mergeItemStack(orgStack, SLOT_INVENTORY, SLOT_PLAYERINV, true)) return ItemStack.EMPTY;
             } 
             //點擊inventory => 移動到player inv or hot bar
             else
             {
-            	if (!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false)) return null;
+            	if (!this.mergeItemStack(orgStack, SLOT_PLAYERINV, SLOT_ALL, false)) return ItemStack.EMPTY;
             }
 
             //如果物品都放完了, 則設成null清空該物品
-            if (orgStack.stackSize <= 0)
+            if (orgStack.getCount() <= 0)
             {
-                slot.putStack(null);
+                slot.putStack(ItemStack.EMPTY);
             }
             //還沒放完, 先跑一次slot update
             else
@@ -132,7 +131,7 @@ public class ContainerVolCore extends Container
             int temp = this.tile.getField(0);
             if (this.btnActive != temp)
             {
-            	listener.sendProgressBarUpdate(this, 0, temp);
+            	listener.sendWindowProperty(this, 0, temp);
             }
         }//end all listener
 		

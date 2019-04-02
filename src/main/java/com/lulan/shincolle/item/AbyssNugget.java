@@ -12,8 +12,7 @@ public class AbyssNugget extends BasicItem
 	public AbyssNugget()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
 	}
 	

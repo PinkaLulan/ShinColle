@@ -14,8 +14,7 @@ public class BlockVolBlock extends BasicBlock
 	public BlockVolBlock()
 	{
 		super(Material.SAND);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(3F);
 	    this.setLightLevel(1F);

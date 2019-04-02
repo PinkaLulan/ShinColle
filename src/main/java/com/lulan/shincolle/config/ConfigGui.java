@@ -1,17 +1,15 @@
 package com.lulan.shincolle.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.IConfigElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * GUI config

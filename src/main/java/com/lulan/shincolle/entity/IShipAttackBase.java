@@ -1,17 +1,15 @@
 package com.lulan.shincolle.entity;
 
-import java.util.HashMap;
-
-import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.MissileData;
-
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import net.minecraft.entity.Entity;
+
+import java.util.HashMap;
 
 /**SHIP ATTACK BASE
  * include attacker states getter/setter
  */
-public interface IShipAttackBase extends IMoveShip, IShipEmotion, IShipOwner, IShipAttrs
+public interface IShipAttackBase extends IShipNavigator, IShipEmotion, IShipOwner, IShipAttrs
 {
 	
 	/** get attack target */

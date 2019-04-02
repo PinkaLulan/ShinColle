@@ -1,9 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
@@ -13,15 +9,15 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.GameSettings;
@@ -33,6 +29,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.Random;
 
 /**
  * render helper
@@ -54,7 +53,7 @@ public class RenderHelper
         float f = 0.00390625F;
         float f1 = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
         vertexbuffer.pos((double)(x + 0), (double)(y + height), zLevel).tex((double)((float)(textureX + 0) * 0.00390625F), (double)((float)(textureY + height) * 0.00390625F)).endVertex();
         vertexbuffer.pos((double)(x + width), (double)(y + height), zLevel).tex((double)((float)(textureX + width) * 0.00390625F), (double)((float)(textureY + height) * 0.00390625F)).endVertex();
@@ -71,7 +70,7 @@ public class RenderHelper
         float f = 0.00390625F;
         float f1 = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder vertexbuffer = tessellator.getBuffer();
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
         vertexbuffer.pos((double)(xCoord + 0.0F), (double)(yCoord + (float)maxV), zLevel).tex((double)((float)(minU + 0) * 0.00390625F), (double)((float)(minV + maxV) * 0.00390625F)).endVertex();
         vertexbuffer.pos((double)(xCoord + (float)maxU), (double)(yCoord + (float)maxV), zLevel).tex((double)((float)(minU + maxU) * 0.00390625F), (double)((float)(minV + maxV) * 0.00390625F)).endVertex();
@@ -127,8 +126,9 @@ public class RenderHelper
     			break;
             	}
             }
-            
-            RenderPlayer renderplayer = (RenderPlayer)ClientProxy.getMineraft().getRenderManager().getEntityRenderObject(player);
+
+            Render render = ClientProxy.getMineraft().getRenderManager().getEntityRenderObject(player); // This *might* crash in some cases, we'll have to see
+            RenderPlayer renderplayer = (RenderPlayer) render;
             
             GlStateManager.disableCull();
 
@@ -154,7 +154,7 @@ public class RenderHelper
 		//get mc
 		Minecraft mc = ClientProxy.getMineraft();
 		if (mc == null || mc.skipRenderWorld) return;
-		FontRenderer fr = mc.fontRendererObj;
+		FontRenderer fr = mc.fontRenderer;
 		
 		//get player
 		EntityPlayer player = ClientProxy.getClientPlayer();

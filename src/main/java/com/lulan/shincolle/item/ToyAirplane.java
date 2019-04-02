@@ -8,8 +8,7 @@ public class ToyAirplane extends BasicItem implements IShipFoodItem
 	public ToyAirplane()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 	}
 	
 	@Override

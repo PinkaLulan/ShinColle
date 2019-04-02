@@ -4,7 +4,6 @@ import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipCannonAttack;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -180,7 +179,7 @@ public class EntityAIShipRangeAttack extends EntityAIBase
 	        //若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
 	        if (distSq < this.rangeSq && onSight && !host.getStateFlag(ID.F.UseMelee))
 	        {
-	        	this.host.getShipNavigate().clearPathEntity();
+	        	this.host.getShipNavigate().clearPath();
 	        }
 	        else
 	        {	//目標移動, 則繼續追

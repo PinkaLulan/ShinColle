@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.destroyer;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipPickItem;
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -11,12 +9,7 @@ import com.lulan.shincolle.entity.IShipRiderType;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +17,8 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * 六驅單縱陣合體特性:
@@ -52,13 +47,13 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 	{
 		super(world);
 		this.setSize(0.5F, 1.5F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DESTROYER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDAkatsuki);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.DD]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 50F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -68,7 +63,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
 		this.riderType = 0;
 		this.ridingState = 0;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -121,7 +116,7 @@ public class EntityDestroyerAkatsuki extends BasicEntityShipSmall implements ISh
   	  			{
 	  				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
 	  				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+	  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSq(player) < 256D)
 	  				{
 	  					//potion effect: id, time, level
 	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.HASTE , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 30, false, false));

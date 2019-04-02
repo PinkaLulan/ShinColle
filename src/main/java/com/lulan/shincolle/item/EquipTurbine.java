@@ -1,7 +1,6 @@
 package com.lulan.shincolle.item;
 
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.item.ItemStack;
 
 /**meta:
@@ -20,8 +19,7 @@ public class EquipTurbine extends BasicEquip
 	public EquipTurbine()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
 	}
 	
@@ -84,3 +82,4 @@ public class EquipTurbine extends BasicEquip
 
 
 }
+

@@ -1,14 +1,7 @@
 package com.lulan.shincolle.ai;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipAircraftAttack;
-import com.lulan.shincolle.entity.IShipCannonAttack;
-import com.lulan.shincolle.entity.IShipGuardian;
+import com.lulan.shincolle.entity.*;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -17,7 +10,6 @@ import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TargetHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,6 +17,9 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.Vec3d;
+
+import java.util.Collections;
+import java.util.List;
 /**SHIP GUARDING AI
  * CanFollow = false時可以執行
  * 持續固守某一點followMax格之內, 距離該點followMax格以上就會嘗試回去該點直到靠近followMin格內
@@ -172,7 +167,7 @@ public class EntityAIShipGuarding extends EntityAIBase
     	this.guarded = null;
     	this.isMoving = false;
     	this.findCooldown = 10;
-        this.ShipNavigator.clearPathEntity();
+        this.ShipNavigator.clearPath();
     }
 
     @Override
@@ -256,7 +251,7 @@ public class EntityAIShipGuarding extends EntityAIBase
         	if (this.distSq <= this.minDistSq)
         	{
         		this.isMoving = false;
-        		this.ShipNavigator.clearPathEntity();
+        		this.ShipNavigator.clearPath();
         	}
         	
         	//每cd到找一次路徑
@@ -447,7 +442,7 @@ public class EntityAIShipGuarding extends EntityAIBase
 						guardPosOld[2] = guarded.posZ;
 						
 						//draw moving particle
-						if (owner != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(owner) != null) &&
+						if (owner != null && (ConfigHandler.alwaysShowTeamParticle || !EntityHelper.getPointerInUse(owner).isEmpty()) &&
 							owner.dimension == host2.dimension)
 						{
 							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) owner);
@@ -458,7 +453,7 @@ public class EntityAIShipGuarding extends EntityAIBase
 					if (this.host2.ticksExisted % 16 == 0)
 					{
 						//draw moving particle
-						if (owner != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(owner) != null) &&
+						if (owner != null && (ConfigHandler.alwaysShowTeamParticle || !EntityHelper.getPointerInUse(owner).isEmpty()) &&
 							owner.dimension == host2.dimension)
 						{
 							CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) owner);

@@ -1,7 +1,6 @@
 package com.lulan.shincolle.item;
 
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.item.ItemStack;
 
 /**meta:
@@ -22,8 +21,7 @@ public class EquipMachinegun extends BasicEquip
 	public EquipMachinegun()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
 	}
 	

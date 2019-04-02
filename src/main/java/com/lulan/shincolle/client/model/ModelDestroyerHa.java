@@ -2,10 +2,9 @@ package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IFloatingEntity;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EmotionHelper;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -224,7 +223,7 @@ public class ModelDestroyerHa extends ModelBase implements IModelEmotion
 		BasicEntityShip ent = (BasicEntityShip) entity;
 		
   		//水上漂浮
-  		if (((IFloatingEntity)ent).getEntityDepth() > 0)
+  		if (((IShipFloating)ent).getShipDepth() > 0)
   		{
   			GlStateManager.translate(0F, angleX * 0.05F + 0.025F, 0F);
     	}

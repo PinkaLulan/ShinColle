@@ -1,9 +1,5 @@
 package com.lulan.shincolle.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.gui.inventory.ContainerMorphInventory;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -16,12 +12,11 @@ import com.lulan.shincolle.reference.Enums;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.AttrsAdv;
+import com.lulan.shincolle.reference.unitclass.AttrsAdv;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.GuiHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -34,6 +29,10 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * morph inventory gui
@@ -98,7 +97,7 @@ public class GuiMorphInventory extends GuiContainer
 		{
 			this.attrs = (AttrsAdv) this.entity.getAttrs();
 			this.shipType = this.entity.getShipType();
-			this.shipClass = this.entity.getAttrClass();
+			this.shipClass = this.entity.getShipClass();
 			this.shipRiding[0] = this.entity;
 			this.maxBtn = this.entity.getStateMinor(ID.M.NumState);
 			this.iconXY = new int[2][3];
@@ -167,69 +166,69 @@ public class GuiMorphInventory extends GuiContainer
 		strEmoFlag2 = I18n.format("gui.shincolle:morph.emo2");
 	}
 	
-	//有用到fontRendererObj的必須放在此init
+	//有用到fontRenderer的必須放在此init
 	@Override
 	public void initGui()
     {
 		super.initGui();
 		
 		//get max string width for hovering text drawing
-		int temp = this.fontRendererObj.getStringWidth(strAttrATK);
+		int temp = this.fontRenderer.getStringWidth(strAttrATK);
 		this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAIR);
+		temp = this.fontRenderer.getStringWidth(strAttrAIR);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrCri);
+		temp = this.fontRenderer.getStringWidth(strAttrCri);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrDHIT);
+		temp = this.fontRenderer.getStringWidth(strAttrDHIT);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrTHIT);
+		temp = this.fontRenderer.getStringWidth(strAttrTHIT);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAA);
+		temp = this.fontRenderer.getStringWidth(strAttrAA);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrASM);
+		temp = this.fontRenderer.getStringWidth(strAttrASM);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrModern);
+		temp = this.fontRenderer.getStringWidth(strAttrModern);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrXP);
+		temp = this.fontRenderer.getStringWidth(strAttrXP);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrGrudge);
+		temp = this.fontRenderer.getStringWidth(strAttrGrudge);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAmmo);
+		temp = this.fontRenderer.getStringWidth(strAttrAmmo);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrHPRES);
+		temp = this.fontRenderer.getStringWidth(strAttrHPRES);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrMiss);
+		temp = this.fontRenderer.getStringWidth(strAttrMiss);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrDodge);
+		temp = this.fontRenderer.getStringWidth(strAttrDodge);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrKB);
+		temp = this.fontRenderer.getStringWidth(strAttrKB);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrHP);
+		temp = this.fontRenderer.getStringWidth(strAttrHP);
 		if (temp > this.widthHoveringText1) this.widthHoveringText1 = temp;
 		
-		temp = this.fontRendererObj.getStringWidth(strAttrFPos);
+		temp = this.fontRenderer.getStringWidth(strAttrFPos);
 		this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrATK);
+		temp = this.fontRenderer.getStringWidth(strAttrATK);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAIR);
+		temp = this.fontRenderer.getStringWidth(strAttrAIR);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrDEF);
+		temp = this.fontRenderer.getStringWidth(strAttrDEF);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrDodge);
+		temp = this.fontRenderer.getStringWidth(strAttrDodge);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrMissR);
+		temp = this.fontRenderer.getStringWidth(strAttrMissR);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrCri);
+		temp = this.fontRenderer.getStringWidth(strAttrCri);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrDHIT);
+		temp = this.fontRenderer.getStringWidth(strAttrDHIT);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrTHIT);
+		temp = this.fontRenderer.getStringWidth(strAttrTHIT);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrAA);
+		temp = this.fontRenderer.getStringWidth(strAttrAA);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrASM);
+		temp = this.fontRenderer.getStringWidth(strAttrASM);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
-		temp = this.fontRendererObj.getStringWidth(strAttrMOV);
+		temp = this.fontRenderer.getStringWidth(strAttrMOV);
 		if (temp > this.widthHoveringText3) this.widthHoveringText3 = temp;
     }
 	
@@ -242,7 +241,7 @@ public class GuiMorphInventory extends GuiContainer
 		
 		//畫出字串 parm: string, x, y, color, (是否dropShadow)
 		//draw entity name (title) 
-		this.fontRendererObj.drawString(titlename, 8, 6, 0);
+		this.fontRenderer.drawString(titlename, 8, 6, 0);
 
 		drawAttributes();	
 		
@@ -513,7 +512,7 @@ public class GuiMorphInventory extends GuiContainer
 		if (xMouse >= 145+guiLeft && xMouse < 202+guiLeft && yMouse >= 4+guiTop && yMouse < 15+guiTop)
 		{
 			mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.HP));
-			this.drawHoveringText(mouseoverList, 145, 32, this.fontRendererObj);
+			this.drawHoveringText(mouseoverList, 145, 32, this.fontRenderer);
 		}
 		//Attrs tooltip
 		else if (xMouse >= 73+guiLeft && xMouse < 134+guiLeft)
@@ -539,7 +538,7 @@ public class GuiMorphInventory extends GuiContainer
 					mouseoverList.add(TextFormatting.DARK_AQUA + strAttrAmmo);
 					mouseoverList.add(TextFormatting.DARK_GREEN + strAttrHPRES);
 					mouseoverList.add(TextFormatting.DARK_RED + strAttrKB);
-					this.drawHoveringText(mouseoverList, 55, 57, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 55, 57, this.fontRenderer);
 					
 					//draw attack value
 					mouseoverList.clear();
@@ -589,31 +588,31 @@ public class GuiMorphInventory extends GuiContainer
 					mouseoverList.add(overText);
 					overText = String.valueOf((int)(attrs.getAttrsBuffed(ID.Attrs.KB) * 100F)) + " %";
 					mouseoverList.add(overText);
-					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText1, 57, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 61 + this.widthHoveringText1, 57, this.fontRenderer);
 				}
 				//DEF tooltip
 				else if (yMouse >= 41+guiTop && yMouse < 62+guiTop)
 				{
 					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.DEF));
-					this.drawHoveringText(mouseoverList, 55, 78, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 55, 78, this.fontRenderer);
 				}
 				//SPD tooltip
 				else if (yMouse >= 62+guiTop && yMouse < 83+guiTop)
 				{
 					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.SPD));
-					this.drawHoveringText(mouseoverList, 55, 99, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 55, 99, this.fontRenderer);
 				}
 				//MOV tooltip
 				else if (yMouse >= 83+guiTop && yMouse < 104+guiTop)
 				{
 					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.MOV));
-					this.drawHoveringText(mouseoverList, 55, 120, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 55, 120, this.fontRenderer);
 				}
 				//RANGE tooltip
 				else if (yMouse >= 104+guiTop && yMouse < 126+guiTop)
 				{
 					mouseoverList.add(strAttrModern+" "+attrs.getAttrsBonus(ID.AttrsBase.HIT));
-					this.drawHoveringText(mouseoverList, 55, 142, this.fontRendererObj);
+					this.drawHoveringText(mouseoverList, 55, 142, this.fontRenderer);
 				}
 			}//end page 2
 //			else if (showPage == 3)
@@ -638,7 +637,7 @@ public class GuiMorphInventory extends GuiContainer
 //					mouseoverList.add(TextFormatting.DARK_GREEN + strAttrHPRES);
 //					mouseoverList.add(TextFormatting.DARK_RED + strAttrKB);
 //					mouseoverList.add(TextFormatting.GRAY + strAttrMOV);
-//					this.drawHoveringText(mouseoverList, 128, 35, this.fontRendererObj);
+//					this.drawHoveringText(mouseoverList, 128, 35, this.fontRenderer);
 //					
 //					//draw value
 //					mouseoverList.clear();
@@ -685,7 +684,7 @@ public class GuiMorphInventory extends GuiContainer
 //					overText = "+ " + String.format("%.2f", attrs.getAttrsFormation(ID.Attrs.MOV));
 //					mouseoverList.add(overText);
 //					
-//					this.drawHoveringText(mouseoverList, 134 + this.widthHoveringText3, 35, this.fontRendererObj);
+//					this.drawHoveringText(mouseoverList, 134 + this.widthHoveringText3, 35, this.fontRenderer);
 //				}//end formation
 //			}//end page 3
 		}
@@ -761,7 +760,7 @@ public class GuiMorphInventory extends GuiContainer
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[1].getAttrClass() == ID.ShipClass.DDIkazuchi)
+			if (entity[1].getShipClass() == ID.ShipClass.DDIkazuchi)
 			{
 				if (entity[0].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -776,16 +775,16 @@ public class GuiMorphInventory extends GuiContainer
 			//ship必須先畫才畫mounts
 			float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (entity[0].renderYawOffset % 360) / 57.2957F, 1F);
 			GlStateManager.translate(partPos[1], (float)entity[0].getMountedYOffset() + specialOffset, partPos[0]);
-			rendermanager.doRenderEntity((Entity) entity[1], 0D, 0D, 0D, 0F, 1F, false);
+			rendermanager.renderEntity((Entity) entity[1], 0D, 0D, 0D, 0F, 1F, false);
 			GlStateManager.translate(-partPos[1], -((float)entity[0].getMountedYOffset() + specialOffset), -partPos[0]);
-			rendermanager.doRenderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
+			rendermanager.renderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
 		}
 		else if (entity[2] != null)
 		{
 			float specialOffset = 0F;
 			
 			//special case
-			if (entity[2].getAttrClass() == ID.ShipClass.DDInazuma)
+			if (entity[2].getShipClass() == ID.ShipClass.DDInazuma)
 			{
 				if (entity[2].getStateEmotion(ID.S.Emotion) == ID.Emotion.BORED)
 				{
@@ -800,13 +799,13 @@ public class GuiMorphInventory extends GuiContainer
 			//ship必須先畫才畫mounts
 			float[] partPos = CalcHelper.rotateXZByAxis(-0.2F, 0F, (entity[0].renderYawOffset % 360) / 57.2957F, 1F);
 			GlStateManager.translate(partPos[1], (float)entity[2].getMountedYOffset() + specialOffset, partPos[0]);
-			rendermanager.doRenderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
+			rendermanager.renderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
 			GlStateManager.translate(-partPos[1], -((float)entity[2].getMountedYOffset() + specialOffset), -partPos[0]);
-			rendermanager.doRenderEntity((Entity) entity[2], 0D, 0D, 0D, 0F, 1F, false);
+			rendermanager.renderEntity((Entity) entity[2], 0D, 0D, 0D, 0F, 1F, false);
 		}
 		else
 		{
-			rendermanager.doRenderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
+			rendermanager.renderEntity((Entity) entity[0], 0D, 0D, 0D, 0F, 1F, false);
 		}
 		
 //		entity.renderYawOffset = f2;
@@ -838,8 +837,8 @@ public class GuiMorphInventory extends GuiContainer
 		color = 0;
 
 		//draw lv/hp name
-		this.fontRendererObj.drawStringWithShadow(lvMark, 231-this.fontRendererObj.getStringWidth(lvMark), 6, 65535);
-		this.fontRendererObj.drawStringWithShadow(hpMark, 145-this.fontRendererObj.getStringWidth(hpMark), 6, 65535);
+		this.fontRenderer.drawStringWithShadow(lvMark, 231-this.fontRenderer.getStringWidth(lvMark), 6, 65535);
+		this.fontRenderer.drawStringWithShadow(hpMark, 145-this.fontRenderer.getStringWidth(hpMark), 6, 65535);
 		
 		//draw level: 150->gold other->white
 		if (entity.getStateMinor(ID.M.ShipLevel) < 150)
@@ -850,15 +849,15 @@ public class GuiMorphInventory extends GuiContainer
 		{
 			color = 16766720;  //gold
 		}
-		this.fontRendererObj.drawStringWithShadow(shiplevel, xSize-6-this.fontRendererObj.getStringWidth(shiplevel), 6, color);
+		this.fontRenderer.drawStringWithShadow(shiplevel, xSize-6-this.fontRenderer.getStringWidth(shiplevel), 6, color);
 
 		//draw maxhp
 		color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.HP));
-		this.fontRendererObj.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRendererObj.getStringWidth(String.valueOf(hpCurrent)), 6, color);
+		this.fontRenderer.drawStringWithShadow("/"+String.valueOf(hpMax), 148 + this.fontRenderer.getStringWidth(String.valueOf(hpCurrent)), 6, color);
 		
 		//draw current hp, if currHP < maxHP, use darker color
 		if (hpCurrent < hpMax) color = GuiHelper.getDarkerColor(color, 0.8F);
-		this.fontRendererObj.drawStringWithShadow(String.valueOf(hpCurrent), 147, 6, color);	
+		this.fontRenderer.drawStringWithShadow(String.valueOf(hpCurrent), 147, 6, color);
 				
 		//draw string in different page
 		switch (this.showPage)
@@ -879,47 +878,47 @@ public class GuiMorphInventory extends GuiContainer
 			//draw ATK, DEF, SPD, MOV, HIT
 			if (this.showAttack == 1)
 			{	//show cannon attack
-				this.fontRendererObj.drawString(strAttrATK, 75, 20, 0);
+				this.fontRenderer.drawString(strAttrATK, 75, 20, 0);
 				color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.ATK));
-				this.fontRendererObj.drawStringWithShadow(strATK, 133-this.fontRendererObj.getStringWidth(strATK), 30, color);
+				this.fontRenderer.drawStringWithShadow(strATK, 133-this.fontRenderer.getStringWidth(strATK), 30, color);
 			}
 			else
 			{	//show aircraft attack
-				this.fontRendererObj.drawString(strAttrAIR, 75, 20, 0);
+				this.fontRenderer.drawString(strAttrAIR, 75, 20, 0);
 				color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.ATK));
-				this.fontRendererObj.drawStringWithShadow(strAATK, 133-this.fontRendererObj.getStringWidth(strAATK), 30, color);
+				this.fontRenderer.drawStringWithShadow(strAATK, 133-this.fontRenderer.getStringWidth(strAATK), 30, color);
 			}
 			
-			this.fontRendererObj.drawString(strAttrDEF, 75, 41, 0);
-			this.fontRendererObj.drawString(strAttrSPD, 75, 62, 0);
-			this.fontRendererObj.drawString(strAttrMOV, 75, 83, 0);
-			this.fontRendererObj.drawString(strAttrHIT, 75, 104, 0);
+			this.fontRenderer.drawString(strAttrDEF, 75, 41, 0);
+			this.fontRenderer.drawString(strAttrSPD, 75, 62, 0);
+			this.fontRenderer.drawString(strAttrMOV, 75, 83, 0);
+			this.fontRenderer.drawString(strAttrHIT, 75, 104, 0);
 			
 			//draw armor
 			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.DEF));
-			this.fontRendererObj.drawStringWithShadow(strDEF, 133-this.fontRendererObj.getStringWidth(strDEF), 51, color);
+			this.fontRenderer.drawStringWithShadow(strDEF, 133-this.fontRenderer.getStringWidth(strDEF), 51, color);
 			
 			//draw attack speed
 			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.SPD));
-			this.fontRendererObj.drawStringWithShadow(strSPD, 133-this.fontRendererObj.getStringWidth(strSPD), 72, color);
+			this.fontRenderer.drawStringWithShadow(strSPD, 133-this.fontRenderer.getStringWidth(strSPD), 72, color);
 			
 			//draw movement speed
 			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.MOV));
-			this.fontRendererObj.drawStringWithShadow(strMOV, 133-this.fontRendererObj.getStringWidth(strMOV), 93, color);
+			this.fontRenderer.drawStringWithShadow(strMOV, 133-this.fontRenderer.getStringWidth(strMOV), 93, color);
 					
 			//draw range
 			color = GuiHelper.getBonusPointColor(attrs.getAttrsBonus(ID.AttrsBase.HIT));
-			this.fontRendererObj.drawStringWithShadow(strHIT, 133-this.fontRendererObj.getStringWidth(strHIT), 114, color);
+			this.fontRenderer.drawStringWithShadow(strHIT, 133-this.fontRenderer.getStringWidth(strHIT), 114, color);
 			break;
 		}
 		case 1:
 		{	//page 1: exp, kills, L&H ammo, fuel
 			//draw string
-			this.fontRendererObj.drawString(strMiKills, 75, 20, 0);
-			this.fontRendererObj.drawString(strMiExp, 75, 41, 0);
-			this.fontRendererObj.drawString(strMiAmmoL, 75, 62, 0);
-			this.fontRendererObj.drawString(strMiAmmoH, 75, 83, 0);
-			this.fontRendererObj.drawString(strMiGrudge, 75, 104, 0);
+			this.fontRenderer.drawString(strMiKills, 75, 20, 0);
+			this.fontRenderer.drawString(strMiExp, 75, 41, 0);
+			this.fontRenderer.drawString(strMiAmmoL, 75, 62, 0);
+			this.fontRenderer.drawString(strMiAmmoH, 75, 83, 0);
+			this.fontRenderer.drawString(strMiGrudge, 75, 104, 0);
 			
 			//draw value
 			entity.setExpNext();  //update exp value
@@ -929,19 +928,19 @@ public class GuiMorphInventory extends GuiContainer
 			AmmoHeavy = String.valueOf(this.entity.getStateMinor(ID.M.NumAmmoHeavy));
 			Grudge = String.valueOf(this.entity.getStateMinor(ID.M.NumGrudge));
 				
-			this.fontRendererObj.drawStringWithShadow(Kills, 133-this.fontRendererObj.getStringWidth(Kills), 30, Enums.EnumColors.WHITE.getValue());
-			this.fontRendererObj.drawStringWithShadow(Exp, 133-this.fontRendererObj.getStringWidth(Exp), 51, Enums.EnumColors.WHITE.getValue());
-			this.fontRendererObj.drawStringWithShadow(AmmoLight, 133-this.fontRendererObj.getStringWidth(AmmoLight), 72, Enums.EnumColors.WHITE.getValue());
-			this.fontRendererObj.drawStringWithShadow(AmmoHeavy, 133-this.fontRendererObj.getStringWidth(AmmoHeavy), 93, Enums.EnumColors.WHITE.getValue());
-			this.fontRendererObj.drawStringWithShadow(Grudge, 133-this.fontRendererObj.getStringWidth(Grudge), 114, Enums.EnumColors.WHITE.getValue());
+			this.fontRenderer.drawStringWithShadow(Kills, 133-this.fontRenderer.getStringWidth(Kills), 30, Enums.EnumColors.WHITE.getValue());
+			this.fontRenderer.drawStringWithShadow(Exp, 133-this.fontRenderer.getStringWidth(Exp), 51, Enums.EnumColors.WHITE.getValue());
+			this.fontRenderer.drawStringWithShadow(AmmoLight, 133-this.fontRenderer.getStringWidth(AmmoLight), 72, Enums.EnumColors.WHITE.getValue());
+			this.fontRenderer.drawStringWithShadow(AmmoHeavy, 133-this.fontRenderer.getStringWidth(AmmoHeavy), 93, Enums.EnumColors.WHITE.getValue());
+			this.fontRenderer.drawStringWithShadow(Grudge, 133-this.fontRenderer.getStringWidth(Grudge), 114, Enums.EnumColors.WHITE.getValue());
 						
 			break;
 		}
 		case 3:
 		{	//page 3: light/heavy airplane, marriage
 			//draw string
-			this.fontRendererObj.drawString(strAttrWedding, 75, 20, 0);
-			this.fontRendererObj.drawString(strAttrFormat, 75, 41, 0);
+			this.fontRenderer.drawString(strAttrWedding, 75, 20, 0);
+			this.fontRenderer.drawString(strAttrFormat, 75, 41, 0);
 			
 			//draw value
 			//draw marriage
@@ -957,20 +956,20 @@ public class GuiMorphInventory extends GuiContainer
 			//draw formation
 			int ftype = this.entity.getStateMinor(ID.M.FormatType);
 			this.Formation = I18n.format("gui.shincolle:formation.format"+ftype);
-			this.fontRendererObj.drawStringWithShadow(Formation, 133-this.fontRendererObj.getStringWidth(Formation), 51, Enums.EnumColors.WHITE.getValue());
+			this.fontRenderer.drawStringWithShadow(Formation, 133-this.fontRenderer.getStringWidth(Formation), 51, Enums.EnumColors.WHITE.getValue());
 			
 			//大型艦, 顯示艦載機數量
 			if (this.entity instanceof BasicEntityShipCV)
 			{
-				this.fontRendererObj.drawString(strMiAirL, 75, 83, 0);
-				this.fontRendererObj.drawString(strMiAirH, 75, 104, 0);
+				this.fontRenderer.drawString(strMiAirL, 75, 83, 0);
+				this.fontRenderer.drawString(strMiAirH, 75, 104, 0);
 				AirLight = String.valueOf(((BasicEntityShipCV)this.entity).getNumAircraftLight());
 				AirHeavy = String.valueOf(((BasicEntityShipCV)this.entity).getNumAircraftHeavy());
-				this.fontRendererObj.drawStringWithShadow(AirLight, 133-this.fontRendererObj.getStringWidth(AirLight), 93, Enums.EnumColors.YELLOW.getValue());
-				this.fontRendererObj.drawStringWithShadow(AirHeavy, 133-this.fontRendererObj.getStringWidth(AirHeavy), 114, Enums.EnumColors.YELLOW.getValue());	
+				this.fontRenderer.drawStringWithShadow(AirLight, 133-this.fontRenderer.getStringWidth(AirLight), 93, Enums.EnumColors.YELLOW.getValue());
+				this.fontRenderer.drawStringWithShadow(AirHeavy, 133-this.fontRenderer.getStringWidth(AirHeavy), 114, Enums.EnumColors.YELLOW.getValue());
 			}
 			
-			this.fontRendererObj.drawStringWithShadow(marriage, 133-this.fontRendererObj.getStringWidth(marriage), 30, Enums.EnumColors.YELLOW.getValue());
+			this.fontRenderer.drawStringWithShadow(marriage, 133-this.fontRenderer.getStringWidth(marriage), 30, Enums.EnumColors.YELLOW.getValue());
 			
 			break;
 		}//end case 3
@@ -982,19 +981,19 @@ public class GuiMorphInventory extends GuiContainer
 		case 1:
 		{	//AI page 1
 			//draw string
-			this.fontRendererObj.drawString(strNofuel, 187, 133, 0);
-			this.fontRendererObj.drawString(strSit, 187, 146, 0);
-			this.fontRendererObj.drawString(strEmoFlag1, 187, 159, 0);
-			this.fontRendererObj.drawString(strEmoFlag2, 187, 172, 0);
-//			this.fontRendererObj.drawString(strASM, 187, 185, 0);
-			this.fontRendererObj.drawString(auraEffect, 187, 198, 0);
+			this.fontRenderer.drawString(strNofuel, 187, 133, 0);
+			this.fontRenderer.drawString(strSit, 187, 146, 0);
+			this.fontRenderer.drawString(strEmoFlag1, 187, 159, 0);
+			this.fontRenderer.drawString(strEmoFlag2, 187, 172, 0);
+//			this.fontRenderer.drawString(strASM, 187, 185, 0);
+			this.fontRenderer.drawString(auraEffect, 187, 198, 0);
 		}
 		break;
 		case 6:		//AI page 6
 		{	//AI page 6
 			//draw string
-			this.fontRendererObj.drawString(strShowHeld, 187, 133, 0);
-			this.fontRendererObj.drawString(strAppear, 177, 146, 0);
+			this.fontRenderer.drawString(strShowHeld, 187, 133, 0);
+			this.fontRenderer.drawString(strAppear, 177, 146, 0);
 		}
 		break;
 		}//end AI page switch

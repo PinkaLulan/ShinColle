@@ -7,7 +7,6 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -26,20 +25,20 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.6F, 1.55F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 6);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.DD]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 50F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 50F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override
@@ -93,7 +92,7 @@ public class EntityDestroyerHime extends BasicEntityShipSmall
   			{
   				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSq(player) < 256D)
   				{
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(MobEffects.SPEED , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 45 + 1, false, false));

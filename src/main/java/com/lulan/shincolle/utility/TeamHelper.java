@@ -1,7 +1,5 @@
 package com.lulan.shincolle.utility;
 
-import java.util.List;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipOwner;
@@ -9,10 +7,11 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.team.TeamData;
 import com.lulan.shincolle.tileentity.BasicTileInventory;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.player.EntityPlayer;
+
+import java.util.List;
 
 /**
  * helper for owner/team/ally/friendly/hostile checking
@@ -195,12 +194,6 @@ public class TeamHelper
 		
 		return false;
 	}
-	
-	/** check is same owner */
-	public static boolean checkSameOwner(IShipOwner host, Entity target)
-    {
-	    return checkSameOwner(host.getHostEntity(), target);
-    }
 	
 	/** check is same owner for ship (host's owner == target's owner) */
 	public static boolean checkSameOwner(Entity enta, Entity entb)

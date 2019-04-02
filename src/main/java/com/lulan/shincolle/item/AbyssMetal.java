@@ -6,16 +6,13 @@ package com.lulan.shincolle.item;
  * 
  */
 public class AbyssMetal extends BasicItem implements IShipResourceItem, IShipFoodItem
-{	
-	
+{
 	private static final String NAME = "AbyssMetal";
-	
 	
 	public AbyssMetal()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
 	}
 	

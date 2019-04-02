@@ -20,8 +20,7 @@ public class BlockGrudgeXP extends BasicBlock
 	public BlockGrudgeXP()
 	{
 		super(Material.SAND);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("shovel", 0);
 	    this.setHardness(1F);
 	    this.setLightLevel(1F);
@@ -30,7 +29,7 @@ public class BlockGrudgeXP extends BasicBlock
 	}
 	
 	@SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    public BlockRenderLayer getRenderLayer()
     {
         return BlockRenderLayer.TRANSLUCENT;
     }

@@ -5,7 +5,6 @@ import com.lulan.shincolle.tileentity.BasicTileMulti;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.MulitBlockHelper;
-
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -107,7 +106,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
     {
         return false;
     }
-	
+    
 	@Override
     public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
     {
@@ -181,7 +180,7 @@ abstract public class BasicBlockMulti extends BasicBlockContainer
 	//右鍵點到方塊時呼叫此方法
 	//參數: world,方塊x,y,z,玩家,玩家面向,玩家點到的x,y,z	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		//client端只需要收到true
 		if(world.isRemote)

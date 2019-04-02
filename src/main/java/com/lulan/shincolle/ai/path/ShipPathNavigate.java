@@ -1,13 +1,10 @@
 package com.lulan.shincolle.ai.path;
 
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.handler.IMoveShip;
+import com.lulan.shincolle.entity.IShipNavigator;
 import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,6 +17,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 /**SHIP PATH NAVIGATE
  * ship or airplane限定path ai, 該entity必須實作IShipNavigator
  * 無視重力或者浮力作用找出空中 or 水中路徑, 若entity在陸上移動則不需要更新此navigator
@@ -31,7 +30,7 @@ public class ShipPathNavigate
 	private static int UpdatePathDelay = 20;
     private EntityLiving host;
     /** The entity using ship path navigate */
-    private IMoveShip hostShip;
+    private IShipNavigator hostShip;
     private World world;
     /** The PathEntity being followed. */
     @Nullable
@@ -59,7 +58,7 @@ public class ShipPathNavigate
     public ShipPathNavigate(EntityLiving entity)
     {
         this.host = entity;
-        this.hostShip = (IMoveShip) entity;
+        this.hostShip = (IShipNavigator) entity;
         this.world = entity.world;
         
         this.maxDistanceToWaypoint = (float) MathHelper.absMax(this.host.width * 0.75D, 0.75D);
@@ -363,7 +362,7 @@ public class ShipPathNavigate
             {
             	if(isStuck)
             	{
-            		this.clearPathEntity();
+            		this.clearPath();
             	}
                 
                 this.ticksAtLastPos = this.pathTicks;
@@ -397,7 +396,7 @@ public class ShipPathNavigate
                 this.lastPosStuck = Vec3d.ZERO;
                 this.timeoutTimer = 0L;
                 this.timeoutLimit = 0D;
-                this.clearPathEntity();
+                this.clearPath();
             }
 
             this.lastTimeoutCheck = System.currentTimeMillis();
@@ -415,7 +414,7 @@ public class ShipPathNavigate
     /**
      * sets active PathEntity to null
      */
-    public void clearPathEntity()
+    public void clearPath()
     {
         this.currentPath = null;
     }
@@ -494,7 +493,7 @@ public class ShipPathNavigate
     private boolean isDirectPathBetweenPoints(Vec3d pos1, Vec3d pos2, int sizeX, int sizeY, int sizeZ)
     {
 //    	//method 1: use raytrace
-//    	RayTraceResult trace = this.world.rayTraceBlocks(pos1, new Vec3d(pos2.x, pos2.y + this.host.height * 0.5D, pos2.z), false, true, false);
+//    	RayTraceResult trace = this.world.rayTraceBlocks(pos1, new Vec3d(pos2.xCoord, pos2.yCoord + this.host.height * 0.5D, pos2.zCoord), false, true, false);
 
     	//method 2: check all block on path
         int x1 = MathHelper.floor(pos1.x);

@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.hime;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -11,16 +9,17 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * model state:
@@ -33,13 +32,13 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 2.05F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 1);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BB]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
-		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
+		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -48,7 +47,7 @@ public class EntityBattleshipHime extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(30);
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override

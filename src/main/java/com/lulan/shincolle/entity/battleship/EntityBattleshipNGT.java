@@ -1,8 +1,5 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
@@ -14,15 +11,8 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
@@ -31,6 +21,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**特殊heavy attack:
  * 用StateEmotion[ID.S.Phase]來儲存攻擊階段
@@ -46,13 +39,13 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 2F);	//碰撞大小 跟模型大小無關
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.BATTLESHIP);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.BATTLESHIP);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.BBNagato);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.BATTLESHIP);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.BB]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.BB]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.BB]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 40F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -61,7 +54,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(20);
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -154,7 +147,7 @@ public class EntityBattleshipNGT extends BasicEntityShipSmall
         	for (EntityLivingBase ent : slist)
         	{
         		if (ent instanceof EntityNorthernHime || (ent instanceof IShipEmotion &&
-        			((IShipEmotion)ent).getStateMinor(ID.M.ShipType) == ID.ShipIconType.DESTROYER))
+        			((IShipEmotion)ent).getStateMinor(ID.M.ShipType) == ID.ShipType.DESTROYER))
         		{
         			target.add(ent);
         		}

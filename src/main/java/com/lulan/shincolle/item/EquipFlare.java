@@ -1,17 +1,14 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.reference.Enums.EnumEquipEffectSP;
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**meta:
  *    0: normal drum
@@ -25,8 +22,7 @@ public class EquipFlare extends BasicEquip
 	public EquipFlare()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 	}
 	
 	@Override
@@ -63,11 +59,15 @@ public class EquipFlare extends BasicEquip
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
-    {  		
+    public void addInformation(ItemStack itemstack, World world, List list, ITooltipFlag par4)
+	{  		
 		list.add(TextFormatting.GRAY + I18n.format("gui.shincolle:flare"));
-		super.addInformation(stack, world, list, flag);
+		super.addInformation(itemstack, world, list, par4);
 	}
 	
 
 }
+
+
+
+

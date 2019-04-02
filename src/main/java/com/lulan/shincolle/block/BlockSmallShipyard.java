@@ -1,7 +1,5 @@
 package com.lulan.shincolle.block;
 
-import java.util.Random;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.client.render.block.RenderSmallShipyard;
 import com.lulan.shincolle.entity.IShipOwner;
@@ -10,11 +8,9 @@ import com.lulan.shincolle.utility.BlockHelper;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -34,6 +30,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Random;
+
 public class BlockSmallShipyard extends BasicBlockFacingContainer
 {
 
@@ -48,8 +46,7 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
 	public BlockSmallShipyard()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHardness(10F);
 	    this.setHarvestLevel("pickaxe", 3);
 	    this.setLightLevel(4);
@@ -91,7 +88,7 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
     public IBlockState getStateFromMeta(int meta)
     {
     	//all direction: 3 bits for FACING, 1 bit for ACTIVE
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7))
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7))
         						.withProperty(ACTIVE, (meta & 8) > 0);
     }
 
@@ -135,12 +132,6 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
     public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
     {
         return false;
-    }
-	
-	@Override
-	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
-    {
-        return BlockFaceShape.SOLID;
     }
     
 	@Override
@@ -250,7 +241,7 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		//sync player UID while right click
 		if (!world.isRemote)
@@ -263,7 +254,7 @@ public class BlockSmallShipyard extends BasicBlockFacingContainer
 			}
 		}
 		
-		return super.onBlockActivated(world, pos, state, player, hand, facing, hitX, hitY, hitZ);
+		return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
 	}
 	
 

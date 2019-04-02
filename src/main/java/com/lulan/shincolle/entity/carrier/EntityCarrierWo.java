@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.carrier;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
@@ -12,10 +10,11 @@ import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.EmotionHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * model state:
@@ -28,13 +27,13 @@ public class EntityCarrierWo extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.7F, 1.9F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.STANDARD_CARRIER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.STANDARD_CARRIER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVWO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 5);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CV]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
-		this.modelPosInGUI = new float[] {0F, 20F, 0F, 30F};
+		this.ModelPos = new float[] {0F, 20F, 0F, 30F};
 		this.launchHeight = this.height * 0.9F;
 		
 		//set attack type
@@ -44,7 +43,7 @@ public class EntityCarrierWo extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(18);
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override

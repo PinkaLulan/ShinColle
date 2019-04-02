@@ -1,17 +1,11 @@
 package com.lulan.shincolle.utility;
 
-import java.util.HashSet;
-import java.util.Random;
-
-import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipOwner;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.tileentity.BasicTileEntity;
 import com.lulan.shincolle.tileentity.TileEntityLightBlock;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
@@ -19,22 +13,18 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.HashSet;
+import java.util.Random;
 
 public class BlockHelper
 {
@@ -498,7 +488,7 @@ public class BlockHelper
 		
 		Vec3d vec3 = viewer.getPositionEyes(duringTicks);
 	    Vec3d vec31 = viewer.getLook(duringTicks);
-	    Vec3d vec32 = vec3.addVector(vec31.xCoord * dist, vec31.yCoord * dist, vec31.zCoord * dist);
+	    Vec3d vec32 = vec3.add(vec31.x * dist, vec31.y * dist, vec31.z * dist);
 	    
 	    //參數: entity位置, entity視線最遠位置, 停止在液體方塊上, 忽略沒有AABB的方塊, 回傳距離內最遠的不可碰撞方塊
 	    return viewer.world.rayTraceBlocks(vec3, vec32, stopOnLiquid, ignoreBlockWithoutBoundingBox, returnLastUncollidableBlock);
@@ -804,33 +794,6 @@ public class BlockHelper
   		}
   		
   		return null;
-	}
-	
-	/**
-	 * used in Block::onBlockActivated
-	 */
-	public static boolean handleBlockClick(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{
-		//client端: 只需要收到true
-        if (world.isRemote)
-        {
-            return true;
-        }
-        
-        //server端: 若玩家不是sneaking, 則開啟gui
-        if (!player.isSneaking())
-        {
-        	TileEntity tile = world.getTileEntity(pos);
-        	
-        	//open gui
-        	if (tile instanceof BasicTileEntity && ((BasicTileEntity) tile).getGuiIntID() >= 0)
-        	{
-        		player.openGui(ShinColle.instance, ((BasicTileEntity) tile).getGuiIntID(), world, pos.getX(), pos.getY(), pos.getZ());
-                return true;
-        	}
-        }
-
-		return false;
 	}
 	
 	

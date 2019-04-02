@@ -1,9 +1,6 @@
 package com.lulan.shincolle.capability;
 
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.item.ShipTank;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -14,6 +11,8 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+
+import javax.annotation.Nullable;
 
 /**
  * fluid capability for itemstack
@@ -45,7 +44,7 @@ public class CapaFluidContainer implements IFluidHandler, ICapabilityProvider
     protected void initCapacity()
     {
     	//set capacity by stack meta value
-    	if (this.needInit && this.stack != null)
+    	if (this.needInit && !this.stack.isEmpty())
     	{
     		if (this.stack.getItem() instanceof ShipTank)
     		{
@@ -194,7 +193,7 @@ public class CapaFluidContainer implements IFluidHandler, ICapabilityProvider
     /**
      * Override this method for special handling.
      * Can be used to swap out the container's item for a different one with "container.setItem".
-     * Can be used to destroy the container with "container.stackSize--"
+     * Can be used to destroy the container with "container.getCount()--"
      */
     protected void setContainerToEmpty()
     {

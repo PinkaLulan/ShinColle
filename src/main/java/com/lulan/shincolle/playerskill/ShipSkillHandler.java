@@ -1,7 +1,5 @@
 package com.lulan.shincolle.playerskill;
 
-import java.util.ArrayList;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -12,18 +10,14 @@ import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.utility.BlockHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.utility.*;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+
+import java.util.ArrayList;
 
 public class ShipSkillHandler
 {
@@ -177,7 +171,7 @@ public class ShipSkillHandler
 			//get skill target: block
 			if (target == null) 
 			{
-				if (mount.getEntityDepth() >= 3D)
+				if (mount.getShipDepth() >= 3D)
 				{
 					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
 				}
@@ -290,7 +284,7 @@ public class ShipSkillHandler
 			//get skill target: block
 			if (target == null) 
 			{
-				if (ship.getEntityDepth() > 2D)
+				if (ship.getShipDepth() > 2D)
 				{
 					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
 				}
@@ -434,7 +428,7 @@ public class ShipSkillHandler
 			//get skill target: block
 			if (target == null) 
 			{
-				if (ship.getEntityDepth() >= 3D)
+				if (ship.getShipDepth() >= 3D)
 				{
 					hitObj = BlockHelper.getPlayerMouseOverBlockThroughWater(range, 1F);
 				}
@@ -576,7 +570,7 @@ public class ShipSkillHandler
 			{
 				target = EntityHelper.getEntityByID(data[1], player.world.provider.getDimension(), false);
 				
-				if (target != null && ship.getDistanceSqToEntity(target) > rangeSq)
+				if (target != null && ship.getDistanceSq(target) > rangeSq)
 				{
 					target = null;
 				}

@@ -11,7 +11,6 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.FormationHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -131,7 +130,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
 	public void resetTask()
     {
         this.owner = null;
-        this.ShipNavigator.clearPathEntity();
+        this.ShipNavigator.clearPath();
     }
 
     @Override
@@ -173,7 +172,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
         	//end move
         	if (this.distSq <= this.minDistSq)
         	{
-        		this.ShipNavigator.clearPathEntity();
+        		this.ShipNavigator.clearPath();
         	}
         	
         	//每cd到找一次路徑
@@ -246,7 +245,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
 				ownerPosOld[2] = owner.posZ;
 					
 				//draw moving particle
-				if (player != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(player) != null) &&
+				if (player != null && (ConfigHandler.alwaysShowTeamParticle || !EntityHelper.getPointerInUse(player).isEmpty()) &&
 					player.dimension == host2.dimension)
 				{
 					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 4, 0), (EntityPlayerMP) player);
@@ -256,7 +255,7 @@ public class EntityAIShipFollowOwner extends EntityAIBase
 			if (this.host2.ticksExisted % 16 == 0)
 			{
 				//draw moving particle
-				if (player != null && (ConfigHandler.alwaysShowTeamParticle || EntityHelper.getPointerInUse(player) != null) &&
+				if (player != null && (ConfigHandler.alwaysShowTeamParticle || !EntityHelper.getPointerInUse(player).isEmpty()) &&
 					player.dimension == host2.dimension)
 				{
 					CommonProxy.channelP.sendTo(new S2CSpawnParticle(25, pos[0], pos[1], pos[2], 0.3, 6, 0), (EntityPlayerMP) player);

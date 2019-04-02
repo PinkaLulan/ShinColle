@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.other;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.entity.BasicEntityAirplane;
@@ -10,19 +8,15 @@ import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 public class EntityFloatingFort extends BasicEntityAirplane
 {
@@ -155,7 +149,7 @@ public class EntityFloatingFort extends BasicEntityAirplane
         	
         	if (distSq <= 6F)
         	{
-        		this.getShipNavigate().clearPathEntity();
+        		this.getShipNavigate().clearPath();
         		this.onImpact();
         	}
     	}//end attack target != null

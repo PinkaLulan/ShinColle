@@ -1,13 +1,9 @@
 package com.lulan.shincolle.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.utility.EntityHelper;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -17,6 +13,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Command: /shipkill [class id] [range]
  * 
@@ -145,7 +144,7 @@ public class ShipCmdKill extends CommandBase
 						
 			            for (BasicEntityShip i : hitent)
 			            {
-			            	if (i.getAttrClass() == id)
+			            	if (i.getShipClass() == id)
 			            	{
 			            		i.setDead();
 			            		sender.sendMessage(new TextComponentString("remove "+i));
@@ -160,7 +159,7 @@ public class ShipCmdKill extends CommandBase
 						
 			            for (BasicEntityShipHostile i : hitent)
 			            {
-			            	if (i.getAttrClass() == id)
+			            	if (i.getShipClass() == id)
 			            	{
 			            		i.setDead();
 			            		sender.sendMessage(new TextComponentString("remove "+i));

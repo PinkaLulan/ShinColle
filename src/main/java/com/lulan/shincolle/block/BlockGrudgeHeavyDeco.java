@@ -15,8 +15,7 @@ public class BlockGrudgeHeavyDeco extends BasicBlock
 	public BlockGrudgeHeavyDeco()
 	{
 		super(Material.SAND);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("shovel", 0);
 	    this.setHardness(3F);
 	    this.setLightLevel(1F);

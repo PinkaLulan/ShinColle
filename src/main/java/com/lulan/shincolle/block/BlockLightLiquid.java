@@ -1,10 +1,7 @@
 package com.lulan.shincolle.block;
 
-import java.util.Random;
-
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntityLightBlock;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStaticLiquid;
 import net.minecraft.block.ITileEntityProvider;
@@ -22,6 +19,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Random;
+
 /**
  * this is NOT custom liquid block!
  * so NO fluid registering, just extends vanilla water
@@ -36,8 +35,8 @@ public class BlockLightLiquid extends BlockStaticLiquid implements ITileEntityPr
 	public BlockLightLiquid()
 	{
 	    super(Material.WATER);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
+		this.setRegistryName(NAME.toLowerCase());
 		this.setLightOpacity(3);
 		this.disableStats();
 		this.setHardness(100F);
@@ -67,9 +66,9 @@ public class BlockLightLiquid extends BlockStaticLiquid implements ITileEntityPr
 	//將name冠上mod名稱 用於之後給各語系檔案放上正確名稱
 	//格式為tile.MOD名稱:方塊名稱.name
 	@Override
-	public String getUnlocalizedName()
+	public String getTranslationKey()
 	{
-		return String.format("tile.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("tile.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getTranslationKey()));
 	}
 
 	@Override
@@ -85,9 +84,7 @@ public class BlockLightLiquid extends BlockStaticLiquid implements ITileEntityPr
     }
 	
 	@Override
-	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
-    {
-    }
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {}
 	
 	@Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {}

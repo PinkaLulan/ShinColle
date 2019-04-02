@@ -1,16 +1,15 @@
 package com.lulan.shincolle.utility;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 /**
  * enchant helper for equip enchantment
@@ -212,7 +211,7 @@ public class EnchantHelper
 	 */
 	public static void applyRandomEnchantToEquip(ItemStack stack, int enchType, int enchLv)
 	{
-		if (stack == null || enchLv == 0) return;
+		if (stack.isEmpty() || enchLv == 0) return;
 		
 		//roll #enchant
 		Random rand = new Random();

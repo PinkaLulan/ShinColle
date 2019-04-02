@@ -1,18 +1,15 @@
 package com.lulan.shincolle.entity.submarine;
 
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -20,6 +17,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 /**
  * model state:
@@ -174,7 +173,7 @@ public class EntitySubmRo500Mob extends BasicEntityShipHostile implements IShipI
 	public void setInvisibleLevel(float level) {}
 	
 	@Override
-	public double getEntityFloatingDepth()
+	public double getShipFloatingDepth()
 	{
 		return 1.1D + this.scaleLevel * 0.3D;
 	}

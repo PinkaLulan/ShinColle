@@ -4,7 +4,6 @@ import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
@@ -21,13 +20,13 @@ public class EntityCARi extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.75F, 1.7F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HEAVY_CRUISER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HEAVY_CRUISER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CARI);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 4);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CA]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
-		this.modelPosInGUI = new float[] {0F, 20F, 0F, 40F};
+		this.ModelPos = new float[] {0F, 20F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -36,7 +35,7 @@ public class EntityCARi extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(14);
 		
-		this.initPre();
+		this.postInit();
 	}
 	
 	@Override

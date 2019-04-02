@@ -1,30 +1,16 @@
 package com.lulan.shincolle.utility;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
 import com.google.common.base.Predicate;
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPath;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
 import com.lulan.shincolle.ai.path.ShipPathPoint;
 import com.lulan.shincolle.capability.CapaInventory;
-import com.lulan.shincolle.capability.CapaInventoryExtend;
+import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.crafting.ShipCalc;
-import com.lulan.shincolle.entity.BasicEntityMount;
-import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.BasicEntityShipHostile;
-import com.lulan.shincolle.entity.IFloatingEntity;
-import com.lulan.shincolle.entity.IShipAttackBase;
-import com.lulan.shincolle.entity.IShipGuardian;
-import com.lulan.shincolle.entity.IShipOwner;
+import com.lulan.shincolle.entity.*;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.IMoveShip;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.network.S2CEntitySync;
@@ -33,31 +19,22 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.Enums;
-import com.lulan.shincolle.reference.Enums.Morale;
-import com.lulan.shincolle.reference.Enums.MoveType;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.Reference;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.server.CacheDataPlayer;
 import com.lulan.shincolle.server.CacheDataShip;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
 import com.lulan.shincolle.tileentity.TileEntityWaypoint;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityOwnable;
+import net.minecraft.entity.*;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGuardian;
-import net.minecraft.entity.monster.EntityVex;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
@@ -68,11 +45,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -86,6 +61,12 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
 /** helper about entity
  * 
  */
@@ -96,147 +77,51 @@ public class EntityHelper
 
 	
 	public EntityHelper() {}
-	
-	
-	/** get host world */
-	public static World getWorld(Object host)
-	{
-	    if (host instanceof Entity)
-	    {
-	        return ((Entity) host).getEntityWorld();
-	    }
-	    else if (host instanceof TileEntity)
-	    {
-	        return ((TileEntity) host).getWorld();
-	    }
-	    
-	    return null;
-	}
-	
-	/** get host entity */
-    public static Entity getEntity(Object host)
-    {
-        if (host instanceof Entity)
-        {
-            return (Entity) host;
-        }
-        {
-            return null;
-        }
-    }
-    
-	/** get host entity id */
-    public static int getEntityID(Object host)
-    {
-        if (host instanceof Entity)
-        {
-            return ((Entity) host).getEntityId();
-        }
-        {
-            return -1;
-        }
-    }
-    
-    /** get host position in BlockPos */
-    public static BlockPos getHostBlokcPosition(Object host)
-    {
-        if (host instanceof Entity)
-        {
-            return ((Entity) host).getPosition();
-        }
-        else if (host instanceof TileEntity)
-        {
-            return ((TileEntity) host).getPos();
-        }
-        else
-        {
-            return BlockPos.ORIGIN;
-        }
-    }
-	
-	/** get host position in Vec3d */
-	public static Vec3d getHostPosition(Object host)
-	{
-	    if (host instanceof Entity)
-	    {
-	        return ((Entity) host).getPositionVector();
-	    }
-	    else if (host instanceof TileEntity)
-	    {
-	        return new Vec3d(((TileEntity) host).getPos());
-	    }
-	    else
-	    {
-	        return Vec3d.ZERO;
-	    }
-	}
-	
-	/** get ship entity by host trace */
-    public static BasicEntityShip getShipEntity(Object host)
-    {
-        if (host instanceof BasicEntityShip)
-        {
-            return (BasicEntityShip) host;
-        }
-        else if (host instanceof BasicEntityMount)
-        {
-            if (((BasicEntityMount) host).getHostEntity() instanceof BasicEntityShip)
-            {
-                return ((BasicEntityShip) ((BasicEntityMount) host).getHostEntity());
-            }
-        }
-        else if (host instanceof IShipOwner)
-        {
-            return getShipEntity(((IShipOwner) host).getHostEntity());
-        }
-        
-        return null;
-    }
 
-	/** check entity is in (stand on, y+0D) liquid (not air or solid block) */
+	/**check entity is in (stand on, y+0D) liquid (not air or solid block) */
 	public static boolean checkEntityIsInLiquid(Entity entity)
 	{
 		IBlockState block = entity.world.getBlockState(new BlockPos(MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY), MathHelper.floor(entity.posZ)));
 		return BlockHelper.checkBlockIsLiquid(block);
 	}
 	
-	/** check entity is free to move (stand in, y+0.5D) the block */
+	/**check entity is free to move (stand in, y+0.5D) the block */
 	public static boolean checkEntityIsFree(Entity entity)
 	{
 		return BlockHelper.checkBlockSafe(entity.world, MathHelper.floor(entity.posX), (int)(entity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor(entity.posZ));
 	}
 	
-	/** get entity move type, ex: fly, undersea */
-	public static MoveType getEntityMoveType(Entity entity)
+	/**check entity is air or underwater mob, return 0:default 1:air 2:water */
+	public static int checkEntityMovingType(Entity entity)
 	{
 		if (entity instanceof IShipAttackBase)
 		{
 			switch (((IShipAttackBase) entity).getDamageType())
 			{
 			case ID.ShipDmgType.AIRPLANE:
-				return MoveType.FLY;
+				return 1;
 			case ID.ShipDmgType.SUBMARINE:
-				return MoveType.UNDERSEA;
+				return 2;
 			default:	//default type
-				return MoveType.LAND;
+				return 0;
 			}
 		}
 		else if (entity instanceof EntityWaterMob || entity instanceof EntityGuardian)
 		{
-			return MoveType.UNDERSEA;
+			return 2;
 		}
 		else if (entity instanceof EntityBlaze || entity instanceof EntityWither ||
 				 entity instanceof EntityDragon || entity instanceof EntityBat ||
-				 entity instanceof EntityFlying || entity instanceof EntityVex)
+				 entity instanceof EntityFlying)
 		{
-			return MoveType.FLY;
+			return 1;
 		}
 		
-		return MoveType.LAND;
+		return 0;
 	}
 	
-	/** replace isInWater, check water block with NO extend AABB */
-	public static void checkDepth(IFloatingEntity host)
+	/**replace isInWater, check water block with NO extend AABB */
+	public static void checkDepth(IShipFloating host)
 	{
 		Entity host2 = (Entity) host;
 		World w = host2.world;
@@ -285,7 +170,7 @@ public class EntityHelper
 			host.setStateFlag(ID.F.CanFloatUp, false);
 		}
 		
-		host.setEntityDepth(depth);
+		host.setShipDepth(depth);
 	}
 	
 	/** check ship is out of combat */
@@ -733,13 +618,13 @@ public class EntityHelper
         	//若同時有官方ai的路徑, 則清除官方ai路徑
         	if (!entity2.getNavigator().noPath())
         	{
-        		entity2.getNavigator().clearPathEntity();
+        		entity2.getNavigator().clearPath();
         	}
 
         	//若坐下或綁住, 則清除路徑
         	if (entity.getIsSitting() || entity.getIsLeashed())
         	{
-        		entity.getShipNavigate().clearPathEntity();
+        		entity.getShipNavigate().clearPath();
         	}
         	else
         	{
@@ -755,7 +640,7 @@ public class EntityHelper
 	        moveHelper.onUpdateMoveHelper();
 	        
 	        //apply movement
-	        entity2.moveEntityWithHeading(entity2.moveStrafing, entity2.moveForward);
+	        entity2.travel(entity2.moveStrafing, 0f, entity2.moveForward);
 		}//end ship path
 
         //若有vanilla path, 則用特效顯示出path
@@ -764,7 +649,7 @@ public class EntityHelper
         	//若entity處於水中, 則消去vanilla path
         	if (checkEntityIsInLiquid(entity2))
         	{
-        		entity2.getNavigator().clearPathEntity();
+        		entity2.getNavigator().clearPath();
         	}
         	
 			//用particle顯示path point
@@ -819,9 +704,9 @@ public class EntityHelper
 			for (int i = 0; i < len; i++)
 			{
 				temp = p.getPathPointFromIndex(i);
-				points[i * 3 + 1] = temp.xCoord;
-				points[i * 3 + 2] = temp.yCoord;
-				points[i * 3 + 3] = temp.zCoord;
+				points[i * 3 + 1] = temp.x;
+				points[i * 3 + 2] = temp.y;
+				points[i * 3 + 3] = temp.z;
 			}
 		}
 		else
@@ -897,16 +782,16 @@ public class EntityHelper
 
             //計算entity視線的方向向量 * 距離
             Vec3d vec31 = viewer.getLook(parTick);
-            double vec3x = vec31.xCoord * dist;
-            double vec3y = vec31.yCoord * dist;
-            double vec3z = vec31.zCoord * dist;
-            Vec3d vec32 = vec3.addVector(vec3x, vec3y, vec3z);
+            double vec3x = vec31.x * dist;
+            double vec3y = vec31.y * dist;
+            double vec3z = vec31.z * dist;
+            Vec3d vec32 = vec3.add(vec3x, vec3y, vec3z);
             Vec3d vec33 = null;
             RayTraceResult lookEntity = null;
             Entity pointedEntity = null;
             
             //從玩家到目標方塊之間, 做出擴展1格的方形collision box, 抓出其中碰到的entity
-            List<Entity> list = viewer.world.getEntitiesWithinAABBExcludingEntity(viewer, viewer.getEntityBoundingBox().addCoord(vec3x, vec3y, vec3z).expand(1D, 1D, 1D));
+            List<Entity> list = viewer.world.getEntitiesWithinAABBExcludingEntity(viewer, viewer.getEntityBoundingBox().grow(vec3x, vec3y, vec3z).expand(1D, 1D, 1D));
             double d2 = d1;
 
             //檢查抓到的entity, 是否在玩家~目標方塊的視線上
@@ -943,7 +828,7 @@ public class EntityHelper
                     RayTraceResult getObj = targetBox.calculateIntercept(vec3, vec32);
 
                     //若viewer完全塞在目標的box裡面
-                    if (targetBox.isVecInside(vec3))
+                    if (targetBox.contains(vec3))
                     {
                         if (d2 >= 0D)
                         {
@@ -1021,7 +906,7 @@ public class EntityHelper
         float f8 = f3 * f5;
         
         Vec3d vec3 = new Vec3d(d0, d1, d2);
-        Vec3d vec31 = vec3.addVector((double)f7 * dist, (double)f6 * dist, (double)f8 * dist);
+        Vec3d vec31 = vec3.add((double)f7 * dist, (double)f6 * dist, (double)f8 * dist);
         
         return world.rayTraceBlocks(vec3, vec31, onLiquid, ignoreNoAABB, alwaysLastHit);
 	}
@@ -1476,7 +1361,7 @@ public class EntityHelper
   	 * 1. floating on water/lava/liquid block
   	 * 2. change movSpeed in water
   	 */
-  	public static <T extends EntityLivingBase & IMoveShip> void moveEntityWithHeading(T host, float strafe, float forward)
+  	public static <T extends EntityLivingBase & IShipNavigator> void moveEntityWithHeading(T host, float strafe, float forward)
 	{
         double d0;
         
@@ -1484,8 +1369,8 @@ public class EntityHelper
         if (host.canFly())
         {
             d0 = host.posY;
-            host.moveRelative(strafe, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
-            host.move(host.motionX, host.motionY, host.motionZ);
+            host.moveRelative(strafe, 0f, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
+            host.move(MoverType.SELF, host.motionX, host.motionY, host.motionZ);
             
             //空中阻力
             host.motionX *= 0.91D;
@@ -1493,7 +1378,7 @@ public class EntityHelper
             host.motionZ *= 0.91D;
             
             //水中撞到東西會上升
-            if (host.isCollidedHorizontally &&
+            if (host.collidedHorizontally &&
             	host.isOffsetPositionInLiquid(host.motionX, host.motionY + 0.6D - host.posY + d0, host.motionZ))
             {
                 host.motionY = 0.3D;
@@ -1503,8 +1388,8 @@ public class EntityHelper
         else if (EntityHelper.checkEntityIsInLiquid(host))
         {
             d0 = host.posY;
-            host.moveRelative(strafe, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
-            host.move(host.motionX, host.motionY, host.motionZ);
+            host.moveRelative(strafe, 0f, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
+            host.move(MoverType.SELF, host.motionX, host.motionY, host.motionZ);
             
             //水中阻力
             host.motionX *= 0.8D;
@@ -1512,7 +1397,7 @@ public class EntityHelper
             host.motionZ *= 0.8D;
             
             //水中撞到東西會上升
-            if (host.isCollidedHorizontally &&
+            if (host.collidedHorizontally &&
             	host.isOffsetPositionInLiquid(host.motionX, host.motionY + 0.6D - host.posY + d0, host.motionZ))
             {
                 host.motionY = 0.3D;
@@ -1552,7 +1437,7 @@ public class EntityHelper
             }
 
             //計算實際XZ速度值
-            host.moveRelative(strafe, forward, f8);
+            host.moveRelative(strafe, 0f, forward, f8);
             
             //再次判定entity是否還站在地面, 重取地面摩擦係數
             f6 = 0.91F;
@@ -1577,10 +1462,10 @@ public class EntityHelper
             }
 
             //實際移動entity
-            host.move(host.motionX, host.motionY, host.motionZ);
+            host.move(MoverType.SELF, host.motionX, host.motionY, host.motionZ);
 
             //若移動方向為衝撞樓梯, 則給予上升值
-            if (host.isCollidedHorizontally && host.isOnLadder())
+            if (host.collidedHorizontally && host.isOnLadder())
             {
                 host.motionY = 0.4D;
             }
@@ -1595,7 +1480,7 @@ public class EntityHelper
             {
                 blockpos$pooledmutableblockpos.setPos(host.posX, 0.0D, host.posZ);
 
-                if (!host.world.isRemote || host.world.isBlockLoaded(blockpos$pooledmutableblockpos) && host.world.getChunkFromBlockCoords(blockpos$pooledmutableblockpos).isLoaded())
+                if (!host.world.isRemote || host.world.isBlockLoaded(blockpos$pooledmutableblockpos) && host.world.getChunk(blockpos$pooledmutableblockpos).isLoaded())
                 {
                     if (!host.hasNoGravity())
                     {
@@ -1676,15 +1561,15 @@ public class EntityHelper
   	 */
   	public static ItemStack getPointerInUse(EntityPlayer player)
   	{
-  		ItemStack pointer = null;
+  		ItemStack pointer = ItemStack.EMPTY;
   		
   		if (player != null)
   		{
   			ItemStack itemMain = player.inventory.getCurrentItem();
-  			ItemStack[] itemOff = player.inventory.offHandInventory;
+  			NonNullList<ItemStack> itemOff = player.inventory.offHandInventory;
 
   			//check main hand
-  			if (itemMain != null && itemMain.getItem() == ModItems.PointerItem)
+  			if (!itemMain.isEmpty() && itemMain.getItem() == ModItems.PointerItem)
   			{
   				pointer = itemMain;
   			}
@@ -1693,7 +1578,7 @@ public class EntityHelper
   			{
   	  			for (ItemStack i : itemOff)
   	  			{
-  	  	  			if (i != null && i.getItem() == ModItems.PointerItem)
+  	  	  			if (!i.isEmpty() && i.getItem() == ModItems.PointerItem)
   	  	  			{
   	  	  				pointer = i;
   	  	  				break;
@@ -1714,7 +1599,7 @@ public class EntityHelper
 		GameSettings keySet = ClientProxy.getGameSetting();
 		ItemStack pointer = EntityHelper.getPointerInUse(player);
 		
-		if (pointer != null)
+		if (!pointer.isEmpty())
 		{
 			int meta = pointer.getMetadata();
 			int getKey = -1;
@@ -1743,7 +1628,7 @@ public class EntityHelper
 			}
 			//change pointer mode to caress head mode (meta + 3)
 			//current item must be PointerItem (NO OFFHAND!)
-			else if (player.inventory.getCurrentItem() != null &&
+			else if (!player.inventory.getCurrentItem().isEmpty() &&
 					 player.inventory.getCurrentItem().getItem() == ModItems.PointerItem &&
 					 keySet.keyBindPlayerList.isPressed())
 			{
@@ -1804,27 +1689,27 @@ public class EntityHelper
   	/** morale level
   	 *  0:excited, 1:happy, 2:normal, 3:tired, 4:exhausted
   	 */
-  	public static Morale getMoraleLevel(int m)
+  	public static int getMoraleLevel(int m)
   	{
-  		if (m > Morale.Excited.getLowerBound())
+  		if (m > ID.Morale.L_Excited)
   		{  //excited
-			return Morale.Excited;
+			return ID.Morale.Excited;
 		}
-		else if (m > Morale.Happy.getLowerBound())
+		else if (m > ID.Morale.L_Happy)
 		{
-			return Morale.Happy;
+			return ID.Morale.Happy;
 		}
-		else if (m > Morale.Normal.getLowerBound())
+		else if (m > ID.Morale.L_Normal)
 		{
-			return Morale.Normal;
+			return ID.Morale.Normal;
 		}
-		else if (m > Morale.Tired.getLowerBound())
+		else if (m > ID.Morale.L_Tired)
 		{
-			return Morale.Tired;
+			return ID.Morale.Tired;
 		}
 		else
 		{
-			return Morale.Exhausted;
+			return ID.Morale.Exhausted;
 		}
   	}
   	
@@ -1892,7 +1777,7 @@ public class EntityHelper
   	 *  >100           top
   	 *  100~80         head
   	 *  80~70          neck
-  	 *  70~45          chest
+  	 *  70~45          back
   	 *  45~35          belly
   	 *  35~30          ubelly
   	 *  <30            leg
@@ -2032,58 +1917,51 @@ public class EntityHelper
   	/** create ship entity, nbt can be null */
   	public static Entity createShipEntity(World world, int classID, NBTTagCompound nbt, double px, double py, double pz, boolean updateUID)
   	{
-  		String name = ShipCalc.getEntityToSpawnName(classID);
-		
 		//create new ship entity
-		if (EntityList.NAME_TO_CLASS.containsKey(name))
-        {
-			Entity ent = EntityList.createEntityByName(name, world);
-            
-			if (ent != null)
+		Entity ent = EntityList.createEntityByIDFromName(new ResourceLocation(Reference.MOD_ID, ShipCalc.getEntityToSpawnName(classID)), world);
+
+		if (ent != null)
+		{
+			//set pos
+			ent.motionX = 0D;
+			ent.motionY = 0D;
+			ent.motionZ = 0D;
+			ent.setPosition(px, py, pz);
+
+			//spawn entity
+			world.spawnEntity(ent);
+		}
+		else
+		{
+			return null;
+		}
+
+		//set ship attrs
+		if (ent instanceof BasicEntityShip)
+		{
+			BasicEntityShip ship = (BasicEntityShip) ent;
+
+			//set alive
+			ship.setHealth(ship.getMaxHealth());
+			ship.isDead = false;
+			ship.deathTime = 0;
+
+			//read entity nbt data
+			if (nbt != null)
 			{
-				//set pos
-				ent.motionX = 0D;
-				ent.motionY = 0D;
-				ent.motionZ = 0D;
-				ent.setPosition(px, py, pz);
-				
-                //spawn entity
-                world.spawnEntity(ent);
-			}
-			else
-			{
-				return null;
-			}
-			
-			//set ship attrs
-			if (ent instanceof BasicEntityShip)
-			{
-				BasicEntityShip ship = (BasicEntityShip) ent;
-				
-				//set alive
-				ship.setHealth(ship.getMaxHealth());
+				ship.readFromNBT(nbt);
+
+				if (ship.getHealth() < 1F) ship.setHealth(1F);
+				ship.setStateFlag(ID.F.CanDrop, true);
 				ship.isDead = false;
 				ship.deathTime = 0;
-				
-				//read entity nbt data
-				if (nbt != null)
-				{
-					ship.readFromNBT(nbt);
-					
-					if (ship.getHealth() < 1F) ship.setHealth(1F);
-					ship.setStateFlag(ID.F.CanDrop, true);
-					ship.isDead = false;
-					ship.deathTime = 0;
-				}
-				
-                //update ship cache
-				if (updateUID) ship.updateShipCacheDataWithoutNewID();
 			}
 
-			return ent;
-        }
-		
-		return null;
+			//update ship cache
+			if (updateUID) ship.updateShipCacheDataWithoutNewID();
+		}
+
+		return ent;
   	}
   	
 	/** show name tag on head, CLIENT SIDE ONLY */
@@ -2094,7 +1972,7 @@ public class EntityHelper
 		//only show name tag if config enabled or player nearby or player press SPRINT key
 		if (ConfigHandler.showTag ||
 			ClientProxy.getGameSetting().keyBindSprint.isKeyDown() ||
-			ship.getDistanceSqToEntity(ClientProxy.getClientPlayer()) < (ConfigHandler.nameTagDist * ConfigHandler.nameTagDist))
+			ship.getDistanceSq(ClientProxy.getClientPlayer()) < (ConfigHandler.nameTagDist * ConfigHandler.nameTagDist))
 		{
 			String str;
 			
@@ -2176,7 +2054,7 @@ public class EntityHelper
      *  
      *  return true if teleport successfully
      */
-  	public static boolean applyTeleport(IMoveShip host, double dist, Vec3d tpPos)
+  	public static boolean applyTeleport(IShipNavigator host, double dist, Vec3d tpPos)
     {
   		if (!ConfigHandler.canTeleport) return false;
   		if (host == null) return false;
@@ -2185,8 +2063,8 @@ public class EntityHelper
   		try
   		{
   			Chunk c = ((Entity) host).world.getChunkProvider().getLoadedChunk(
-  						(MathHelper.floor(tpPos.xCoord) >> 4),
-  						(MathHelper.floor(tpPos.zCoord) >> 4));
+  						(MathHelper.floor(tpPos.x) >> 4),
+  						(MathHelper.floor(tpPos.z) >> 4));
   			
   			if (c == null) return false;  //chunk isn't loaded
   		}
@@ -2212,7 +2090,7 @@ public class EntityHelper
     		((BasicEntityMount) host).setDead();
     		
     		//teleport rider
-    		hostHost.setPositionAndUpdate(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
+    		hostHost.setPositionAndUpdate(tpPos.x, tpPos.y, tpPos.z);
     		sendPositionSyncPacket(hostHost);
     		
     		return true;
@@ -2229,8 +2107,8 @@ public class EntityHelper
     		}
 
     		//teleport host
-    		host.getShipNavigate().clearPathEntity();
-    		host2.setPositionAndUpdate(tpPos.xCoord, tpPos.yCoord, tpPos.zCoord);
+    		host.getShipNavigate().clearPath();
+    		host2.setPositionAndUpdate(tpPos.x, tpPos.y, tpPos.z);
     		sendPositionSyncPacket(host2);
     		
     		return true;
@@ -2255,7 +2133,7 @@ public class EntityHelper
 	{
 		//get ship data
     	NBTTagCompound nbt = new NBTTagCompound();
-    	CapaInventoryExtend shipInv = ship.getCapaShipInventory();
+    	CapaShipInventory shipInv = ship.getCapaShipInventory();
     	String ownerUUID = EntityHelper.getPetPlayerUUID(ship);
     	String name = EntityHelper.getOwnerName(ship);
     	Attrs attrs = ship.getAttrs();
@@ -2360,8 +2238,8 @@ public class EntityHelper
 		//check biome
 		if (canSpawn)
 		{
-			if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
-				BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH)) {}
+			if (BiomeDictionary.hasType(biome, BiomeDictionary.Type.WATER) ||
+				BiomeDictionary.hasType(biome, BiomeDictionary.Type.BEACH)) {}
 			else
 			{
 				canSpawn = false;
@@ -2434,7 +2312,7 @@ public class EntityHelper
 							for (int i = 0; i < shipNum; i++)
 							{
 								//get random mob
-				            	Entity mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+				            	Entity mobToSpawn = EntityList.createEntityByIDFromName(new ResourceLocation(Reference.MOD_ID, ShipCalc.getRandomMobToSpawnName()), w);
 				            	
 				            	//spawn mob
 				            	if (mobToSpawn instanceof BasicEntityShipHostile)
@@ -2469,8 +2347,8 @@ public class EntityHelper
 		Biome biome = player.world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
 		
 		//boss cooldown--
-		if ((BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.WATER) || 
-			 BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.BEACH)) && capa.hasRing())
+		if ((BiomeDictionary.hasType(biome, BiomeDictionary.Type.WATER) ||
+			 BiomeDictionary.hasType(biome, BiomeDictionary.Type.BEACH)) && capa.hasRing())
 		{
 			capa.setBossCooldown(capa.getBossCooldown() - 1);
 		}
@@ -2549,7 +2427,7 @@ public class EntityHelper
 			            	int j;
 			            	for (j = 0; j < ConfigHandler.spawnBossNum; j++)
 			            	{
-			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+			            		mobToSpawn = EntityList.createEntityByIDFromName(new ResourceLocation(Reference.MOD_ID, ShipCalc.getRandomMobToSpawnName()), w);
 			            		
 				            	//spawn mob
 				            	if (mobToSpawn instanceof BasicEntityShipHostile)
@@ -2563,7 +2441,7 @@ public class EntityHelper
 			            	//roll small ship
 			            	for (j = 0; j < ConfigHandler.spawnMobNum; j++)
 			            	{
-			            		mobToSpawn = EntityList.createEntityByName(ShipCalc.getRandomMobToSpawnName(), w);
+			            		mobToSpawn = EntityList.createEntityByIDFromName(new ResourceLocation(Reference.MOD_ID, ShipCalc.getRandomMobToSpawnName()), w);
 			            		
 				            	//spawn mob
 				            	if (mobToSpawn instanceof BasicEntityShipHostile)
@@ -2596,31 +2474,6 @@ public class EntityHelper
 			}//end roll spawn boss
 		}//end boss cooldown <= 0
 	}
-	
-	/** get rotationYawHead or rotationYaw in RAD */
-    public static float getRadRenderYawHead(Entity host)
-    {
-        if (host == null) return 0F;
-        return host instanceof EntityLivingBase ?
-               (((EntityLivingBase) host).rotationYawHead % 360) * Values.N.DIV_PI_180 :
-               (host.rotationYaw % 360) * Values.N.DIV_PI_180;
-    }
-	
-	/** get renderYawOffset or rotationYaw in RAD */
-	public static float getRadRenderYawOffset(Entity host)
-	{
-	    if (host == null) return 0F;
-	    return host instanceof EntityLivingBase ?
-	           (((EntityLivingBase) host).renderYawOffset % 360) * Values.N.DIV_PI_180 :
-	           (host.rotationYaw % 360) * Values.N.DIV_PI_180;
-	}
-	
-	/** get rotationPitch in RAD */
-    public static float getRadRenderPitch(Entity host)
-    {
-        if (host == null) return 0F;
-        return host.rotationPitch * Values.N.DIV_PI_180;
-    }
 	
   	
 }

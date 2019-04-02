@@ -6,7 +6,6 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
@@ -102,11 +101,11 @@ public class EntityShipFishingHook extends Entity
         	
         	//host dead check
             ItemStack rod = this.host.getHeldItemMainhand();
-            if (rod == null || rod.getItem() != Items.FISHING_ROD) rod = this.host.getHeldItemOffhand();
+            if (rod.isEmpty() || rod.getItem() != Items.FISHING_ROD) rod = this.host.getHeldItemOffhand();
             	
-        	if (host.isDead || !host.isEntityAlive() || rod == null ||
+        	if (host.isDead || !host.isEntityAlive() || rod.isEmpty() ||
         		rod.getItem() != Items.FISHING_ROD ||
-        		this.getDistanceSqToEntity(host) > 1024D)
+        		this.getDistanceSq(host) > 1024D)
             {
                 this.setDead();
                 return;

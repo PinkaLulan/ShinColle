@@ -1,24 +1,22 @@
 package com.lulan.shincolle.client.particle;
 
-import org.lwjgl.opengl.GL11;
-
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.CalcHelper;
-
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
 
 /**
  * SPHERE LIGHT PARTICLE
@@ -126,7 +124,7 @@ public class ParticleSparkle extends Particle
     }
     
     @Override
-    public void renderParticle(VertexBuffer render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
+    public void renderParticle(BufferBuilder render, Entity entity, float ptick, float cosYaw, float cosPitch, float sinYaw, float sinYawsinPitch, float cosYawsinPitch)
     {
         float x = (float)(this.prevPosX + (this.posX - this.prevPosX) * ptick - interpPosX);
         float y = (float)(this.prevPosY + (this.posY - this.prevPosY) * ptick - interpPosY);
@@ -160,10 +158,10 @@ public class ParticleSparkle extends Particle
         	if (beam[3] == 0F || beam[4] == 0F || beam[5] == 0F || beam[6] == 0F) continue;
         	float size = (20F - beam[7]) * 0.05F;
 	        
-	        render.pos((double)x + beam[0] + avec3d[0].xCoord * size, (double)y + beam[1] + avec3d[0].yCoord * size, (double)z + beam[2] + avec3d[0].zCoord * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
-	        render.pos((double)x + beam[0] + avec3d[1].xCoord * size, (double)y + beam[1] + avec3d[1].yCoord * size, (double)z + beam[2] + avec3d[1].zCoord * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
-	        render.pos((double)x + beam[0] + avec3d[2].xCoord * size, (double)y + beam[1] + avec3d[2].yCoord * size, (double)z + beam[2] + avec3d[2].zCoord * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
-	        render.pos((double)x + beam[0] + avec3d[3].xCoord * size, (double)y + beam[1] + avec3d[3].yCoord * size, (double)z + beam[2] + avec3d[3].zCoord * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
+	        render.pos((double)x + beam[0] + avec3d[0].x * size, (double)y + beam[1] + avec3d[0].y * size, (double)z + beam[2] + avec3d[0].z * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
+	        render.pos((double)x + beam[0] + avec3d[1].x * size, (double)y + beam[1] + avec3d[1].y * size, (double)z + beam[2] + avec3d[1].z * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
+	        render.pos((double)x + beam[0] + avec3d[2].x * size, (double)y + beam[1] + avec3d[2].y * size, (double)z + beam[2] + avec3d[2].z * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
+	        render.pos((double)x + beam[0] + avec3d[3].x * size, (double)y + beam[1] + avec3d[3].y * size, (double)z + beam[2] + avec3d[3].z * size).color(beam[3], beam[4], beam[5], beam[6]).endVertex();
         }
         
         Tessellator.getInstance().draw();

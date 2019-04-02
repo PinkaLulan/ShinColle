@@ -1,14 +1,13 @@
 package com.lulan.shincolle.crafting;
 
-import java.util.Random;
-
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.utility.LogHelper;
 import com.lulan.shincolle.utility.TileEntityHelper;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import java.util.Random;
 
 /**Small Shipyard Recipe Helper
  *  Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -65,7 +64,7 @@ public class SmallRecipes
 	//判定物品是否為材料
 	public static boolean isMaterial(ItemStack itemstack)
 	{
-		if (itemstack != null)
+		if (!itemstack.isEmpty())
 		{
 			Item item = itemstack.getItem();
 			int meta = itemstack.getItemDamage();
@@ -102,9 +101,9 @@ public class SmallRecipes
 		
 		for (int i = 0; i < 4; i++)
 		{	//取得item 0~3的資料, 即四樣材料資料
-			if (item[i] != null)
+			if (!item[i].isEmpty())
 			{	//加上null判斷以免NPE
-				itemAmount[i] = item[i].stackSize;
+				itemAmount[i] = item[i].getCount();
 			}
 			else
 			{
@@ -141,7 +140,7 @@ public class SmallRecipes
 	public static ItemStack getBuildResultEquip(int[] matAmount)
 	{	
 		//result item
-		ItemStack buildResult = null;
+		ItemStack buildResult;
 		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
 		int[] matsInt = new int[] {0,0,0,0};
 		int rollType = -1;

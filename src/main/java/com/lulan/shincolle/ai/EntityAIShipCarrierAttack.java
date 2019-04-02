@@ -1,15 +1,14 @@
 package com.lulan.shincolle.ai;
 
-import java.util.Random;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.IShipAircraftAttack;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.CombatHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
+
+import java.util.Random;
 
 /**CARRIER RANGE ATTACK AI
  * entity必須實作IUseAircraft
@@ -116,7 +115,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase
 //        if(host != null) {
 //        	this.host2.setAttackTarget(null);
 //        	this.host.setEntityTarget(null);
-//        	this.host.getShipNavigate().clearPathEntity();
+//        	this.host.getShipNavigate().clearPath();
 //        }
     }
 
@@ -163,7 +162,7 @@ public class EntityAIShipCarrierAttack extends EntityAIBase
         		//若目標進入射程, 且目標無障礙物阻擋, 則清空AI移動的目標, 以停止繼續移動      
 		        if (distSq < this.rangeSq && onSight && !host.getStateFlag(ID.F.UseMelee))
 		        {
-		        	this.host.getShipNavigate().clearPathEntity();
+		        	this.host.getShipNavigate().clearPath();
 		        }
 		        else
 		        {	//目標移動, 則繼續追擊		        	

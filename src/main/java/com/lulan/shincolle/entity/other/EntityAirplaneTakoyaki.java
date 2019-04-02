@@ -6,10 +6,9 @@ import com.lulan.shincolle.entity.BasicEntityAirplane;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.ParticleHelper;
 import com.lulan.shincolle.utility.TargetHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.world.World;

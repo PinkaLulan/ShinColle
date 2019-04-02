@@ -11,7 +11,6 @@ import com.lulan.shincolle.proxy.ClientProxy;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.PacketHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -125,7 +124,7 @@ public class TileEntityWaypoint extends BasicTileEntity implements ITileWaypoint
 			EntityPlayer player = ClientProxy.getClientPlayer();
 			ItemStack item = player.inventory.getCurrentItem();
 			
-			if (item != null && (item.getItem() instanceof ItemBlockWaypoint || item.getItem() == ModItems.TargetWrench ||
+			if (!item.isEmpty() && (item.getItem() instanceof ItemBlockWaypoint || item.getItem() == ModItems.TargetWrench ||
 			   (item.getItem() instanceof PointerItem && item.getItemDamage() < 3)))
 			{
 				//every 8 ticks

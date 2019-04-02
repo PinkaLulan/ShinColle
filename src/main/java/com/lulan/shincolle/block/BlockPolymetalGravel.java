@@ -12,8 +12,8 @@ public class BlockPolymetalGravel extends BasicBlockFalling
 	public BlockPolymetalGravel()
 	{
 		super(Material.SAND);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
+		this.setRegistryName(NAME.toLowerCase());
 		this.setHarvestLevel("shovel", 0);
 	    this.setHardness(0.8F);
 	    this.setSoundType(SoundType.SAND);

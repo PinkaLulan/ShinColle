@@ -1,19 +1,18 @@
 package com.lulan.shincolle.worldgen;
 
-import java.util.Random;
-
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
-
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.gen.feature.WorldGenerator;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.common.IWorldGenerator;
+
+import java.util.Random;
 
 public class ShinColleWorldGen implements IWorldGenerator
 {
@@ -59,7 +58,7 @@ public class ShinColleWorldGen implements IWorldGenerator
 		
 		Biome biome = world.getBiomeForCoordsBody(new BlockPos(blockX, 0, blockZ));
 		
-		if (BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN))
+		if (BiomeDictionary.hasType(biome, BiomeDictionary.Type.OCEAN))
 		{
 			spawnN *= 3;
 		}
@@ -87,7 +86,7 @@ public class ShinColleWorldGen implements IWorldGenerator
 	{
 		Biome biome = world.getBiomeForCoordsBody(new BlockPos(x, 0, z));
 		
-		if(BiomeDictionary.isBiomeOfType(biome, BiomeDictionary.Type.OCEAN))
+		if(BiomeDictionary.hasType(biome, BiomeDictionary.Type.OCEAN))
 		{
 			genPolyGravel = new WorldGenPolyGravel(2 + rand.nextInt(2));
 			int posX, posY, posZ = 0;

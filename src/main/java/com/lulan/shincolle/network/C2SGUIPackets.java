@@ -1,8 +1,5 @@
 package com.lulan.shincolle.network;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -10,12 +7,7 @@ import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.proxy.ServerProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.FormationHelper;
-import com.lulan.shincolle.utility.PacketHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.utility.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,6 +24,9 @@ import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**CLIENT TO SERVER : GUI INPUT PACKETS
  * 用於將GUI的操作發送到server
@@ -455,7 +450,7 @@ public class C2SGUIPackets implements IMessage
 				ItemStack pointer = EntityHelper.getPointerInUse(player);
 				
 				//if sync pointer, check pointer meta
-				if (pointer != null)
+				if (!pointer.isEmpty())
 				{
 					//sync item damage value
 					int oldmeta = pointer.getItemDamage();
@@ -720,7 +715,7 @@ public class C2SGUIPackets implements IMessage
 		break;
 		case PID.SetUnitName:
 		{
-			player = ctx.getServerHandler().playerEntity;
+			player = ctx.getServerHandler().player;
 			capa = CapaTeitoku.getTeitokuCapability(player);
 			
 			if (capa != null)

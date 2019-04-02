@@ -1,16 +1,11 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.intermod.MetamorphHelper;
 import com.lulan.shincolle.network.C2SInputPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.tileentity.ITileWaypoint;
 import com.lulan.shincolle.tileentity.TileEntityCrane;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -25,6 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /** target selector for OP only
  * 
@@ -42,8 +39,7 @@ public class TargetWrench extends BasicItem
 	public TargetWrench()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(1);
 		this.setFull3D();
 		
@@ -109,8 +105,8 @@ public class TargetWrench extends BasicItem
     }
 	
 	@Override
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
-    {
+    public void addInformation(ItemStack itemstack, World world, List list, ITooltipFlag par4)
+	{
     	list.add(TextFormatting.YELLOW + I18n.format("gui.shincolle:wrench3"));
 	}
 	

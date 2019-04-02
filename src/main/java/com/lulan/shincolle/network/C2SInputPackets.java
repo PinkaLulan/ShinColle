@@ -4,26 +4,15 @@ import com.lulan.shincolle.ShinColle;
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IShipMorph;
+import com.lulan.shincolle.entity.BasicEntityShipHostile;
+import com.lulan.shincolle.entity.BasicEntitySummon;
 import com.lulan.shincolle.handler.ConfigHandler;
-import com.lulan.shincolle.handler.IPacketEntity;
-import com.lulan.shincolle.handler.IStateEntity;
-import com.lulan.shincolle.handler.PacketHandler;
-import com.lulan.shincolle.handler.StateHandler;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.ShipTank;
 import com.lulan.shincolle.playerskill.ShipSkillHandler;
-import com.lulan.shincolle.reference.Enums.AttrBoo;
-import com.lulan.shincolle.reference.Enums.AttrNum;
-import com.lulan.shincolle.reference.Enums.AttrStr;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.LogHelper;
-import com.lulan.shincolle.utility.PacketHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-import com.lulan.shincolle.utility.TileEntityHelper;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -91,7 +80,51 @@ public class C2SInputPackets implements IMessage
         this.value3 = parms;
     }
 	
-	/** send packet */
+	//接收packet方法, server side
+	@Override
+	public void fromBytes(ByteBuf buf)
+	{	
+		//get type and entityID
+		this.packetID = buf.readByte();
+	
+		//get data
+		switch (this.packetID)
+		{
+		case PID.MountMove:			//mount move key
+		case PID.MountGUI:			//mount GUI key
+		case PID.MorphGUI:			//morph GUI key
+		case PID.PlayerSkill:		//mount skill  key
+		case PID.SyncHandheld:		//sync current item
+		case PID.CmdChOwner:    	//command: change owner
+		case PID.CmdShipAttr:   	//command: set ship attrs
+		case PID.Request_SyncModel:	//request model display sync
+		case PID.Request_Riding:	//request riding
+		case PID.Request_WpSet:		//waypoint pairing packet
+		case PID.Request_ChestSet:	//chest and waypoint pairing packet
+		case PID.Request_PlaceFluid://ship tank place fluid packet
+		case PID.Request_UnitName:	//ship unit name
+		case PID.Request_Buffmap:	//buff map
+		case PID.Request_EntityItemList://entity item list for radar
+			try
+			{
+				this.value = buf.readInt();  //int array length
+				
+				//get int array data
+				if (this.value > 0)
+				{
+					this.value3 = PacketHelper.readIntArray(buf, this.value);
+				}
+			}
+			catch (Exception e)
+			{
+				LogHelper.info("EXCEPTION: C2S input packet: ");
+				e.printStackTrace();
+			}
+		break;
+		}
+	}
+
+	//發出packet方法, client side
 	@Override
 	public void toBytes(ByteBuf buf)
 	{
@@ -205,7 +238,6 @@ public class C2SInputPackets implements IMessage
 				player.inventory.currentItem = msg.value3[0];
 			break;
 			case PID.CmdChOwner:    //command: change owner
-			{
 				/** ship change owner
 				 *    1. (done) check command sender is OP (server)
 				 *    2. (done) check owner exists (server)
@@ -220,17 +252,14 @@ public class C2SInputPackets implements IMessage
 				
 				if (player != null && entity instanceof BasicEntityShip)
 				{
-				    BasicEntityShip ship = (BasicEntityShip) entity;
-				    
 					//set owner
-					EntityHelper.setPetPlayerUUID(player.getUniqueID(), ship);
-					EntityHelper.setPetPlayerUID(player, ship);
-					ship.getStateHandler().setStringState(AttrStr.OwnerName, player.getName());
+					EntityHelper.setPetPlayerUUID(player.getUniqueID(), (BasicEntityShip) entity);
+					EntityHelper.setPetPlayerUID(player, (BasicEntityShip) entity);
+					((BasicEntityShip) entity).ownerName = player.getName();
 					//sync
 					LogHelper.debug("DEBUG : C2S input packet: command: change owner "+player+" "+entity);
-					PacketHelper.sendAttrsAll(ship);
+					((BasicEntityShip) entity).sendSyncPacketAll();
 				}
-			}
 			break;
 			case PID.CmdShipAttr:   //command: set ship attrs
 				/**
@@ -248,18 +277,18 @@ public class C2SInputPackets implements IMessage
 					
 					if (msg.value3.length == 9)
 					{
-						Attrs shipattrs = ship.getStateHandler().getAttrs();
+						Attrs shipattrs = ship.getAttrs();
 						shipattrs.setAttrsBonus(ID.AttrsBase.HP, msg.value3[3]);
 						shipattrs.setAttrsBonus(ID.AttrsBase.ATK, msg.value3[4]);
 						shipattrs.setAttrsBonus(ID.AttrsBase.DEF, msg.value3[5]);
 						shipattrs.setAttrsBonus(ID.AttrsBase.SPD, msg.value3[6]);
 						shipattrs.setAttrsBonus(ID.AttrsBase.MOV, msg.value3[7]);
 						shipattrs.setAttrsBonus(ID.AttrsBase.HIT, msg.value3[8]);
-						ship.getStateHandler().setShipLevel(msg.value3[2]);
+						ship.setShipLevel(msg.value3[2], true);
 					}
 					else if (msg.value3.length == 3)
 					{
-						ship.getStateHandler().setShipLevel(msg.value3[2], true);
+						ship.setShipLevel(msg.value3[2], true);
 					}
 				}
 			break;
@@ -267,20 +296,27 @@ public class C2SInputPackets implements IMessage
 			{
 				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
 				
-				//is state entity
-				if (entity instanceof IStateEntity)
+				if (entity instanceof BasicEntityShip)
 				{
-				    reactRequestEmotion((IStateEntity) entity);
+					((BasicEntityShip) entity).sendSyncPacketEmotion();
 				}
-				//is morph host
+				else if (entity instanceof BasicEntityShipHostile)
+				{
+					((BasicEntityShipHostile) entity).sendSyncPacket(0);
+				}
+				else if (entity instanceof BasicEntitySummon)
+				{
+					((BasicEntitySummon) entity).sendSyncPacket(0);
+				}
+				//sync model state to morph entity
 				else if (entity instanceof EntityPlayer)
 				{
-				    CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) entity);
-                    
-                    if (capa != null && capa.morphEntity instanceof IStateEntity)
-                    {
-                        reactRequestEmotion((IStateEntity) capa.morphEntity);
-                    }
+					CapaTeitoku capa = CapaTeitoku.getTeitokuCapability((EntityPlayer) entity);
+					
+					if (capa != null && capa.morphEntity instanceof BasicEntityShip)
+					{
+						((BasicEntityShip) capa.morphEntity).sendSyncPacketEmotion();
+					}
 				}
 			}
 			break;
@@ -296,8 +332,8 @@ public class C2SInputPackets implements IMessage
 					{
 						ship.setEntitySit(false);
 						ship.startRiding(player, true);
-						ship.getMoveHandler().getShipNavigate().clearPathEntity();
-						PacketHelper.sendRiders(ship);
+						ship.getShipNavigate().clearPath();
+						ship.sendSyncPacketRiders();
 					}
 				}
 			}
@@ -308,8 +344,9 @@ public class C2SInputPackets implements IMessage
 				 * waypoint pairing packet:
 				 * data: 0:playerUID, 1~3:from xyz, 4~6:to xyz
 				 */
+				EntityPlayer p = ctx.getServerHandler().player;
 				World w = null;
-				if (player != null) w = player.world;
+				if (p != null) w = p.world;
 				
 				if (w != null)
 				{
@@ -321,7 +358,7 @@ public class C2SInputPackets implements IMessage
 					//check distance
 					if (dist <= ConfigHandler.pairDistWp)
 					{
-						TileEntityHelper.pairingWaypoints(player, msg.value3[0], w,
+						TileEntityHelper.pairingWaypoints(p, msg.value3[0], w,
 								new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
 								new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
 					}
@@ -340,8 +377,9 @@ public class C2SInputPackets implements IMessage
 				 * chest and waypoint pairing packet:
 				 * data: 0:playerUID, 1~3:waypoint xyz, 4~6:chest xyz
 				 */
+				EntityPlayer p = ctx.getServerHandler().player;
 				World w = null;
-				if (player != null) w = player.world;
+				if (p != null) w = p.world;
 				
 				if (w != null)
 				{
@@ -353,7 +391,7 @@ public class C2SInputPackets implements IMessage
 					//check distance
 					if (dist <= ConfigHandler.pairDistChest)
 					{
-						TileEntityHelper.pairingWaypointAndChest(player, msg.value3[0], w,
+						TileEntityHelper.pairingWaypointAndChest(p, msg.value3[0], w,
 								new BlockPos(msg.value3[1], msg.value3[2], msg.value3[3]),
 								new BlockPos(msg.value3[4], msg.value3[5], msg.value3[6]));
 					}
@@ -373,7 +411,7 @@ public class C2SInputPackets implements IMessage
 					//check held item = ship tank
 					ItemStack stack = player.inventory.getCurrentItem();
 					
-					if (stack != null && stack.getItem() == ModItems.ShipTank)
+					if (!stack.isEmpty() && stack.getItem() == ModItems.ShipTank)
 					{
 						//check fluid in tank
 						IFluidHandler fh = FluidUtil.getFluidHandler(stack);
@@ -385,7 +423,7 @@ public class C2SInputPackets implements IMessage
 							
 							if (player.world.isBlockModifiable(player, pos))
 							{
-								ShipTank.tryPlaceContainedLiquid(player, player.world, pos, fh);
+								ShipTank.tryPlaceContainedLiquid(player, player.world, pos, pos, fh);
 							}
 						}
 					}
@@ -396,9 +434,9 @@ public class C2SInputPackets implements IMessage
 			{
 				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
 				
-				if (entity instanceof IStateEntity)
+				if (entity instanceof BasicEntityShip)
 				{
-				    //TODO send unit name, get unit name from ServerProxy cache
+					((BasicEntityShip) entity).sendSyncPacketUnitName();
 				}
 			}
 			break;
@@ -406,19 +444,10 @@ public class C2SInputPackets implements IMessage
 			{
 				entity = EntityHelper.getEntityByID(msg.value3[0], msg.value3[1], false);
 				
-				if (entity instanceof IPacketEntity)
+				if (entity instanceof BasicEntityShip)
 				{
-				    if (entity instanceof IShipMorph)
-				    {
-				        if (!((IShipMorph) entity).isMorph())
-				        {
-				            PacketHelper.sendBuffMap((IPacketEntity) entity);
-				        }
-				    }
-				    else
-				    {
-				        PacketHelper.sendBuffMap((IPacketEntity) entity);
-				    }
+					BasicEntityShip ship = (BasicEntityShip) entity;
+					if (!ship.isMorph()) ship.sendSyncPacketBuffMap();
 				}
 			}
 			break;
@@ -440,50 +469,6 @@ public class C2SInputPackets implements IMessage
 		
 	}
 	
-	/** get packet */
-    @Override
-    public void fromBytes(ByteBuf buf)
-    {   
-        //get type and entityID
-        this.packetID = buf.readByte();
-    
-        //get data
-        switch (this.packetID)
-        {
-        case PID.MountMove:         //mount move key
-        case PID.MountGUI:          //mount GUI key
-        case PID.MorphGUI:          //morph GUI key
-        case PID.PlayerSkill:       //mount skill  key
-        case PID.SyncHandheld:      //sync current item
-        case PID.CmdChOwner:        //command: change owner
-        case PID.CmdShipAttr:       //command: set ship attrs
-        case PID.Request_SyncModel: //request model display sync
-        case PID.Request_Riding:    //request riding
-        case PID.Request_WpSet:     //waypoint pairing packet
-        case PID.Request_ChestSet:  //chest and waypoint pairing packet
-        case PID.Request_PlaceFluid://ship tank place fluid packet
-        case PID.Request_UnitName:  //ship unit name
-        case PID.Request_Buffmap:   //buff map
-        case PID.Request_EntityItemList://entity item list for radar
-            try
-            {
-                this.value = buf.readInt();  //int array length
-                
-                //get int array data
-                if (this.value > 0)
-                {
-                    this.value3 = PacketHelper.readIntArray(buf, this.value);
-                }
-            }
-            catch (Exception e)
-            {
-                LogHelper.info("EXCEPTION: C2S input packet: ");
-                e.printStackTrace();
-            }
-        break;
-        }
-    }
-	
 	//packet handler (inner class)
 	public static class Handler implements IMessageHandler<C2SInputPackets, IMessage>
 	{
@@ -501,22 +486,5 @@ public class C2SInputPackets implements IMessage
 		}
     }
 	
-	private static void reactRequestEmotion(IStateEntity host)
-	{
-        //mark update flag
-        StateHandler sh = host.getStateHandler();
-        sh.setSyncNumber(AttrNum.ModelState);
-        sh.setSyncNumber(AttrNum.HPState);
-        sh.setSyncNumber(AttrNum.Emotion);
-        sh.setSyncNumber(AttrNum.Emotion2);
-        sh.setSyncNumber(AttrNum.Emotion3);
-        sh.setSyncNumber(AttrNum.Emotion4);
-        sh.setSyncNumber(AttrNum.Phase);
-        sh.setSyncFlag(AttrBoo.IsNoFuel);
-        sh.setSyncFlag(AttrBoo.Vanilla);
-        
-        PacketHandler ph = host.getPacketHandler();
-        PacketHelper.sendAttrs(host);
-	}
 	
 }

@@ -61,7 +61,7 @@ abstract public class BasicBlockFacing extends BasicBlock
     public IBlockState getStateFromMeta(int meta)
     {
         // all direction: 3 bits for 6 direction
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7));
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7));
     }
 
     /** state轉meta, 注意meta值只有0~15 */

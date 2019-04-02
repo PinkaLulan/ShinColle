@@ -1,9 +1,5 @@
 package com.lulan.shincolle.client.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lulan.shincolle.client.gui.inventory.ContainerVolCore;
 import com.lulan.shincolle.network.C2SGUIPackets;
 import com.lulan.shincolle.proxy.CommonProxy;
@@ -11,13 +7,16 @@ import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntityVolCore;
 import com.lulan.shincolle.utility.GuiHelper;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiVolCore extends GuiContainer
 {
@@ -62,9 +61,9 @@ public class GuiVolCore extends GuiContainer
 		{
 			List list = new ArrayList();
 			String strFuel = String.valueOf(tile.getPowerRemained());
-			int strLen = this.fontRendererObj.getStringWidth(strFuel) / 2;
+			int strLen = this.fontRenderer.getStringWidth(strFuel) / 2;
 			list.add(strFuel);
-			this.drawHoveringText(list, 10-strLen, 52, this.fontRendererObj);
+			this.drawHoveringText(list, 10-strLen, 52, this.fontRenderer);
 		}	
 	}
 	
@@ -74,7 +73,7 @@ public class GuiVolCore extends GuiContainer
 	{
 		//畫出字串 parm: string, x, y, color, (是否dropShadow)
 		//畫出該方塊名稱, 位置: x=gui寬度的一半扣掉字串長度一半, y=6, 顏色為4210752
-		this.fontRendererObj.drawString(conName, this.xSize / 2 - this.fontRendererObj.getStringWidth(conName) / 2, 6, 4210752);
+		this.fontRenderer.drawString(conName, this.xSize / 2 - this.fontRenderer.getStringWidth(conName) / 2, 6, 4210752);
 		
 		//畫出tooltip
 		handleHoveringText();

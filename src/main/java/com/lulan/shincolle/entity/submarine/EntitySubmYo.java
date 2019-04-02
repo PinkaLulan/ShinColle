@@ -7,14 +7,9 @@ import com.lulan.shincolle.entity.IShipInvisible;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
-import com.lulan.shincolle.utility.CalcHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EmotionHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
@@ -33,20 +28,20 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 	{
 		super(world);
 		this.setSize(0.6F, 1.8F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.SUBMARINE);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.SUBMARINE);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.SSYO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.SUBMARINE);
 		this.setStateMinor(ID.M.NumState, 2);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.SS]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.SS]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.SS]);
-		this.modelPosInGUI = new float[] {0F, 25F, 0F, 45F};
+		this.ModelPos = new float[] {0F, 25F, 0F, 45F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -85,7 +80,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
   					if (getStateFlag(ID.F.IsMarried))
   					{
   						EntityPlayerMP player = (EntityPlayerMP) EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
-  	  	  				if (player != null && getDistanceSqToEntity(player) < 256D)
+  	  	  				if (player != null && getDistanceSq(player) < 256D)
   	  	  				{
   	  	  					//potion effect: id, time, level
   	  	  	  	  			player.addPotionEffect(new PotionEffect(MobEffects.INVISIBILITY, 40+getLevel(), 0, false, false));
@@ -277,7 +272,7 @@ public class EntitySubmYo extends BasicEntityShipSmall implements IShipInvisible
 	}
   	
 	@Override
-	public double getEntityFloatingDepth()
+	public double getShipFloatingDepth()
 	{
 		return 1D;
 	}

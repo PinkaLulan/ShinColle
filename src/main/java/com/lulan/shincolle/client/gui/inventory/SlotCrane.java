@@ -1,35 +1,36 @@
 package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.tileentity.TileEntityCrane;
-
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
-public class SlotCrane extends SlotItemHandler
+public class SlotCrane extends Slot
 {
-    
-    private TileEntityCrane tile;
+	
+	private int slotIndex;
+	private TileEntityCrane tile;
 
-    
-    public SlotCrane(TileEntityCrane tile, IItemHandler itemHandler, int slotIndex, int x, int y)
-    {
-        super(itemHandler, slotIndex, x, y);
-        this.tile = (TileEntityCrane) tile;
+	
+	public SlotCrane(IInventory tile, int slotIndex, int x, int y)
+	{
+		super(tile, slotIndex, x, y);
+		this.slotIndex = slotIndex;
+		this.tile = (TileEntityCrane) tile;
+	}
+	
+	@Override
+	public boolean isItemValid(ItemStack itemstack)
+	{
+		return false;
     }
-    
-    @Override
-    public boolean isItemValid(ItemStack itemstack)
-    {
+	
+	@Override
+	public boolean canTakeStack(EntityPlayer player)
+	{
         return false;
     }
-    
-    @Override
-    public boolean canTakeStack(EntityPlayer player)
-    {
-        return false;
-    }
 
-    
+	
 }

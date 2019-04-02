@@ -1,7 +1,6 @@
 package com.lulan.shincolle.server;
 
 import com.lulan.shincolle.entity.BasicEntityShip;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 public class CacheDataShip
@@ -23,7 +22,7 @@ public class CacheDataShip
 		{
 			this.entityID = ship.getEntityId();
 			this.worldID = ship.world.provider.getDimension();
-			this.classID = ship.getAttrClass();
+			this.classID = ship.getShipClass();
 			this.isDead = ship.isDead;
 			this.posX = (int) ship.posX;
 			this.posY = (int) ship.posY;

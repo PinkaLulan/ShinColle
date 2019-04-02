@@ -1,15 +1,10 @@
 package com.lulan.shincolle.item;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.utility.InteractHelper;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,6 +17,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class ModernKit extends BasicItem
 {
 	
@@ -30,24 +27,28 @@ public class ModernKit extends BasicItem
 	public ModernKit()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 	}
 	
+	//display equip information
+    @Override
+    public void addInformation(ItemStack itemstack, World world, List list, ITooltipFlag par4)
+    {  	
+    	list.add(TextFormatting.GOLD + I18n.format("gui.shincolle:modernkit"));
+    }
+    
 	//start use item
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
-		ItemStack stack = player.getHeldItem(hand);
-		
 		if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && hand == EnumHand.MAIN_HAND)
         {
             player.setActiveHand(hand);
-            return new ActionResult(EnumActionResult.SUCCESS, stack);
+            return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItemMainhand());
         }
         else
         {
-            return new ActionResult(EnumActionResult.FAIL, stack);
+            return new ActionResult(EnumActionResult.FAIL, player.getHeldItem(hand));
         }
     }
     
@@ -71,7 +72,6 @@ public class ModernKit extends BasicItem
     }
     
     @Override
-	@Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase host)
     {
 		if (host instanceof EntityPlayer && world != null && !world.isRemote &&
@@ -88,12 +88,5 @@ public class ModernKit extends BasicItem
         return stack;
     }
 	
-	//display equip information
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
-    {  	
-    	list.add(TextFormatting.GOLD + I18n.format("gui.shincolle:modernkit"));
-    }
-    
     
 }

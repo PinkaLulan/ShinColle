@@ -6,7 +6,6 @@ import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.EntityHelper;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -24,20 +23,20 @@ public class EntityDestroyerRo extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.9F, 1.7F);	//碰撞大小 跟模型大小無關
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.DESTROYER);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.DESTROYER);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.DDRO);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.DESTROYER);
 		this.setStateMinor(ID.M.NumState, 1);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.DD]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.DD]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.DD]);
-		this.modelPosInGUI = new float[] {0F, 0F, 0F, 25F};
+		this.ModelPos = new float[] {0F, 0F, 0F, 25F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
 		this.StateFlag[ID.F.AtkType_AirHeavy] = false;
 		this.StateFlag[ID.F.CanPickItem] = true;
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	//equip type: 1:cannon+misc 2:cannon+airplane+misc 3:airplane+misc
@@ -72,7 +71,7 @@ public class EntityDestroyerRo extends BasicEntityShipSmall
   			{
   				EntityPlayer player = EntityHelper.getEntityPlayerByUID(this.getPlayerUID());
   				if (getStateFlag(ID.F.IsMarried) && getStateFlag(ID.F.UseRingEffect) &&
-  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSqToEntity(player) < 256D)
+  					getStateMinor(ID.M.NumGrudge) > 0 && player != null && getDistanceSq(player) < 256D)
   				{
   					//potion effect: id, time, level
   	  	  			player.addPotionEffect(new PotionEffect(MobEffects.HASTE , 80+getStateMinor(ID.M.ShipLevel), getStateMinor(ID.M.ShipLevel) / 30, false, false));

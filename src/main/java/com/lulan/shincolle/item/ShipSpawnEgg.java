@@ -1,21 +1,14 @@
 package com.lulan.shincolle.item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
-import com.lulan.shincolle.capability.CapaInventoryExtend;
+import com.lulan.shincolle.capability.CapaShipInventory;
 import com.lulan.shincolle.crafting.ShipCalc;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-import com.lulan.shincolle.reference.dataclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Attrs;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.LogHelper;
-
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
@@ -38,6 +31,10 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 /**custom spawn egg
 *  read egg NBTdata to spawn different ship
 *  
@@ -53,8 +50,7 @@ public class ShipSpawnEgg extends BasicItem
     public ShipSpawnEgg()
     {
     	super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
         this.setMaxStackSize(1);
         
@@ -84,7 +80,7 @@ public class ShipSpawnEgg extends BasicItem
     //format: item.MOD_ID:EGG_NAME.name
     //item name for different metadata
   	@Override
-  	public String getUnlocalizedName(ItemStack itemstack)
+  	public String getTranslationKey(ItemStack itemstack)
   	{
   		int metaid = itemstack.getItemDamage();		//get metadata
   		
@@ -284,7 +280,7 @@ public class ShipSpawnEgg extends BasicItem
   	//for list all same id items
   	@Override
   	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-    {
+  	{
   		for (int meta : shipList)
   		{
   			list.add(new ItemStack(this, 1, meta));
@@ -351,12 +347,12 @@ public class ShipSpawnEgg extends BasicItem
 			
 			if (nbt != null)
 			{
-				CapaInventoryExtend capa = entity.getCapaShipInventory();
+				CapaShipInventory capa = entity.getCapaShipInventory();
 				
 				//load inventory
-		        if (nbt.hasKey(CapaInventoryExtend.InvName))
+		        if (nbt.hasKey(CapaShipInventory.InvName))
 		        {
-		        	capa.deserializeNBT((NBTTagCompound) nbt.getTag(CapaInventoryExtend.InvName));
+		        	capa.deserializeNBT((NBTTagCompound) nbt.getTag(CapaShipInventory.InvName));
 		        }
 				
 				//load ship attributes
@@ -488,8 +484,8 @@ public class ShipSpawnEgg extends BasicItem
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
-    	ItemStack stack = player.getHeldItem(hand);
-    	
+		ItemStack stack = player.getHeldItem(hand);
+
     	//client side
     	if (world.isRemote)
     	{
@@ -548,7 +544,7 @@ public class ShipSpawnEgg extends BasicItem
                         }
                         	
                         //item -1
-                        stack.grow(-1);
+                        stack.shrink(1);
                     }
                     
                     //spawn entity in front of player (1 block)
@@ -596,13 +592,13 @@ public class ShipSpawnEgg extends BasicItem
   	
     //display egg information
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<String> list, ITooltipFlag flag)
+    public void addInformation(ItemStack itemstack, World world, List list, ITooltipFlag par4)
     {
     	int[] material = new int[4];
 
-    	if (stack.hasTagCompound())
+    	if (itemstack.hasTagCompound())
     	{ 	//正常製造egg, 會有四個材料tag	
-    		NBTTagCompound nbt = stack.getTagCompound();
+    		NBTTagCompound nbt = itemstack.getTagCompound();
 
     		if (nbt.hasKey("Attrs"))
     		{
@@ -625,10 +621,10 @@ public class ShipSpawnEgg extends BasicItem
     		}
     		else
     		{
-    			material[0] = stack.getTagCompound().getInteger("Grudge");
-        		material[1] = stack.getTagCompound().getInteger("Abyssium");
-        		material[2] = stack.getTagCompound().getInteger("Ammo");
-        		material[3] = stack.getTagCompound().getInteger("Polymetal");
+    			material[0] = itemstack.getTagCompound().getInteger("Grudge");
+        		material[1] = itemstack.getTagCompound().getInteger("Abyssium");
+        		material[2] = itemstack.getTagCompound().getInteger("Ammo");
+        		material[3] = itemstack.getTagCompound().getInteger("Polymetal");
         		
         		list.add(TextFormatting.WHITE + "" + material[0] + " " + I18n.format("item.shincolle:Grudge.name"));
                 list.add(TextFormatting.RED + "" + material[1] + " " + I18n.format("item.shincolle:AbyssMetal.name"));

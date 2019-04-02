@@ -2,7 +2,6 @@ package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.TileEntityLightBlock;
-
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -25,8 +24,8 @@ public class BlockLightAir extends BlockAir implements ITileEntityProvider, ICus
 	public BlockLightAir()
 	{
 	    super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
+		this.setRegistryName(NAME.toLowerCase());
 		this.setTickRandomly(false);
 		this.setLightLevel(1F);
 	}
@@ -50,9 +49,9 @@ public class BlockLightAir extends BlockAir implements ITileEntityProvider, ICus
 	//將name冠上mod名稱 用於之後給各語系檔案放上正確名稱
 	//格式為tile.MOD名稱:方塊名稱.name
 	@Override
-	public String getUnlocalizedName()
+	public String getTranslationKey()
 	{
-		return String.format("tile.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+		return String.format("tile.%s%s", Reference.MOD_ID+":", getUnwrappedUnlocalizedName(super.getTranslationKey()));
 	}
 	
 	@Override

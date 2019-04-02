@@ -1,13 +1,10 @@
 package com.lulan.shincolle.item;
 
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.BasicEntityShipCV;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.proxy.CommonProxy;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -26,8 +23,7 @@ public class BucketRepair extends BasicItem
 	public BucketRepair()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setMaxStackSize(16);
 	}
 	
@@ -35,16 +31,14 @@ public class BucketRepair extends BasicItem
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
     {
-		ItemStack stack = player.getHeldItem(hand);
-		
 		if (CommonProxy.activeMetamorph && ConfigHandler.enableMetamorphSkill && hand == EnumHand.MAIN_HAND)
         {
             player.setActiveHand(hand);
-            return new ActionResult(EnumActionResult.SUCCESS, stack);
+            return new ActionResult(EnumActionResult.SUCCESS, player.getHeldItemMainhand());
         }
         else
         {
-            return new ActionResult(EnumActionResult.PASS, stack);
+            return new ActionResult(EnumActionResult.FAIL, player.getHeldItem(hand));
         }
     }
 	
@@ -71,7 +65,6 @@ public class BucketRepair extends BasicItem
 	
 	//item use result
 	@Override
-	@Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase host)
     {
 		if (host instanceof EntityPlayer && world != null && !world.isRemote &&
@@ -89,7 +82,7 @@ public class BucketRepair extends BasicItem
 					//item-1 in non-creative mode
 					if (!player.capabilities.isCreativeMode)
 					{
-						stack.grow(-1);
+						stack.shrink(1);
 		            }
 					
 					//1 bucket = 10% hp

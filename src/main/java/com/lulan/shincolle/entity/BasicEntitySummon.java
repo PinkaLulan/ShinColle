@@ -1,11 +1,8 @@
 package com.lulan.shincolle.entity;
 
-import java.util.HashMap;
-import java.util.Random;
-
 import com.lulan.shincolle.ai.path.ShipMoveHelper;
 import com.lulan.shincolle.ai.path.ShipPathNavigate;
-import com.lulan.shincolle.client.render.ICustomTexture;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModSounds;
 import com.lulan.shincolle.network.C2SInputPackets;
@@ -13,16 +10,15 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.BuffHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.EntityHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -34,7 +30,10 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
-abstract public class BasicEntitySummon extends EntityCreature implements IShipCannonAttack, ICustomTexture, IShipMorph
+import java.util.HashMap;
+import java.util.Random;
+
+abstract public class BasicEntitySummon extends EntityLiving implements IShipCannonAttack, IShipCustomTexture, IShipMorph
 {
 	
     //attributes
@@ -385,7 +384,7 @@ abstract public class BasicEntitySummon extends EntityCreature implements IShipC
 	}
   	
     @Override
-    public void moveEntityWithHeading(float strafe, float forward)
+    public void travel(float strafe, float vertical, float forward)
     {
     	EntityHelper.moveEntityWithHeading(this, strafe, forward);
     }
@@ -632,19 +631,19 @@ abstract public class BasicEntitySummon extends EntityCreature implements IShipC
 		boolean checkDEF = true;
 		
 		//damage disabled
-		if (source == DamageSource.inWall || source == DamageSource.starve ||
-			source == DamageSource.cactus || source == DamageSource.fall)
+		if (source == DamageSource.IN_WALL || source == DamageSource.STARVE ||
+			source == DamageSource.CACTUS || source == DamageSource.FALL)
 		{
 			return false;
 		}
 		//damage ignore def value
-		else if (source == DamageSource.magic || source == DamageSource.wither ||
-				 source == DamageSource.dragonBreath)
+		else if (source == DamageSource.MAGIC || source == DamageSource.WITHER ||
+				 source == DamageSource.DRAGON_BREATH)
 		{
 			checkDEF = false;
 		}
 		//out of world
-		else if (source == DamageSource.outOfWorld)
+		else if (source == DamageSource.OUT_OF_WORLD)
 		{
 			this.returnSummonResource();
 			this.setDead();
@@ -658,8 +657,8 @@ abstract public class BasicEntitySummon extends EntityCreature implements IShipC
     	}
     	
     	//若攻擊方為owner, 則直接回傳傷害, 不計def跟friendly fire
-		if (source.getEntity() instanceof EntityPlayer &&
-			TeamHelper.checkSameOwner(source.getEntity(), this))
+		if (source.getTrueSource() instanceof EntityPlayer &&
+			TeamHelper.checkSameOwner(source.getTrueSource(), this))
 		{
 			return super.attackEntityFrom(source, atk);
 		}
@@ -670,9 +669,9 @@ abstract public class BasicEntitySummon extends EntityCreature implements IShipC
             return false;
         }
 		//只對entity damage類有效
-		else if (source.getEntity() != null)
+		else if (source.getTrueSource() != null)
 		{
-			Entity attacker = source.getEntity();
+			Entity attacker = source.getTrueSource();
 			
 			//不會對自己造成傷害, 可免疫毒/掉落/窒息等傷害 (此為自己對自己造成傷害)
 			if (attacker.equals(this))
@@ -691,7 +690,7 @@ abstract public class BasicEntitySummon extends EntityCreature implements IShipC
 			}
 			
 			//進行dodge計算
-			float dist = (float) this.getDistanceSqToEntity(attacker);
+			float dist = (float) this.getDistanceSq(attacker);
 			
 			if (CombatHelper.canDodge(this, dist))
 			{

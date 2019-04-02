@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.battleship;
 
-import java.util.HashMap;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipHostile;
 import com.lulan.shincolle.entity.other.EntityProjectileBeam;
@@ -11,16 +9,17 @@ import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
 import com.lulan.shincolle.utility.CalcHelper;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.ParticleHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.HashMap;
 
 /**
  * model state:
@@ -145,7 +144,7 @@ public class EntityBattleshipYMTMob extends BasicEntityShipHostile
         if (getStateEmotion(ID.S.Phase) > 0)
         {	//spawn beam particle & entity
             //calc dist to target
-            Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPositionVector(), target.getPositionVector().addVector(0D, this.scaleLevel * -0.6D, 0D));
+            Dist4d distVec = CalcHelper.getDistanceFromA2B(this.getPositionVector(), target.getPositionVector().add(0D, this.scaleLevel * -0.6D, 0D));
             
         	//shot sound
         	this.playSound(ModSounds.SHIP_YAMATO_SHOT, ConfigHandler.volumeFire, 1F);

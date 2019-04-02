@@ -1,9 +1,6 @@
 package com.lulan.shincolle.entity.other;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.lulan.shincolle.client.render.ICustomTexture;
+import com.lulan.shincolle.client.render.IShipCustomTexture;
 import com.lulan.shincolle.entity.IShipAttackBase;
 import com.lulan.shincolle.entity.IShipAttrs;
 import com.lulan.shincolle.entity.IShipOwner;
@@ -14,19 +11,16 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.network.S2CSpawnParticle;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Attrs;
-import com.lulan.shincolle.utility.BuffHelper;
-import com.lulan.shincolle.utility.CombatHelper;
-import com.lulan.shincolle.utility.EntityHelper;
-import com.lulan.shincolle.utility.ParticleHelper;
-import com.lulan.shincolle.utility.TargetHelper;
-import com.lulan.shincolle.utility.TeamHelper;
-
+import com.lulan.shincolle.reference.unitclass.Attrs;
+import com.lulan.shincolle.utility.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Beam entity
  *  fly to target, create beam particle between host and target
@@ -38,7 +32,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
  *
  *	實際最大射程約為 lifeLength * acc (格)
  */
-public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttrs, ICustomTexture, IShipProjectile
+public class EntityProjectileBeam extends Entity implements IShipOwner, IShipAttrs, IShipCustomTexture, IShipProjectile
 {
 	
 	//host data

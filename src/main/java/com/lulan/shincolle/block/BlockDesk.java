@@ -2,7 +2,6 @@ package com.lulan.shincolle.block;
 
 import com.lulan.shincolle.client.render.block.RenderDesk;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
-
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -24,8 +23,7 @@ public class BlockDesk extends BasicBlockFacingContainer
 	public BlockDesk()
 	{
 	    super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHardness(1F);
 		this.setResistance(60F);
 	    this.setHarvestLevel("pickaxe", 0);

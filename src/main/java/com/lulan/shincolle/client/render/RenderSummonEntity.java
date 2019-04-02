@@ -1,23 +1,16 @@
 package com.lulan.shincolle.client.render;
 
-import javax.annotation.Nonnull;
-
-import com.lulan.shincolle.client.model.ModelAirplane;
-import com.lulan.shincolle.client.model.ModelAirplaneT;
-import com.lulan.shincolle.client.model.ModelAirplaneZero;
-import com.lulan.shincolle.client.model.ModelFloatingFort;
-import com.lulan.shincolle.client.model.ModelRensouhou;
-import com.lulan.shincolle.client.model.ModelRensouhouS;
-import com.lulan.shincolle.client.model.ModelTakoyaki;
+import com.lulan.shincolle.client.model.*;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
+
+import javax.annotation.Nonnull;
 
 public class RenderSummonEntity extends RenderBasic
 {
@@ -51,7 +44,7 @@ public class RenderSummonEntity extends RenderBasic
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		case ID.ShipMisc.Airplane:
 			return TEX_Airplane;
@@ -78,7 +71,7 @@ public class RenderSummonEntity extends RenderBasic
     @Override
     protected void setModel()
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		case ID.ShipMisc.Airplane:
 			this.mainModel = MD_Airplane;
@@ -114,7 +107,7 @@ public class RenderSummonEntity extends RenderBasic
     @Override
     protected void setShadowSize()
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		case ID.ShipMisc.Airplane:
 		case ID.ShipMisc.AirplaneZero:

@@ -2,10 +2,9 @@ package com.lulan.shincolle.ai;
 
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
-import com.lulan.shincolle.entity.IFloatingEntity;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.entity.IShipGuardian;
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -19,13 +18,13 @@ import net.minecraft.util.math.BlockPos;
 public class EntityAIShipFloating extends EntityAIBase
 {
 	
-	private IFloatingEntity host;
+	private IShipFloating host;
     private BasicEntityShip hostShip;
     private BasicEntityMount hostMount;
     private EntityLivingBase hostLiving;
     
 
-    public EntityAIShipFloating(IFloatingEntity entity)
+    public EntityAIShipFloating(IShipFloating entity)
     {
     	this.host = entity;
     	this.hostLiving = (EntityLivingBase) entity;
@@ -48,7 +47,7 @@ public class EntityAIShipFloating extends EntityAIBase
     	//ship類: 檢查host坐下
     	if (hostShip != null)
     	{
-    		if (hostShip.getStateFlag(ID.F.CanFloatUp) && hostShip.getEntityDepth() > hostShip.getEntityFloatingDepth())
+    		if (hostShip.getStateFlag(ID.F.CanFloatUp) && hostShip.getShipDepth() > hostShip.getShipFloatingDepth())
     		{
     			//騎乘, 守衛, 移動, 坐下, 裝載中: 禁止上浮
         		if (hostShip.isRiding() || hostShip.isSitting() || hostShip.getStateMinor(ID.M.CraneState) > 0 ||
@@ -66,7 +65,7 @@ public class EntityAIShipFloating extends EntityAIBase
     	//mount類: 檢查mount水深 & host坐下
     	else if (hostMount != null && hostMount.getHostEntity() != null)
     	{
-    		if (hostMount.getEntityDepth() > hostMount.getEntityFloatingDepth())
+    		if (hostMount.getShipDepth() > hostMount.getShipFloatingDepth())
     		{
     			BasicEntityShip host = (BasicEntityShip) hostMount.getHostEntity();
     			
@@ -89,37 +88,37 @@ public class EntityAIShipFloating extends EntityAIBase
     		return false;
 		}
     	
-    	return host.getEntityDepth() > host.getEntityFloatingDepth();
+    	return host.getShipDepth() > host.getShipFloatingDepth();
     }
 
     @Override
 	public void updateTask()
     {
-    	if (this.host.getEntityDepth() > 4D)
+    	if (this.host.getShipDepth() > 4D)
     	{
     		this.hostLiving.motionY += 0.025D;
     		return;
     	}
     	
-    	if (this.host.getEntityDepth() > 2D)
+    	if (this.host.getShipDepth() > 2D)
     	{
     		this.hostLiving.motionY += 0.015D;
     		return;
     	}
     	
-    	if (this.host.getEntityDepth() > 1.3D)
+    	if (this.host.getShipDepth() > 1.3D)
     	{
     		this.hostLiving.motionY += 0.007D;
     		return;
     	}
     	
-    	if (this.host.getEntityDepth() > 0.47D)
+    	if (this.host.getShipDepth() > 0.47D)
     	{
     		this.hostLiving.motionY += 0.003D;
     		return;
     	}
     	
-    	if (this.host.getEntityDepth() > 0.15D)
+    	if (this.host.getShipDepth() > 0.15D)
     	{
     		this.hostLiving.motionY += 0.0015D;
     		return;

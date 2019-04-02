@@ -1,21 +1,20 @@
 package com.lulan.shincolle.ai;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
 import com.lulan.shincolle.entity.IShipEmotion;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.utility.TargetHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+
+import java.util.Collections;
+import java.util.List;
 
 /** SHIP PICK ITEM AI
  * 
@@ -76,7 +75,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     		}
     		
     		//check inventory space
-    		if (this.hostShip.getCapaShipInventory().getFirstSlotEmpty() >= 0) return true;
+    		if (this.hostShip.getCapaShipInventory().getFirstSlotForItem() > 0) return true;
     	}
     	//mount類
     	else if (this.hostMount != null && this.hostShip != null)
@@ -93,7 +92,7 @@ public class EntityAIShipPickItem extends EntityAIBase
     		}
 			
 			//check inventory space
-    		if(this.hostShip.getCapaShipInventory().getFirstSlotEmpty() > 0) return true;
+    		if(this.hostShip.getCapaShipInventory().getFirstSlotForItem() > 0) return true;
 		}
 
     	return false;
@@ -177,8 +176,8 @@ public class EntityAIShipPickItem extends EntityAIBase
     				}
     				
     				//clear path
-    				this.hostShip.getShipNavigate().clearPathEntity();
-    				if(this.hostMount != null) this.hostMount.getShipNavigate().clearPathEntity();
+    				this.hostShip.getShipNavigate().clearPath();
+    				if(this.hostMount != null) this.hostMount.getShipNavigate().clearPath();
     			}
     		}//end pick up item
     	}//end ship not null

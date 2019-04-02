@@ -1,12 +1,6 @@
 package com.lulan.shincolle.block;
 
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.lulan.shincolle.proxy.ClientProxy;
-
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -23,6 +17,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
+
 public class BlockFrame extends BasicBlockFacing
 {
 	
@@ -33,15 +31,14 @@ public class BlockFrame extends BasicBlockFacing
 	public BlockFrame()
 	{
 		super(Material.GLASS);
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
 		this.setHarvestLevel("pickaxe", 0);
 	    this.setHardness(0.1F);
 	    this.setResistance(40F);
 	    this.setLightOpacity(0);
 	    this.setTickRandomly(false);
 	    this.setSoundType(SoundType.METAL);
-	    
+        
         //default state
         this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
@@ -58,14 +55,14 @@ public class BlockFrame extends BasicBlockFacing
 	
 	/** 設定AABB */
 	@Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
     {
         addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_Frame);
     }
-    
+	
 	@Override
 	@SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer()
+    public BlockRenderLayer getRenderLayer()
     {
         return BlockRenderLayer.CUTOUT;
     }
@@ -97,7 +94,7 @@ public class BlockFrame extends BasicBlockFacing
 	
 	/** ladder movement */
 	@Override
-	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity)
+	public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity)
 	{
 		//if client player
 		if (world.isRemote)

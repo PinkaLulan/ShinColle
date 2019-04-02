@@ -1,12 +1,7 @@
 package com.lulan.shincolle.client.gui.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryCraftResult;
-import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
@@ -80,7 +75,7 @@ public class ContainerRecipePaper extends Container
 
                 if (slot >= 0 && slot < 9)
                 {
-                    this.craftMatrix.setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(itemTags));
+                    this.craftMatrix.setInventorySlotContents(slot, new ItemStack(itemTags));
                 }
             }
         }
@@ -95,7 +90,7 @@ public class ContainerRecipePaper extends Container
 	@Override
     public void onCraftMatrixChanged(IInventory inventoryIn)
     {
-    	ItemStack result = CraftingManager.getInstance().findMatchingRecipe(this.craftMatrix, this.world);
+    	ItemStack result = CraftingManager.findMatchingResult(this.craftMatrix, this.world);
     	this.craftResult.setInventorySlotContents(0, result);
     }
     
@@ -107,8 +102,8 @@ public class ContainerRecipePaper extends Container
 
         if (!this.world.isRemote)
         {
-        	ItemStack stack = null;
-            NBTTagCompound nbt = null;
+        	ItemStack stack;
+            NBTTagCompound nbt;
             NBTTagList nbtlist = new NBTTagList();
             
             //get nbt tag from stack
@@ -120,7 +115,7 @@ public class ContainerRecipePaper extends Container
             {
             	stack = this.craftMatrix.getStackInSlot(i);
             	
-                if (stack != null)
+                if (!stack.isEmpty())
                 {
                     NBTTagCompound itemTag = new NBTTagCompound();
                     itemTag.setInteger("Slot", i);
@@ -132,7 +127,7 @@ public class ContainerRecipePaper extends Container
             //save craft result slot
             stack = this.craftResult.getStackInSlot(0);
             
-            if (stack != null)
+            if (!stack.isEmpty())
             {
             	NBTTagCompound itemTag = new NBTTagCompound();
                 itemTag.setInteger("Slot", 9);
@@ -157,7 +152,7 @@ public class ContainerRecipePaper extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-		return null;
+		return ItemStack.EMPTY;
     }
 	
 	@Override
@@ -185,32 +180,32 @@ public class ContainerRecipePaper extends Container
         	Slot slot = (Slot) this.inventorySlots.get(id);
         	
         	//click slot with item
-        	if (itemstack != null)
+        	if (!itemstack.isEmpty())
         	{
         		//clear slot by right click
         		if (key == 1)
         		{
-            		slot.putStack(null);
+            		slot.putStack(ItemStack.EMPTY);
         		}
         		//set slot by left click
         		else
         		{
         			ItemStack itemstack2 = itemstack.copy();
-            		itemstack2.stackSize = 1;
+            		itemstack2.setCount(1);
             		slot.putStack(itemstack2);
         		}
         	}
         	//any key without item
         	else
         	{
-        		slot.putStack(null);
+        		slot.putStack(ItemStack.EMPTY);
         	}
         	
         	this.detectAndSendChanges();
-        	return null;
+        	return ItemStack.EMPTY;
         }
         //click on result slot
-        else if (id == 9) return null;
+        else if (id == 9) return ItemStack.EMPTY;
         
         //click on other slot
         return super.slotClick(id, key, type, player);

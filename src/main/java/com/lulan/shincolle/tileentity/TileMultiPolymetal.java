@@ -2,7 +2,6 @@ package com.lulan.shincolle.tileentity;
 
 import com.lulan.shincolle.block.BlockPolymetal;
 import com.lulan.shincolle.capability.CapaInventory;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -146,7 +145,7 @@ public class TileMultiPolymetal extends BasicTileMulti
 			return ((TileMultiGrudgeHeavy) tile).getStackInSlot(i);
 		}
 		
-		return null;
+		return ItemStack.EMPTY;
   	}
   	
     //移除slot i中, 數量j個物品, 回傳為itemstack, 左右鍵等動作存取slot時會呼叫此方法
@@ -161,7 +160,7 @@ public class TileMultiPolymetal extends BasicTileMulti
 		{
 			return ((TileMultiGrudgeHeavy) tile).decrStackSize(id, count);
 		}
-		return null;
+		return ItemStack.EMPTY;
   	}
   	
   	@Override
@@ -174,7 +173,7 @@ public class TileMultiPolymetal extends BasicTileMulti
 		{
 			return ((TileMultiGrudgeHeavy) tile).removeStackFromSlot(id);
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 	
   	@Override

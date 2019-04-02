@@ -2,7 +2,6 @@ package com.lulan.shincolle.client.gui.inventory;
 
 import com.lulan.shincolle.capability.CapaTeitoku;
 import com.lulan.shincolle.tileentity.TileEntityDesk;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IContainerListener;
@@ -69,7 +68,7 @@ public class ContainerDesk extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotid)
 	{
-        return null;
+        return ItemStack.EMPTY;
     }
 	
 	//將container數值跟tile entity內的數值比對, 如果不同則發送更新給client使gui呈現新數值
@@ -92,7 +91,7 @@ public class ContainerDesk extends Container
 	            
 	            if (this.allyCD != this.capa.getPlayerTeamCooldownInSec())
 	            {
-	            	listener.sendProgressBarUpdate(this, 0, this.capa.getPlayerTeamCooldownInSec());
+	            	listener.sendWindowProperty(this, 0, this.capa.getPlayerTeamCooldownInSec());
 	            }
 	            
 	            for (int j = 0; j < this.lenTemp; j++)
@@ -102,7 +101,7 @@ public class ContainerDesk extends Container
 	            	//有部份數值需要用自訂封包來發送更新
 	            	if (this.valueTemp[j] != temp)
 	            	{
-	                    listener.sendProgressBarUpdate(this, j + 1, temp);
+	                    listener.sendWindowProperty(this, j + 1, temp);
 	            	}
 	            }//end for all value temp
 	        }//end for all listener

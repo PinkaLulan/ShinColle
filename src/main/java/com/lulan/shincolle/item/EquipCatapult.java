@@ -1,7 +1,6 @@
 package com.lulan.shincolle.item;
 
 import com.lulan.shincolle.reference.ID;
-
 import net.minecraft.item.ItemStack;
 
 /**meta:
@@ -19,8 +18,7 @@ public class EquipCatapult extends BasicEquip
 	public EquipCatapult()
 	{
 		super();
-		this.setUnlocalizedName(NAME);
-		this.setRegistryName(NAME);
+		this.setTranslationKey(NAME);
         this.setHasSubtypes(true);
 	}
 	
@@ -81,3 +79,4 @@ public class EquipCatapult extends BasicEquip
 	
 
 }
+

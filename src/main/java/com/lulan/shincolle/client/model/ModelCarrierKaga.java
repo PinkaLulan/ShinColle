@@ -1,11 +1,10 @@
 package com.lulan.shincolle.client.model;
 
 import com.lulan.shincolle.entity.IShipEmotion;
-import com.lulan.shincolle.entity.IFloatingEntity;
+import com.lulan.shincolle.entity.IShipFloating;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
 import com.lulan.shincolle.utility.EmotionHelper;
-
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
@@ -602,7 +601,7 @@ public class ModelCarrierKaga extends ShipModelBaseAdv
     	GlStateManager.translate(0F, 0.48F + 0.2F * ent.getScaleLevel(), 0F);
   		this.setFaceHungry(ent);
   		
-	  	if (((IFloatingEntity)ent).getEntityDepth() > 0)
+	  	if (((IShipFloating)ent).getShipDepth() > 0)
 	  	{
 	  		this.EquipSL01.isHidden = false;
 	    	this.EquipSR01.isHidden = false;
@@ -714,7 +713,7 @@ public class ModelCarrierKaga extends ShipModelBaseAdv
   		addk1 = angleAdd1 * 0.5F - 0.2793F;  //LegLeft01
 	  	addk2 = angleAdd2 * 0.5F - 0.1396F;  //LegRight01
 	  	
-	  	if (((IFloatingEntity)ent).getEntityDepth() > 0)
+	  	if (((IShipFloating)ent).getShipDepth() > 0)
 	  	{
 	  		this.EquipSL01.isHidden = false;
 	    	this.EquipSR01.isHidden = false;

@@ -1,18 +1,17 @@
 package com.lulan.shincolle.crafting;
 
-import java.util.Random;
-
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.init.ModItems;
 import com.lulan.shincolle.item.IShipResourceItem;
 import com.lulan.shincolle.item.ShipSpawnEgg;
 import com.lulan.shincolle.tileentity.TileMultiGrudgeHeavy;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import java.util.Random;
 
 /**Large Shipyard Recipe Helper
  *  Fuel Cost = BaseCost + CostPerMaterial * ( TotalMaterialAmount - minAmount * 4 )
@@ -61,13 +60,13 @@ public class LargeRecipes
 	//add or set item to slot
 	private static void addSlotContents(TileMultiGrudgeHeavy tile, Item item, int meta, int slot)
 	{
-		if (tile.getStackInSlot(slot) == null)
+		if (tile.getStackInSlot(slot).isEmpty())
 		{	//空slot, 新增itemstack
 			tile.setInventorySlotContents(slot, new ItemStack(item, 1, meta));
 		}
 		else
 		{	//slot已佔用, 物品數+1
-			tile.getStackInSlot(slot).stackSize++;
+			tile.getStackInSlot(slot).grow(1);
 		}
 	}
 	
@@ -78,10 +77,10 @@ public class LargeRecipes
 		for (int i = TileMultiGrudgeHeavy.SLOTS_OUT + 1; i < TileMultiGrudgeHeavy.SLOTS_NUM; i++)
 		{
 			//slot為空 or 物品相同且尚未達到最大堆疊數
-			if ((tile.getStackInSlot(i) == null) ||
+			if ((tile.getStackInSlot(i).isEmpty()) ||
 				(tile.getStackInSlot(i).getItem() == item &&
 				 tile.getStackInSlot(i).getItemDamage() == meta &&
-				 tile.getStackInSlot(i).stackSize < tile.getStackInSlot(i).getMaxStackSize()))
+				 tile.getStackInSlot(i).getCount() < tile.getStackInSlot(i).getMaxStackSize()))
 			{
 				return i;
 			}
@@ -162,7 +161,7 @@ public class LargeRecipes
 	{
 		boolean canAdd = false;
 		
-		if (stack != null)
+		if (!stack.isEmpty())
 		{
 			try
 			{
@@ -216,9 +215,9 @@ public class LargeRecipes
 						
 						for (ItemStack i : items)
 						{
-							if (i != null)
+							if (!i.isEmpty())
 							{
-								int size = i.stackSize;
+								int size = i.getCount();
 								int meta = i.getItemDamage();
 								int[] addMats = ((IShipResourceItem)i.getItem()).getResourceValue(meta);
 								
@@ -326,7 +325,7 @@ public class LargeRecipes
 	public static ItemStack getBuildResultEquip(int[] matAmount)
 	{
 		//result item
-		ItemStack buildResult = null;
+		ItemStack buildResult = ItemStack.EMPTY;
 		int rollType = -1;
 		int totalMats = matAmount[0] + matAmount[1] + matAmount[2] + matAmount[3];
 		float randRate = rand.nextFloat();

@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.hime;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipCarrierAttack;
 import com.lulan.shincolle.entity.BasicEntityMount;
 import com.lulan.shincolle.entity.BasicEntityShip;
@@ -10,15 +8,16 @@ import com.lulan.shincolle.entity.mounts.EntityMountCaH;
 import com.lulan.shincolle.entity.other.EntityAbyssMissile;
 import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.ID;
-import com.lulan.shincolle.reference.dataclass.Dist4d;
-import com.lulan.shincolle.reference.dataclass.MissileData;
+import com.lulan.shincolle.reference.unitclass.Dist4d;
+import com.lulan.shincolle.reference.unitclass.MissileData;
 import com.lulan.shincolle.utility.CombatHelper;
 import com.lulan.shincolle.utility.TeamHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * model state:
@@ -31,13 +30,13 @@ public class EntityCarrierHime extends BasicEntityShipCV
 	{
 		super(world);
 		this.setSize(0.7F, 1.9F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CVHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CARRIER);
 		this.setStateMinor(ID.M.NumState, 3);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CV]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CV]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CV]);
-		this.modelPosInGUI = new float[] {-6F, 30F, 0F, 40F};
+		this.ModelPos = new float[] {-6F, 30F, 0F, 40F};
 		this.launchHeight = this.height * 0.9F;
 		
 		//set attack type
@@ -47,7 +46,7 @@ public class EntityCarrierHime extends BasicEntityShipCV
 		//misc
 		this.setFoodSaturationMax(24);
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override

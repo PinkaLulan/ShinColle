@@ -6,7 +6,47 @@
   },
   
   "variants": {
-    "normal": [{}],
-    "inventory": [{}]
+    "normal": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "inventory": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=true,facing=up": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=false,facing=up": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=true,facing=down": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=false,facing=down": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=true,facing=north": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=false,facing=north": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=true,facing=south": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=false,facing=south": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=true,facing=east": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=false,facing=east": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=true,facing=west": {
+      "model": "shincolle:BlockVolCore"
+    },
+    "active=false,facing=west": {
+      "model": "shincolle:BlockVolCore"
+    }
   }
 }

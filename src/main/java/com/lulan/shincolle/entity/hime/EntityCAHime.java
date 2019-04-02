@@ -1,7 +1,5 @@
 package com.lulan.shincolle.entity.hime;
 
-import java.util.List;
-
 import com.lulan.shincolle.ai.EntityAIShipRangeAttack;
 import com.lulan.shincolle.entity.BasicEntityShipSmall;
 import com.lulan.shincolle.handler.ConfigHandler;
@@ -9,7 +7,6 @@ import com.lulan.shincolle.network.S2CEntitySync;
 import com.lulan.shincolle.proxy.CommonProxy;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Values;
-
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -18,6 +15,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+
+import java.util.List;
 
 /**
  * model state:
@@ -39,13 +38,13 @@ public class EntityCAHime extends BasicEntityShipSmall
 	{
 		super(world);
 		this.setSize(0.7F, 1.2F);
-		this.setStateMinor(ID.M.ShipType, ID.ShipIconType.HIME);
+		this.setStateMinor(ID.M.ShipType, ID.ShipType.HIME);
 		this.setStateMinor(ID.M.ShipClass, ID.ShipClass.CAHime);
 		this.setStateMinor(ID.M.DamageType, ID.ShipDmgType.CRUISER);
 		this.setStateMinor(ID.M.NumState, 5);
-		this.setGrudgeConsumeIdle(ConfigHandler.consumeGrudgeShipIdle[ID.ShipConsume.CA]);
+		this.setGrudgeConsumption(ConfigHandler.consumeGrudgeShip[ID.ShipConsume.CA]);
 		this.setAmmoConsumption(ConfigHandler.consumeAmmoShip[ID.ShipConsume.CA]);
-		this.modelPosInGUI = new float[] {0F, 10F, 0F, 40F};
+		this.ModelPos = new float[] {0F, 10F, 0F, 40F};
 		
 		//set attack type
 		this.StateFlag[ID.F.AtkType_AirLight] = false;
@@ -54,7 +53,7 @@ public class EntityCAHime extends BasicEntityShipSmall
 		//misc
 		this.setFoodSaturationMax(17);
 		
-		this.initPre();
+		this.postInit();
 	}
 
 	@Override
@@ -146,7 +145,7 @@ public class EntityCAHime extends BasicEntityShipSmall
         		}
         		else
         		{
-        			float distPush = this.getDistanceToEntity(this.targetPush);
+        			float distPush = this.getDistance(this.targetPush);
         			
             		if (distPush <= 2.5F)
             		{

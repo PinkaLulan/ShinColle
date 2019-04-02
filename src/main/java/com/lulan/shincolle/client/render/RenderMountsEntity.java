@@ -1,24 +1,16 @@
 package com.lulan.shincolle.client.render;
 
-import javax.annotation.Nonnull;
-
-import com.lulan.shincolle.client.model.ModelMountAfH;
-import com.lulan.shincolle.client.model.ModelMountBaH;
-import com.lulan.shincolle.client.model.ModelMountCaH;
-import com.lulan.shincolle.client.model.ModelMountCaWD;
-import com.lulan.shincolle.client.model.ModelMountHbH;
-import com.lulan.shincolle.client.model.ModelMountIsH;
-import com.lulan.shincolle.client.model.ModelMountMiH;
-import com.lulan.shincolle.client.model.ModelMountSuH;
+import com.lulan.shincolle.client.model.*;
 import com.lulan.shincolle.reference.ID;
 import com.lulan.shincolle.reference.Reference;
-
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
+
+import javax.annotation.Nonnull;
 
 public class RenderMountsEntity extends RenderShipEntity
 {
@@ -54,7 +46,7 @@ public class RenderMountsEntity extends RenderShipEntity
     @Nonnull
     protected ResourceLocation getEntityTexture(@Nonnull EntityLiving entity)
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		case ID.ShipMisc.AirfieldMount:
 			return TEX_AirfieldMount;
@@ -83,7 +75,7 @@ public class RenderMountsEntity extends RenderShipEntity
     @Override
     protected void setModel()
     {
-		switch (this.textuerID)
+		switch (this.shipClass)
 		{
 		case ID.ShipMisc.AirfieldMount:
 			this.mainModel = MD_AirfieldMount;
@@ -125,7 +117,7 @@ public class RenderMountsEntity extends RenderShipEntity
 	@Override
 	protected float[] getLeashHeight()
 	{
-		switch(this.textuerID)
+		switch(this.shipClass)
 		{
 		case ID.ShipMisc.AirfieldMount:
 			return new float[] {0.37F, 0.5F, 0.5F, 0.5F, 0.5F};
