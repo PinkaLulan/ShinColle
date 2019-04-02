@@ -2,6 +2,9 @@ Shin Colle
 ==========
 Shinkeiseikan Collection
 
+This is an unofficial port of the 1.10.2 build to 1.12.2.
+No new features will be added, and only bugs caused by the 1.12.2 port will be fixed.
+
 Add cute ship girls for battle and decoration.
 
 
