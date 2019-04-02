@@ -1189,7 +1189,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
 	@Override
     public void travel(float strafe, float vertical, float forward)
 	{
-		EntityHelper.moveEntityWithHeading(this, strafe, forward);
+		EntityHelper.moveEntityWithHeading(this, strafe, vertical, forward);
     }
 	
 	@Override

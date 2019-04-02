@@ -1113,6 +1113,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
+		this.getAttributeMap().registerAttribute(SWIM_SPEED);
     }
 	
 	//set next exp value (for client load nbt data, gui display)
@@ -1827,7 +1828,7 @@ public abstract class BasicEntityShip extends EntityTameable implements IShipCan
 	@Override
     public void travel(float strafe, float vertical, float forward)
 	{
-		EntityHelper.moveEntityWithHeading(this, strafe, forward);
+		EntityHelper.moveEntityWithHeading(this, strafe, vertical, forward);
     }
 
 	/** update entity 

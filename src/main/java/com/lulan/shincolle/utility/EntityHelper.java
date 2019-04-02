@@ -1361,7 +1361,7 @@ public class EntityHelper
   	 * 1. floating on water/lava/liquid block
   	 * 2. change movSpeed in water
   	 */
-  	public static <T extends EntityLivingBase & IShipNavigator> void moveEntityWithHeading(T host, float strafe, float forward)
+  	public static <T extends EntityLivingBase & IShipNavigator> void moveEntityWithHeading(T host, float strafe, float vertical, float forward)
 	{
         double d0;
         
@@ -1369,7 +1369,7 @@ public class EntityHelper
         if (host.canFly())
         {
             d0 = host.posY;
-            host.moveRelative(strafe, 0f, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
+            host.moveRelative(strafe, vertical, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
             host.move(MoverType.SELF, host.motionX, host.motionY, host.motionZ);
             
             //空中阻力
@@ -1388,7 +1388,7 @@ public class EntityHelper
         else if (EntityHelper.checkEntityIsInLiquid(host))
         {
             d0 = host.posY;
-            host.moveRelative(strafe, 0f, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
+            host.moveRelative(strafe, vertical, forward, host.getMoveSpeed() * 0.4F); //水中的速度計算(含漂移效果)
             host.move(MoverType.SELF, host.motionX, host.motionY, host.motionZ);
             
             //水中阻力
@@ -1437,7 +1437,7 @@ public class EntityHelper
             }
 
             //計算實際XZ速度值
-            host.moveRelative(strafe, 0f, forward, f8);
+            host.moveRelative(strafe, vertical, forward, f8);
             
             //再次判定entity是否還站在地面, 重取地面摩擦係數
             f6 = 0.91F;

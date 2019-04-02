@@ -750,7 +750,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
 	@Override
     public void travel(float strafe, float vertical, float forward)
 	{
-		EntityHelper.moveEntityWithHeading(this, strafe, forward);
+		EntityHelper.moveEntityWithHeading(this, strafe, vertical, forward);
     }
 	
 	/** send sync packet:
