@@ -6,11 +6,7 @@
   },
   
   "variants": {
-    "normal": {
-      "model": "shincolle:BlockGrudgeXP"
-    },
-    "inventory": {
-      "model": "shincolle:BlockGrudgeXP"
-    }
+    "normal": [{}],
+    "inventory": [{}]
   }
 }

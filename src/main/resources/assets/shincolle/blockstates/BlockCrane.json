@@ -6,11 +6,7 @@
   },
   
   "variants": {
-    "normal": {
-      "model": "shincolle:BlockCrane"
-    },
-    "inventory": {
-      "model": "shincolle:BlockCrane"
-    }
+    "normal": [{}],
+    "inventory": [{}]
   }
 }

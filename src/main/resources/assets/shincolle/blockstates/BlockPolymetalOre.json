@@ -6,11 +6,7 @@
   },
   
   "variants": {
-    "normal": {
-      "model": "shincolle:BlockPolymetalOre"
-    },
-    "inventory": {
-      "model": "shincolle:BlockPolymetalOre"
-    }
+    "normal": [{}],
+    "inventory": [{}]
   }
 }
