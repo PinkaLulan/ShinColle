@@ -6,7 +6,6 @@ import com.lulan.shincolle.handler.ConfigHandler;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.tileentity.BasicTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +36,7 @@ public class RenderLargeShipyard extends TileEntitySpecialRenderer<BasicTileEnti
 	}
 	
 	@Override
-	public void renderTileEntityFast(BasicTileEntity tile, double x, double y, double z, float partick, int deststage, float partial, BufferBuilder buffer)
+	public void render(BasicTileEntity tile, double x, double y, double z, float partick, int deststage, float alpha)
 	{
 		//get blockstate: get real meta if tile exist in world, or get meta = -1
 		int meta = tile.getRenderMetadata();

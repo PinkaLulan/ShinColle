@@ -11,24 +11,6 @@
     },
     "inventory": {
       "model": "shincolle:BlockVolCore"
-    },
-    "facing=north": {
-      "model": "shincolle:BlockVolCore"
-    },
-    "facing=south": {
-      "model": "shincolle:BlockVolCore"
-    },
-    "facing=east": {
-      "model": "shincolle:BlockVolCore"
-    },
-    "facing=west": {
-      "model": "shincolle:BlockVolCore"
-    },
-    "facing=up": {
-      "model": "shincolle:BlockVolCore"
-    },
-    "facing=down": {
-      "model": "shincolle:BlockVolCore"
     }
   }
 }

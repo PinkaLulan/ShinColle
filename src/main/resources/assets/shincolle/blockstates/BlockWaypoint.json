@@ -10,7 +10,7 @@
       "model": "shincolle:BlockVolCore"
     },
     "inventory": {
-      "model": "shincolle:BlockVolCore"
+      "model": "shincolle:blockwaypoint"
     }
   }
 }

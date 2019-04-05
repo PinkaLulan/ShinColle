@@ -11,15 +11,6 @@
     },
     "inventory": {
       "model": "shincolle:BlockPolymetal"
-    },
-    "mbs=0": {
-      "model": "shincolle:BlockPolymetal"
-    },
-    "mbs=1": {
-      "model": "shincolle:BlockPolymetal"
-    },
-    "mbs=2": {
-      "model": "shincolle:BlockPolymetal"
     }
   }
 }

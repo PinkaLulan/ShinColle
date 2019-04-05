@@ -1,16 +1,15 @@
 package com.lulan.shincolle.utility;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lulan.shincolle.init.ModBlocks;
 import com.lulan.shincolle.tileentity.BasicTileMulti;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MulitBlockHelper
 {
@@ -72,10 +71,10 @@ public class MulitBlockHelper
 	 */
 	public static int checkMultiBlockForm(World world, int xCoord, int yCoord, int zCoord)
 	{
-		IBlockState state = null;
-		BlockPos pos = null;
-		Block block = null;
-		int blockType = -1;
+		IBlockState state;
+		BlockPos pos;
+		Block block;
+		int blockType;
 		/** bitwise pattern match
 		 *  ex: type = 3 (int) = 0011 (bit) = match pattern 0,1
 		 *      type = 2 (int) = 0010 (bit) = match pattern 1
@@ -99,7 +98,7 @@ public class MulitBlockHelper
 	    			
 	    			//1. get block
 	    			state = world.getBlockState(pos);
-	    			if (state != null) 
+	    			if (!world.isAirBlock(pos))
     				{
 	    				block = state.getBlock();
     				}
@@ -157,11 +156,11 @@ public class MulitBlockHelper
 	public static void setupStructure(World world, int xCoord, int yCoord, int zCoord, int type)
 	{
 		List<BasicTileMulti> tiles = new ArrayList<BasicTileMulti>();  //all tile in structure
-		BlockPos pos = null;
+		BlockPos pos;
 		BlockPos masterPos = new BlockPos(xCoord, yCoord, zCoord);
 		BasicTileMulti masterTile = null;  //master tile
-		BasicTileMulti tile2 = null;
-		TileEntity tile = null;
+		BasicTileMulti tile2;
+		TileEntity tile;
 		LogHelper.debug("DEBUG: setup structure type: "+type);
 		
 		//get all tile and master tile
