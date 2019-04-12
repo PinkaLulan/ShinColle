@@ -182,6 +182,7 @@ public class MarriageRing extends BasicItem implements IBauble
 	}
 	
 	//show ability text, this is CLIENT side
+	@SideOnly(Side.CLIENT)
 	@Override
     public void addInformation(ItemStack itemstack, World world, List<String> list, ITooltipFlag par4)
 	{  		
