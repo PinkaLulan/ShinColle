@@ -120,6 +120,7 @@ public abstract class BasicEntityShipHostile extends EntityMob implements IShipC
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+		this.getAttributeMap().registerAttribute(SWIM_SPEED);
     }
 	
 	//display fire effect

@@ -131,6 +131,7 @@ abstract public class BasicEntitySummon extends EntityLiving implements IShipCan
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+		this.getAttributeMap().registerAttribute(SWIM_SPEED);
     }
 	
 	//setup AI

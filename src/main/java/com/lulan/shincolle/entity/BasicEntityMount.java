@@ -1456,6 +1456,7 @@ abstract public class BasicEntityMount extends EntityCreature implements IShipMo
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS);
+		this.getAttributeMap().registerAttribute(SWIM_SPEED);
     }
 	
 	@Override
