@@ -1,0 +1,24 @@
+I should probably make a list for these instead of relying on memory.
+
+Old bugs:
+Phantoms of ships still appear. This started being a thing since 1.10, and I have a feeling it's tied to the player shipmorphs somehow. No evidence of that but just a gut feeling.
+
+New bugs:
+
+Unknown location: Some items aren't consumed properly. Mostly affects grudge, ammo and the abyssal foods. Also extends to not checking nor consuming items when adding those things via the buttons to your personal ship-morph stats screen. Does not affect marrage rings, modernization toolkits or ship construction via those machines. Ships consume items placed into their inventory as normal.
+
+Either in ShipCalc.java or ID.java: ship names are being overridden with their untranslated code names. Might just be a WALIA thing?
+
+Fixed bugs:
+
+Baubles is a dependancy to build the mod (used on the marrage ring), so it should be added to the build.gradle alongside metamorph. I bumped up the metamorph version as well.
+
+Texture paths are case sensitive now. Rather then fix this in the code, I simply lowercased all of the textures. I'm unsure whether fixing it codeside or fileside is the correct choice and went for the one that left the code untouched to get a feel for how far long the port was. This was the second thing I fixed.
+
+Shincolle items were being added to all creative tabs (and the creative trash\delete slot) This is a common bug with ported mods, new version calls that function globally across all tabs and needed minor fixes in a few places to resolve.
+
+Edge Case or Mod interactions:
+
+EREBUS https://minecraft.curseforge.com/projects/the-erebus
+------
+Rendering on some items (shields, the wands) in the Erebus breaks. They seem to be custom models...? Rendering issue with whatever Erebus is doing? Other items are just fine, and there's no issue with any other mod's items, so this is going to be one of those extremely hard to chase down things most likely, and thus definitely not worth my time chasing for months on end.

@@ -2,6 +2,14 @@ Shin Colle
 ==========
 Shinkeiseikan Collection
 
+--------------------------------------------------------------
+
+Based off https://github.com/Theray070696/ShinColle
+
+Technically working 1.12.2 version. Check bugs.txt for a more in-depth coverage of what I did to it so far and known remaining issues. -Mystia
+
+-------------------------------------------------------------
+
 This is an unofficial port of the 1.10.2 build to 1.12.2.
 No new features will be added, and only bugs caused by the 1.12.2 port will be fixed.
 
