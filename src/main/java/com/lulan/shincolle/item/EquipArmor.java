@@ -29,7 +29,8 @@ public class EquipArmor extends BasicEquip
 	
 	/** rearrange item order in creative tab */
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+	if (this.isInCreativeTab(tab)) {
 	{
 		//armor
 		list.add(new ItemStack(this, 1, 0));
@@ -41,6 +42,8 @@ public class EquipArmor extends BasicEquip
 		list.add(new ItemStack(this, 1, 4));
 		//bulkhead
 		list.add(new ItemStack(this, 1, 6));
+	}
+	}
 	}
 	
 	@Override

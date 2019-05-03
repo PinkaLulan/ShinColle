@@ -44,7 +44,8 @@ public class EquipAirplane extends BasicEquip
 	
 	/** rearrange item order in creative tab */
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+	if (this.isInCreativeTab(tab)) {
 	{
 		//T
 		list.add(new ItemStack(this, 1, 0));
@@ -72,6 +73,8 @@ public class EquipAirplane extends BasicEquip
 		//R
 		list.add(new ItemStack(this, 1, 13));
 		list.add(new ItemStack(this, 1, 14));
+	}
+	}
 	}
 	
 	/** T=5, F=8, B=7, R=2 */

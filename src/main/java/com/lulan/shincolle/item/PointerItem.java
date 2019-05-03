@@ -91,9 +91,12 @@ public class PointerItem extends BasicItem
 
 	/** add only 1 type of item to creative tab */
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+	if (this.isInCreativeTab(tab)) {
 	{
 		list.add(new ItemStack(this));
+	}
+	}
 	}
 	
 	//item glow effect

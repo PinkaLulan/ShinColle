@@ -33,8 +33,8 @@ abstract public class BasicItem extends Item implements ICustomModels
 	
 	/** add item to creative tabs according to type value */
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-	{
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+	if (this.isInCreativeTab(tab)) {
 		if (getTypes() <= 1)
 		{
 			list.add(new ItemStack(this));
@@ -46,6 +46,7 @@ abstract public class BasicItem extends Item implements ICustomModels
 				list.add(new ItemStack(this, 1, i));
 			}
 		}
+	}
 	}
 	
 	//name設定用方法: 去掉.之前的字串 以便另外串上mod名稱形成的字串

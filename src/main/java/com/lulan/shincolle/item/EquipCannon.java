@@ -39,8 +39,8 @@ public class EquipCannon extends BasicEquip
 	
 	/** rearrange item order in creative tab */
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-	{
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+	if (this.isInCreativeTab(tab)) {
 		//S
 		list.add(new ItemStack(this, 1, 0));
 		list.add(new ItemStack(this, 1, 1));
@@ -62,7 +62,8 @@ public class EquipCannon extends BasicEquip
 		//Qu
 		list.add(new ItemStack(this, 1, 14));
 	}
-	
+	}
+
 	/** S=3, Tw=8, Tri=3 */
 	@Override
 	public int getTypes()

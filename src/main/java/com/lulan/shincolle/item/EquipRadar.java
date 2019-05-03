@@ -31,8 +31,8 @@ public class EquipRadar extends BasicEquip
 	
 	/** rearrange item order in creative tab */
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-	{
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+	if (this.isInCreativeTab(tab)) {
 		//AA radar
 		list.add(new ItemStack(this, 1, 0));
 		list.add(new ItemStack(this, 1, 1));
@@ -46,6 +46,7 @@ public class EquipRadar extends BasicEquip
 		list.add(new ItemStack(this, 1, 7));
 		//other
 		list.add(new ItemStack(this, 1, 8));
+	}
 	}
 	
 	@Override

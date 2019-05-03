@@ -279,13 +279,14 @@ public class ShipSpawnEgg extends BasicItem
   	
   	//for list all same id items
   	@Override
-  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list)
-  	{
+  	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
+	if (this.isInCreativeTab(tab)) {
   		for (int meta : shipList)
   		{
   			list.add(new ItemStack(this, 1, meta));
   		}
   	}
+	}
   	
   	/** VANILLA SPAWN METHOD edited by Jabelar
      * Spawns the creature specified by the egg's type in the location specified by 
