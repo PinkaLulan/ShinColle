@@ -3,11 +3,15 @@ I should probably make a list for these instead of relying on memory.
 Old bugs:
 Phantoms of ships still appear. This started being a thing since 1.10, and I have a feeling it's tied to the player shipmorphs somehow. No evidence of that but just a gut feeling.
 
+  - Yes this bug is very likely tied to metamorph... It's the bug that also has the name tag appear on the phantom right?
+
 New bugs:
 
 Unknown location: Some items aren't consumed properly. Mostly affects grudge, ammo and the abyssal foods. Also extends to not checking nor consuming items when adding those things via the buttons to your personal ship-morph stats screen. Does not affect marrage rings, modernization toolkits or ship construction via those machines. Ships consume items placed into their inventory as normal.
 
 Either in ShipCalc.java or ID.java: ship names are being overridden with their untranslated code names. Might just be a WALIA thing?
+
+  - Prepend "shincolle." to the entityName argument in the registerModEntity method
 
 Fixed bugs:
 

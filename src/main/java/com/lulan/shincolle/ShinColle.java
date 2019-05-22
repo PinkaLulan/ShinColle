@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 @Mod(modid = Reference.MOD_ID,
 	 name = Reference.MOD_NAME,
 	 version = Reference.MOD_VERSION,
-	 dependencies="required-after:forge@[14.23.4.2765,)",
+	 dependencies="required-after:forge@[14.23.5.2768,)",
 	 guiFactory = "com.lulan.shincolle.config.ConfigGuiFactory")
 public class ShinColle
 {
@@ -42,7 +42,7 @@ public class ShinColle
 		//config inti
 		ConfigHandler.init(event);	//load config file
 
-		ModEntity.init();
+		// ModEntity.init(); // ModEntity now registers entities via the registerEntities event.
 		
 		ModSounds.init();
 

@@ -13,8 +13,16 @@ import com.lulan.shincolle.entity.transport.EntityTransportWa;
 import com.lulan.shincolle.item.BasicEntityItem;
 import com.lulan.shincolle.reference.Reference;
 import com.lulan.shincolle.utility.LogHelper;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent.Register;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 
 /**
 // register natural spawns for entities (1.7.10)
@@ -34,11 +42,19 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 // EntityRegistry.addSpawn(EntityLion.class, 6, 1, 5, EnumCreatureType.creature, BiomeGenBase.savanna); //change the values to vary the spawn rarity, biome, etc.              
 // EntityRegistry.addSpawn(EntityElephant.class, 10, 1, 5, EnumCreatureType.creature, BiomeGenBase.savanna); //change the values to vary the spawn rarity, biome, etc.              
 */
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModEntity
 {
 	
 	private static int modEntityID = 1;  //start id
-
+	private static IForgeRegistry registry;
+	
+	@SubscribeEvent
+	public static void registerEntities(Register<EntityEntry> event)
+	{
+		registry = event.getRegistry();
+		init();
+	}
 	
 	public static void init()
 	{
@@ -165,11 +181,13 @@ public class ModEntity
 	
 	//登錄生物方法
 	//參數: 該生物class, 生物名稱, 生物id
-	public static void createEntity(Class entityClass, String entityName, int entityId)
+	public static <E extends Entity> void createEntity(Class<E> entityClass, String entityName, int entityId)
 	{
 		LogHelper.debug("DEBUG: register entity: "+entityId+" "+entityClass+" "+entityName);
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送同步封包(高速entity必須true才會顯示平順)
-		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
+		// EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, Reference.MOD_ID + "." + entityName, entityId, ShinColle.instance, 64, 1, true);
+		// Will clean up later? lol
+		registry.register(EntityEntryBuilder.<E>create().id(new ResourceLocation(Reference.MOD_ID, entityName), entityId).name(Reference.MOD_ID + "." + entityName).entity(entityClass).tracker(64, 1, true).build());
 	}
 	
 	//登錄非生物方法 (無生怪蛋)
@@ -177,15 +195,17 @@ public class ModEntity
 	public static void createProjectileEntity(Class entityClass, String entityName, int entityId)
 	{
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
-		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, entityName, entityId, ShinColle.instance, 64, 1, true);
+		// EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, Reference.MOD_ID + "." + entityName, entityId, ShinColle.instance, 64, 1, true);
+		createEntity(entityClass, entityName, entityId); // These two methods do the same thing.
 	}
 	
 	//登錄item entity方法 (無生怪蛋)
 	//參數: 該生物class, 生物名稱, 生物id
-	public static void createItemEntity(Class entityClass, String entityName, int entityId)
+	public static <E extends Entity> void createItemEntity(Class<E> entityClass, String entityName, int entityId)
 	{
 		//登錄參數: 生物class, 生物名稱, 生物id, mod副本, 追蹤更新距離, 更新時間間隔, 是否發送速度封包
-		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, entityName, entityId, ShinColle.instance, 64, 4, false);
+		// EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, entityName), entityClass, Reference.MOD_ID + "." + entityName, entityId, ShinColle.instance, 64, 4, false);
+		registry.register(EntityEntryBuilder.<E>create().id(new ResourceLocation(Reference.MOD_ID, entityName), entityId).name(Reference.MOD_ID + "." + entityName).entity(entityClass).tracker(64, 4, false).build());
 	}
 	
 	
